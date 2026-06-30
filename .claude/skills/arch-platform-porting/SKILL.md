@@ -132,6 +132,9 @@ Current Axvisor LoongArch QEMU bring-up uses the dynamic UEFI platform path. The
   version, mirror probing, SHA-256 verification, and `$TMPDIR/ostool/ovmf` cache. Use
   `TGOS_OVMF_DIR` only to select another Ostool-format cache root; do not add per-consumer
   firmware variables or scan distribution-specific `/usr/share` candidates.
+  Guest FDT runtime patching must apply `kernel.cmdline` as the per-VM `/chosen/bootargs`
+  override after selecting the guest tree, while retaining host bootargs as the fallback.
+  Keep this policy in the shared AxVM FDT layer so Axvisor applications do not duplicate it.
   QEMU `uefi`, `to_bin`, acceleration, CPU feature, and device choices are part of each
   `qemu-*.toml` contract; axbuild must not infer or overwrite them from the target architecture
   or host `/dev/kvm` availability.
