@@ -46,6 +46,7 @@ mod resources;
 mod runtime_resources;
 mod serial;
 mod service;
+mod virtio_net;
 #[cfg(target_arch = "x86_64")]
 mod x86;
 
