@@ -51,6 +51,7 @@ ax-api = { workspace = true, optional = true }
 # System dependent modules provided by ArceOS-Hypervisor.
 axaddrspace = { workspace = true }
 axvm-types = { workspace = true }
+axvm-net = { workspace = true }
 axhvc = { workspace = true }
 axdevice = { workspace = true }
 axdevice_base = { workspace = true }

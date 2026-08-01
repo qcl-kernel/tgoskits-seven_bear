@@ -102,7 +102,7 @@ pub use serial::{
     Uart16550, build_16550_mmio, build_16550_port, build_pl011_mmio,
 };
 pub use service::{DeviceServices, ServiceCardinality, ServiceKey};
-pub use virtio_net::VirtioNet;
+pub use virtio_net::{VirtioNet, VirtioNetHeaderMode, VirtioNetOptions};
 #[cfg(target_arch = "x86_64")]
 // Reusable x86 device models and narrow typed services. These are target-gated
 // device packages, not part of the architecture-neutral framework core.
