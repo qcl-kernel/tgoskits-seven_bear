@@ -564,6 +564,8 @@ fn map_interrupt_backend_error(operation: &'static str, error: VmBackendError) -
 
 #[cfg(test)]
 mod tests {
+    use axvm_types::{NestedPagingConfig, VmBackendResult};
+
     use super::*;
 
     #[test]
@@ -701,5 +703,89 @@ mod tests {
                 ..
             }
         ));
+    }
+
+    #[test]
+    fn configures_starting_secondary_without_replacing_current_vcpu() {
+        ax_percpu::init();
+        ax_percpu::init_percpu_reg(0);
+
+        let primary = AxVCpu::<TestVcpu>::new(1, 0, None, ()).unwrap();
+        let secondary = AxVCpu::<TestVcpu>::new(1, 1, None, ()).unwrap();
+        secondary
+            .transition_state(VmVcpuState::Created, VmVcpuState::Starting)
+            .unwrap();
+
+        let entry = GuestPhysAddr::from(0x8020_0000usize);
+        let argument = 0x1234;
+        primary.with_current_cpu_set(|| {
+            secondary.set_entry(entry).unwrap();
+            secondary.set_gpr(0, argument);
+            let current = get_current_vcpu::<TestVcpu>().unwrap();
+            assert!(core::ptr::eq(current, &primary));
+        });
+
+        let backend = secondary.get_arch_vcpu();
+        assert_eq!(backend.entry, Some(entry));
+        assert_eq!(backend.argument, argument);
+        assert_eq!(secondary.state(), VmVcpuState::Starting);
+    }
+
+    #[derive(Default)]
+    struct TestVcpu {
+        entry: Option<GuestPhysAddr>,
+        argument: usize,
+    }
+
+    impl VmArchVcpuOps for TestVcpu {
+        type CreateConfig = ();
+        type SetupConfig = ();
+        type Exit = ();
+
+        fn new(
+            _vm_id: usize,
+            _vcpu_id: usize,
+            _config: Self::CreateConfig,
+        ) -> VmBackendResult<Self> {
+            Ok(Self::default())
+        }
+
+        fn set_entry(&mut self, entry: GuestPhysAddr) -> VmBackendResult {
+            self.entry = Some(entry);
+            Ok(())
+        }
+
+        fn set_nested_page_table(&mut self, _config: NestedPagingConfig) -> VmBackendResult {
+            Ok(())
+        }
+
+        fn setup(&mut self, _config: Self::SetupConfig) -> VmBackendResult {
+            Ok(())
+        }
+
+        fn run(&mut self) -> VmBackendResult<Self::Exit> {
+            Ok(())
+        }
+
+        fn bind(&mut self) -> VmBackendResult {
+            Ok(())
+        }
+
+        fn unbind(&mut self) -> VmBackendResult {
+            Ok(())
+        }
+
+        fn set_gpr(&mut self, reg: usize, val: usize) {
+            assert_eq!(reg, 0);
+            self.argument = val;
+        }
+
+        fn inject_interrupt(&mut self, _vector: usize) -> VmBackendResult {
+            Ok(())
+        }
+
+        fn set_return_value(&mut self, val: usize) {
+            self.argument = val;
+        }
     }
 }

@@ -290,6 +290,7 @@ Current Axvisor LoongArch QEMU bring-up uses the dynamic UEFI platform path. The
    On x86, encode SIPI as Linux `APIC_DM_STARTUP` (`0x600`); INIT level bits do not belong to SIPI.
    Keep this contract synchronized with `docs/design/someboot-secondary-cpu-startup.md`.
 9. For guest SMP under a cooperative scheduler, give newly created vCPU tasks distinct initial host run queues whenever their effective affinity masks admit a matching. Keep guest hardware CPU IDs separate from dense host scheduler IDs, retain each task's full affinity for later migration, and publish VM runtime bookkeeping before activating a task on a remote CPU. Activation must revalidate the runtime CPU bound and current affinity, return an explicit error on mismatch, and roll back published vCPU/runtime lifecycle state if it fails.
+10. A guest `CPU_ON` exit is handled while the calling vCPU remains registered as current on the host CPU. Configure only the target vCPU's saved, inactive backend state under its `Starting` reservation; do not install the target as current or bind it until its published host task first runs on the selected CPU.
 
 ## Validation Ladder
 
