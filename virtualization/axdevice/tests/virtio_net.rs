@@ -7,11 +7,10 @@ use std::{
 };
 
 use axdevice::{
-    AccessWidth, AxVmDeviceConfig, AxVmDevices, BaseDeviceOps, DeviceManagerError,
-    DeviceManagerResult, GuestPhysAddr, VirtioNet, VirtioNetHeaderMode, VirtioNetOptions,
+    AccessWidth, DeviceManagerError, DeviceManagerResult, GuestPhysAddr, VirtioNet,
+    VirtioNetHeaderMode, VirtioNetOptions,
 };
 use axdevice_base::{DeviceError, DeviceResult};
-use axvm_types::{EmulatedDeviceConfig, EmulatedDeviceType};
 
 const MMIO_BASE: usize = 0x1_0000;
 const DESCRIPTOR_AREA: usize = 0x2_0000;
@@ -432,41 +431,6 @@ fn exposes_mac_and_network_segment_without_changing_default_segment() {
     assert_eq!(selected_segment.segment_id(), 7);
 }
 
-#[test]
-fn device_config_assigns_mac_suffix_and_network_segment() {
-    let devices =
-        AxVmDevices::new(AxVmDeviceConfig::new(vec![virtio_net_config(vec![9, 7])])).unwrap();
-    let device = &devices.virtio_nets()[0];
-
-    assert_eq!(device.mac(), [0x52, 0x54, 0, 0, 0, 9]);
-    assert_eq!(device.segment_id(), 7);
-}
-
-#[test]
-fn device_config_rejects_network_segment_outside_u16() {
-    let result = AxVmDevices::new(AxVmDeviceConfig::new(vec![virtio_net_config(vec![
-        1,
-        u16::MAX as usize + 1,
-    ])]));
-
-    assert!(matches!(
-        result,
-        Err(DeviceManagerError::InvalidConfig { .. })
-    ));
-}
-
-#[test]
-fn device_config_rejects_unknown_header_compatibility_mode() {
-    let result = AxVmDevices::new(AxVmDeviceConfig::new(vec![virtio_net_config(vec![
-        1, 0, 2,
-    ])]));
-
-    assert!(matches!(
-        result,
-        Err(DeviceManagerError::InvalidConfig { .. })
-    ));
-}
-
 fn new_device() -> VirtioNet {
     VirtioNet::new(
         GuestPhysAddr::from_usize(MMIO_BASE),
@@ -535,17 +499,6 @@ fn assert_twelve_byte_tx_and_rx(device: &VirtioNet) {
         rx_memory.load(BUFFER_AREA + VIRTIO_NET_HEADER_LEN, frame.len()),
         frame
     );
-}
-
-fn virtio_net_config(cfg_list: Vec<usize>) -> EmulatedDeviceConfig {
-    EmulatedDeviceConfig {
-        name: "virtio-net".into(),
-        base_gpa: MMIO_BASE,
-        length: 0x1000,
-        irq_id: 32,
-        emu_type: EmulatedDeviceType::VirtioNet,
-        cfg_list,
-    }
 }
 
 fn configure_queue(device: &VirtioNet, queue: u32, size: u32) {

@@ -1,7 +1,7 @@
 //! Virtio-mmio register handling for the emulated network device.
 
-use axdevice_base::{AccessWidth, BaseDeviceOps, DeviceError, DeviceResult, EmuDeviceType};
-use axvm_types::{GuestPhysAddr, GuestPhysAddrRange};
+use axdevice_base::{AccessWidth, DeviceError, DeviceResult};
+use axvm_types::GuestPhysAddr;
 
 use super::{VIRTIO_F_VERSION_1, VIRTIO_NET_F_MRG_RXBUF, VirtioNet, queue::QueueAddressKind};
 
@@ -61,13 +61,22 @@ impl VirtioNet {
             VIRTIO_MMIO_INTERRUPT_STATUS => state.interrupt_status,
             VIRTIO_MMIO_STATUS => state.status,
             VIRTIO_MMIO_CONFIG_GENERATION => 0,
-            offset
-                if (VIRTIO_MMIO_CONFIG..VIRTIO_MMIO_CONFIG + self.mac.len()).contains(&offset) =>
-            {
-                u32::from(self.mac[offset - VIRTIO_MMIO_CONFIG])
-            }
             _ => 0,
         }
+    }
+
+    fn read_device_config(&self, offset: usize, width: AccessWidth) -> usize {
+        let Some(mac_offset) = offset.checked_sub(VIRTIO_MMIO_CONFIG) else {
+            return 0;
+        };
+        self.mac
+            .iter()
+            .skip(mac_offset)
+            .take(width.size())
+            .enumerate()
+            .fold(0_u64, |value, (byte_index, byte)| {
+                value | (u64::from(*byte) << (byte_index * u8::BITS as usize))
+            }) as usize
     }
 
     fn write_register(&self, offset: usize, value: u32) -> DeviceResult {
@@ -155,17 +164,13 @@ impl VirtioNet {
     }
 }
 
-impl BaseDeviceOps<GuestPhysAddrRange> for VirtioNet {
-    fn emu_type(&self) -> EmuDeviceType {
-        EmuDeviceType::VirtioNet
-    }
-
-    fn address_range(&self) -> GuestPhysAddrRange {
-        self.guest_address_range()
-    }
-
-    fn handle_read(&self, address: GuestPhysAddr, width: AccessWidth) -> DeviceResult<usize> {
+impl VirtioNet {
+    /// Handles one direct MMIO read against the reusable network core.
+    pub fn handle_read(&self, address: GuestPhysAddr, width: AccessWidth) -> DeviceResult<usize> {
         let offset = self.mmio_offset(address, width)?;
+        if offset >= VIRTIO_MMIO_CONFIG {
+            return Ok(self.read_device_config(offset, width));
+        }
         let value = match width {
             AccessWidth::Byte => self.read_register(offset) & 0xff,
             AccessWidth::Word => self.read_register(offset) & 0xffff,
@@ -174,7 +179,8 @@ impl BaseDeviceOps<GuestPhysAddrRange> for VirtioNet {
         Ok(value as usize)
     }
 
-    fn handle_write(
+    /// Handles one direct MMIO write against the reusable network core.
+    pub fn handle_write(
         &self,
         address: GuestPhysAddr,
         width: AccessWidth,

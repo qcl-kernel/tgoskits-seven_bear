@@ -7,30 +7,30 @@ once, and returns STATUS followed by ACK.
 
 ## Guest network contract
 
-The overlay enables the existing QEMU virt MMIO slot 16. The same values must
-be used by the AxVisor VM configuration:
+The overlay declares the automatic AArch64 virtio-mmio resource selected for
+the sole configured `net0` device. The same values must be used by the AxVisor
+VM configuration:
 
 | Item | RTOS guest value |
 | --- | --- |
-| virtio-mmio base | `0x0a002000` |
+| virtio-mmio base | `0x0b000000` |
 | MMIO window owned by AxVisor | `0x1000` |
-| DTS interrupt cell | GIC SPI 32 |
-| Architectural guest INTID | 64 |
+| DTS interrupt cell | GIC SPI 0 |
+| Architectural guest INTID | 32 |
 | MAC | `52:54:00:00:00:02` |
 | IPv4 address | `10.0.0.2/24` |
 | UDP endpoint | `10.0.0.2:5500` |
 | L2 switch segment | 1 |
 
-The AxVisor virtio-net configuration advertises MAC
-`52:54:00:00:00:02` (`cfg_list = [2, 1, 1]`). The first two values select the
-MAC suffix and switch segment. The final `1` explicitly selects the fixed
-12-byte header compatibility mode. Upstream Zephyr v4.3.0 accepts
+The AxVisor `virtio-net-mmio` request advertises MAC `52:54:00:00:00:02` with
+`mac_suffix = 2`, `segment_id = 1`, and
+`header_mode = "fixed-twelve-byte"`. Upstream Zephyr v4.3.0 accepts
 `VIRTIO_F_VERSION_1` and exchanges its modern 12-byte layout without accepting
 `VIRTIO_NET_F_MRG_RXBUF`; the explicit mode pins that behavior independently of
 feature-state tracking. Linux configurations omit this compatibility value and
 use the negotiated legacy/modern layout. The overlay pins the Zephyr link
 address to the same value, and startup treats any different runtime link
-address as fatal. This also prevents an accidental slot/MAC mismatch from
+address as fatal. This also prevents an accidental resource/MAC mismatch from
 producing misleading packet-loss results.
 
 The Linux/Starry controller side is `52:54:00:00:00:01` and `10.0.0.1/24` on
@@ -100,6 +100,28 @@ python3 competition/ivc/analyze_qemu.py <qemu.log> \
   --drop-ack-every 5
 ```
 
+### Physical Orange Pi evidence images
+
+The physical-board overlays keep the normal protocol behavior but make the
+endpoint finite. `board-smoke.conf` accepts 20 fresh commands and `board.conf`
+accepts 1,800; both emit `IVC-RTOS-RESULT`, print a compact poweroff marker,
+and request PSCI system-off so the AxVisor board runner can regain control:
+
+```sh
+west build -p always -b qemu_cortex_a53 \
+  -d <repo>/competition/ivc/zephyr/build-board-smoke \
+  <repo>/competition/ivc/zephyr -- \
+  -DEXTRA_CONF_FILE=board-smoke.conf
+
+west build -p always -b qemu_cortex_a53 \
+  -d <repo>/competition/ivc/zephyr/build-board \
+  <repo>/competition/ivc/zephyr -- \
+  -DEXTRA_CONF_FILE=board.conf
+```
+
+Use these only with the matching `orangepi-5-plus-zephyr-*.toml` description.
+The normal QEMU image remains open-ended.
+
 The AxVisor image is built for non-secure EL1 (`CONFIG_ARMV8_A_NS=y`) and uses
 safe GIC initialization so it does not reinitialize a distributor that the
 hypervisor already owns. The raw binary must be loaded at `0x40000000` and
@@ -167,9 +189,11 @@ bash competition/ivc/zephyr/run-host-tests.sh
 ```
 
 For an AxVisor boot, load the generated binary as the VM2/RTOS image and expose
-the slot-16 virtio-net device with guest INTID 64 and config bytes `[2, 1, 1]`.
-Do not write `64` into a GIC `GIC_SPI` device-tree cell: the cell is `32`, and
-the interrupt controller adds the architectural SPI base of 32.
+the configured `virtio-net-mmio` device at guest INTID 32 with
+`mac_suffix = 2`, `segment_id = 1`, and
+`header_mode = "fixed-twelve-byte"`. Do not write `32` into a GIC `GIC_SPI`
+device-tree cell: the cell is `0`, and the interrupt controller adds the
+architectural SPI base of 32.
 
 ## Run the controller
 
@@ -181,8 +205,9 @@ cargo run -p ivcproto --bin ivcproto -- \
   controller 10.0.0.2:5500 1800 neural 100
 ```
 
-The endpoint has no finite request-count exit condition. Stop the guest after
-the controller has collected its results.
+The default endpoint has no finite request-count exit condition. Stop the guest
+after the controller has collected its results. The two physical-board
+overlays above intentionally power off after their configured finite count.
 
 ## Compatibility behavior
 
