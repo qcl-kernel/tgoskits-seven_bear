@@ -86,4 +86,6 @@ rdrive.workspace = true
 rdif-clk.workspace = true
 
 [dev-dependencies]
+ax-percpu = { workspace = true, features = ["host-test"] }
+ax-kspin = { workspace = true, features = ["host-test"] }
 rdif-clk = { path = "../../drivers/interface/rdif-clk" }
