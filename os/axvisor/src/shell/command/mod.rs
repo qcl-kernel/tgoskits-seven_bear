@@ -566,6 +566,8 @@ pub fn show_available_commands() {
 #[cfg(test)]
 mod tests {
     use super::{CommandParser, ParseError};
+    #[cfg(feature = "fs")]
+    use super::build_command_tree;
 
     #[test]
     fn shlex_tokenizes_shell_words() {
@@ -639,5 +641,11 @@ mod tests {
         let tokens = CommandParser::tokenize("help\t'vm' start").unwrap();
 
         assert_eq!(tokens, ["help", "vm", "start"]);
+    }
+
+    #[test]
+    #[cfg(feature = "fs")]
+    fn shutdown_command_is_registered_when_filesystem_is_enabled() {
+        assert!(build_command_tree().contains_key("shutdown"));
     }
 }

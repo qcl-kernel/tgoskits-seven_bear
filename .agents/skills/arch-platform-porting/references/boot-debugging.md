@@ -204,6 +204,13 @@ docker run --rm -v "$PWD:/workspace" -w /workspace \
 - 容器通过后，如果持续集成或开发流程依赖该映像，仍需编写与宿主无关的文档。
 - 客户机控制台失败时区分宿主串口和机器所有客户机串口。宿主串口不得进入客户机直通集合。先检查固定 LoongArch 客户机资源、生成的扁平设备树或固件表、虚拟 PCH-PIC 电平状态和 Axvisor 控制台多路复用器，再修改宿主中断路由。
 
+## Axvisor 实体板关机交接
+
+- Axvisor 板卡构建启用 `fs` 时，外部复位或电源循环前使用 shell 的 `shutdown` 命令。等待精确标记 `AXVISOR_HOST_FILESYSTEM_SYNCED`；它确认平台断电前已写回宿主文件系统缓存并释放块设备中断注册。
+- 把 `AXVISOR_HOST_FILESYSTEM_SYNC_FAILED:` 视为硬停止。保留串口日志且不得自动断电，因为宿主文件系统可能仍有脏状态。
+- Axvisor shell 不解释 `;` 等 shell 操作符。板卡自动化必须把 `shutdown` 作为独立命令发送，不能发送 Linux 风格的 `sync; ...` 命令行。
+- Axvisor 挂载物理根分区后，不得把同一分区暴露给客户机。使用独立客户机映像或设备，避免宿主与客户机并发修改同一文件系统。
+
 ## QEMU 调试模式
 
 - 首条可靠输出前失败时加入 `-S -s`，在复位处停止并连接 GDB。
