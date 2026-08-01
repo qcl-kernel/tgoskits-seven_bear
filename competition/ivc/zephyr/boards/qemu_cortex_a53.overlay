@@ -1,20 +1,26 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 /*
- * QEMU virt slot 16 is 0x0a002000. Its GIC cell is SPI 32, which maps to
- * architectural INTID 64. The parent board DTS already supplies reg/interrupts.
+ * AxVM resolves net0 as the sole automatic AArch64 virtual device at
+ * 0x0b000000 and architectural GIC INTID 32 (SPI cell 0).
  */
-&virtio_mmio16 {
-	status = "okay";
-
-	ivc_virtio_net: ethernet {
-		compatible = "virtio,net";
-		local-mac-address = [52 54 00 00 00 02];
+/ {
+	ivc_virtio_mmio: virtio_mmio@b000000 {
+		compatible = "virtio,mmio";
+		reg = <0x0 0x0b000000 0x0 0x1000>;
+		interrupt-parent = <&gic>;
+		interrupts = <0 0 1>;
 		status = "okay";
+
+		ivc_virtio_net: ethernet {
+			compatible = "virtio,net";
+			local-mac-address = [52 54 00 00 00 02];
+			status = "okay";
+		};
 	};
 };
 
-/* The AxVisor guest exposes only the slot-16 virtio-net device. */
+/* The AxVisor guest exposes only its configured virtio-net device. */
 &eth0 {
 	status = "disabled";
 };

@@ -4,12 +4,21 @@
 //! validated before guest memory is accessed, and malformed chains are rejected
 //! without advancing the available ring.
 
-use alloc::{format, vec::Vec};
+use alloc::{boxed::Box, format, string::String, sync::Arc, vec::Vec};
+use core::{cell::RefCell, mem};
 
 use ax_kspin::SpinNoIrq as Mutex;
-use axvm_types::{GuestPhysAddr, GuestPhysAddrRange};
+use axdevice_base::{
+    BusAccess, BusKind, BusResponse, ControllerInputId, Device, DeviceAccess, DeviceError,
+    DeviceResult, DmaGrant, InterruptControllerId, InterruptSharing, InterruptTrigger,
+    InterruptTriggerMode, IrqLine, Resource,
+};
+use axvm_types::GuestPhysAddr;
 
-use crate::{DeviceManagerError, DeviceManagerResult};
+use crate::{
+    DeviceBundle, DeviceFirmwareSpec, DeviceLifecycle, DeviceManagerError, DeviceManagerResult,
+    DeviceModel, DeviceRequirements, ResourceRequest, ResourceSlot, ServiceCardinality, ServiceKey,
+};
 
 mod descriptor;
 mod memory;
@@ -72,6 +81,101 @@ impl VirtioNetHeaderLayout {
 /// The full page is trapped so unused neighbouring virtio-mmio slots read as
 /// absent devices instead of reaching a passthrough mapping.
 pub const VIRTIO_NET_MMIO_SIZE: usize = 0x1000;
+
+/// Typed service key for VM-local virtio network switch ports.
+pub struct VirtioNetPortKey;
+
+impl ServiceKey for VirtioNetPortKey {
+    type Service = VirtioNetPort;
+
+    const NAME: &'static str = "virtio-net-port";
+    const CARDINALITY: ServiceCardinality = ServiceCardinality::Multiple;
+}
+
+/// One planned virtio network device backed by the VM-local interrupt controller.
+pub struct VirtioNetModel {
+    name: String,
+    mac_suffix: u8,
+    options: VirtioNetOptions,
+    controller: InterruptControllerId,
+    mmio_request: ResourceRequest<u64>,
+    irq_request: ResourceRequest<ControllerInputId>,
+}
+
+impl VirtioNetModel {
+    /// Creates a validated device model whose resources are resolved by the device graph.
+    pub fn new(
+        name: impl Into<String>,
+        mac_suffix: u8,
+        options: VirtioNetOptions,
+        controller: InterruptControllerId,
+        mmio_request: ResourceRequest<u64>,
+        irq_request: ResourceRequest<ControllerInputId>,
+    ) -> Self {
+        Self {
+            name: name.into(),
+            mac_suffix,
+            options,
+            controller,
+            mmio_request,
+            irq_request,
+        }
+    }
+}
+
+impl DeviceModel for VirtioNetModel {
+    fn requirements(&self) -> DeviceManagerResult<DeviceRequirements> {
+        DeviceRequirements::new()
+            .with_mmio(
+                ResourceSlot::new("registers")?,
+                VIRTIO_NET_MMIO_SIZE as u64,
+                VIRTIO_NET_MMIO_SIZE as u64,
+                self.mmio_request,
+            )?
+            .with_wired_irq(
+                ResourceSlot::new("irq")?,
+                self.controller,
+                InterruptTrigger::LevelTriggered,
+                InterruptSharing::Exclusive,
+                self.irq_request,
+            )
+    }
+
+    fn firmware(&self) -> DeviceFirmwareSpec {
+        DeviceFirmwareSpec::new("virtio_mmio")
+            .with_compatible("virtio,mmio")
+            .with_register(ResourceSlot::new("registers").expect("static slot is valid"))
+            .with_interrupt(ResourceSlot::new("irq").expect("static slot is valid"))
+    }
+
+    fn build(
+        &self,
+        context: &mut crate::DeviceBuildContext<'_>,
+    ) -> DeviceManagerResult<DeviceBundle> {
+        let (base, length) = context.mmio("registers")?;
+        let irq = context.irq("irq")?;
+        let base = usize::try_from(base).map_err(|_| DeviceManagerError::InvalidConfig {
+            operation: "build virtio network device",
+            detail: format!("device '{}' MMIO base {base:#x} exceeds usize", self.name),
+        })?;
+        let length = usize::try_from(length).map_err(|_| DeviceManagerError::InvalidConfig {
+            operation: "build virtio network device",
+            detail: format!(
+                "device '{}' MMIO length {length:#x} exceeds usize",
+                self.name
+            ),
+        })?;
+        build_virtio_net_mmio(
+            self.name.clone(),
+            base,
+            length,
+            irq.input().value(),
+            [0x52, 0x54, 0, 0, 0, self.mac_suffix],
+            self.options,
+            irq,
+        )
+    }
+}
 
 #[derive(Default)]
 struct VirtioNetState {
@@ -289,10 +393,6 @@ impl VirtioNet {
         Ok(true)
     }
 
-    fn guest_address_range(&self) -> GuestPhysAddrRange {
-        GuestPhysAddrRange::from_start_size(self.base, self.size)
-    }
-
     fn header_layout(&self, state: &VirtioNetState) -> VirtioNetHeaderLayout {
         match self.header_mode {
             VirtioNetHeaderMode::Negotiated
@@ -303,6 +403,282 @@ impl VirtioNet {
             VirtioNetHeaderMode::Negotiated => VirtioNetHeaderLayout::Legacy,
             VirtioNetHeaderMode::FixedTwelveByte => VirtioNetHeaderLayout::TwelveByte,
         }
+    }
+
+    fn interrupt_asserted(&self) -> bool {
+        self.state.lock().interrupt_status != 0
+    }
+
+    fn reset(&self) {
+        self.state.lock().reset();
+    }
+}
+
+/// Builds one memory-mapped virtio network device and its VM-local switch port.
+///
+/// The caller supplies resources already resolved by the VM device graph. The
+/// resulting bundle owns the guest-memory grant used only while handling a
+/// source VM's queue notification; cross-VM delivery remains an explicit
+/// operation on [`VirtioNetPort`].
+pub fn build_virtio_net_mmio(
+    name: String,
+    base: usize,
+    length: usize,
+    irq_id: usize,
+    mac: [u8; 6],
+    options: VirtioNetOptions,
+    irq: IrqLine,
+) -> DeviceManagerResult<DeviceBundle> {
+    if length != VIRTIO_NET_MMIO_SIZE {
+        return Err(DeviceManagerError::InvalidConfig {
+            operation: "build virtio network device",
+            detail: format!(
+                "device '{name}' MMIO length {length:#x} must be {VIRTIO_NET_MMIO_SIZE:#x}"
+            ),
+        });
+    }
+
+    let core = Arc::new(VirtioNet::new_with_options(
+        base.into(),
+        mac,
+        irq_id,
+        options,
+    ));
+    let port = Arc::new(VirtioNetPort::new(core, irq));
+    let dma_grant = DmaGrant::new();
+    let device = Arc::new(VirtioNetDevice::new(
+        name,
+        base,
+        length,
+        irq_id,
+        Arc::clone(&port),
+        dma_grant.clone(),
+    )?);
+    let mut bundle = DeviceBundle::new();
+    bundle.add_guest_memory_device_with_grant(device.clone(), dma_grant);
+    bundle.add_lifecycle(device);
+    bundle.provide_service::<VirtioNetPortKey>(port)?;
+    Ok(bundle)
+}
+
+/// VM-local network port capability exposed to the software switch.
+///
+/// Transmit descriptor processing stays inside the access-scoped device DMA
+/// path. The switch drains only owned Ethernet frames from this capability.
+/// Receive delivery is an explicit asynchronous backend operation supplied
+/// with the destination VM's checked guest-memory callbacks.
+pub struct VirtioNetPort {
+    core: Arc<VirtioNet>,
+    irq: IrqLine,
+    transmitted_frames: Mutex<Vec<Vec<u8>>>,
+}
+
+impl VirtioNetPort {
+    fn new(core: Arc<VirtioNet>, irq: IrqLine) -> Self {
+        Self {
+            core,
+            irq,
+            transmitted_frames: Mutex::new(Vec::new()),
+        }
+    }
+
+    /// Returns the base guest-physical address of the MMIO window.
+    pub fn base(&self) -> GuestPhysAddr {
+        self.core.base()
+    }
+
+    /// Returns the Ethernet MAC address assigned to this port.
+    pub fn mac(&self) -> [u8; 6] {
+        self.core.mac()
+    }
+
+    /// Returns the isolated software-switch segment assigned to this port.
+    pub fn segment_id(&self) -> u16 {
+        self.core.segment_id()
+    }
+
+    /// Returns whether this access notifies the port's transmit queue.
+    pub fn is_tx_notification(&self, address: GuestPhysAddr, value: u32) -> bool {
+        address
+            .as_usize()
+            .checked_sub(self.base().as_usize())
+            .is_some_and(|offset| self.core.is_tx_notify(offset, value))
+    }
+
+    /// Takes the complete batch produced by prior transmit notifications.
+    pub fn take_transmitted_frames(&self) -> Vec<Vec<u8>> {
+        mem::take(&mut self.transmitted_frames.lock())
+    }
+
+    /// Delivers one frame to this port's receive virtqueue.
+    pub fn deliver_rx(
+        &self,
+        read: &dyn Fn(GuestPhysAddr, &mut [u8]) -> DeviceManagerResult,
+        write: &dyn Fn(GuestPhysAddr, &[u8]) -> DeviceManagerResult,
+        frame: &[u8],
+    ) -> DeviceManagerResult<bool> {
+        let delivered = self.core.deliver_rx(read, write, frame)?;
+        self.sync_interrupt_line()
+            .map_err(DeviceManagerError::from)?;
+        Ok(delivered)
+    }
+
+    fn process_tx_notification(
+        &self,
+        grant: &DmaGrant,
+        context: &mut dyn DeviceAccess,
+    ) -> DeviceResult {
+        let context = RefCell::new(context);
+        let read = |address, buffer: &mut [u8]| {
+            context
+                .borrow_mut()
+                .read_guest_memory(grant, address, buffer)
+                .map_err(DeviceManagerError::from)
+        };
+        let write = |address, buffer: &[u8]| {
+            context
+                .borrow_mut()
+                .write_guest_memory(grant, address, buffer)
+                .map_err(DeviceManagerError::from)
+        };
+        let tx_result = self
+            .core
+            .process_tx(&read, &write)
+            .and_then(|frames| {
+                let mut pending = self.transmitted_frames.lock();
+                pending
+                    .try_reserve(frames.len())
+                    .map_err(|_| DeviceManagerError::OutOfMemory {
+                        operation: "queue transmitted virtio-net frames",
+                    })?;
+                pending.extend(frames);
+                Ok(())
+            })
+            .map_err(DeviceError::from);
+        let irq_result = self.sync_interrupt_line();
+        tx_result.and(irq_result)
+    }
+
+    fn sync_interrupt_line(&self) -> DeviceResult {
+        let result = if self.core.interrupt_asserted() {
+            self.irq.assert()
+        } else {
+            self.irq.deassert()
+        };
+        result.map_err(|error| DeviceError::Backend {
+            operation: "signal virtio network interrupt",
+            detail: format!("{error}"),
+        })
+    }
+
+    fn reset(&self) -> DeviceManagerResult {
+        self.core.reset();
+        self.transmitted_frames.lock().clear();
+        self.sync_interrupt_line().map_err(DeviceManagerError::from)
+    }
+}
+
+/// Unified-device adapter that owns the DMA and interrupt capabilities for one
+/// virtio network port.
+struct VirtioNetDevice {
+    name: String,
+    base: u64,
+    port: Arc<VirtioNetPort>,
+    dma_grant: DmaGrant,
+    resources: Box<[Resource]>,
+}
+
+impl VirtioNetDevice {
+    fn new(
+        name: String,
+        base: usize,
+        length: usize,
+        irq_id: usize,
+        port: Arc<VirtioNetPort>,
+        dma_grant: DmaGrant,
+    ) -> DeviceManagerResult<Self> {
+        let irq_line = u32::try_from(irq_id).map_err(|_| DeviceManagerError::InvalidConfig {
+            operation: "build virtio network device",
+            detail: format!("device '{name}' IRQ {irq_id} does not fit the device resource format"),
+        })?;
+        Ok(Self {
+            name,
+            base: base as u64,
+            port,
+            dma_grant,
+            resources: alloc::vec![
+                Resource::MmioRange {
+                    base: base as u64,
+                    size: length as u64,
+                },
+                Resource::IrqLine {
+                    line: irq_line,
+                    trigger: InterruptTriggerMode::LevelTriggered,
+                },
+            ]
+            .into_boxed_slice(),
+        })
+    }
+}
+
+impl Device for VirtioNetDevice {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn resources(&self) -> &[Resource] {
+        &self.resources
+    }
+
+    fn access(
+        &self,
+        access: &BusAccess,
+        context: &mut dyn DeviceAccess,
+    ) -> Result<BusResponse, DeviceError> {
+        if access.kind != BusKind::Mmio {
+            return Err(DeviceError::OutOfRange { addr: access.addr });
+        }
+        let address = usize::try_from(access.addr)
+            .map(GuestPhysAddr::from_usize)
+            .map_err(|_| DeviceError::OutOfRange { addr: access.addr })?;
+        if access.is_read {
+            let value = self.port.core.handle_read(address, access.width)?;
+            return Ok(BusResponse::Read {
+                value: value as u64,
+            });
+        }
+
+        let value = usize::try_from(access.data).map_err(|_| DeviceError::InvalidInput {
+            operation: "write virtio network register",
+            detail: format!("value {:#x} does not fit the host word", access.data),
+        })?;
+        self.port.core.handle_write(address, access.width, value)?;
+        let offset = access
+            .addr
+            .checked_sub(self.base)
+            .and_then(|offset| usize::try_from(offset).ok())
+            .ok_or(DeviceError::OutOfRange { addr: access.addr })?;
+        if self.port.core.is_tx_notify(offset, value as u32) {
+            self.port
+                .process_tx_notification(&self.dma_grant, context)?;
+        } else {
+            self.port.sync_interrupt_line()?;
+        }
+        Ok(BusResponse::Write)
+    }
+}
+
+impl DeviceLifecycle for VirtioNetDevice {
+    fn reset(&self) -> DeviceManagerResult {
+        self.port.reset()
+    }
+
+    fn suspend(&self) -> DeviceManagerResult {
+        Ok(())
+    }
+
+    fn resume(&self) -> DeviceManagerResult {
+        Ok(())
     }
 }
 

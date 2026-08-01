@@ -33,6 +33,10 @@ use ax_std::{os::arceos::sync::IrqSafeMutex, sync::Mutex as SleepMutex};
 use axaddrspace::{AddrSpace, NestedPageTableOps};
 use axdevice::*;
 use axdevice_base::*;
+use axvm_net::{
+    MAX_SWITCH_PORTS, MacAddress, PortId, RouteDecision, SegmentId, SwitchPort, SwitchTopology,
+    TopologyError,
+};
 use axvm_types::*;
 
 use crate::{
@@ -54,6 +58,66 @@ type VCpu = AxVCpu<crate::arch::current::ArchVCpu>;
 pub(crate) type AxVCpuRef<A = crate::arch::current::ArchVCpu> = Arc<AxVCpu<A>>;
 /// A reference to a VM.
 pub type AxVMRef = Arc<AxVM>;
+
+struct SwitchPortBinding {
+    port: SwitchPort,
+    vm: AxVMRef,
+    device: Arc<VirtioNetPort>,
+}
+
+struct SwitchPortSnapshot {
+    bindings: Vec<SwitchPortBinding>,
+}
+
+fn collect_switch_ports() -> Result<SwitchPortSnapshot, TopologyError> {
+    // Both snapshot APIs return owned Arcs after releasing their registry or
+    // machine lock. No broad lock is retained across routing or RX callbacks.
+    let mut bindings = Vec::new();
+    for vm in crate::get_vm_list() {
+        let devices = match vm.get_devices() {
+            Ok(devices) => devices,
+            Err(error) => {
+                crate::network::record_skipped_vm_snapshots(1);
+                debug!(
+                    "virtual switch skipped unavailable VM[{}] device snapshot: {error}",
+                    vm.id()
+                );
+                continue;
+            }
+        };
+        for device in devices.services().all::<VirtioNetPortKey>() {
+            if bindings.len() == MAX_SWITCH_PORTS {
+                return Err(TopologyError::TooManyPorts {
+                    count: MAX_SWITCH_PORTS + 1,
+                    max: MAX_SWITCH_PORTS,
+                });
+            }
+            bindings
+                .try_reserve(1)
+                .map_err(|_| TopologyError::AllocationFailed)?;
+            let port = SwitchPort {
+                id: PortId(bindings.len()),
+                segment: SegmentId(device.segment_id()),
+                mac: MacAddress(device.mac()),
+            };
+            bindings.push(SwitchPortBinding {
+                port,
+                vm: Arc::clone(&vm),
+                device,
+            });
+        }
+    }
+    Ok(SwitchPortSnapshot { bindings })
+}
+
+fn build_switch_topology(bindings: &[SwitchPortBinding]) -> Result<SwitchTopology, TopologyError> {
+    let mut ports = Vec::new();
+    ports
+        .try_reserve_exact(bindings.len())
+        .map_err(|_| TopologyError::AllocationFailed)?;
+    ports.extend(bindings.iter().map(|binding| binding.port));
+    SwitchTopology::new(&ports)
+}
 
 pub(crate) struct VmGuestMemoryAccess<'a> {
     vm: &'a AxVM,
@@ -1718,10 +1782,134 @@ impl AxVM {
 
     pub(crate) fn try_write_device(&self, access: &DeviceAccess, value: u64) -> AxVmResult<bool> {
         let devices = self.get_devices()?;
+        let tx_port = if access.bus() == BusKind::Mmio {
+            usize::try_from(access.address())
+                .ok()
+                .map(GuestPhysAddr::from_usize)
+                .and_then(|address| {
+                    devices
+                        .services()
+                        .all::<VirtioNetPortKey>()
+                        .into_iter()
+                        .find(|port| port.is_tx_notification(address, value as u32))
+                })
+        } else {
+            None
+        };
         let mut memory = VmGuestMemoryAccess { vm: self };
-        devices
+        let handled = devices
             .try_write(access, value, Some(&mut memory))
-            .map_err(Into::into)
+            .map_err(AxVmError::from)?;
+        if handled && let Some(port) = tx_port {
+            self.drive_virtio_net_tx(&port)?;
+        }
+        Ok(handled)
+    }
+
+    /// Routes frames completed by one access-scoped virtio-net TX operation.
+    fn drive_virtio_net_tx(&self, port: &Arc<VirtioNetPort>) -> AxVmResult {
+        crate::network::record_tx_notification();
+        let frames = port.take_transmitted_frames();
+        if frames.is_empty() {
+            crate::network::record_empty_tx_notification();
+            return Ok(());
+        }
+        for frame in &frames {
+            crate::network::record_transmission(frame.len());
+        }
+
+        let snapshot = match collect_switch_ports() {
+            Ok(snapshot) => snapshot,
+            Err(error) => {
+                crate::network::record_topology_failure(frames.len());
+                warn!("virtual switch port snapshot failed; dropping TX batch: {error}");
+                return Ok(());
+            }
+        };
+        let bindings = snapshot.bindings;
+        let topology = match build_switch_topology(&bindings) {
+            Ok(topology) => topology,
+            Err(error) => {
+                crate::network::record_topology_failure(frames.len());
+                warn!("virtual switch topology is unusable; dropping TX batch: {error}");
+                return Ok(());
+            }
+        };
+        let Some(ingress) = bindings
+            .iter()
+            .find(|binding| binding.vm.id() == self.id() && Arc::ptr_eq(&binding.device, port))
+            .map(|binding| binding.port.id)
+        else {
+            crate::network::record_topology_failure(frames.len());
+            warn!(
+                "VM[{}] virtio-net at {:#x} is absent from the switch snapshot; dropping TX batch",
+                self.id(),
+                port.base().as_usize()
+            );
+            return Ok(());
+        };
+
+        for frame in &frames {
+            let decision = topology.route(ingress, frame);
+            crate::network::record_route(&decision);
+            match decision {
+                RouteDecision::Forward { targets, .. } => {
+                    for target in targets {
+                        let Some(binding) =
+                            bindings.iter().find(|binding| binding.port.id == target)
+                        else {
+                            crate::network::record_delivery_error();
+                            warn!("virtual switch produced missing target port {target:?}");
+                            continue;
+                        };
+                        match binding.vm.deliver_rx_frame_to(&binding.device, frame) {
+                            Ok(true) => {
+                                crate::network::record_forwarded_copy();
+                            }
+                            Ok(false) => crate::network::record_unavailable_rx_buffer(),
+                            Err(error) => {
+                                crate::network::record_delivery_error();
+                                warn!(
+                                    "virtual switch delivery to VM[{}] port {:?} failed: {error}",
+                                    binding.vm.id(),
+                                    binding.port.id
+                                );
+                            }
+                        }
+                    }
+                }
+                RouteDecision::Drop(reason) => {
+                    debug!(
+                        "virtual switch dropped frame from VM[{}] port {ingress:?}: {reason:?}",
+                        self.id()
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Delivers one Ethernet frame to a selected port in this VM.
+    fn deliver_rx_frame_to(&self, port: &Arc<VirtioNetPort>, frame: &[u8]) -> AxVmResult<bool> {
+        Ok(port.deliver_rx(
+            &|gpa, buffer| {
+                self.read_from_guest(gpa, buffer).map_err(|error| {
+                    DeviceManagerError::UnexpectedResponse {
+                        operation: "read guest memory for virtio-net RX",
+                        detail: std::format!("{error}"),
+                    }
+                })
+            },
+            &|gpa, buffer| {
+                self.write_to_guest(gpa, buffer).map_err(|error| {
+                    DeviceManagerError::UnexpectedResponse {
+                        operation: "write guest memory for virtio-net RX",
+                        detail: std::format!("{error}"),
+                    }
+                })
+            },
+            frame,
+        )?)
     }
 
     pub(crate) fn handle_nested_page_fault(

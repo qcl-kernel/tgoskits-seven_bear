@@ -11,6 +11,20 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 QEMU_CONFIG = REPOSITORY_ROOT / "competition/ivc/config/qemu-aarch64.toml"
+ORANGEPI_BOARD_CONFIGS = (
+    REPOSITORY_ROOT / "competition/ivc/config/board-orangepi-5-plus-smoke.toml",
+    REPOSITORY_ROOT / "competition/ivc/config/board-orangepi-5-plus.toml",
+)
+ORANGEPI_GUEST_CONFIGS = (
+    REPOSITORY_ROOT / "competition/ivc/config/orangepi-5-plus-linux-smp2.toml",
+    REPOSITORY_ROOT / "competition/ivc/config/orangepi-5-plus-linux-smp2-smoke.toml",
+    REPOSITORY_ROOT / "competition/ivc/config/orangepi-5-plus-zephyr-smp1.toml",
+    REPOSITORY_ROOT / "competition/ivc/config/orangepi-5-plus-zephyr-smoke.toml",
+)
+ORANGEPI_LINUX_DTS = REPOSITORY_ROOT / "competition/ivc/linux/orangepi-5-plus.dts"
+ZEPHYR_BOARD_OVERLAY = (
+    REPOSITORY_ROOT / "competition/ivc/zephyr/boards/qemu_cortex_a53.overlay"
+)
 LINUX_ACK_LOSS_CONFIG = (
     REPOSITORY_ROOT / "competition/ivc/config/linux-smp2-ack-loss.toml"
 )
@@ -44,6 +58,51 @@ class QemuConfigContractTests(unittest.TestCase):
                 for pattern in failure_patterns
             )
         )
+
+    def test_orangepi_success_requires_a_complete_line_with_serial_crlf(self) -> None:
+        completed = "[guest-console:pl011-linux] IVC-LINUX-DONE exit=0"
+
+        for config_path in ORANGEPI_BOARD_CONFIGS:
+            with self.subTest(config=config_path.name), config_path.open("rb") as source:
+                config = tomllib.load(source)
+            self.assertEqual(len(config["success_regex"]), 1)
+            success = re.compile(config["success_regex"][0])
+
+            self.assertIsNone(success.search(completed))
+            self.assertIsNotNone(success.search(f"{completed}\n"))
+            self.assertIsNotNone(success.search(f"{completed}\r\n"))
+            self.assertIsNotNone(success.search(f"{completed}\r\r\n"))
+
+    def test_orangepi_guest_configs_use_the_device_graph_virtio_net_model(self) -> None:
+        for config_path in ORANGEPI_GUEST_CONFIGS:
+            with self.subTest(config=config_path.name), config_path.open("rb") as source:
+                config = tomllib.load(source)
+
+            self.assertEqual(config["base"]["guest_type"], "virtualized")
+            devices = config["devices"]
+            self.assertEqual(devices["passthrough"], [])
+            self.assertEqual(devices["disabled"], [])
+            self.assertNotIn("emu_devices", devices)
+            self.assertEqual(len(devices["virtual"]), 1)
+            network = devices["virtual"][0]
+            self.assertEqual(network["id"], "net0")
+            self.assertEqual(network["model"], "virtio-net-mmio")
+            self.assertEqual(network["segment_id"], 1)
+
+            if "zephyr" in config_path.name:
+                self.assertEqual(network["mac_suffix"], 2)
+                self.assertEqual(network["header_mode"], "fixed-twelve-byte")
+            else:
+                self.assertEqual(network["mac_suffix"], 1)
+                self.assertNotIn("header_mode", network)
+
+    def test_orangepi_guest_firmware_matches_the_automatic_network_resources(self) -> None:
+        linux_dts = ORANGEPI_LINUX_DTS.read_text(encoding="utf-8")
+        zephyr_overlay = ZEPHYR_BOARD_OVERLAY.read_text(encoding="utf-8")
+
+        for source in (linux_dts, zephyr_overlay):
+            self.assertIn("0x0b000000", source)
+            self.assertIn("interrupts = <0 0 1>", source)
 
     def test_ack_loss_guest_configs_pin_the_100_command_fault_campaign(self) -> None:
         with LINUX_ACK_LOSS_CONFIG.open("rb") as source:

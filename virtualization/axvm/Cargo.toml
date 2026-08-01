@@ -90,3 +90,4 @@ rdif-clk.workspace = true
 ax-percpu = { workspace = true, features = ["host-test"] }
 ax-kspin = { workspace = true, features = ["host-test"] }
 rdif-clk = { path = "../../drivers/interface/rdif-clk" }
+toml.workspace = true
