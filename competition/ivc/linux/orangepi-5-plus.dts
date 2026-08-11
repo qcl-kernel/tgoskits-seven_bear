@@ -77,11 +77,5 @@
 		status = "okay";
 	};
 
-	/* The sole configured virtio device receives the first AArch64 auto slot. */
-	virtio_mmio@b000000 {
-		compatible = "virtio,mmio";
-		reg = <0 0x0b000000 0 0x1000>;
-		interrupts = <0 0 1>;
-		dma-coherent;
-	};
+	/* AxVM adds configured conventional devices from its resolved graph. */
 };

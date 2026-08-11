@@ -230,6 +230,36 @@ impl<A: VmArchVcpuOps> AxVCpu<A> {
         reserve_cpu_on_state(&mut inner_mut.state)
     }
 
+    /// Configures the saved backend state owned by a CPU_ON reservation.
+    pub(crate) fn configure_reserved_startup<F>(
+        &self,
+        entry: GuestPhysAddr,
+        configure_args: F,
+    ) -> AxVmResult
+    where
+        F: FnOnce(&mut A),
+    {
+        let state_guard = self.inner_mut.lock();
+        if state_guard.state != VmVcpuState::Starting {
+            let current_state = state_guard.state;
+            return ax_err!(
+                BadState,
+                format!("VCpu state is not Starting, but {current_state:?}")
+            );
+        }
+
+        // The Starting reservation serializes access to this inactive backend. The CPU_ON exit
+        // still runs with the caller vCPU published as current, so the target must not use
+        // with_current_cpu_set() or bind until its own task first runs on the selected host CPU.
+        let arch_vcpu = self.get_arch_vcpu();
+        arch_vcpu
+            .set_entry(entry)
+            .map_err(|error| map_vcpu_backend_error("set vCPU entry", error))?;
+        configure_args(arch_vcpu);
+        drop(state_guard);
+        Ok(())
+    }
+
     /// Binds a CPU_ON-started vCPU and rolls it back to Free if bind fails.
     pub(crate) fn bind_after_cpu_on_or_rollback(&self) -> AxVmResult {
         {
@@ -706,11 +736,7 @@ mod tests {
     }
 
     #[test]
-    fn configures_starting_secondary_without_replacing_current_vcpu() {
-        ax_percpu::init();
-        ax_percpu::init_percpu_reg(0);
-
-        let primary = AxVCpu::<TestVcpu>::new(1, 0, None, ()).unwrap();
+    fn configures_starting_secondary_without_host_cpu_binding() {
         let secondary = AxVCpu::<TestVcpu>::new(1, 1, None, ()).unwrap();
         secondary
             .transition_state(VmVcpuState::Created, VmVcpuState::Starting)
@@ -718,17 +744,30 @@ mod tests {
 
         let entry = GuestPhysAddr::from(0x8020_0000usize);
         let argument = 0x1234;
-        primary.with_current_cpu_set(|| {
-            secondary.set_entry(entry).unwrap();
-            secondary.set_gpr(0, argument);
-            let current = get_current_vcpu::<TestVcpu>().unwrap();
-            assert!(core::ptr::eq(current, &primary));
-        });
+        secondary
+            .configure_reserved_startup(entry, |backend| backend.set_gpr(0, argument))
+            .unwrap();
 
         let backend = secondary.get_arch_vcpu();
         assert_eq!(backend.entry, Some(entry));
         assert_eq!(backend.argument, argument);
         assert_eq!(secondary.state(), VmVcpuState::Starting);
+    }
+
+    #[test]
+    fn rejects_secondary_configuration_without_starting_reservation() {
+        let secondary = AxVCpu::<TestVcpu>::new(1, 1, None, ()).unwrap();
+
+        let result = secondary
+            .configure_reserved_startup(GuestPhysAddr::from(0x8020_0000usize), |backend| {
+                backend.set_gpr(0, 0x1234)
+            });
+
+        assert!(result.is_err());
+        let backend = secondary.get_arch_vcpu();
+        assert_eq!(backend.entry, None);
+        assert_eq!(backend.argument, 0);
+        assert_eq!(secondary.state(), VmVcpuState::Created);
     }
 
     #[derive(Default)]

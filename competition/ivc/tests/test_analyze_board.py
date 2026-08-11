@@ -1,0 +1,1473 @@
+from __future__ import annotations
+
+import importlib.util
+import hashlib
+import gzip
+import sys
+import tempfile
+import unittest
+import zlib
+from pathlib import Path
+
+
+ANALYZER_PATH = Path(__file__).resolve().parents[1] / "analyze_board.py"
+SPEC = importlib.util.spec_from_file_location("ivc_analyze_board", ANALYZER_PATH)
+assert SPEC is not None and SPEC.loader is not None
+analyzer = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = analyzer
+SPEC.loader.exec_module(analyzer)
+
+
+VALID_LOG = """\
+[guest-console:pl011-starry] IVC-STARRY-BOOT mode=neural backend=native count=1800 period_ms=100 vcpus=2
+[guest-console:pl011-starry] IVC-STARRY-NET iface=eth0 mac=02:00:00:00:00:01 ip=10.0.0.1/24 peer=10.0.0.2 udp_port=5500 segment=1
+[guest-console:pl011-starry] IVC-CONTROLLER-OUTCOME policy=neural sent=1800 acknowledged=1800 errors=0 timeouts=0
+[guest-console:pl011-starry] IVC-CONTROLLER-RELIABILITY retransmissions=0 recoveries=0 success_percent=100.000
+[guest-console:pl011-starry] IVC-CONTROLLER-FULL-LOOP p50_us=6644 p95_us=11282 p99_us=11719 max_us=20115
+[guest-console:pl011-starry] IVC-CONTROLLER-PRE-SEND p50_us=17 p95_us=17 p99_us=17 max_us=365
+[guest-console:pl011-starry] IVC-CONTROLLER-TRANSPORT p50_us=6628 p95_us=11266 p99_us=11702 max_us=20098 throughput_msg_s=9.995
+[guest-console:pl011-starry] IVC-CONTROLLER-CONTROL rmse_milli_c=5932.491 iae_milli_c_s=686993.400 max_overshoot_milli_c=13428
+[guest-console:pl011-starry] IVC-CONTROLLER-RESULT policy=neural sent=1800 acknowledged=1800 trasg_s=9.995
+[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME profile=normal accepted=1800 applied=1800 duplicates=0 acks_dropped=0
+[guest-console:pl011-zephyr] IVC-RTOS-MESSAGES status_sent=1800 acks_sent=1800 errors_sent=0 protocol_errors=0
+[guest-console:pl011-zephyr] IVC-RTOS-RESULT profile=normal accepted=1800 applied=1800 duplicates=0 acks_dropped=0 status_sent=1800 acks_sent=1800 errors_sent=0 protocol_errors=0
+[guest-console:pl011-zephyr] IVC-RTOS-POWEROFF accepted=1800
+[guest-console:pl011-starry] IVC-STARRY-DONE exit=0
+AXVISOR_SNAPSHOT_SYNC_OK
+BOARD_LINUX_RESTORED
+BOARD_RESULT_IMAGE_VALIDATED vm=1 index=0 path=/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img bytes=67108864 sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef fsck=clean
+"""
+
+RAW_CSV = """\
+sequence,cycle_started_us,command_sent_us,response_completed_us,full_loop_us,pre_send_us,transport_us,setpoint_milli_c,observed_milli_c,measured_milli_c,command_actuator_permille,status_actuator_permille,error_milli_c
+1,0,10,110,110,10,100,45000,44000,44000,500,500,1000
+2,200,220,340,140,20,120,45000,44000,46000,500,500,-1000
+3,400,430,580,180,30,150,45000,46000,45000,500,500,0
+4,600,640,840,240,40,200,45000,45000,43000,500,500,2000
+"""
+
+RKNN_CSV = """\
+sequence,input0_bits,input1_bits,input2_bits,input3_bits,output_bits,actuator_permille,wall_ns,device_us
+1,00000000,00000000,00000000,00000000,3f000000,500,11000,10
+2,00000000,00000000,00000000,00000000,3f000000,500,13000,12
+3,00000000,00000000,00000000,00000000,3f000000,500,12000,11
+4,00000000,00000000,00000000,00000000,3f000000,500,16000,15
+"""
+RKNN_MODEL_SHA256 = "a" * 64
+ORT_CSV = """\
+sequence,input0_bits,input1_bits,input2_bits,input3_bits,output_bits,actuator_permille,wall_ns
+1,00000000,00000000,00000000,00000000,3f000000,500,121000
+2,00000000,00000000,00000000,00000000,3f000000,500,124000
+3,00000000,00000000,00000000,00000000,3f000000,500,122000
+4,00000000,00000000,00000000,00000000,3f000000,500,130000
+"""
+ORT_MODEL_SHA256 = "c" * 64
+
+RAW_LOG_TEMPLATE = """\
+[guest-console:pl011-starry] IVC-STARRY-BOOT mode=neural backend=native count=4 period_ms=100 vcpus=2
+[guest-console:pl011-starry] IVC-STARRY-NET iface=eth0 mac=02:00:00:00:00:01 ip=10.0.0.1/24 peer=10.0.0.2 udp_port=5500 segment=1
+[guest-console:pl011-starry] IVC-CONTROLLER-OUTCOME policy=neural sent=4 acknowledged=4 errors=0 timeouts=0
+[guest-console:pl011-starry] IVC-CONTROLLER-RELIABILITY retransmissions=0 recoveries=0 success_percent=100.000
+[guest-console:pl011-starry] IVC-CONTROLLER-FULL-LOOP p50_us=140 p95_us=180 p99_us=180 max_us=240
+[guest-console:pl011-starry] IVC-CONTROLLER-PRE-SEND p50_us=20 p95_us=30 p99_us=30 max_us=40
+[guest-console:pl011-starry] IVC-CONTROLLER-TRANSPORT p50_us=120 p95_us=150 p99_us=150 max_us=200 throughput_msg_s=9.000
+[guest-console:pl011-starry] IVC-CONTROLLER-CONTROL rmse_milli_c=1224.745 iae_milli_c_s=400.000 max_overshoot_milli_c=1000
+[guest-console:pl011-starry] IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 sha256={raw_sha256}
+[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME profile=normal accepted=4 applied=4 duplicates=0 acks_dropped=0
+[guest-console:pl011-zephyr] IVC-RTOS-MESSAGES status_sent=4 acks_sent=4 errors_sent=0 protocol_errors=0
+[guest-console:pl011-zephyr] IVC-RTOS-POWEROFF accepted=4
+[guest-console:pl011-starry] IVC-STARRY-DONE exit=0
+AXVISOR_SNAPSHOT_SYNC_OK
+BOARD_LINUX_RESTORED
+BOARD_RESULT_IMAGE_VALIDATED vm=1 index=0 path=/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img bytes=67108864 sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef fsck=clean
+BOARD_GUEST_RAW_MANIFEST path=/var/lib/ivc/raw.csv samples=4 sha256={raw_sha256}
+BOARD_RAW_RESULT_HARVESTED path=/tmp/results/raw.csv samples=4 sha256={raw_sha256}
+BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=42500
+"""
+
+
+def integrity_record(prefix: str, fields: tuple[tuple[str, object], ...]) -> str:
+    body = " ".join(f"{name}={value}" for name, value in fields)
+    checksum = zlib.crc32(body.encode("ascii")) & 0xFFFF_FFFF
+    return f"{prefix}{body} crc={checksum:08x}"
+
+
+def repeated_raw_csv(count: int) -> str:
+    rows = [RAW_CSV.splitlines()[0]]
+    for sequence in range(1, count + 1):
+        cycle_started_us = (sequence - 1) * 200
+        rows.append(
+            f"{sequence},{cycle_started_us},{cycle_started_us + 10},"
+            f"{cycle_started_us + 110},110,10,100,45000,44000,44000,"
+            "500,500,1000"
+        )
+    return "\n".join(rows) + "\n"
+
+
+class BoardAnalysisTests(unittest.TestCase):
+    def write_log(self, contents: str) -> Path:
+        temporary = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False)
+        self.addCleanup(Path(temporary.name).unlink, missing_ok=True)
+        with temporary:
+            temporary.write(contents)
+        return Path(temporary.name)
+
+    def write_raw_csv(self, contents: str = RAW_CSV) -> Path:
+        temporary = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False)
+        self.addCleanup(Path(temporary.name).unlink, missing_ok=True)
+        with temporary:
+            temporary.write(contents)
+        return Path(temporary.name)
+
+    def write_gzip(self, contents: str) -> Path:
+        temporary = tempfile.NamedTemporaryFile(suffix=".gz", delete=False)
+        temporary.close()
+        path = Path(temporary.name)
+        self.addCleanup(path.unlink, missing_ok=True)
+        with gzip.open(path, "wt", encoding="utf-8") as output:
+            output.write(contents)
+        return path
+
+    def raw_log(self, raw_csv: str = RAW_CSV) -> str:
+        digest = hashlib.sha256(raw_csv.encode()).hexdigest()
+        return RAW_LOG_TEMPLATE.format(raw_sha256=digest)
+
+    def rknn_log(self, rknn_csv: str = RKNN_CSV) -> str:
+        digest = hashlib.sha256(rknn_csv.encode()).hexdigest()
+        rknn_boot_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-BOOT "
+            "mode=neural backend=rknn-npu count=4 period_ms=100 vcpus=2\n"
+        )
+        rknn_record_set = (
+            "[guest-console:pl011-starry] IVC-STARRY-RKNN-DEVICE "
+            "path=/dev/dri/card1 registered=true core_mask=0\n"
+            "[guest-console:pl011-starry] IVC-RKNN-RUNTIME "
+            "api=2.3.2 driver=0.9.8 core=0 init_us=70000\n"
+            "[guest-console:pl011-starry] IVC-RKNN-RESULT "
+            "samples=4 positive_device_times=4 device_p99_us=12 wall_p99_ns=13000\n"
+            "[guest-console:pl011-starry] IVC-STARRY-RKNN-MODEL "
+            f"sha256={RKNN_MODEL_SHA256}\n"
+            "[guest-console:pl011-starry] IVC-STARRY-RKNN-RAW "
+            f"sha256={digest}\n"
+        )
+        rknn_records = rknn_record_set * 3
+        harvest_records = (
+            "BOARD_GUEST_RKNN_MANIFEST path=/var/lib/ivc/rknn.csv "
+            f"samples=4 sha256={digest}\n"
+            "BOARD_RKNN_RESULT_HARVESTED path=/tmp/results/rknn.csv "
+            f"samples=4 sha256={digest}\n"
+        )
+        return (
+            self.raw_log()
+            .replace("backend=native", "backend=rknn-npu")
+            .replace(rknn_boot_record, rknn_boot_record * 3)
+            .replace(
+                "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+                rknn_records
+                + "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+            )
+            .replace(
+                "BOARD_IDENTITY board_id=",
+                harvest_records + "BOARD_IDENTITY board_id=",
+            )
+            .replace(
+                "/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img",
+                "/home/orangepi/ivc-rs",
+            )
+        )
+
+    def ort_log(self, ort_csv: str = ORT_CSV) -> str:
+        digest = hashlib.sha256(ort_csv.encode()).hexdigest()
+        ort_boot_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-BOOT "
+            "mode=neural backend=onnxruntime count=4 period_ms=100 vcpus=2\n"
+        )
+        ort_record_set = (
+            "[guest-console:pl011-starry] IVC-ORT-CONTROL-RUNTIME "
+            "version=1.25.0 provider=CPUExecutionProvider init_us=1780\n"
+            "[guest-console:pl011-starry] IVC-ORT-CONTROL-RESULT "
+            "samples=4 wall_p99_ns=124000\n"
+            "[guest-console:pl011-starry] IVC-STARRY-ORT-MODEL "
+            f"sha256={ORT_MODEL_SHA256}\n"
+            "[guest-console:pl011-starry] IVC-STARRY-ORT-RAW "
+            f"sha256={digest}\n"
+        )
+        harvest_records = (
+            "BOARD_GUEST_ORT_MANIFEST path=/var/lib/ivc/ort.csv "
+            f"samples=4 sha256={digest}\n"
+            "BOARD_ORT_RESULT_HARVESTED path=/tmp/results/ort.csv "
+            f"samples=4 sha256={digest}\n"
+        )
+        return (
+            self.raw_log()
+            .replace("backend=native", "backend=onnxruntime")
+            .replace(ort_boot_record, ort_boot_record * 3)
+            .replace(
+                "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+                ort_record_set * 3
+                + "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+            )
+            .replace(
+                "BOARD_IDENTITY board_id=",
+                harvest_records + "BOARD_IDENTITY board_id=",
+            )
+            .replace(
+                "/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img",
+                "/home/orangepi/ivc-os",
+            )
+        )
+
+    def ack_loss_log(self, raw_csv: str = RAW_CSV) -> str:
+        normal_outcome = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME profile=normal "
+            "accepted=4 applied=4 duplicates=0 acks_dropped=0\n"
+        )
+        fault_outcome = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-READY "
+            "bind=10.0.0.2:5500 mac=52:54:00:00:00:02 window_bits=64 "
+            "ack_loss_drop_every=2 expected_commands=4 exit_after_expected=1\n"
+            "[guest-console:pl011-zephyr] IVC-RTOS-INJECT drop_ack_seq=2\n"
+            "[guest-console:pl011-zephyr] IVC-RTOS-DUPLICATE "
+            "seq=2 next_expected=3 duplicates=1\n"
+            "[guest-console:pl011-zephyr] IVC-RTOS-INJECT drop_ack_seq=4\n"
+            "[guest-console:pl011-zephyr] IVC-RTOS-DUPLICATE "
+            "seq=4 next_expected=5 duplicates=2\n"
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME profile=ack-loss "
+            "accepted=4 applied=4 duplicates=2 acks_dropped=2\n"
+        )
+        return (
+            self.raw_log(raw_csv)
+            .replace(
+                "IVC-CONTROLLER-RELIABILITY retransmissions=0 recoveries=0",
+                "IVC-CONTROLLER-RELIABILITY retransmissions=2 recoveries=2",
+            )
+            .replace(normal_outcome, fault_outcome)
+            .replace(
+                "IVC-RTOS-MESSAGES status_sent=4 acks_sent=4",
+                "IVC-RTOS-MESSAGES status_sent=6 acks_sent=4",
+            )
+            .replace(
+                "/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img",
+                "/home/orangepi/ivc-a",
+            )
+        )
+
+    def error_profile_log(self, raw_csv: str = RAW_CSV) -> str:
+        normal_outcome = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME profile=normal "
+            "accepted=4 applied=4 duplicates=0 acks_dropped=0\n"
+        )
+        fault_records = [
+            "[guest-console:pl011-zephyr] IVC-RTOS-READY "
+            "bind=10.0.0.2:5500 mac=52:54:00:00:00:02 window_bits=64 "
+            "ack_loss_drop_every=0 expected_commands=4 expected_protocol_errors=5 "
+            "exit_after_expected=1"
+        ]
+        for kind, sequence, error_code, reason in analyzer.ERROR_FAULT_CONTRACT:
+            fault_records.append(
+                "[guest-console:pl011-starry] "
+                + integrity_record(
+                    "IVC-ERROR-C ",
+                    (
+                        ("kind", kind),
+                        ("seq", sequence),
+                        ("expected", error_code),
+                        ("observed", error_code),
+                    ),
+                )
+            )
+            fault_records.append(
+                "[guest-console:pl011-zephyr] "
+                + integrity_record(
+                    "IVC-ERROR-Z ",
+                    (("seq", sequence), ("code", error_code), ("reason", reason)),
+                )
+            )
+        fault_records.extend(
+            [
+                "[guest-console:pl011-starry] "
+                + integrity_record(
+                    "IVC-ERROR-RESULT ",
+                    (
+                        ("profile", "error"),
+                        ("injected", 5),
+                        ("received", 5),
+                        ("acknowledged", 4),
+                        ("continued", 1),
+                    ),
+                ),
+                "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME profile=error "
+                "accepted=4 applied=4 duplicates=0 acks_dropped=0",
+            ]
+        )
+        fault_records_text = "\n".join(fault_records) + "\n"
+        return (
+            self.raw_log(raw_csv)
+            .replace(
+                "backend=native count=4",
+                "backend=native fault_profile=error count=4",
+            )
+            .replace(normal_outcome, fault_records_text)
+            .replace(
+                "IVC-RTOS-MESSAGES status_sent=4 acks_sent=4 errors_sent=0 "
+                "protocol_errors=0",
+                "IVC-RTOS-MESSAGES status_sent=4 acks_sent=4 errors_sent=5 "
+                "protocol_errors=5",
+            )
+            .replace(
+                "/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img",
+                "/home/orangepi/ivc-e",
+            )
+        )
+
+    def restart_profile_log(
+        self, post_reset_raw_csv: str = RAW_CSV, pre_reset_raw_csv: str | None = None
+    ) -> str:
+        if pre_reset_raw_csv is None:
+            pre_reset_raw_csv = repeated_raw_csv(20)
+        post_digest = hashlib.sha256(post_reset_raw_csv.encode()).hexdigest()
+        pre_digest = hashlib.sha256(pre_reset_raw_csv.encode()).hexdigest()
+        old_session = 286_331_153
+        new_session = 572_662_306
+        stale_error = integrity_record(
+            "IVC-ERROR-Z ",
+            (("seq", 21), ("code", 4), ("reason", "retired-or-invalid-session")),
+        )
+        controller_restart = integrity_record(
+            "IVC-RESTART-C ",
+            (
+                ("old", old_session),
+                ("new", new_session),
+                ("ack_ignored", 1),
+                ("status_ignored", 1),
+                ("control_rejected", 1),
+            ),
+        )
+        controller_duplicate = integrity_record(
+            "IVC-RESTART-D ",
+            (("seq", 1), ("status", 1), ("ack", 1)),
+        )
+        controller_result = integrity_record(
+            "IVC-RESTART-RESULT ",
+            (("profile", "restart"), ("sent", 4), ("acknowledged", 4), ("continued", 1)),
+        )
+        return f"""\
+AXVISOR_GUEST_RESTART_ARMED schema=1 vm_id=1 host_cpu=3 delay_ms=20000 ready_timeout_ms=30000
+AXVISOR_GUEST_RESTART_PLACED schema=1 vm_id=1 requested_pcpu=3 actual_pcpu=3 affinity_mask=8
+AXVISOR_GUEST_RESTART_RUNNING schema=1 vm_id=1 host_cpu=3 ready_wait_ms=450 status=running
+[guest-console:pl011-starry] IVC-STARRY-BOOT mode=neural backend=native fault_profile=restart count=4 period_ms=100 vcpus=2
+[guest-console:pl011-starry] IVC-STARRY-NET iface=eth0 mac=02:00:00:00:00:01 ip=10.0.0.1/24 peer=10.0.0.2 udp_port=5500 segment=1
+[guest-console:pl011-zephyr] IVC-RTOS-READY bind=10.0.0.2:5500 mac=52:54:00:00:00:02 window_bits=64 ack_loss_drop_every=0 expected_commands=24 expected_protocol_errors=1 exit_after_expected=1
+[guest-console:pl011-zephyr] IVC-RTOS-RESTART-READY commands=24 errors=1 resets=1 rejections=1 safe=1 drop=0 exit=1
+[guest-console:pl011-starry] IVC-STARRY-RESTART-ARMED phase=before-reset session_id={old_session} samples=20
+[guest-console:pl011-starry] IVC-STARRY-RESTART-RAW path=/var/lib/ivc/raw-before-reset.csv samples=20 sha256={pre_digest}
+[guest-console:pl011-zephyr] IVC-RTOS-SAFE-FALLBACK reason=controller-timeout actuator_permille=0 last_sequence=20 session={old_session} safe_fallbacks=1
+AXVISOR_GUEST_RESTART_TRIGGER schema=1 vm_id=1 host_cpu=3 requested_delay_ms=20000 observed_delay_ms=20001 before_status=running reset_count=1
+[guest-console:pl011-starry] IVC-STARRY-BOOT mode=neural backend=native fault_profile=restart count=4 period_ms=100 vcpus=2
+[guest-console:pl011-starry] IVC-STARRY-NET iface=eth0 mac=02:00:00:00:00:01 ip=10.0.0.1/24 peer=10.0.0.2 udp_port=5500 segment=1
+[guest-console:pl011-starry] IVC-STARRY-RESTART-RESUME phase=after-reset old_session={old_session} new_session={new_session} first_samples=20
+[guest-console:pl011-zephyr] IVC-RTOS-STALE-REPLAY old_session={old_session} old_sequence=20 new_session={new_session} stale_status_sent=1 stale_acks_sent=1
+[guest-console:pl011-zephyr] IVC-RTOS-RECOVERY session={new_session} seq=1 from=controller-timeout mode=Neural actuator_permille=500 recoveries=1
+[guest-console:pl011-starry] IVC-CONTROLLER-OUTCOME policy=neural sent=4 acknowledged=4 errors=0 timeouts=0
+[guest-console:pl011-starry] IVC-CONTROLLER-RELIABILITY retransmissions=0 recoveries=0 success_percent=100.000
+[guest-console:pl011-starry] IVC-CONTROLLER-FULL-LOOP p50_us=140 p95_us=180 p99_us=180 max_us=240
+[guest-console:pl011-starry] IVC-CONTROLLER-PRE-SEND p50_us=20 p95_us=30 p99_us=30 max_us=40
+[guest-console:pl011-starry] IVC-CONTROLLER-TRANSPORT p50_us=120 p95_us=150 p99_us=150 max_us=200 throughput_msg_s=9.000
+[guest-console:pl011-starry] IVC-CONTROLLER-CONTROL rmse_milli_c=1224.745 iae_milli_c_s=400.000 max_overshoot_milli_c=1000
+[guest-console:pl011-starry] {controller_duplicate}
+[guest-console:pl011-starry] {controller_restart}
+[guest-console:pl011-starry] {controller_result}
+[guest-console:pl011-zephyr] {stale_error}
+[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME profile=restart accepted=24 applied=24 duplicates=1 acks_dropped=0
+[guest-console:pl011-zephyr] IVC-RTOS-MESSAGES status_sent=26 acks_sent=26 errors_sent=1 protocol_errors=1
+[guest-console:pl011-zephyr] IVC-RTOS-RESTART session_resets=1 session_rejections=1 safe_fallbacks=1 recoveries=1 stale_status_sent=1 stale_acks_sent=1
+[guest-console:pl011-zephyr] IVC-RTOS-POWEROFF accepted=24
+[guest-console:pl011-starry] IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 sha256={post_digest}
+[guest-console:pl011-starry] IVC-STARRY-DONE exit=0
+AXVISOR_GUEST_RESTART_COMPLETE schema=1 vm_id=1 host_cpu=3 before_status=running after_status=running reset_count=1
+AXVISOR_GUEST_RESTART_TIMING schema=1 vm_id=1 host_cpu=3 ready_wait_ms=450 requested_delay_ms=20000 observed_delay_ms=20001
+AXVISOR_SNAPSHOT_SYNC_OK
+BOARD_LINUX_RESTORED
+BOARD_RESULT_IMAGE_VALIDATED vm=1 index=0 path=/home/orangepi/ivc-r bytes=67108864 sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef fsck=clean
+BOARD_GUEST_RAW_MANIFEST path=/var/lib/ivc/raw.csv samples=4 sha256={post_digest}
+BOARD_RAW_RESULT_HARVESTED path=/tmp/results/raw.csv samples=4 sha256={post_digest}
+BOARD_GUEST_PRE_RESET_RAW_MANIFEST path=/var/lib/ivc/raw-before-reset.csv samples=20 sha256={pre_digest}
+BOARD_PRE_RESET_RAW_RESULT_HARVESTED path=/tmp/results/raw-before-reset.csv samples=20 sha256={pre_digest}
+BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=42500
+"""
+
+    def test_compact_records_survive_a_corrupted_legacy_result(self) -> None:
+        result = analyzer.analyze(self.write_log(VALID_LOG), 1_800)
+
+        self.assertEqual(result["platform"], "orangepi-5-plus")
+        self.assertEqual(result["guest"], "starryos")
+        self.assertEqual(result["controller"]["acknowledged"], 1_800)
+        self.assertEqual(result["controller"]["transport_p99_us"], 11_702)
+        self.assertEqual(result["rtos"]["applied"], 1_800)
+        self.assertTrue(result["lifecycle"]["host_filesystem_synced"])
+        self.assertTrue(result["lifecycle"]["board_linux_restored"])
+
+    def test_current_axvisor_vm_console_prefix_is_accepted(self) -> None:
+        log = VALID_LOG.replace(
+            "[guest-console:pl011-starry]", "[VM 1]"
+        ).replace("[guest-console:pl011-zephyr]", "[VM 2]")
+
+        result = analyzer.analyze(self.write_log(log), 1_800)
+
+        self.assertEqual(result["controller"]["acknowledged"], 1_800)
+        self.assertEqual(result["rtos"]["accepted"], 1_800)
+
+    def test_complete_rtos_result_recovers_damaged_compact_records(self) -> None:
+        log = VALID_LOG.replace(
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME "
+            "profile=normal accepted=1800 applied=1800 duplicates=0 "
+            "acks_dropped=0\n",
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME pro\n",
+        ).replace(
+            "[guest-console:pl011-zephyr] IVC-RTOS-MESSAGES "
+            "status_sent=1800 acks_sent=1800 errors_sent=0 protocol_errors=0\n",
+            "",
+        )
+
+        result = analyzer.analyze(self.write_log(log), 1_800)
+
+        self.assertEqual(result["rtos"]["accepted"], 1_800)
+        self.assertEqual(result["rtos"]["protocol_errors"], 0)
+
+    def test_compact_records_ignore_a_type_invalid_legacy_result(self) -> None:
+        corrupted_legacy = (
+            "[guest-console:pl011-starry] IVC-CONTROLLER-RESULT "
+            "policy=neural sent=1800 acknowledged=1800 errors=0 timeouts=0 "
+            "retransmissions=0 recoveries=0 "
+            "success_percent=e_send_p50_us=201 pre_send_p95_us=224\n"
+        )
+        log = VALID_LOG.replace(
+            "[guest-console:pl011-starry] IVC-CONTROLLER-RESULT "
+            "policy=neural sent=1800 acknowledged=1800 trasg_s=9.995\n",
+            corrupted_legacy,
+        )
+
+        result = analyzer.analyze(self.write_log(log), 1_800)
+
+        self.assertEqual(result["controller"]["acknowledged"], 1_800)
+        self.assertEqual(result["controller"]["success_percent"], 100.0)
+
+    def test_complete_legacy_result_recovers_dropped_compact_outcome(self) -> None:
+        log = VALID_LOG.replace(
+            "[guest-console:pl011-starry] IVC-CONTROLLER-OUTCOME "
+            "policy=neural sent=1800 acknowledged=1800 errors=0 timeouts=0\n",
+            "",
+        ).replace(
+            "[guest-console:pl011-starry] IVC-CONTROLLER-RELIABILITY "
+            "retransmissions=0 recoveries=0 success_percent=100.000\n",
+            "",
+        ).replace(
+            "[guest-console:pl011-starry] IVC-CONTROLLER-RESULT "
+            "policy=neural sent=1800 acknowledged=1800 trasg_s=9.995\n",
+            "[guest-console:pl011-starry] IVC-CONTROLLER-RESULT "
+            "policy=neural sent=1800 acknowledged=1800 errors=0 timeouts=0 "
+            "retransmissions=0 recoveries=0 success_percent=100.000\n",
+        )
+
+        result = analyzer.analyze(self.write_log(log), 1_800)
+
+        self.assertEqual(result["controller"]["acknowledged"], 1_800)
+        self.assertEqual(result["controller"]["recoveries"], 0)
+
+    def test_conflicting_complete_legacy_outcome_is_rejected(self) -> None:
+        log = VALID_LOG.replace(
+            "[guest-console:pl011-starry] IVC-CONTROLLER-RESULT "
+            "policy=neural sent=1800 acknowledged=1800 trasg_s=9.995\n",
+            "[guest-console:pl011-starry] IVC-CONTROLLER-RESULT "
+            "policy=neural sent=1799 acknowledged=1799 errors=0 timeouts=0 "
+            "retransmissions=0 recoveries=0 success_percent=100.000\n",
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "conflicting complete"):
+            analyzer.analyze(self.write_log(log), 1_800)
+
+    def test_redundant_compact_record_survives_one_uart_damaged_copy(self) -> None:
+        complete = (
+            "[guest-console:pl011-starry] IVC-CONTROLLER-PRE-SEND "
+            "p50_us=17 p95_us=17 p99_us=17 max_us=365\n"
+        )
+        damaged = (
+            "[guest-console:pl011-starry] IVC-CONTROLLER-PRE-SEND "
+            "p50_us=17 p95_us=17 p99_us=17 max_"
+            "[guest-console:pl011-starry] IVC-CONTROLLER-TRANSPORT\n"
+        )
+        log = VALID_LOG.replace(complete, damaged + complete)
+
+        result = analyzer.analyze(self.write_log(log), 1_800)
+
+        self.assertEqual(result["controller"]["pre_send_max_us"], 365)
+
+    def test_concatenated_guest_records_are_split_at_uart_prefix(self) -> None:
+        log = VALID_LOG.replace(
+            "acks_dropped=0\n"
+            "[guest-console:pl011-zephyr] IVC-RTOS-MESSAGES",
+            "acks_dropped=0"
+            "[guest-console:pl011-zephyr] IVC-RTOS-MESSAGES",
+            1,
+        )
+
+        result = analyzer.analyze(self.write_log(log), 1_800)
+
+        self.assertEqual(result["rtos"]["acks_sent"], 1_800)
+
+    def test_runner_sync_confirmation_survives_a_damaged_raw_marker(self) -> None:
+        log = VALID_LOG.replace(
+            "AXVISOR_SNAPSHOT_SYNC_OK\n",
+            "AXVISOR_SNAPSHOT_SYNC_OK\n"
+            "[HOST_FILESYSTEM_SYNCED\n",
+        )
+
+        result = analyzer.analyze(self.write_log(log), 1_800)
+
+        self.assertTrue(result["lifecycle"]["host_filesystem_synced"])
+
+    def test_missing_linux_restore_is_rejected(self) -> None:
+        log = VALID_LOG.replace("BOARD_LINUX_RESTORED\n", "")
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "BOARD_LINUX_RESTORED"):
+            analyzer.analyze(self.write_log(log), 1_800)
+
+    def test_missing_volatile_block_snapshot_is_rejected(self) -> None:
+        log = VALID_LOG.replace(
+            "BOARD_RESULT_IMAGE_VALIDATED vm=1 index=0 "
+            "path=/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img "
+            "bytes=67108864 "
+            "sha256=0123456789abcdef0123456789abcdef"
+            "0123456789abcdef0123456789abcdef fsck=clean\n",
+            "",
+        )
+
+        with self.assertRaisesRegex(
+            analyzer.AnalysisError, "BOARD_RESULT_IMAGE_VALIDATED"
+        ):
+            analyzer.analyze(self.write_log(log), 1_800)
+
+    def test_compact_uart_safe_snapshot_path_is_accepted(self) -> None:
+        compact_log = VALID_LOG.replace(
+            "/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img",
+            "/home/orangepi/ivc-n",
+        )
+
+        result = analyzer.analyze(self.write_log(compact_log), 1_800)
+
+        self.assertEqual(
+            result["lifecycle"]["block_snapshot"]["image_path"],
+            "/home/orangepi/ivc-n",
+        )
+
+    def test_rknpu_smoke_snapshot_path_is_accepted(self) -> None:
+        rknpu_log = VALID_LOG.replace(
+            "/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img",
+            "/home/orangepi/ivc-rs",
+        )
+
+        result = analyzer.analyze(self.write_log(rknpu_log), 1_800)
+
+        self.assertEqual(
+            result["lifecycle"]["block_snapshot"]["image_path"],
+            "/home/orangepi/ivc-rs",
+        )
+
+    def test_rknn_samples_are_harvested_and_cross_checked(self) -> None:
+        result = analyzer.analyze(
+            self.write_log(self.rknn_log()),
+            4,
+            self.write_raw_csv(),
+            rknn_path=self.write_raw_csv(RKNN_CSV),
+            expected_rknn_model_sha256=RKNN_MODEL_SHA256,
+            expected_rknn_runtime_api="2.3.2",
+        )
+
+        self.assertEqual(result["rknn_samples"]["sample_count"], 4)
+        self.assertEqual(result["rknn_samples"]["device_p99_us"], 12)
+        self.assertEqual(result["rknn_samples"]["wall_p99_ns"], 13_000)
+        self.assertEqual(result["rknn_samples"]["runtime_api"], "2.3.2")
+
+    def test_ort_samples_are_harvested_and_cross_checked(self) -> None:
+        result = analyzer.analyze(
+            self.write_log(self.ort_log()),
+            4,
+            self.write_raw_csv(),
+            ort_path=self.write_raw_csv(ORT_CSV),
+            expected_ort_model_sha256=ORT_MODEL_SHA256,
+            expected_ort_runtime_version="1.25.0",
+        )
+
+        self.assertEqual(result["ort_samples"]["sample_count"], 4)
+        self.assertEqual(result["ort_samples"]["wall_p99_ns"], 124_000)
+        self.assertEqual(result["ort_samples"]["runtime_version"], "1.25.0")
+        self.assertEqual(
+            result["ort_samples"]["provider"], "CPUExecutionProvider"
+        )
+
+    def test_ort_actuator_reproduces_f32_half_boundary_scaling(self) -> None:
+        encoded = dict(
+            zip(
+                analyzer.ORT_COLUMNS,
+                (
+                    "1280",
+                    "be1800a8",
+                    "3ec00000",
+                    "bd71a9fc",
+                    "3ea6e979",
+                    "3ea72b02",
+                    "327",
+                    "144958",
+                ),
+                strict=True,
+            )
+        )
+
+        result = analyzer.parse_ort_row(encoded, expected_sequence=1280)
+
+        self.assertEqual(result["actuator_permille"], 327)
+        encoded["actuator_permille"] = "326"
+        with self.assertRaisesRegex(
+            analyzer.AnalysisError,
+            "ORT CSV actuator conflicts with output bits at row 1280",
+        ):
+            analyzer.parse_ort_row(encoded, expected_sequence=1280)
+
+    def test_ort_actuator_mismatch_with_control_csv_is_rejected(self) -> None:
+        mismatched = ORT_CSV.replace("3f000000,500", "3f19999a,600", 1)
+
+        with self.assertRaisesRegex(
+            analyzer.AnalysisError,
+            "ORT actuator does not match the controller raw CSV",
+        ):
+            analyzer.analyze(
+                self.write_log(self.ort_log(mismatched)),
+                4,
+                self.write_raw_csv(),
+                ort_path=self.write_raw_csv(mismatched),
+                expected_ort_model_sha256=ORT_MODEL_SHA256,
+                expected_ort_runtime_version="1.25.0",
+            )
+
+    def test_ort_runtime_version_must_match_the_frozen_profile(self) -> None:
+        with self.assertRaisesRegex(
+            analyzer.AnalysisError,
+            "ORT runtime version does not match the frozen profile",
+        ):
+            analyzer.analyze(
+                self.write_log(self.ort_log()),
+                4,
+                self.write_raw_csv(),
+                ort_path=self.write_raw_csv(ORT_CSV),
+                expected_ort_model_sha256=ORT_MODEL_SHA256,
+                expected_ort_runtime_version="1.26.0",
+            )
+
+    def test_rknn_uart_quorum_ignores_one_complete_collision_record(self) -> None:
+        corrupt_model_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-RKNN-MODEL "
+            f"sha256={'b' * 64}\n"
+        )
+        log = self.rknn_log().replace(
+            "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+            corrupt_model_record
+            + "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            rknn_path=self.write_raw_csv(RKNN_CSV),
+            expected_rknn_model_sha256=RKNN_MODEL_SHA256,
+            expected_rknn_runtime_api="2.3.2",
+        )
+
+        self.assertEqual(
+            result["rknn_samples"]["model_sha256"], RKNN_MODEL_SHA256
+        )
+
+    def test_rknn_uart_quorum_ignores_larger_invalid_hash_vote(self) -> None:
+        digest = hashlib.sha256(RKNN_CSV.encode()).hexdigest()
+        complete_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-RKNN-RAW "
+            f"sha256={digest}\n"
+        )
+        truncated_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-RKNN-RAW "
+            f"sha256={digest[:-12]}\n"
+        )
+        done_record = "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n"
+        log = (
+            self.rknn_log()
+            .replace(complete_record, truncated_record, 1)
+            .replace(done_record, truncated_record * 2 + done_record)
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            rknn_path=self.write_raw_csv(RKNN_CSV),
+            expected_rknn_model_sha256=RKNN_MODEL_SHA256,
+            expected_rknn_runtime_api="2.3.2",
+        )
+
+        self.assertEqual(result["rknn_samples"]["sha256"], digest)
+
+    def test_rknn_boot_quorum_ignores_one_complete_collision_record(self) -> None:
+        corrupt_boot_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-BOOT "
+            "mode=manual backend=rknn-npu count=4 period_ms=100 vcpus=2\n"
+        )
+        log = self.rknn_log().replace(
+            "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+            corrupt_boot_record
+            + "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            rknn_path=self.write_raw_csv(RKNN_CSV),
+            expected_rknn_model_sha256=RKNN_MODEL_SHA256,
+            expected_rknn_runtime_api="2.3.2",
+        )
+
+        self.assertEqual(result["starry"]["mode"], "neural")
+
+    def test_rknn_uart_quorum_rejects_a_split_tie(self) -> None:
+        corrupt_model_records = (
+            "[guest-console:pl011-starry] IVC-STARRY-RKNN-MODEL "
+            f"sha256={'b' * 64}\n"
+        ) * 3
+        log = self.rknn_log().replace(
+            "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+            corrupt_model_records
+            + "[guest-console:pl011-starry] IVC-STARRY-DONE exit=0\n",
+        )
+
+        with self.assertRaisesRegex(
+            analyzer.ConflictingRecordsError, "RKNN-MODEL"
+        ):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                rknn_path=self.write_raw_csv(RKNN_CSV),
+                expected_rknn_model_sha256=RKNN_MODEL_SHA256,
+                expected_rknn_runtime_api="2.3.2",
+            )
+
+    def test_rknn_model_must_match_the_expected_artifact_hash(self) -> None:
+        with self.assertRaisesRegex(analyzer.AnalysisError, "model SHA-256"):
+            analyzer.analyze(
+                self.write_log(self.rknn_log()),
+                4,
+                self.write_raw_csv(),
+                rknn_path=self.write_raw_csv(RKNN_CSV),
+                expected_rknn_model_sha256="b" * 64,
+                expected_rknn_runtime_api="2.3.2",
+            )
+
+    def test_rknn_runtime_api_must_match_the_frozen_profile(self) -> None:
+        with self.assertRaisesRegex(analyzer.AnalysisError, "runtime API version"):
+            analyzer.analyze(
+                self.write_log(self.rknn_log()),
+                4,
+                self.write_raw_csv(),
+                rknn_path=self.write_raw_csv(RKNN_CSV),
+                expected_rknn_model_sha256=RKNN_MODEL_SHA256,
+                expected_rknn_runtime_api="2.4.0",
+            )
+
+    def test_rknn_backend_without_harvested_samples_is_rejected(self) -> None:
+        with self.assertRaisesRegex(analyzer.AnalysisError, "RKNN evidence CSV"):
+            analyzer.analyze(
+                self.write_log(self.rknn_log()),
+                4,
+                self.write_raw_csv(),
+            )
+
+    def test_rknn_actuator_mismatch_with_control_csv_is_rejected(self) -> None:
+        mismatched = RKNN_CSV.replace(
+            "1,00000000,00000000,00000000,00000000,3f000000,500,11000,10",
+            "1,00000000,00000000,00000000,00000000,3f000000,499,11000,10",
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "actuator.*raw CSV"):
+            analyzer.analyze(
+                self.write_log(self.rknn_log(mismatched)),
+                4,
+                self.write_raw_csv(),
+                rknn_path=self.write_raw_csv(mismatched),
+                expected_rknn_model_sha256=RKNN_MODEL_SHA256,
+                expected_rknn_runtime_api="2.3.2",
+            )
+
+    def test_rtos_duplicates_are_rejected(self) -> None:
+        log = VALID_LOG.replace("duplicates=0", "duplicates=1")
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "duplicates"):
+            analyzer.analyze(self.write_log(log), 1_800)
+
+    def test_compact_rtos_records_do_not_depend_on_the_legacy_long_line(self) -> None:
+        legacy = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-RESULT profile=normal "
+            "accepted=1800 applied=1800 duplicates=0 acks_dropped=0 "
+            "status_sent=1800 acks_sent=1800 errors_sent=0 protocol_errors=0\n"
+        )
+
+        result = analyzer.analyze(self.write_log(VALID_LOG.replace(legacy, "")), 1_800)
+
+        self.assertEqual(result["rtos"]["accepted"], 1_800)
+
+    def test_raw_samples_are_recomputed_and_cross_checked_with_console(self) -> None:
+        raw_path = self.write_raw_csv()
+
+        result = analyzer.analyze(self.write_log(self.raw_log()), 4, raw_path)
+
+        self.assertEqual(result["raw_samples"]["sample_count"], 4)
+        self.assertEqual(result["raw_samples"]["deadline_misses"], 0)
+        self.assertEqual(result["board"]["board_id"], "test-rk3588")
+        self.assertEqual(result["board"]["cpu_temp_milli_c"], 42_500)
+        self.assertEqual(result["starry"]["backend"], "native")
+        self.assertEqual(result["controller"]["full_loop_p99_us"], 180)
+        self.assertAlmostEqual(
+            result["controller"]["rmse_milli_c"], 1224.744871, places=6
+        )
+
+    def test_missing_starry_backend_is_rejected(self) -> None:
+        log = self.raw_log().replace(" backend=native", "")
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "IVC-STARRY-BOOT"):
+            analyzer.analyze(self.write_log(log), 4, self.write_raw_csv())
+
+    def test_snapshot_guest_manifest_recovers_a_truncated_uart_hash(self) -> None:
+        raw_path = self.write_raw_csv()
+        digest = hashlib.sha256(RAW_CSV.encode()).hexdigest()
+        uart_record = (
+            "IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={digest}"
+        )
+        damaged_uart_record = uart_record.replace(digest, digest[:48])
+        log = self.raw_log().replace(uart_record, damaged_uart_record)
+
+        result = analyzer.analyze(self.write_log(log), 4, raw_path)
+
+        self.assertEqual(result["raw_samples"]["guest_manifest_sha256"], digest)
+        self.assertFalse(result["raw_samples"]["uart_sha256_complete"])
+
+    def test_raw_record_survives_a_missing_console_tag_open_bracket(self) -> None:
+        raw_path = self.write_raw_csv()
+        log = self.raw_log().replace(
+            "[guest-console:pl011-starry] IVC-STARRY-RAW ",
+            "[263.257538 0:15 axvm::vm:902] "
+            "guest-console:pl011-starry] IVC-STARRY-RAW ",
+        )
+
+        result = analyzer.analyze(self.write_log(log), 4, raw_path)
+
+        self.assertEqual(result["raw_samples"]["sample_count"], 4)
+        self.assertTrue(result["raw_samples"]["uart_sha256_complete"])
+
+    def test_raw_hash_quorum_survives_one_uart_collision(self) -> None:
+        raw_path = self.write_raw_csv()
+        digest = hashlib.sha256(RAW_CSV.encode()).hexdigest()
+        uart_record = (
+            "IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={digest}"
+        )
+        damaged_record = uart_record.replace(digest, digest[:32] + digest[33:])
+        log = self.raw_log().replace(
+            uart_record,
+            "\n".join((damaged_record, uart_record, uart_record)),
+        )
+
+        result = analyzer.analyze(self.write_log(log), 4, raw_path)
+
+        self.assertEqual(result["raw_samples"]["uart_sha256"], digest)
+        self.assertTrue(result["raw_samples"]["uart_sha256_complete"])
+
+    def test_raw_hash_larger_quorum_wins(self) -> None:
+        raw_path = self.write_raw_csv()
+        digest = hashlib.sha256(RAW_CSV.encode()).hexdigest()
+        uart_record = (
+            "IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={digest}"
+        )
+        damaged_record = uart_record.replace(digest, digest[:32] + digest[33:])
+        log = self.raw_log().replace(
+            uart_record,
+            "\n".join(
+                (
+                    damaged_record,
+                    damaged_record,
+                    uart_record,
+                    uart_record,
+                    uart_record,
+                )
+            ),
+        )
+
+        result = analyzer.analyze(self.write_log(log), 4, raw_path)
+
+        self.assertEqual(result["raw_samples"]["uart_sha256"], digest)
+
+    def test_raw_hash_equal_quorums_are_rejected(self) -> None:
+        digest = hashlib.sha256(RAW_CSV.encode()).hexdigest()
+        uart_record = (
+            "IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={digest}"
+        )
+        damaged_record = uart_record.replace(digest, digest[:32] + digest[33:])
+        log = self.raw_log().replace(
+            uart_record,
+            "\n".join(
+                (damaged_record, damaged_record, uart_record, uart_record)
+            ),
+        )
+
+        with self.assertRaisesRegex(
+            analyzer.ConflictingRecordsError,
+            "conflicting SHA-256 quorums",
+        ):
+            analyzer.analyze(self.write_log(log), 4, self.write_raw_csv())
+
+    def test_raw_hash_conflict_without_a_quorum_is_rejected(self) -> None:
+        digest = hashlib.sha256(RAW_CSV.encode()).hexdigest()
+        uart_record = (
+            "IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={digest}"
+        )
+        damaged_record = uart_record.replace(digest, digest[:32] + digest[33:])
+        log = self.raw_log().replace(
+            uart_record,
+            "\n".join((damaged_record, uart_record)),
+        )
+
+        with self.assertRaisesRegex(
+            analyzer.ConflictingRecordsError,
+            "conflicting SHA-256 fragments",
+        ):
+            analyzer.analyze(self.write_log(log), 4, self.write_raw_csv())
+
+    def test_snapshot_guest_manifest_mismatch_is_rejected(self) -> None:
+        digest = hashlib.sha256(RAW_CSV.encode()).hexdigest()
+        log = self.raw_log().replace(
+            "BOARD_GUEST_RAW_MANIFEST path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={digest}",
+            "BOARD_GUEST_RAW_MANIFEST path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={'0' * 64}",
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "snapshot guest manifest"):
+            analyzer.analyze(self.write_log(log), 4, self.write_raw_csv())
+
+    def test_complete_conflicting_uart_hash_is_rejected(self) -> None:
+        digest = hashlib.sha256(RAW_CSV.encode()).hexdigest()
+        uart_record = (
+            "IVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=4 "
+            f"sha256={digest}"
+        )
+        log = self.raw_log().replace(
+            uart_record,
+            uart_record.replace(digest, "0" * 64),
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "UART SHA-256 conflicts"):
+            analyzer.analyze(self.write_log(log), 4, self.write_raw_csv())
+
+    def test_raw_samples_replace_missing_uart_metric_summaries(self) -> None:
+        raw_path = self.write_raw_csv()
+        metric_prefixes = (
+            "IVC-CONTROLLER-FULL-LOOP ",
+            "IVC-CONTROLLER-PRE-SEND ",
+            "IVC-CONTROLLER-TRANSPORT ",
+            "IVC-CONTROLLER-CONTROL ",
+        )
+        log = "\n".join(
+            line
+            for line in self.raw_log().splitlines()
+            if not any(prefix in line for prefix in metric_prefixes)
+        )
+
+        result = analyzer.analyze(self.write_log(log + "\n"), 4, raw_path)
+
+        self.assertEqual(result["controller"]["full_loop_p99_us"], 180)
+        self.assertAlmostEqual(
+            result["controller"]["rmse_milli_c"], 1224.744871, places=6
+        )
+
+    def test_raw_samples_replace_conflicting_uart_metric_summaries(self) -> None:
+        raw_path = self.write_raw_csv()
+        transport = (
+            "[guest-console:pl011-starry] IVC-CONTROLLER-TRANSPORT "
+            "p50_us=120 p95_us=150 p99_us=150 max_us=200 "
+            "throughput_msg_s=9.000\n"
+        )
+        damaged_copy = transport.replace(
+            "throughput_msg_s=9.000", "throughput_msg_s=9.0"
+        )
+        log = self.raw_log().replace(transport, damaged_copy + transport)
+
+        result = analyzer.analyze(self.write_log(log), 4, raw_path)
+
+        self.assertEqual(result["controller"]["transport_p50_us"], 120)
+        self.assertEqual(result["controller"]["transport_max_us"], 200)
+
+    def test_conflicting_uart_metric_summaries_without_raw_are_rejected(self) -> None:
+        full_loop = (
+            "[guest-console:pl011-starry] IVC-CONTROLLER-FULL-LOOP "
+            "p50_us=6644 p95_us=11282 p99_us=11719 max_us=20115\n"
+        )
+        conflicting = full_loop.replace("p50_us=6644", "p50_us=6643")
+        log = VALID_LOG.replace(full_loop, conflicting + full_loop)
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "conflicting complete"):
+            analyzer.analyze(self.write_log(log), 1_800)
+
+    def test_tampered_raw_samples_are_rejected_by_guest_hash(self) -> None:
+        raw_path = self.write_raw_csv(RAW_CSV.replace(",43000,500,500,2000", ",43001,500,500,1999"))
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "SHA-256"):
+            analyzer.analyze(self.write_log(self.raw_log()), 4, raw_path)
+
+    def test_compressed_console_and_raw_artifacts_remain_analyzable(self) -> None:
+        result = analyzer.analyze(
+            self.write_gzip(self.raw_log()),
+            4,
+            self.write_gzip(RAW_CSV),
+        )
+
+        self.assertEqual(result["raw_samples"]["sample_count"], 4)
+        self.assertEqual(
+            result["raw_samples"]["sha256"],
+            hashlib.sha256(RAW_CSV.encode()).hexdigest(),
+        )
+
+    def test_ack_loss_capture_cross_checks_every_injected_recovery(self) -> None:
+        result = analyzer.analyze(
+            self.write_log(self.ack_loss_log()),
+            4,
+            self.write_raw_csv(),
+            profile="ack-loss",
+            drop_ack_every=2,
+        )
+
+        self.assertEqual(result["profile"], "ack-loss")
+        self.assertEqual(result["controller"]["retransmissions"], 2)
+        self.assertEqual(result["controller"]["recoveries"], 2)
+        self.assertEqual(result["rtos"]["injected_sequences"], [2, 4])
+        self.assertEqual(result["rtos"]["duplicate_sequences"], [2, 4])
+        self.assertEqual(result["rtos"]["status_sent"], 6)
+        self.assertEqual(
+            result["lifecycle"]["block_snapshot"]["image_path"],
+            "/home/orangepi/ivc-a",
+        )
+
+    def test_ack_loss_capture_rejects_a_missing_injection_marker(self) -> None:
+        log = self.ack_loss_log().replace(
+            "[guest-console:pl011-zephyr] IVC-RTOS-INJECT drop_ack_seq=4\n",
+            "",
+        )
+
+        with self.assertRaisesRegex(
+            analyzer.AnalysisError, "injected ACK-loss sequence set"
+        ):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="ack-loss",
+                drop_ack_every=2,
+            )
+
+    def test_error_profile_cross_checks_every_error_and_normal_continuation(self) -> None:
+        result = analyzer.analyze(
+            self.write_log(self.error_profile_log()),
+            4,
+            self.write_raw_csv(),
+            profile="error",
+        )
+
+        self.assertEqual(result["profile"], "error")
+        self.assertEqual(result["rtos"]["errors_sent"], 5)
+        self.assertEqual(result["rtos"]["protocol_errors"], 5)
+        self.assertEqual(
+            [fault["kind"] for fault in result["error_evidence"]],
+            [
+                "unsupported-version",
+                "length-mismatch",
+                "checksum-mismatch",
+                "unexpected-message-type",
+                "invalid-session-transition",
+            ],
+        )
+        self.assertTrue(result["error_recovery"]["continued"])
+        self.assertEqual(result["error_recovery"]["normal_acknowledged"], 4)
+
+    def test_error_profile_rejects_a_missing_rtos_error_marker(self) -> None:
+        marker = integrity_record(
+            "IVC-ERROR-Z ",
+            (("seq", 1003), ("code", 3), ("reason", "checksum-mismatch")),
+        )
+        log = self.error_profile_log().replace(
+            f"[guest-console:pl011-zephyr] {marker}\n",
+            "",
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "error evidence"):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="error",
+            )
+
+    def test_error_profile_ignores_checksum_invalid_uart_corruption(self) -> None:
+        valid = integrity_record(
+            "IVC-ERROR-Z ",
+            (("seq", 1001), ("code", 2), ("reason", "unsupported-version")),
+        )
+        corrupted = valid.replace("unsupported-version", "unsupported-sion")
+        log = self.error_profile_log().replace(valid, f"{valid}\n{corrupted}")
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="error",
+        )
+
+        self.assertEqual(result["error_evidence"][0]["reason"], "unsupported-version")
+
+    def test_error_profile_rejects_conflicting_checksum_valid_evidence(self) -> None:
+        valid = integrity_record(
+            "IVC-ERROR-Z ",
+            (("seq", 1001), ("code", 2), ("reason", "unsupported-version")),
+        )
+        conflicting = integrity_record(
+            "IVC-ERROR-Z ",
+            (("seq", 1001), ("code", 2), ("reason", "different-reason")),
+        )
+        log = self.error_profile_log().replace(valid, f"{valid}\n{conflicting}")
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "conflicting error evidence"):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="error",
+            )
+
+    def test_error_profile_rejects_a_non_error_starry_boot_profile(self) -> None:
+        log = self.error_profile_log().replace(
+            "fault_profile=error", "fault_profile=none"
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "fault profile"):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="error",
+            )
+
+    def test_restart_profile_cross_checks_vm_reset_safe_state_and_sessions(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        result = analyzer.analyze(
+            self.write_log(self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw)),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertEqual(result["profile"], "restart")
+        self.assertEqual(result["rtos"]["accepted"], 24)
+        self.assertEqual(result["rtos"]["duplicates"], 1)
+        self.assertEqual(result["rtos"]["duplicate_sequences"], [1])
+        self.assertEqual(result["rtos"]["status_sent"], 26)
+        self.assertEqual(result["rtos"]["acks_sent"], 26)
+        self.assertEqual(result["rtos"]["session_resets"], 1)
+        self.assertEqual(result["rtos"]["session_rejections"], 1)
+        self.assertEqual(result["restart_recovery"]["old_session"], 286_331_153)
+        self.assertEqual(result["restart_recovery"]["new_session"], 572_662_306)
+        self.assertTrue(result["restart_recovery"]["safe_fallback_observed"])
+        self.assertTrue(result["restart_recovery"]["actual_vm_reset"])
+        self.assertEqual(result["restart_recovery"]["host_cpu"], 3)
+        self.assertEqual(result["pre_reset_raw_samples"]["sample_count"], 20)
+        self.assertEqual(
+            result["lifecycle"]["block_snapshot"]["image_path"],
+            "/home/orangepi/ivc-r",
+        )
+
+    def test_restart_ready_record_fits_the_shared_uart_budget(self) -> None:
+        line = (
+            "[guest-console:pl011-zephyr] "
+            "IVC-RTOS-RESTART-READY commands=120 errors=1 resets=1 "
+            "rejections=1 safe=1 drop=0 exit=1"
+        )
+
+        self.assertLessEqual(len(line.encode("ascii")), 160)
+
+    def test_restart_duplicate_probe_record_fits_the_shared_uart_budget(self) -> None:
+        line = (
+            "[guest-console:pl011-starry] "
+            + integrity_record(
+                "IVC-RESTART-D ",
+                (("seq", 1), ("status", 1), ("ack", 1)),
+            )
+        )
+
+        self.assertLessEqual(len(line.encode("ascii")), 160)
+
+    def test_restart_profile_requires_the_explicit_duplicate_probe(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        log = "\n".join(
+            line
+            for line in self.restart_profile_log(
+                pre_reset_raw_csv=pre_reset_raw
+            ).splitlines()
+            if "IVC-RESTART-D" not in line
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "IVC-RESTART-D"):
+            analyzer.analyze(
+                self.write_log(log + "\n"),
+                4,
+                self.write_raw_csv(),
+                profile="restart",
+                pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+                expected_pre_reset_count=20,
+            )
+
+    def test_restart_profile_recovers_complete_host_records_after_uart_prefix_collision(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            "AXVISOR_GUEST_RESTART_ARMED schema=1",
+            "AXVISOR_AXVISOR_GUEST_RESTART_ARMED schema=1",
+        ).replace(
+            "AXVISOR_GUEST_RESTART_COMPLETE schema=1",
+            "[113.647781 axvm] VM[1AXVISOR_GUEST_RESTART_COMPLETE schema=1",
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertTrue(result["restart_recovery"]["actual_vm_reset"])
+        self.assertEqual(result["restart_recovery"]["host_cpu"], 3)
+
+    def test_restart_profile_orders_replayed_rtos_evidence_from_its_first_prefix(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        stale_replay = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-STALE-REPLAY "
+            "old_session=286331153 old_sequence=20 new_session=572662306 "
+            "stale_status_sent=1 stale_acks_sent=1"
+        )
+        truncated_stale_replay = stale_replay.rsplit("=", maxsplit=2)[0]
+        recovery = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-RECOVERY "
+            "session=572662306 seq=1 from=controller-timeout mode=Neural "
+            "actuator_permille=500 recoveries=1"
+        )
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            stale_replay,
+            truncated_stale_replay,
+            1,
+        ).replace(
+            recovery,
+            f"{recovery}\n{stale_replay}",
+            1,
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertTrue(result["restart_recovery"]["recovered"])
+
+    def test_restart_profile_orders_replayed_safe_fallback_from_its_first_prefix(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        safe_fallback = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-SAFE-FALLBACK "
+            "reason=controller-timeout actuator_permille=0 last_sequence=20 "
+            "session=286331153 safe_fallbacks=1"
+        )
+        truncated_safe_fallback = safe_fallback.rsplit(
+            " safe_fallbacks=", maxsplit=1
+        )[0]
+        recovery = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-RECOVERY "
+            "session=572662306 seq=1 from=controller-timeout mode=Neural "
+            "actuator_permille=500 recoveries=1"
+        )
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            safe_fallback,
+            truncated_safe_fallback,
+            1,
+        ).replace(
+            recovery,
+            f"{recovery}\n{safe_fallback}",
+            1,
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertTrue(result["restart_recovery"]["safe_fallback_observed"])
+
+    def test_restart_profile_accepts_compatible_pre_reset_uart_hash_fragments(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        digest = hashlib.sha256(pre_reset_raw.encode()).hexdigest()
+        uart_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-RESTART-RAW "
+            "path=/var/lib/ivc/raw-before-reset.csv samples=20 "
+            f"sha256={digest}"
+        )
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            uart_record,
+            "\n".join(
+                (
+                    uart_record.replace(digest, digest[:8]),
+                    uart_record.replace(digest, digest[:12]),
+                )
+            ),
+            1,
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertEqual(
+            result["pre_reset_raw_samples"]["uart_sha256"], digest[:12]
+        )
+
+    def test_restart_profile_rejects_incompatible_pre_reset_uart_hash_fragments(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        digest = hashlib.sha256(pre_reset_raw.encode()).hexdigest()
+        conflicting_prefix = ("0" if digest[0] != "0" else "1") + digest[1:12]
+        uart_record = (
+            "[guest-console:pl011-starry] IVC-STARRY-RESTART-RAW "
+            "path=/var/lib/ivc/raw-before-reset.csv samples=20 "
+            f"sha256={digest}"
+        )
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            uart_record,
+            "\n".join(
+                (
+                    uart_record.replace(digest, digest[:12]),
+                    uart_record.replace(digest, conflicting_prefix),
+                )
+            ),
+            1,
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "conflicting"):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="restart",
+                pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+                expected_pre_reset_count=20,
+            )
+
+    def test_restart_profile_does_not_let_unterminated_guest_prefix_consume_host_records(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        trigger = (
+            "AXVISOR_GUEST_RESTART_TRIGGER schema=1 vm_id=1 host_cpu=3 "
+            "requested_delay_ms=20000 observed_delay_ms=20001 "
+            "before_status=running reset_count=1"
+        )
+        damaged_uart = (
+            f"[guest-console:pl011-{trigger}\n{trigger}\n{trigger}\n"
+            "[guest-console:pl011-starry] trailing-guest-output"
+        )
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            trigger, damaged_uart
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertTrue(result["restart_recovery"]["actual_vm_reset"])
+        self.assertEqual(result["restart_recovery"]["observed_delay_ms"], 20_001)
+
+    def test_restart_profile_rejects_missing_safe_fallback(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        log = "\n".join(
+            line
+            for line in self.restart_profile_log(
+                pre_reset_raw_csv=pre_reset_raw
+            ).splitlines()
+            if "IVC-RTOS-SAFE-FALLBACK" not in line
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "SAFE-FALLBACK"):
+            analyzer.analyze(
+                self.write_log(log + "\n"),
+                4,
+                self.write_raw_csv(),
+                profile="restart",
+                pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+                expected_pre_reset_count=20,
+            )
+
+    def test_normal_capture_rejects_ack_loss_markers(self) -> None:
+        log = self.raw_log().replace(
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME",
+            "[guest-console:pl011-zephyr] IVC-RTOS-INJECT drop_ack_seq=2\n"
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME",
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "ACK-loss evidence"):
+            analyzer.analyze(self.write_log(log), 4, self.write_raw_csv())
+
+
+if __name__ == "__main__":
+    unittest.main()

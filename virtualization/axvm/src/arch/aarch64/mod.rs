@@ -15,6 +15,7 @@ use crate::{
     AxVmResult,
     architecture::cpu_up::{self, CpuUpExit, CpuUpOps},
     ax_err,
+    host::{HostCpu, default_host},
 };
 
 mod capabilities;
@@ -68,6 +69,17 @@ impl ArchOps for Aarch64Arch {
         vcpu.get_arch_vcpu().prepare_timer_run()
     }
 
+    fn before_vcpu_task_exit(vm: &crate::AxVMRef, vcpu: &crate::vm::AxVCpuRef<Self::VCpu>) {
+        let byte_len = vm.quiesce_local_reset_memory_cache();
+        if byte_len != 0 {
+            info!(
+                "VM[{}] VCpu[{}] quiesced {byte_len} bytes of reset-memory cache state on pCPU{}",
+                vm.id(),
+                vcpu.id(),
+                default_host().this_cpu_id()
+            );
+        }
+    }
     fn handle_vcpu_exit_bound(
         vm: &crate::AxVMRef,
         vcpu: &crate::vm::AxVCpuRef<Self::VCpu>,
@@ -336,7 +348,7 @@ impl AxvmArmVcpu {
             virtual_timer_ppi,
             physical_timer_ppi,
             host_virtual_timer_intid,
-            timer_config.frequency(),
+            timer_config,
         )
         .map_err(|error| crate::AxVmError::interrupt("bind host virtual-timer PPI", error))?;
         self.vgic = Some(vgic);

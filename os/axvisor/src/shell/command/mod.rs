@@ -14,6 +14,7 @@
 
 mod base;
 mod history;
+mod host;
 mod vm;
 
 pub use base::*;
@@ -371,6 +372,7 @@ fn build_command_tree() -> BTreeMap<String, CommandNode> {
     let mut tree = BTreeMap::new();
 
     build_base_cmd(&mut tree);
+    host::build_host_cmd(&mut tree);
     build_vm_cmd(&mut tree);
 
     tree
@@ -565,9 +567,9 @@ pub fn show_available_commands() {
 
 #[cfg(test)]
 mod tests {
-    use super::{CommandParser, ParseError};
     #[cfg(feature = "fs")]
     use super::build_command_tree;
+    use super::{CommandParser, ParseError};
 
     #[test]
     fn shlex_tokenizes_shell_words() {

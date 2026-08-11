@@ -1,0 +1,120 @@
+{
+  "artifacts": {
+    "golden_vectors": {
+      "path": "competition/ivc/model/golden-vectors.json",
+      "sha256": "f7255de6c730924781bd3703ecac717bd222fa9ed8488e52dd87e20204278ef6",
+      "size_bytes": 6034757
+    },
+    "native_rust": {
+      "path": "tools/ivcproto/src/neural_model_generated.rs",
+      "sha256": "ab6fa230cca473dbfc97cf2216983093da47d6362da810aa699be43259366e4e",
+      "size_bytes": 4657
+    },
+    "onnx": {
+      "dtype": "float32",
+      "ir_version": 8,
+      "opset": 13,
+      "path": "competition/ivc/model/thermal-4x6x1-v1.onnx",
+      "sha256": "b21b3441908040c796a7528e6d941ae1f15d0b6fad8362a9d6492cf5b479b5b6",
+      "size_bytes": 1016
+    },
+    "ort": {
+      "backend": "onnxruntime-cpu",
+      "format": "ORT",
+      "path": "competition/ivc/model/thermal-4x6x1-v1.ort",
+      "sha256": "3582869baf9b8cec722208d06f66acd680a64128b52875d22e7f0e43f2ed7887",
+      "size_bytes": 4144,
+      "status": "host-verified-starry-pending",
+      "verification_vectors": 10000
+    },
+    "rknn": {
+      "backend": "rk3588-rknpu",
+      "format": "RKNN",
+      "path": "competition/ivc/model/thermal-4x6x1-v1-rk3588-fp16.rknn",
+      "sha256": "2ad3fecedc9767ee57cbcd31787f70297a8f8e2cfcdc8e07b81b949566d53bb8",
+      "size_bytes": 15873,
+      "status": "starry-rk3588-verified",
+      "verification_vectors": 10000
+    }
+  },
+  "graph": {
+    "input": {
+      "dtype": "float32",
+      "name": "normalized_observation",
+      "shape": [
+        1,
+        4
+      ]
+    },
+    "nodes": [
+      "Gemm",
+      "Relu",
+      "Gemm",
+      "Clip"
+    ],
+    "output": {
+      "dtype": "float32",
+      "name": "control_fraction",
+      "shape": [
+        1,
+        1
+      ]
+    }
+  },
+  "model_id": "thermal-4x6x1-v1",
+  "policy": {
+    "quantization": "disabled",
+    "training": "none",
+    "weight_tuning_after_freeze": "forbidden"
+  },
+  "runtime_compatibility_target": {
+    "librknnrt": {
+      "build_id": "4f5001b81d147d0db1f48e68fe87a6029caa2ccb",
+      "reported_version": "2.3.2 (429f97ae6b@2025-04-09T09:09:27)",
+      "sha256": "d31fc19c85b85f6091b2bd0f6af9d962d5264a4e410bfb536402ec92bac738e8"
+    },
+    "onnxruntime_cpu": {
+      "api_version": 25,
+      "reported_version": "1.25.0",
+      "sha256": "e03801f70263a028207491471f09a17ed6a62b146568edada797483f8f8ec8d3",
+      "status": "candidate-pending-starry-physical-gate"
+    },
+    "rknpu_driver_abi": "0.9.8",
+    "target_platform": "rk3588"
+  },
+  "schema_version": 1,
+  "sources": {
+    "exporter": {
+      "path": "competition/ivc/model/export_thermal_onnx.py",
+      "sha256": "ae414aada68e1102df6f1b7de930c44aa8c4a7fa94a3f69764f9d1bfa4fc4cde",
+      "size_bytes": 26185
+    },
+    "requirements_lock": {
+      "path": "competition/ivc/model/requirements-lock.txt",
+      "sha256": "48b7c598d7006d34fd85346455d82c86cad8aa0bc85bd738edcf554f1afb1a2c",
+      "size_bytes": 6730
+    },
+    "weights": {
+      "path": "competition/ivc/model/thermal-4x6x1-v1.weights.json",
+      "sha256": "10e22ea81ee5dbfae0e1459646e55963f14d6f2149e2bab83e4fc75fbf586029",
+      "size_bytes": 2767
+    }
+  },
+  "toolchain": {
+    "build_host": "WSL2 Ubuntu 22.04 x86_64",
+    "numpy": "1.26.4",
+    "onnx": "1.16.1",
+    "onnxruntime": {
+      "candidate_version": "1.25.0",
+      "source": "https://github.com/microsoft/onnxruntime/releases/tag/v1.25.0",
+      "status": "host-frozen-starry-abi-pending"
+    },
+    "protobuf": "4.25.4",
+    "python": "3.10.12",
+    "rknn_toolkit2": {
+      "candidate_version": "2.3.2",
+      "source": "https://github.com/airockchip/rknn-toolkit2/releases/tag/v2.3.2",
+      "status": "frozen-and-physical-rk3588-verified"
+    }
+  }
+}

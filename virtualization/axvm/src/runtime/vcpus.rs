@@ -14,8 +14,11 @@
 
 use std::{cell::Cell, format, sync::Arc};
 
+use ax_std::os::arceos::guard::PreemptGuard;
+use axvmconfig::VcpuTaskAffinity;
+
 use crate::{
-    AsVCpuTask, AxVmResult, GuestPhysAddr, StopReason, VCpuTask, VmStatus, VmVcpuState,
+    AsVCpuTask, AxVmError, AxVmResult, GuestPhysAddr, StopReason, VCpuTask, VmStatus, VmVcpuState,
     arch::current::CurrentArch,
     architecture::{ArchOps, Architecture, VcpuRunAction},
     ax_err_type,
@@ -24,6 +27,34 @@ use crate::{
 };
 
 const KERNEL_STACK_SIZE: usize = 0x40000; // 256 KiB
+
+#[must_use = "a pending vCPU task must be prepared before activation"]
+pub(crate) struct PendingVcpuTask {
+    task: crate::TaskInner,
+    initial_cpu: usize,
+}
+
+#[must_use = "a prepared vCPU task remains non-runnable until it is activated"]
+pub(crate) struct PreparedVcpuTask {
+    task: crate::host::task::PreparedTask,
+}
+
+impl PendingVcpuTask {
+    pub(crate) fn prepare(self) -> AxVmResult<PreparedVcpuTask> {
+        let task = crate::host::task::prepare_task_with_initial_cpu(self.task, self.initial_cpu)?;
+        Ok(PreparedVcpuTask { task })
+    }
+}
+
+impl PreparedVcpuTask {
+    pub(crate) fn task_ref(&self) -> &crate::AxTaskRef {
+        self.task.task_ref()
+    }
+
+    pub(crate) fn activate(self) -> AxVmResult<crate::AxTaskRef> {
+        crate::host::task::activate_task(self.task)
+    }
+}
 
 /// Blocks the current thread until the provided condition is met, using the wait queue
 /// associated with the VCpus of the specified VM.
@@ -280,17 +311,29 @@ pub(crate) fn vcpu_on(
             return Err(VcpuOnError::StartFailed);
         }
 
-        vcpu.set_entry(entry_point)
-            .map_err(|_| VcpuOnError::StartFailed)?;
-        CurrentArch::set_vcpu_on_args(&vcpu, vcpu_id, arg);
+        crate::architecture::configure_reserved_vcpu_startup(&vcpu, entry_point, |arch_vcpu| {
+            CurrentArch::set_vcpu_on_args(arch_vcpu, vcpu_id, arg)
+        })
+        .map_err(|_| VcpuOnError::StartFailed)?;
 
         let ack = Arc::new(CpuOnStartAck::new());
         runtime
             .insert_cpu_on_start_ack(vcpu_id, ack.clone())
             .map_err(|_| VcpuOnError::StartFailed)?;
 
-        let vcpu_task = build_vcpu_task(&vm, vcpu.clone());
-        spawn_registered_vcpu_task(vm.id(), vcpu_id, runtime.clone(), vcpu_task);
+        let prepared_task = build_vcpu_task(&vm, vcpu.clone())
+            .and_then(PendingVcpuTask::prepare)
+            .map_err(|_| VcpuOnError::StartFailed)?;
+        let task_ref = prepared_task.task_ref().clone();
+        if runtime.add_vcpu_task(vcpu_id, task_ref).is_err() {
+            runtime.remove_cpu_on_start_ack(vcpu_id);
+            return Err(VcpuOnError::StartFailed);
+        }
+        if prepared_task.activate().is_err() {
+            runtime.remove_vcpu_task(vcpu_id);
+            runtime.remove_cpu_on_start_ack(vcpu_id);
+            return Err(VcpuOnError::StartFailed);
+        }
         runtime.notify_all();
 
         runtime.wait_until(|| ack.is_complete() || !vm.running());
@@ -331,21 +374,6 @@ pub(crate) fn vcpu_on(
     }
     start_result
 }
-pub(crate) fn spawn_registered_vcpu_task(
-    vm_id: usize,
-    vcpu_id: usize,
-    runtime: std::sync::Arc<VmRuntimeHandle>,
-    task: crate::TaskInner,
-) -> crate::AxTaskRef {
-    crate::host::task::spawn_task_with(task, |task_ref| {
-        runtime
-            .add_vcpu_task(vcpu_id, task_ref.clone())
-            .unwrap_or_else(|error| {
-                panic!("VM[{vm_id}] vCPU[{vcpu_id}] task registration failed: {error}")
-            });
-    })
-}
-
 fn spawn_deferred_reset_task(vm_id: usize) {
     let reset_task = crate::TaskInner::new(
         move || {
@@ -360,7 +388,7 @@ fn spawn_deferred_reset_task(vm_id: usize) {
     crate::host::task::spawn_task(reset_task);
 }
 
-pub(crate) fn build_vcpu_task(vm: &VMRef, vcpu: VCpuRef) -> crate::TaskInner {
+pub(crate) fn build_vcpu_task(vm: &VMRef, vcpu: VCpuRef) -> AxVmResult<PendingVcpuTask> {
     info!("Spawning task for VM[{}] VCpu[{}]", vm.id(), vcpu.id());
     let mut vcpu_task = crate::TaskInner::new(
         vcpu_run,
@@ -368,54 +396,31 @@ pub(crate) fn build_vcpu_task(vm: &VMRef, vcpu: VCpuRef) -> crate::TaskInner {
         KERNEL_STACK_SIZE,
     );
 
-    // Partition scheduling: pCPUs reserved by dedicated (real-time) VMs must not be used
-    // by any other VM's vCPU. A non-dedicated VM is constrained to avoid the reserved set;
-    // this also covers *unpinned* vCPUs (which would otherwise be free to run on a
-    // real-time VM's dedicated pCPU).
-    let reserved = if vm.cpus_dedicated() {
-        0
-    } else {
-        dedicated_pcpu_mask()
-    };
-
-    let base_mask = match vcpu.phys_cpu_set() {
-        Some(phys_cpu_set) => Some(vcpu_task_cpu_mask(vm.id(), vcpu.id(), phys_cpu_set)),
-        // Unpinned vCPU of a non-dedicated VM: pin it to the enabled pCPUs so the reserved
-        // ones can be excluded below. With no dedicated VMs this stays None (original behavior).
-        None if reserved != 0 => {
-            let enabled = crate::percpu::enabled_cpu_mask();
-            (enabled != 0).then_some(enabled)
-        }
-        None => None,
-    };
-
-    if let Some(mut mask) = base_mask {
-        if reserved != 0 {
-            let pruned = mask & !reserved;
-            if pruned != 0 {
-                if pruned != mask {
-                    info!(
-                        "VM[{}] VCpu[{}] cpumask {:#x} -> {:#x} (excluding dedicated pCPUs {:#x})",
-                        vm.id(),
-                        vcpu.id(),
-                        mask,
-                        pruned,
-                        reserved
-                    );
-                }
-                mask = pruned;
-            } else {
-                warn!(
-                    "VM[{}] VCpu[{}] cpumask {:#x} fully overlaps dedicated pCPUs {:#x}; keeping \
-                     original to avoid an unrunnable vCPU",
-                    vm.id(),
-                    vcpu.id(),
-                    mask,
-                    reserved
-                );
-            }
-        }
-        vcpu_task.set_cpumask(crate::host::task::cpu_mask_from_raw_bits(mask));
+    let placement = crate::manager::vcpu_task_placement(vm.id(), vcpu.id()).ok_or_else(|| {
+        AxVmError::resource_unavailable(
+            "guest CPU partition",
+            format_args!(
+                "VM[{}] vCPU[{}] has no validated initial placement",
+                vm.id(),
+                vcpu.id()
+            ),
+        )
+    })?;
+    if let VcpuTaskAffinity::CpuMask(requested_mask) = placement.affinity {
+        let effective_mask = vcpu_task_cpu_mask(vm.id(), vcpu.id(), requested_mask);
+        vcpu_task.set_cpumask(crate::host::task::cpu_mask_from_raw_bits(effective_mask));
+    }
+    if !vcpu_task.cpumask().get(placement.initial_cpu) {
+        return Err(AxVmError::invalid_state(
+            "prepare vCPU task",
+            format_args!(
+                "planned initial host CPU {} is outside VM[{}] vCPU[{}] affinity {:?}",
+                placement.initial_cpu,
+                vm.id(),
+                vcpu.id(),
+                vcpu_task.cpumask()
+            ),
+        ));
     }
 
     // Use Weak reference in TaskExt to avoid keeping VM alive
@@ -423,29 +428,15 @@ pub(crate) fn build_vcpu_task(vm: &VMRef, vcpu: VCpuRef) -> crate::TaskInner {
     *vcpu_task.task_ext_mut() = Some(crate::AxTaskExt::from_impl(inner));
 
     info!(
-        "VCpu task {} created {:?}",
+        "VCpu task {} created {:?}, initial CPU {}",
         vcpu_task.id_name(),
-        vcpu_task.cpumask()
+        vcpu_task.cpumask(),
+        placement.initial_cpu
     );
-    vcpu_task
-}
-
-/// Returns the union of physical-CPU bits reserved by all dedicated (partition-scheduled)
-/// VMs. Non-dedicated VMs' vCPU tasks are kept off these pCPUs so real-time VMs get an
-/// uncontended pCPU under the cooperative FIFO scheduler.
-fn dedicated_pcpu_mask() -> usize {
-    let mut reserved = 0usize;
-    for vm in crate::get_vm_list() {
-        if !vm.cpus_dedicated() {
-            continue;
-        }
-        for (_vcpu_id, affinity, _phys_id) in vm.get_vcpu_affinities_pcpu_ids() {
-            if let Some(mask) = affinity {
-                reserved |= mask;
-            }
-        }
-    }
-    reserved
+    Ok(PendingVcpuTask {
+        task: vcpu_task,
+        initial_cpu: placement.initial_cpu,
+    })
 }
 
 fn vcpu_task_cpu_mask(vm_id: usize, vcpu_id: usize, requested_mask: usize) -> usize {
@@ -551,14 +542,30 @@ fn vcpu_run() {
             let _ = poll_primary_vcpu_devices_with(&runtime, || poll_vm_devices(&vm));
         }
 
-        // The guest has entered (and exited) for this run-loop iteration: the
-        // control plane reads this as independent re-execution evidence. It is
-        // published *only* after a successful `run_vcpu`, so a failed entry
-        // (bind / `before_vcpu_run` / `vcpu.run()` / exit handling that returns
-        // `Err` before the guest ever runs) cannot advance the counter — a
-        // broken wake path that only flips the status without ever re-entering
-        // the guest cannot advance it either.
-        let action = match CurrentArch::run_vcpu(&vm, &vcpu) {
+        #[cfg(feature = "rt-trace")]
+        let run_started_ticks = crate::rt_trace::current_ticks();
+        #[cfg(feature = "rt-trace")]
+        let run_pcpu_id = crate::rt_trace::current_pcpu_id();
+        let run_result = {
+            // Deferred physical IRQ tokens name the pCPU that acknowledged
+            // them. Keep this bound-run transaction on that pCPU until every
+            // token has been routed or retained by the architecture backend.
+            let _preempt_guard = PreemptGuard::new();
+            CurrentArch::run_vcpu(&vm, &vcpu)
+        };
+        #[cfg(feature = "rt-trace")]
+        crate::rt_trace::record_vcpu_run(
+            vm_id,
+            vcpu_id,
+            run_pcpu_id,
+            run_started_ticks,
+            crate::rt_trace::current_ticks(),
+        );
+
+        // Publish independent re-execution evidence only after a successful
+        // guest run. A failed entry or a wake path that never re-enters the
+        // guest must not advance this counter.
+        let action = match run_result {
             Ok(action) => Some(action),
             Err(err) => {
                 error!("VM[{vm_id}] run VCpu[{vcpu_id}] get error {err:?}");
@@ -625,7 +632,18 @@ fn vcpu_run() {
                 VcpuRunAction {
                     waits_for_event: true,
                     ..
-                } => CurrentArch::wait_for_vcpu_event(&vm, &vcpu, &runtime),
+                } => {
+                    #[cfg(feature = "rt-trace")]
+                    let wait_started_ticks = crate::rt_trace::current_ticks();
+                    CurrentArch::wait_for_vcpu_event(&vm, &vcpu, &runtime);
+                    #[cfg(feature = "rt-trace")]
+                    crate::rt_trace::record_vcpu_wait(
+                        vm_id,
+                        vcpu_id,
+                        wait_started_ticks,
+                        crate::rt_trace::current_ticks(),
+                    );
+                }
                 VcpuRunAction { .. } => {}
             }
         }
@@ -646,6 +664,8 @@ fn vcpu_run() {
             // never blocks; the control-plane probe then times out waiting for
             // `guest_park_count`, correctly reporting that the pause did not
             // genuinely complete instead of passing on a fake.
+            #[cfg(feature = "rt-trace")]
+            let wait_started_ticks = crate::rt_trace::current_ticks();
             let parked = Cell::new(false);
             wait_for(&runtime, || {
                 if !vm.suspending() {
@@ -657,12 +677,20 @@ fn vcpu_run() {
                 }
                 false
             });
+            #[cfg(feature = "rt-trace")]
+            crate::rt_trace::record_vcpu_wait(
+                vm_id,
+                vcpu_id,
+                wait_started_ticks,
+                crate::rt_trace::current_ticks(),
+            );
             info!("VM[{}] VCpu[{}] resumed from suspend", vm_id, vcpu_id);
             continue;
         }
 
         // Check if the VM is stopping.
         if vm.stopping() {
+            CurrentArch::before_vcpu_task_exit(&vm, &vcpu);
             warn!(
                 "VM[{}] VCpu[{}] stopping because of VM stopping",
                 vm_id, vcpu_id
@@ -682,6 +710,9 @@ fn vcpu_run() {
                 } else {
                     info!("VM[{}] state changed to Stopped", vm_id);
                 }
+
+                #[cfg(feature = "rt-trace")]
+                crate::rt_trace::end_vm(vm_id);
 
                 sub_running_vm_count(1);
                 if reset_after_stop {

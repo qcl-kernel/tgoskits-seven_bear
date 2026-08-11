@@ -121,6 +121,7 @@ pub fn handle_exception_sync(ctx: &mut TrapFrame) -> ArmVcpuResult<ArmVmExit> {
             // `hvc`) in ELR_EL2, so the handlers must preserve this PC.
             // The `#imm` argument when triggering a hvc call, currently not used.
             let _hvc_arg_imm16 = ESR_EL2.read(ESR_EL2::ISS);
+            // ELR_EL2 already contains the architectural next-instruction address for HVC.
 
             if let Some(result) = handle_hvc_psci_version(ctx) {
                 return result;
@@ -203,7 +204,6 @@ fn handle_data_abort(context_frame: &mut TrapFrame) -> ArmVcpuResult<ArmVmExit> 
         context_frame.exception_pc(),
         exception_esr(),
     );
-
     let width = ArmAccessWidth::try_from(access_width)?;
     let reg_width = ArmAccessWidth::try_from(reg_width)?;
 

@@ -17,7 +17,7 @@ pub(crate) trait ArchOps {
     fn has_hardware_support() -> bool;
 
     #[allow(dead_code)]
-    fn set_vcpu_on_args(vcpu: &crate::vm::AxVCpuRef<Self::VCpu>, _vcpu_id: usize, arg: usize) {
+    fn set_vcpu_on_args(vcpu: &mut Self::VCpu, _vcpu_id: usize, arg: usize) {
         vcpu.set_gpr(0, arg);
     }
 
@@ -40,6 +40,7 @@ pub(crate) trait ArchOps {
         Ok(())
     }
 
+    fn before_vcpu_task_exit(_vm: &crate::AxVMRef, _vcpu: &crate::vm::AxVCpuRef<Self::VCpu>) {}
     fn wait_for_vcpu_event(
         vm: &crate::AxVMRef,
         _vcpu: &crate::vm::AxVCpuRef<Self::VCpu>,

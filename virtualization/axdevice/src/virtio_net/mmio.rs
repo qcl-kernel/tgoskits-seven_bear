@@ -3,7 +3,8 @@
 use axdevice_base::{AccessWidth, DeviceError, DeviceResult};
 use axvm_types::GuestPhysAddr;
 
-use super::{VIRTIO_F_VERSION_1, VIRTIO_NET_F_MRG_RXBUF, VirtioNet, queue::QueueAddressKind};
+use super::{VIRTIO_F_VERSION_1, VIRTIO_NET_F_MRG_RXBUF, VirtioNet};
+use crate::virtio::queue::{QUEUE_NUM_MAX, QueueAddressKind};
 
 const VIRTIO_MMIO_MAGIC_VALUE: usize = 0x000;
 const VIRTIO_MMIO_VERSION: usize = 0x004;
@@ -52,7 +53,7 @@ impl VirtioNet {
             },
             VIRTIO_MMIO_QUEUE_NUM_MAX => state
                 .selected_queue()
-                .map(|_| u32::from(super::queue::QUEUE_NUM_MAX))
+                .map(|_| u32::from(QUEUE_NUM_MAX))
                 .unwrap_or(0),
             VIRTIO_MMIO_QUEUE_READY => state
                 .selected_queue()
