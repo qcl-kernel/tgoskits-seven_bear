@@ -140,7 +140,12 @@ Current Axvisor LoongArch QEMU bring-up uses the dynamic UEFI platform path. The
   whole RK3588 host tree as though those devices were passed through. Configured virtual
   devices use only `id + model + typed options`: the architecture's resolved device graph
   owns their MMIO ranges and virtual-controller inputs, and guest firmware artifacts must
-  match those resolved resources. Do not restore legacy `emu_devices`, raw guest address
+  match those resolved resources. AArch64 emits conventional runtime FDT nodes directly from
+  `DeviceModel::firmware()` plus `ResolvedDeviceResources`; Linux/Starry DTB templates must omit
+  those nodes, and a duplicate compatible template node is an error. A guest such as Zephyr that
+  compiles resources into its image may keep a build overlay matching the deterministic graph
+  slot, while the runtime DTB is still graph-generated and a contract test guards the match.
+  Do not restore legacy `emu_devices`, raw guest address
   or IRQ fields, `interrupt_mode`, or physical-IRQ passthrough as configuration shortcuts.
   Each GPPT GICR
   frame is 128 KiB, frames must not overlap, and only the final guest redistributor sets

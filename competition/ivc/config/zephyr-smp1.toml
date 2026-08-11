@@ -1,7 +1,7 @@
 [base]
 id = 2
 name = "zephyr-ivc-endpoint"
-vm_type = 1
+guest_type = "virtualized"
 cpu_num = 1
 phys_cpu_ids = [0]
 phys_cpu_sets = [0x1]
@@ -23,18 +23,12 @@ memory_regions = [
 ]
 
 [devices]
-interrupt_mode = "passthrough"
-passthrough_devices = [
-  ["/"],
-]
-passthrough_addresses = []
-excluded_devices = []
+passthrough = []
+disabled = []
 
-# MAC 52:54:00:00:00:02, isolated segment 1. The final compatibility value 1
-# selects a fixed 12-byte virtio-net header. Zephyr 4.3 accepts VERSION_1 and
-# uses its modern 12-byte layout without accepting MRG_RXBUF; the explicit mode
-# pins that behavior independently of feature-state tracking. QEMU virt slot 16
-# uses SPI 64.
-emu_devices = [
-  ["virtio-net-zephyr", 0x0a00_2000, 0x1000, 64, 0xE2, [2, 1, 1]],
+# Zephyr 4.3 accepts VERSION_1 and uses the modern 12-byte header without
+# accepting MRG_RXBUF. Keep that transport contract explicit while the graph
+# assigns net0's MMIO and virtual-controller input.
+virtual = [
+  { id = "net0", model = "virtio-net-mmio", mac_suffix = 2, segment_id = 1, header_mode = "fixed-twelve-byte" },
 ]

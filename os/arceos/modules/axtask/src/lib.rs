@@ -77,6 +77,8 @@ cfg_if::cfg_if! {
         mod api;
         #[doc(hidden)]
         pub mod runtime_preempt;
+        #[cfg(feature = "irq")]
+        mod idle_accounting;
         #[cfg(feature = "lockdep")]
         mod lockdep;
         #[cfg(feature = "tracepoint-hooks")]
@@ -93,6 +95,8 @@ cfg_if::cfg_if! {
 
         #[cfg_attr(doc, doc(cfg(feature = "multitask")))]
         pub use self::api::*;
+        #[cfg(feature = "irq")]
+        pub use self::idle_accounting::{finish_current_idle_wait, idle_time_ticks};
         #[cfg(feature = "irq")]
         pub use self::irq_notify::IrqNotify;
         pub use self::api::{sleep, sleep_until, yield_now};

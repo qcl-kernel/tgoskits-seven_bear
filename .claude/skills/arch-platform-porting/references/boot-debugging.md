@@ -34,6 +34,15 @@ snapshot, or a same-ID user override supplied the final model and fixed binding.
 MMIO/PIO exits must call the runtime optional-dispatch path once; a `find_*`
 probe followed by a second dispatch indicates a stale routing path.
 
+On AArch64, ordinary virtual-device FDT nodes are emitted only after the common
+controller/timer/serial patch, using each graph model's `DeviceFirmwareSpec`
+and that node's `ResolvedDeviceResources`. A Linux/Starry DTB template that
+already contains the same conventional model is stale and intentionally fails
+instead of creating two devices. For a guest whose driver resources are
+compiled from a build overlay, such as Zephyr, compare the compiled MMIO/SPI
+tuple with the deterministic graph slot and confirm the runtime DTB contains
+the graph-generated node.
+
 For x86 direct Linux boot, verify all of the following before changing Linux
 command-line policy:
 

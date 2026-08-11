@@ -36,6 +36,8 @@ mod manager;
 mod network;
 mod npt;
 mod percpu;
+#[cfg(feature = "rt-trace")]
+pub mod rt_trace;
 mod runtime;
 mod sync;
 mod task;
@@ -54,7 +56,7 @@ pub use axvm_types::{
 pub use configured::{
     ConfiguredDeviceCatalog, ConfiguredDeviceError, ConfiguredModelConstructor,
     ConfiguredModelRegistration, DefaultVirtualDeviceIntent, DeviceInstantiationContext,
-    FixedDeviceBindings, FixedWiredBinding,
+    FixedDeviceBindings, FixedWiredBinding, NullVirtioBlockImageProvider, VirtioBlockImageProvider,
 };
 pub use error::{AxVmError, AxVmResult};
 pub(crate) use error::{ax_err, ax_err_type};

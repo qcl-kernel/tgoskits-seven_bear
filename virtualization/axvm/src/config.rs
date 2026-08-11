@@ -24,7 +24,10 @@ pub use axvm_types::{
 };
 use axvmconfig::VirtualDeviceRequest;
 
-use crate::{arch::current::CurrentArch, architecture::MachinePlatform, machine::*};
+use crate::{
+    NullVirtioBlockImageProvider, VirtioBlockImageProvider, arch::current::CurrentArch,
+    architecture::MachinePlatform, machine::*,
+};
 
 /// Policy used by AxVM when deriving runtime guest boot image addresses.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -106,6 +109,7 @@ pub struct AxVMConfig {
     plic_profile: Option<GuestPlicProfile>,
     timer_profile: Option<GuestTimerProfile>,
     serial_backend_factory: Arc<dyn SerialBackendFactory>,
+    virtio_block_image_provider: Arc<dyn VirtioBlockImageProvider>,
     virtual_device_requests: Vec<VirtualDeviceRequest>,
     virtual_device_catalog: Arc<crate::ConfiguredDeviceCatalog>,
 }
@@ -130,6 +134,8 @@ pub struct AxVMConfigParams {
     pub serial_profile: Option<GuestSerialProfile>,
     /// App-owned backend factory for the mandatory virtual serial device.
     pub serial_backend_factory: Option<Arc<dyn SerialBackendFactory>>,
+    /// App-owned source for file-seeded volatile virtio block images.
+    pub virtio_block_image_provider: Option<Arc<dyn VirtioBlockImageProvider>>,
     /// Open-ended virtual-device requests parsed from guest configuration.
     pub virtual_device_requests: Vec<VirtualDeviceRequest>,
     /// Code-registered factories available to this VM.
@@ -164,6 +170,9 @@ impl AxVMConfig {
             serial_backend_factory: params
                 .serial_backend_factory
                 .unwrap_or_else(|| Arc::new(NullSerialBackendFactory)),
+            virtio_block_image_provider: params
+                .virtio_block_image_provider
+                .unwrap_or_else(|| Arc::new(NullVirtioBlockImageProvider)),
             virtual_device_requests: params.virtual_device_requests,
             virtual_device_catalog: params.virtual_device_catalog,
         }
@@ -428,6 +437,11 @@ impl AxVMConfig {
         self.serial_backend_factory.clone()
     }
 
+    /// Returns the application-owned source for configured block images.
+    pub fn virtio_block_image_provider(&self) -> Arc<dyn VirtioBlockImageProvider> {
+        self.virtio_block_image_provider.clone()
+    }
+
     pub(crate) fn virtual_device_requests(&self) -> &[VirtualDeviceRequest] {
         &self.virtual_device_requests
     }
@@ -585,7 +599,7 @@ mod tests {
     #[test]
     fn controller_replacements_require_machine_capabilities() {
         let mut config = AxVMConfig::new(AxVMConfigParams {
-            phys_cpu_ls: PhysCpuList::new(1, None, None),
+            phys_cpu_ls: PhysCpuList::new(1, None, None, false),
             ..Default::default()
         });
         let gic = GuestGicProfile {

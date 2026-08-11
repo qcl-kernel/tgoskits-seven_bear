@@ -9,7 +9,7 @@ use std::{
 };
 
 use aarch64_cpu_ext::registers::{CNTPCT_EL0, Readable};
-use arm_vcpu::{ArmTimerKind, ArmTimerSnapshot};
+use arm_vcpu::{ArmTimerKind, ArmTimerSnapshot, ArmTimerVmConfig};
 use arm_vgic::{GicVcpuId, PpiId, VgicCore, VgicResult};
 use ax_std::os::arceos::sync::IrqSafeMutex;
 
@@ -40,7 +40,7 @@ pub(in crate::arch::aarch64) struct Aarch64TimerBinding {
     virtual_ppi: PpiId,
     physical_ppi: PpiId,
     host_virtual_timer_intid: u32,
-    frequency: u64,
+    timer_config: ArmTimerVmConfig,
     registered: AtomicBool,
     wait_generation: AtomicU64,
     scheduled: IrqSafeMutex<Option<VmTimerHandle>>,
@@ -56,7 +56,7 @@ impl Aarch64TimerBinding {
         virtual_ppi: PpiId,
         physical_ppi: PpiId,
         host_virtual_timer_intid: u32,
-        frequency: u64,
+        timer_config: ArmTimerVmConfig,
     ) -> VgicResult<Arc<Self>> {
         let binding = Arc::new(Self {
             vm_id,
@@ -66,7 +66,7 @@ impl Aarch64TimerBinding {
             virtual_ppi,
             physical_ppi,
             host_virtual_timer_intid,
-            frequency,
+            timer_config,
             registered: AtomicBool::new(false),
             wait_generation: AtomicU64::new(0),
             scheduled: IrqSafeMutex::new(None),
@@ -105,16 +105,40 @@ impl Aarch64TimerBinding {
         if super::super::gic::host_irq_intid(token) != self.host_virtual_timer_intid {
             return false;
         }
+        #[cfg(feature = "rt-trace")]
+        let host_counter_ticks = physical_counter();
         let activation = HostTimerActivation {
             token,
             owner_cpu: default_host().this_cpu_id(),
         };
         let mut active = self.host_activation.lock();
-        if active.is_some() {
+        let accepted = active.is_none();
+        if !accepted {
             drop(active);
             super::super::gic::deactivate_host_irq(token);
         } else {
             *active = Some(activation);
+        }
+        #[cfg(feature = "rt-trace")]
+        {
+            let forwarding_finished_ticks = physical_counter();
+            crate::rt_trace::record_virtual_timer_injection(
+                crate::rt_trace::VirtualTimerInjectionRecord {
+                    sequence: 0,
+                    vm_id: self.vm_id,
+                    vcpu_id: self.vcpu.raw(),
+                    pcpu_id: default_host().this_cpu_id(),
+                    physical_irq: self.host_virtual_timer_intid,
+                    virtual_irq: u32::from(self.virtual_ppi.raw()),
+                    host_counter_ticks,
+                    guest_counter_ticks: self
+                        .timer_config
+                        .guest_counter(ArmTimerKind::Virtual, host_counter_ticks),
+                    forwarding_ticks: forwarding_finished_ticks.saturating_sub(host_counter_ticks),
+                    injected: accepted,
+                },
+                self.timer_config.frequency(),
+            );
         }
         true
     }
@@ -144,7 +168,8 @@ impl Aarch64TimerBinding {
             .wait_generation
             .fetch_add(1, Ordering::AcqRel)
             .wrapping_add(1);
-        let deadline_ns = host_deadline_ns(deadline_counter, now_counter, self.frequency);
+        let deadline_ns =
+            host_deadline_ns(deadline_counter, now_counter, self.timer_config.frequency());
         let binding = Arc::downgrade(self);
         let handle = crate::timer::register_timer_handle(
             deadline_ns,

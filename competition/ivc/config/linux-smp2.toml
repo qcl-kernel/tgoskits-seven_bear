@@ -1,7 +1,7 @@
 [base]
 id = 1
 name = "linux-ivc-controller"
-vm_type = 1
+guest_type = "virtualized"
 cpu_num = 2
 # Keep pCPU0 available for Zephyr, dedicate pCPUs 1-2 to Linux, and leave
 # pCPU3 for AxVisor housekeeping.
@@ -23,14 +23,8 @@ memory_regions = [
 ]
 
 [devices]
-interrupt_mode = "passthrough"
-passthrough_devices = [
-  ["/"],
-]
-passthrough_addresses = []
-excluded_devices = []
-
-# MAC 52:54:00:00:00:01, isolated segment 1. QEMU virt slot 8 uses SPI 56.
-emu_devices = [
-  ["virtio-net-linux", 0x0a00_1000, 0x1000, 56, 0xE2, [1, 1]],
+passthrough = []
+disabled = []
+virtual = [
+  { id = "net0", model = "virtio-net-mmio", mac_suffix = 1, segment_id = 1 },
 ]

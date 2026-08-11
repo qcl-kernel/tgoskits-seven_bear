@@ -7,9 +7,9 @@ once, and returns STATUS followed by ACK.
 
 ## Guest network contract
 
-The overlay declares the automatic AArch64 virtio-mmio resource selected for
-the sole configured `net0` device. The same values must be used by the AxVisor
-VM configuration:
+The overlay reserves the first AArch64 device-graph virtio-mmio slot. AxVM
+resolves the configured `net0` device to the same resources when it emits the
+guest FDT:
 
 | Item | RTOS guest value |
 | --- | --- |
@@ -22,15 +22,16 @@ VM configuration:
 | UDP endpoint | `10.0.0.2:5500` |
 | L2 switch segment | 1 |
 
-The AxVisor `virtio-net-mmio` request advertises MAC `52:54:00:00:00:02` with
-`mac_suffix = 2`, `segment_id = 1`, and
-`header_mode = "fixed-twelve-byte"`. Upstream Zephyr v4.3.0 accepts
+The AxVisor virtio-net configuration advertises MAC
+`52:54:00:00:00:02` (`cfg_list = [2, 1, 1]`). The first two values select the
+MAC suffix and switch segment. The final `1` explicitly selects the fixed
+12-byte header compatibility mode. Upstream Zephyr v4.3.0 accepts
 `VIRTIO_F_VERSION_1` and exchanges its modern 12-byte layout without accepting
 `VIRTIO_NET_F_MRG_RXBUF`; the explicit mode pins that behavior independently of
 feature-state tracking. Linux configurations omit this compatibility value and
 use the negotiated legacy/modern layout. The overlay pins the Zephyr link
 address to the same value, and startup treats any different runtime link
-address as fatal. This also prevents an accidental resource/MAC mismatch from
+address as fatal. This also prevents an accidental slot/MAC mismatch from
 producing misleading packet-loss results.
 
 The Linux/Starry controller side is `52:54:00:00:00:01` and `10.0.0.1/24` on
@@ -104,8 +105,15 @@ python3 competition/ivc/analyze_qemu.py <qemu.log> \
 
 The physical-board overlays keep the normal protocol behavior but make the
 endpoint finite. `board-smoke.conf` accepts 20 fresh commands and `board.conf`
-accepts 1,800; both emit `IVC-RTOS-RESULT`, print a compact poweroff marker,
-and request PSCI system-off so the AxVisor board runner can regain control:
+accepts 1,800. Both preserve the legacy `IVC-RTOS-RESULT` line and additionally
+split terminal counters into compact `IVC-RTOS-OUTCOME` and
+`IVC-RTOS-MESSAGES` records. Each compact result record is emitted twice with
+a 10 ms pause. After a 500 ms drain interval, the combined
+`IVC-RTOS-RESULT` and short `IVC-RTOS-POWEROFF` records are replayed together
+five times at 100 ms intervals before the guest requests PSCI system-off. This
+quiet-window replay prevents the StarryOS controller's simultaneous terminal
+metrics from corrupting every complete result or poweroff copy on the shared
+physical UART:
 
 ```sh
 west build -p always -b qemu_cortex_a53 \
@@ -117,10 +125,85 @@ west build -p always -b qemu_cortex_a53 \
   -d <repo>/competition/ivc/zephyr/build-board \
   <repo>/competition/ivc/zephyr -- \
   -DEXTRA_CONF_FILE=board.conf
+
+west build -p always -b qemu_cortex_a53 \
+  -d <repo>/competition/ivc/zephyr/build-board-ack-loss \
+  <repo>/competition/ivc/zephyr -- \
+  -DEXTRA_CONF_FILE=board-ack-loss.conf
+
+west build -p always -b qemu_cortex_a53 \
+  -d <repo>/competition/ivc/zephyr/build-board-error \
+  <repo>/competition/ivc/zephyr -- \
+  -DEXTRA_CONF_FILE=board-error.conf
+
+west build -p always -b qemu_cortex_a53 \
+  -d <repo>/competition/ivc/zephyr/build-board-restart \
+  <repo>/competition/ivc/zephyr -- \
+  -DEXTRA_CONF_FILE=board-restart.conf
 ```
 
-Use these only with the matching `orangepi-5-plus-zephyr-*.toml` description.
+The third image is the physical 100-command ACK-loss campaign: it drops the
+first ACK for every fifth fresh command and powers off only after all 20
+deterministic retransmissions have been observed. Use these images only with
+the matching `orangepi-5-plus-zephyr-*.toml` description.
+
+The fourth image is the physical malformed-frame campaign. Before normal
+control begins, StarryOS injects one unsupported-version frame, length
+mismatch, checksum mismatch, unexpected message type, and invalid session
+transition. Zephyr returns the contractually mapped `ERROR` for all five and
+then accepts exactly 100 normal commands. It emits its terminal result only
+when `errors_sent=protocol_errors=5`, so a missing response or failure to
+continue cannot be accepted as evidence.
+
+The fifth image is the physical StarryOS VM-reset campaign. It accepts 20
+commands in the original controller session, enters the controller-timeout
+safe state while AxVisor resets VM 1, and then accepts 100 commands in a fixed
+replacement session. Before powering off it requires exactly one session
+reset, retired-session rejection, safe fallback, recovery, stale STATUS, and
+stale ACK. The matching analyzer additionally requires AxVisor's running →
+reset → running evidence and both hash-verified raw CSV phases.
+
+After building and staging the matching StarryOS artifacts, run the physical
+campaign from a clean worktree. The wrapper preserves every failed attempt,
+harvests and hashes the raw CSV, validates all 20 injection/recovery pairs, and
+restores board Linux after each repeat:
+
+```sh
+competition/ivc/run-orangepi-5-plus.sh \
+  --profile fault-ack-loss \
+  --repeat 3 \
+  --require-clean \
+  --result-dir competition/results/orangepi-5-plus/<campaign-id>
+
+competition/ivc/run-orangepi-5-plus.sh \
+  --profile fault-error \
+  --repeat 3 \
+  --require-clean \
+  --result-dir competition/results/orangepi-5-plus/<campaign-id>
+
+competition/ivc/run-orangepi-5-plus.sh \
+  --profile fault-restart \
+  --repeat 3 \
+  --require-clean \
+  --result-dir competition/results/orangepi-5-plus/<campaign-id>
+```
 The normal QEMU image remains open-ended.
+
+The retained physical build produced:
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| full `zephyr.bin` | 121,568 | `38c322b1181f09bde9dcb974bbffeaf576f8eac6dc97bd020a4e4ec831c3ec59` |
+| full `zephyr.elf` | 2,179,208 | `b34f44fb22ba4d19a7160e3e30cfc8b17bcc1687398c63c436d4cf861cce5674` |
+| smoke `zephyr.bin` | 121,568 | `d82d1f1a7a262a7f465990ce88ff7daa11c5034b68d82391efb10a5cddc61bb3` |
+| smoke `zephyr.elf` | 2,179,416 | `a54130d6f217debbc8b28519a98b68bd618bb6010ad2d9a5c3c757e9fff200fd` |
+
+`competition/ivc/analyze_board.py` accepts a run only when at least one
+complete copy of each compact record exists, all complete copies agree, the
+expected counts match, and StarryOS completion, Zephyr poweroff, AxVisor
+filesystem sync, and restored board Linux are all present. The validated raw
+logs and summaries are retained under
+[`../../results/orangepi-starry-reference`](../../results/orangepi-starry-reference/).
 
 The AxVisor image is built for non-secure EL1 (`CONFIG_ARMV8_A_NS=y`) and uses
 safe GIC initialization so it does not reinitialize a distributor that the
@@ -189,11 +272,9 @@ bash competition/ivc/zephyr/run-host-tests.sh
 ```
 
 For an AxVisor boot, load the generated binary as the VM2/RTOS image and expose
-the configured `virtio-net-mmio` device at guest INTID 32 with
-`mac_suffix = 2`, `segment_id = 1`, and
-`header_mode = "fixed-twelve-byte"`. Do not write `32` into a GIC `GIC_SPI`
-device-tree cell: the cell is `0`, and the interrupt controller adds the
-architectural SPI base of 32.
+`net0` in the first AArch64 device-graph virtio-mmio slot with guest INTID 32
+and config bytes `[2, 1, 1]`. The corresponding GIC device-tree cell is
+`GIC_SPI 0`; the interrupt controller adds the architectural SPI base of 32.
 
 ## Run the controller
 
@@ -206,8 +287,10 @@ cargo run -p ivcproto --bin ivcproto -- \
 ```
 
 The default endpoint has no finite request-count exit condition. Stop the guest
-after the controller has collected its results. The two physical-board
-overlays above intentionally power off after their configured finite count.
+after the controller has collected its results. The physical StarryOS rootfs
+autorun invokes the same checked-in binary with the profile count and neural
+policy; the two physical-board overlays above intentionally power off after
+their configured finite count.
 
 ## Compatibility behavior
 
@@ -248,4 +331,6 @@ IVC-RTOS-READY bind=10.0.0.2:5500 mac=52:54:00:00:00:02 window_bits=64 ack_loss_
 
 Applied commands, duplicates, protocol errors, and timeout fallback use stable
 `IVC-RTOS-* key=value` console lines so the demonstration harness can collect
-them without parsing Zephyr's log prefixes.
+them without parsing Zephyr's log prefixes. Finite physical images use the
+redundant compact terminal records described above; the analyzer strips Zephyr
+and AxVisor console prefixes before validating them.

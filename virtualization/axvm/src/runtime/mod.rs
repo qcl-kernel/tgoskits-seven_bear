@@ -53,6 +53,8 @@ pub fn launch_all() -> std::vec::Vec<usize> {
     info!("VMM starting, booting VMs...");
     let mut started = std::vec::Vec::new();
     for vm in crate::get_vm_list() {
+        #[cfg(feature = "rt-trace")]
+        crate::rt_trace::begin_vm(vm.id(), vm.vcpu_num());
         match vm.start() {
             Ok(_) => {
                 RUNNING_VM_COUNT.fetch_add(1, Ordering::Release);
@@ -60,7 +62,11 @@ pub fn launch_all() -> std::vec::Vec<usize> {
                 started.push(vm.id());
                 info!("VM[{}] boot success", vm.id());
             }
-            Err(err) => warn!("VM[{}] boot failed, error {:?}", vm.id(), err),
+            Err(err) => {
+                #[cfg(feature = "rt-trace")]
+                crate::rt_trace::abort_vm(vm.id());
+                warn!("VM[{}] boot failed, error {:?}", vm.id(), err);
+            }
         }
     }
     started
@@ -102,6 +108,12 @@ pub fn start_vm(vm_id: usize) -> AxVmResult {
         return ax_err!(BadState, "VM cannot be started from its current state");
     }
 
+    #[cfg(feature = "rt-trace")]
+    crate::rt_trace::begin_vm(vm_id, vm.vcpu_num());
+    #[cfg(feature = "rt-trace")]
+    vm.start()
+        .inspect_err(|_| crate::rt_trace::abort_vm(vm_id))?;
+    #[cfg(not(feature = "rt-trace"))]
     vm.start()?;
     add_running_vm_count(1);
     vcpus::notify_primary_vcpu(vm_id);
@@ -210,9 +222,13 @@ pub fn resume_vm(vm_id: usize) -> AxVmResult {
 }
 
 pub fn reset_vm(vm_id: usize) -> AxVmResult {
+    reset_vm_with_wait(vm_id, crate::host::task::yield_now)
+}
+
+pub fn reset_vm_with_wait(vm_id: usize, wait_step: impl FnMut()) -> AxVmResult {
     let vm = vm_by_id(vm_id)?;
     let previous_status = vm.status();
-    vm.reset()?;
+    vm.reset_with_wait(wait_step)?;
     if reset_starts_counted_runtime(previous_status) {
         add_running_vm_count(1);
     }
@@ -224,8 +240,8 @@ pub fn remove_vm(vm_id: usize) -> Option<VMRef> {
     crate::manager::remove_existing_vm(vm_id)
 }
 
-/// Register a prepared VM in the AxVM runtime.
-pub fn register_vm(vm: VMRef) -> bool {
+/// Validate and register a prepared VM in the AxVM runtime.
+pub fn register_vm(vm: VMRef) -> AxVmResult {
     crate::manager::push_existing_vm(vm)
 }
 

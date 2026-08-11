@@ -24,6 +24,7 @@ fn test_vm_with_machine(
         config: SleepMutex::new(config),
         machine: IrqSafeMutex::new(machine),
         fw_cfg_payload: Arc::new(FwCfgPayloadSlot::new()),
+        reset_memory_snapshot: IrqSafeMutex::new(None),
     })
 }
 

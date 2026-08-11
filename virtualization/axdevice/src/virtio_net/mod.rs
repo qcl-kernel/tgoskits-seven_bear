@@ -7,7 +7,7 @@
 use alloc::{boxed::Box, format, string::String, sync::Arc, vec::Vec};
 use core::{cell::RefCell, mem};
 
-use ax_kspin::SpinNoIrq as Mutex;
+use ax_sync::SpinLock as Mutex;
 use axdevice_base::{
     BusAccess, BusKind, BusResponse, ControllerInputId, Device, DeviceAccess, DeviceError,
     DeviceResult, DmaGrant, InterruptControllerId, InterruptSharing, InterruptTrigger,
@@ -21,12 +21,11 @@ use crate::{
 };
 
 mod descriptor;
-mod memory;
 mod mmio;
-mod queue;
 
 use descriptor::DescriptorDirection;
-use queue::QueueState;
+
+use crate::virtio::queue::QueueState;
 
 const RX_QUEUE: usize = 0;
 const TX_QUEUE: usize = 1;
@@ -146,6 +145,7 @@ impl DeviceModel for VirtioNetModel {
             .with_compatible("virtio,mmio")
             .with_register(ResourceSlot::new("registers").expect("static slot is valid"))
             .with_interrupt(ResourceSlot::new("irq").expect("static slot is valid"))
+            .with_flag_property("dma-coherent")
     }
 
     fn build(
@@ -304,7 +304,7 @@ impl VirtioNet {
         read: &dyn Fn(GuestPhysAddr, &mut [u8]) -> DeviceManagerResult,
         write: &dyn Fn(GuestPhysAddr, &[u8]) -> DeviceManagerResult,
     ) -> DeviceManagerResult<Vec<Vec<u8>>> {
-        let mut state = self.state.lock();
+        let mut state = self.state.lock_irqsave();
         let header_layout = self.header_layout(&state);
         let header_len = header_layout.len();
         let Some(queue) = state.queues[TX_QUEUE].active("process virtio-net TX")? else {
@@ -321,8 +321,10 @@ impl VirtioNet {
         let mut available_index = queue.last_avail();
         for _ in 0..pending {
             let head = queue.available_head(read, available_index)?;
-            let chain = queue.read_chain(
+            let chain = descriptor::read_descriptor_chain(
                 read,
+                queue.descriptor_table(),
+                queue.size(),
                 head,
                 DescriptorDirection::DeviceReadable,
                 Some(header_len + MAX_ETHERNET_FRAME_LEN),
@@ -364,7 +366,7 @@ impl VirtioNet {
         write: &dyn Fn(GuestPhysAddr, &[u8]) -> DeviceManagerResult,
         frame: &[u8],
     ) -> DeviceManagerResult<bool> {
-        let mut state = self.state.lock();
+        let mut state = self.state.lock_irqsave();
         let payload = receive_payload(frame, self.header_layout(&state))?;
         let Some(queue) = state.queues[RX_QUEUE].active("deliver virtio-net RX")? else {
             return Ok(false);
@@ -374,7 +376,14 @@ impl VirtioNet {
         }
 
         let head = queue.available_head(read, queue.last_avail())?;
-        let chain = queue.read_chain(read, head, DescriptorDirection::DeviceWritable, None)?;
+        let chain = descriptor::read_descriptor_chain(
+            read,
+            queue.descriptor_table(),
+            queue.size(),
+            head,
+            DescriptorDirection::DeviceWritable,
+            None,
+        )?;
         if chain.capacity() < payload.len() {
             return Err(DeviceManagerError::InvalidInput {
                 operation: "deliver virtio-net RX packet",
@@ -406,11 +415,11 @@ impl VirtioNet {
     }
 
     fn interrupt_asserted(&self) -> bool {
-        self.state.lock().interrupt_status != 0
+        self.state.lock_irqsave().interrupt_status != 0
     }
 
     fn reset(&self) {
-        self.state.lock().reset();
+        self.state.lock_irqsave().reset();
     }
 }
 
@@ -507,7 +516,7 @@ impl VirtioNetPort {
 
     /// Takes the complete batch produced by prior transmit notifications.
     pub fn take_transmitted_frames(&self) -> Vec<Vec<u8>> {
-        mem::take(&mut self.transmitted_frames.lock())
+        mem::take(&mut self.transmitted_frames.lock_irqsave())
     }
 
     /// Delivers one frame to this port's receive virtqueue.
@@ -545,7 +554,7 @@ impl VirtioNetPort {
             .core
             .process_tx(&read, &write)
             .and_then(|frames| {
-                let mut pending = self.transmitted_frames.lock();
+                let mut pending = self.transmitted_frames.lock_irqsave();
                 pending
                     .try_reserve(frames.len())
                     .map_err(|_| DeviceManagerError::OutOfMemory {
@@ -573,7 +582,7 @@ impl VirtioNetPort {
 
     fn reset(&self) -> DeviceManagerResult {
         self.core.reset();
-        self.transmitted_frames.lock().clear();
+        self.transmitted_frames.lock_irqsave().clear();
         self.sync_interrupt_line().map_err(DeviceManagerError::from)
     }
 }

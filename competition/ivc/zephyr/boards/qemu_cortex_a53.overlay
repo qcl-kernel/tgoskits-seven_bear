@@ -1,15 +1,15 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 /*
- * AxVM resolves net0 as the sole automatic AArch64 virtual device at
- * 0x0b000000 and architectural GIC INTID 32 (SPI cell 0).
+ * Zephyr compiles this resource into its image. AxVM independently resolves
+ * net0 to the same first AArch64 graph slot and emits the runtime FDT node.
  */
 / {
 	ivc_virtio_mmio: virtio_mmio@b000000 {
 		compatible = "virtio,mmio";
 		reg = <0x0 0x0b000000 0x0 0x1000>;
 		interrupt-parent = <&gic>;
-		interrupts = <0 0 1>;
+		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
 		status = "okay";
 
 		ivc_virtio_net: ethernet {

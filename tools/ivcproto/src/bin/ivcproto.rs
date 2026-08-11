@@ -2,13 +2,21 @@ use std::{
     fs::File,
     io::{ErrorKind, Write},
     net::{SocketAddr, UdpSocket},
+    path::PathBuf,
     process::ExitCode,
     str::FromStr,
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
+#[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+use ivcproto::ort::OrtController;
+#[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+use ivcproto::rknn::RknnController;
 use ivcproto::{
-    control::{AckPayload, ControlCommand, ErrorReport, StatusReport},
+    control::{
+        AckPayload, ControlCommand, ControlMode, ControlOperation, ErrorReport, StatusReport,
+    },
+    controller_csv::{ControllerSample, write_controller_samples},
     endpoint::{ControlEndpoint, EndpointConfig},
     neural::{
         ManualFixedController, NeuralController, Policy, ScenarioMetrics, ThermalObservation,
@@ -18,12 +26,305 @@ use ivcproto::{
         AckResult, Delivery, ReceiveWindow, ReliabilityConfig, RetryAction, StopAndWaitSender,
     },
     wire::{
-        ErrorCode, FrameFlags, HEADER_LEN, Header, MAX_PAYLOAD_LEN, MessageType, decode_frame,
-        encode_frame,
+        ErrorCode, Frame, FrameFlags, HEADER_LEN, Header, MAX_PAYLOAD_LEN, MessageType, VERSION,
+        decode_frame, encode_frame,
     },
 };
 
 const SOCKET_TIMEOUT: Duration = Duration::from_millis(100);
+const DEFAULT_ACK_TIMEOUT: Duration = Duration::from_millis(100);
+const BOARD_CONSOLE_RECORD_MAX_BYTES: usize = 160;
+const BOARD_CONSOLE_RECORD_COPIES: usize = 2;
+const BOARD_CONSOLE_RECORD_PAUSE: Duration = Duration::from_millis(10);
+const BOARD_CONSOLE_SUMMARY_SETTLE: Duration = Duration::from_millis(250);
+#[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+const RKNPU_RECORD_COPIES: usize = 5;
+#[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+const RKNPU_RECORD_PAUSE: Duration = Duration::from_millis(25);
+#[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+const ORT_RECORD_COPIES: usize = 5;
+#[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+const ORT_RECORD_PAUSE: Duration = Duration::from_millis(25);
+const ERROR_FAULT_RESPONSE_TIMEOUT: Duration = Duration::from_secs(2);
+const ERROR_FAULT_RESULT_SETTLE: Duration = Duration::from_millis(750);
+const ERROR_FAULT_RESULT_RECORD_COPIES: usize = 3;
+const ERROR_FAULT_RESULT_RECORD_PAUSE: Duration = Duration::from_millis(25);
+const RESTART_RESULT_SETTLE: Duration = Duration::from_secs(2);
+const RESTART_RESULT_RECORD_COPIES: usize = 3;
+const RESTART_RESULT_RECORD_PAUSE: Duration = Duration::from_millis(100);
+const ERROR_EVIDENCE_RECORD_MAX_BYTES: usize = 96;
+const ERROR_FAULT_SEQUENCE_BASE: u32 = 1_000;
+const RESTART_PREVIOUS_FINAL_SEQUENCE: u32 = 20;
+const RESTART_DUPLICATE_SEQUENCE: u32 = 1;
+const RESTART_STALE_CONTROL_SEQUENCE: u32 = RESTART_PREVIOUS_FINAL_SEQUENCE + 1;
+const RESTART_PROBE_RESPONSE_TIMEOUT: Duration = Duration::from_secs(2);
+const VERSION_OFFSET: usize = 4;
+const PAYLOAD_LENGTH_OFFSET: usize = 24;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum InferenceBackend {
+    Native,
+    RknnNpu,
+    OnnxRuntime,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+enum ControllerFaultProfile {
+    #[default]
+    None,
+    Error,
+    Restart,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ErrorFaultKind {
+    UnsupportedVersion,
+    LengthMismatch,
+    ChecksumMismatch,
+    UnexpectedMessageType,
+    InvalidSessionTransition,
+}
+
+impl ErrorFaultKind {
+    const ALL: [Self; 5] = [
+        Self::UnsupportedVersion,
+        Self::LengthMismatch,
+        Self::ChecksumMismatch,
+        Self::UnexpectedMessageType,
+        Self::InvalidSessionTransition,
+    ];
+
+    const fn name(self) -> &'static str {
+        match self {
+            Self::UnsupportedVersion => "unsupported-version",
+            Self::LengthMismatch => "length-mismatch",
+            Self::ChecksumMismatch => "checksum-mismatch",
+            Self::UnexpectedMessageType => "unexpected-message-type",
+            Self::InvalidSessionTransition => "invalid-session-transition",
+        }
+    }
+
+    const fn expected_error(self) -> ErrorCode {
+        match self {
+            Self::UnsupportedVersion => ErrorCode::UnsupportedVersion,
+            Self::LengthMismatch => ErrorCode::MalformedFrame,
+            Self::ChecksumMismatch => ErrorCode::ChecksumMismatch,
+            Self::UnexpectedMessageType => ErrorCode::InvalidControl,
+            Self::InvalidSessionTransition => ErrorCode::SequenceOutsideWindow,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ErrorFaultProbe {
+    kind: ErrorFaultKind,
+    sequence: u32,
+    offending_type: MessageType,
+    expected_error: ErrorCode,
+    datagram: Vec<u8>,
+}
+
+impl InferenceBackend {
+    const fn name(self) -> &'static str {
+        match self {
+            Self::Native => "native",
+            Self::RknnNpu => "rknn-npu",
+            Self::OnnxRuntime => "onnxruntime",
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ControllerArguments {
+    peer: String,
+    count: u32,
+    policy: Policy,
+    period_ms: u64,
+    session_id: Option<u32>,
+    backend: InferenceBackend,
+    raw_csv: Option<PathBuf>,
+    rknn_model: Option<PathBuf>,
+    rknn_evidence: Option<PathBuf>,
+    ort_model: Option<PathBuf>,
+    ort_evidence: Option<PathBuf>,
+    fault_profile: ControllerFaultProfile,
+    restart_previous_session: Option<u32>,
+    ack_timeout: Duration,
+}
+
+enum ControllerEngine {
+    Manual(ManualFixedController),
+    Native(NeuralController),
+    #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+    Rknn(RknnController),
+    #[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+    Ort(OrtController),
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+struct RknnBackendSummary {
+    api_version: String,
+    driver_version: String,
+    core_mask: u32,
+    initialization_us: u64,
+    samples: usize,
+    positive_device_times: usize,
+    device_p99_us: u64,
+    wall_p99_ns: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+struct OrtBackendSummary {
+    runtime_version: String,
+    provider: String,
+    initialization_us: u64,
+    samples: usize,
+    wall_p99_ns: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum BackendSummary {
+    #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+    Rknn(RknnBackendSummary),
+    #[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+    Ort(OrtBackendSummary),
+}
+
+impl ControllerEngine {
+    fn new(
+        policy: Policy,
+        backend: InferenceBackend,
+        rknn_model: Option<&std::path::Path>,
+        rknn_evidence: Option<&std::path::Path>,
+        ort_model: Option<&std::path::Path>,
+        ort_evidence: Option<&std::path::Path>,
+    ) -> Result<Self, String> {
+        match (policy, backend) {
+            (Policy::ManualFixed { actuator_permille }, InferenceBackend::Native) => {
+                Ok(Self::Manual(
+                    ManualFixedController::new(actuator_permille)
+                        .map_err(|error| error.to_string())?,
+                ))
+            }
+            (Policy::Neural, InferenceBackend::Native) => Ok(Self::Native(NeuralController)),
+            (Policy::ManualFixed { .. }, InferenceBackend::RknnNpu) => {
+                Err("RKNN NPU backend requires the neural policy".to_owned())
+            }
+            (Policy::Neural, InferenceBackend::RknnNpu) => {
+                Self::new_rknn(rknn_model, rknn_evidence)
+            }
+            (Policy::ManualFixed { .. }, InferenceBackend::OnnxRuntime) => {
+                Err("ONNX Runtime backend requires the neural policy".to_owned())
+            }
+            (Policy::Neural, InferenceBackend::OnnxRuntime) => {
+                Self::new_ort(ort_model, ort_evidence)
+            }
+        }
+    }
+
+    #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+    fn new_rknn(
+        rknn_model: Option<&std::path::Path>,
+        rknn_evidence: Option<&std::path::Path>,
+    ) -> Result<Self, String> {
+        let model = rknn_model.ok_or_else(|| "RKNN model path is missing".to_owned())?;
+        let evidence = rknn_evidence.ok_or_else(|| "RKNN evidence path is missing".to_owned())?;
+        RknnController::new(model, evidence, 0)
+            .map(Self::Rknn)
+            .map_err(|error| error.to_string())
+    }
+
+    #[cfg(not(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu")))]
+    fn new_rknn(
+        _rknn_model: Option<&std::path::Path>,
+        _rknn_evidence: Option<&std::path::Path>,
+    ) -> Result<Self, String> {
+        Err("controller backend 'rknn-npu' is not available in this build".to_owned())
+    }
+
+    #[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+    fn new_ort(
+        ort_model: Option<&std::path::Path>,
+        ort_evidence: Option<&std::path::Path>,
+    ) -> Result<Self, String> {
+        let model = ort_model.ok_or_else(|| "ORT model path is missing".to_owned())?;
+        let evidence = ort_evidence.ok_or_else(|| "ORT evidence path is missing".to_owned())?;
+        OrtController::new(model, evidence)
+            .map(Self::Ort)
+            .map_err(|error| error.to_string())
+    }
+
+    #[cfg(not(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu")))]
+    fn new_ort(
+        _ort_model: Option<&std::path::Path>,
+        _ort_evidence: Option<&std::path::Path>,
+    ) -> Result<Self, String> {
+        Err("controller backend 'onnxruntime' is not available in this build".to_owned())
+    }
+
+    fn command(
+        &mut self,
+        observation: ThermalObservation,
+        sample_id: u32,
+    ) -> Result<ControlCommand, String> {
+        match self {
+            Self::Manual(controller) => Ok(controller.command(observation, sample_id)),
+            Self::Native(controller) => controller
+                .command(observation, sample_id)
+                .map_err(|error| error.to_string()),
+            #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+            Self::Rknn(controller) => controller
+                .command(observation, sample_id)
+                .map_err(|error| error.to_string()),
+            #[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+            Self::Ort(controller) => controller
+                .command(observation, sample_id)
+                .map_err(|error| error.to_string()),
+        }
+    }
+
+    fn finish(&mut self) -> Result<Option<BackendSummary>, String> {
+        match self {
+            Self::Manual(_) | Self::Native(_) => Ok(None),
+            #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+            Self::Rknn(controller) => {
+                let summary = controller.finish().map_err(|error| error.to_string())?;
+                Ok(Some(BackendSummary::Rknn(RknnBackendSummary {
+                    api_version: summary.runtime.api_version,
+                    driver_version: summary.runtime.driver_version,
+                    core_mask: summary.runtime.core_mask,
+                    initialization_us: summary.runtime.initialization_us,
+                    samples: summary.samples,
+                    positive_device_times: summary.positive_device_times,
+                    device_p99_us: summary.device_p99_us,
+                    wall_p99_ns: summary.wall_p99_ns,
+                })))
+            }
+            #[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+            Self::Ort(controller) => {
+                let summary = controller.finish().map_err(|error| error.to_string())?;
+                Ok(Some(BackendSummary::Ort(OrtBackendSummary {
+                    runtime_version: summary.runtime.runtime_version,
+                    provider: summary.runtime.provider,
+                    initialization_us: summary.runtime.initialization_us,
+                    samples: summary.samples,
+                    wall_p99_ns: summary.wall_p99_ns,
+                })))
+            }
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct RestartDuplicateEvidence {
+    sequence: u32,
+    statuses_received: u64,
+    acknowledgements_received: u64,
+    stale_acknowledgements_ignored: u64,
+    stale_statuses_ignored: u64,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct ControlCycleTimeline {
@@ -37,6 +338,122 @@ struct ControlCycleLatency {
     full_loop_us: u64,
     pre_send_us: u64,
     transport_us: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct LatencySummary {
+    p50_us: u64,
+    p95_us: u64,
+    p99_us: u64,
+    max_us: u64,
+}
+
+impl LatencySummary {
+    fn from_sorted_samples(samples: &[u64]) -> Self {
+        Self {
+            p50_us: percentile(samples, 50),
+            p95_us: percentile(samples, 95),
+            p99_us: percentile(samples, 99),
+            max_us: samples.last().copied().unwrap_or(0),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct ControllerResultSummary {
+    policy: &'static str,
+    sent: u64,
+    acknowledged: u64,
+    errors: u64,
+    timeouts: u64,
+    retransmissions: u64,
+    recoveries: u64,
+    success_percent: f64,
+    full_loop: LatencySummary,
+    pre_send: LatencySummary,
+    transport: LatencySummary,
+    throughput_msg_s: f64,
+    rmse_milli_c: f64,
+    iae_milli_c_s: f64,
+    max_overshoot_milli_c: i32,
+}
+
+impl ControllerResultSummary {
+    fn compact_records(self) -> [String; 6] {
+        [
+            format!(
+                "IVC-CONTROLLER-OUTCOME policy={} sent={} acknowledged={} errors={} timeouts={}",
+                self.policy, self.sent, self.acknowledged, self.errors, self.timeouts
+            ),
+            format!(
+                "IVC-CONTROLLER-RELIABILITY retransmissions={} recoveries={} success_percent={:.3}",
+                self.retransmissions, self.recoveries, self.success_percent
+            ),
+            format!(
+                "IVC-CONTROLLER-FULL-LOOP p50_us={} p95_us={} p99_us={} max_us={}",
+                self.full_loop.p50_us,
+                self.full_loop.p95_us,
+                self.full_loop.p99_us,
+                self.full_loop.max_us
+            ),
+            format!(
+                "IVC-CONTROLLER-PRE-SEND p50_us={} p95_us={} p99_us={} max_us={}",
+                self.pre_send.p50_us,
+                self.pre_send.p95_us,
+                self.pre_send.p99_us,
+                self.pre_send.max_us
+            ),
+            format!(
+                "IVC-CONTROLLER-TRANSPORT p50_us={} p95_us={} p99_us={} max_us={} \
+                 throughput_msg_s={:.3}",
+                self.transport.p50_us,
+                self.transport.p95_us,
+                self.transport.p99_us,
+                self.transport.max_us,
+                self.throughput_msg_s
+            ),
+            format!(
+                "IVC-CONTROLLER-CONTROL rmse_milli_c={:.3} iae_milli_c_s={:.3} \
+                 max_overshoot_milli_c={}",
+                self.rmse_milli_c, self.iae_milli_c_s, self.max_overshoot_milli_c
+            ),
+        ]
+    }
+
+    fn legacy_record(self) -> String {
+        format!(
+            "IVC-CONTROLLER-RESULT policy={} sent={} acknowledged={} errors={} timeouts={} \
+             retransmissions={} recoveries={} success_percent={:.3} full_loop_p50_us={} \
+             full_loop_p95_us={} full_loop_p99_us={} full_loop_max_us={} pre_send_p50_us={} \
+             pre_send_p95_us={} pre_send_p99_us={} pre_send_max_us={} transport_p50_us={} \
+             transport_p95_us={} transport_p99_us={} transport_max_us={} throughput_msg_s={:.3} \
+             rmse_milli_c={:.3} iae_milli_c_s={:.3} max_overshoot_milli_c={}",
+            self.policy,
+            self.sent,
+            self.acknowledged,
+            self.errors,
+            self.timeouts,
+            self.retransmissions,
+            self.recoveries,
+            self.success_percent,
+            self.full_loop.p50_us,
+            self.full_loop.p95_us,
+            self.full_loop.p99_us,
+            self.full_loop.max_us,
+            self.pre_send.p50_us,
+            self.pre_send.p95_us,
+            self.pre_send.p99_us,
+            self.pre_send.max_us,
+            self.transport.p50_us,
+            self.transport.p95_us,
+            self.transport.p99_us,
+            self.transport.max_us,
+            self.throughput_msg_s,
+            self.rmse_milli_c,
+            self.iae_milli_c_s,
+            self.max_overshoot_milli_c,
+        )
+    }
 }
 
 fn measure_control_cycle(timeline: ControlCycleTimeline) -> Result<ControlCycleLatency, String> {
@@ -85,14 +502,7 @@ fn run(mut arguments: impl Iterator<Item = String>) -> Result<(), String> {
             let drop_every = optional_parse(arguments.next(), "drop-every")?.unwrap_or(0);
             run_rtos_sim(&bind, expected, drop_every)
         }
-        Some("controller") => {
-            let peer = required(&mut arguments, "peer address")?;
-            let count = parse(&required(&mut arguments, "command count")?, "count")?;
-            let policy = parse_policy(&required(&mut arguments, "policy")?)?;
-            let period_ms = optional_parse(arguments.next(), "period-ms")?.unwrap_or(0);
-            let session_id = optional_parse(arguments.next(), "session-id")?;
-            run_controller(&peer, count, policy, period_ms, session_id)
-        }
+        Some("controller") => run_controller(parse_controller_arguments(arguments)?),
         Some(command) => Err(format!("unsupported command '{command}'\n{}", usage())),
         None => Err(usage().to_owned()),
     }
@@ -335,17 +745,461 @@ fn run_rtos_sim(bind: &str, expected: u32, drop_every: u32) -> Result<(), String
     Ok(())
 }
 
-fn run_controller(
-    peer: &str,
-    count: u32,
-    policy: Policy,
-    period_ms: u64,
-    session_id: Option<u32>,
+fn build_error_fault_probe(
+    kind: ErrorFaultKind,
+    session_id: u32,
+    sequence: u32,
+    timestamp_us: u64,
+) -> Result<ErrorFaultProbe, String> {
+    let command = ControlCommand {
+        operation: ControlOperation::SetActuator,
+        mode: ControlMode::Neural,
+        actuator_permille: 0,
+        setpoint_milli_c: 45_000,
+        sample_id: sequence,
+    };
+    let control_payload = command.encode().map_err(|error| error.to_string())?;
+    let offending_type = if kind == ErrorFaultKind::UnexpectedMessageType {
+        MessageType::Status
+    } else {
+        MessageType::Control
+    };
+    let probe_session_id = if kind == ErrorFaultKind::InvalidSessionTransition {
+        0
+    } else {
+        session_id
+    };
+    let header = Header::new(offending_type, probe_session_id, sequence, timestamp_us);
+    let payload = if offending_type == MessageType::Control {
+        control_payload.as_slice()
+    } else {
+        &[]
+    };
+    let mut buffer = [0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
+    let length = encode_frame(header, payload, &mut buffer).map_err(|error| error.to_string())?;
+    let mut datagram = buffer[..length].to_vec();
+    match kind {
+        ErrorFaultKind::UnsupportedVersion => {
+            datagram[VERSION_OFFSET] = VERSION.wrapping_add(1);
+        }
+        ErrorFaultKind::LengthMismatch => {
+            let declared = u16::try_from(payload.len() + 1)
+                .map_err(|_| "fault payload length exceeds u16".to_owned())?;
+            datagram[PAYLOAD_LENGTH_OFFSET..PAYLOAD_LENGTH_OFFSET + 2]
+                .copy_from_slice(&declared.to_le_bytes());
+        }
+        ErrorFaultKind::ChecksumMismatch => {
+            let last = datagram
+                .last_mut()
+                .ok_or_else(|| "fault datagram is unexpectedly empty".to_owned())?;
+            *last ^= 1;
+        }
+        ErrorFaultKind::UnexpectedMessageType | ErrorFaultKind::InvalidSessionTransition => {}
+    }
+    Ok(ErrorFaultProbe {
+        kind,
+        sequence,
+        offending_type,
+        expected_error: kind.expected_error(),
+        datagram,
+    })
+}
+
+fn receive_error_fault_response(
+    socket: &UdpSocket,
+    probe: &ErrorFaultProbe,
+) -> Result<ErrorCode, String> {
+    let started = Instant::now();
+    loop {
+        let mut response = [0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
+        let received = match socket.recv(&mut response) {
+            Ok(received) => received,
+            Err(error)
+                if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut)
+                    && started.elapsed() < ERROR_FAULT_RESPONSE_TIMEOUT =>
+            {
+                continue;
+            }
+            Err(error) if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => {
+                return Err(format!(
+                    "timed out waiting for {} ERROR response",
+                    probe.kind.name()
+                ));
+            }
+            Err(error) => return Err(format!("receive fault response: {error}")),
+        };
+        let frame = decode_frame(&response[..received])
+            .map_err(|error| format!("decode {} ERROR response: {error}", probe.kind.name()))?;
+        if frame.header.message_type != MessageType::Error
+            || frame.header.sequence != probe.sequence
+        {
+            return Err(format!(
+                "unexpected response while waiting for {} ERROR",
+                probe.kind.name()
+            ));
+        }
+        let report = ErrorReport::decode(frame.payload).map_err(|error| error.to_string())?;
+        if frame.header.error != probe.expected_error
+            || report.offending_type != probe.offending_type
+            || report.offending_sequence != probe.sequence
+        {
+            return Err(format!(
+                "{} ERROR response does not match the injected frame",
+                probe.kind.name()
+            ));
+        }
+        return Ok(frame.header.error);
+    }
+}
+
+fn run_error_fault_probes(
+    socket: &UdpSocket,
+    session_id: u32,
+    clock: Instant,
+) -> Result<u32, String> {
+    let mut errors_received = 0u32;
+    for (index, kind) in ErrorFaultKind::ALL.into_iter().enumerate() {
+        let sequence = ERROR_FAULT_SEQUENCE_BASE + index as u32 + 1;
+        let probe = build_error_fault_probe(kind, session_id, sequence, elapsed_us(clock))?;
+        socket
+            .send(&probe.datagram)
+            .map_err(|error| format!("send {} fault probe: {error}", kind.name()))?;
+        let observed_error = receive_error_fault_response(socket, &probe)?;
+        errors_received += 1;
+        for _ in 0..BOARD_CONSOLE_RECORD_COPIES {
+            report_error_fault_record(kind, sequence, observed_error)?;
+        }
+    }
+    Ok(errors_received)
+}
+
+fn report_error_fault_record(
+    kind: ErrorFaultKind,
+    sequence: u32,
+    observed_error: ErrorCode,
 ) -> Result<(), String> {
+    let body = format!(
+        "kind={} seq={} expected={} observed={}",
+        kind.name(),
+        sequence,
+        kind.expected_error() as u16,
+        observed_error as u16
+    );
+    let record = checksummed_console_record("IVC-ERROR-C ", &body);
+    debug_assert!(record.len() <= ERROR_EVIDENCE_RECORD_MAX_BYTES);
+    println!("{record}");
+    std::io::stdout()
+        .flush()
+        .map_err(|error| format!("flush fault evidence: {error}"))?;
+    std::thread::sleep(BOARD_CONSOLE_RECORD_PAUSE);
+    Ok(())
+}
+
+fn replay_verified_error_fault_records() -> Result<(), String> {
+    for _ in 0..BOARD_CONSOLE_RECORD_COPIES {
+        for (index, kind) in ErrorFaultKind::ALL.into_iter().enumerate() {
+            let sequence = ERROR_FAULT_SEQUENCE_BASE + index as u32 + 1;
+            report_error_fault_record(kind, sequence, kind.expected_error())?;
+        }
+    }
+    Ok(())
+}
+
+fn report_restart_records(records: &[&str]) -> Result<(), String> {
+    for _ in 0..RESTART_RESULT_RECORD_COPIES {
+        for record in records {
+            println!("{record}");
+            std::io::stdout()
+                .flush()
+                .map_err(|error| format!("flush restart evidence: {error}"))?;
+            std::thread::sleep(RESTART_RESULT_RECORD_PAUSE);
+        }
+    }
+    Ok(())
+}
+
+fn build_restart_duplicate_datagram(
+    session_id: u32,
+    command: ControlCommand,
+    timestamp_us: u64,
+) -> Result<Vec<u8>, String> {
+    let mut datagram = vec![0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
+    let mut header = Header::new(
+        MessageType::Control,
+        session_id,
+        RESTART_DUPLICATE_SEQUENCE,
+        timestamp_us,
+    );
+    header.flags = FrameFlags::ACK_REQUIRED.union(FrameFlags::RETRANSMISSION);
+    let payload = command.encode().map_err(|error| error.to_string())?;
+    let length =
+        encode_frame(header, &payload, &mut datagram).map_err(|error| error.to_string())?;
+    datagram.truncate(length);
+    Ok(datagram)
+}
+
+fn run_restart_duplicate_probe(
+    socket: &UdpSocket,
+    session_id: u32,
+    previous_session: u32,
+    command: ControlCommand,
+    clock: Instant,
+) -> Result<RestartDuplicateEvidence, String> {
+    let datagram = build_restart_duplicate_datagram(session_id, command, elapsed_us(clock))?;
+    socket
+        .send(&datagram)
+        .map_err(|error| format!("send current-session duplicate probe: {error}"))?;
+
+    let mut evidence = RestartDuplicateEvidence {
+        sequence: RESTART_DUPLICATE_SEQUENCE,
+        statuses_received: 0,
+        acknowledgements_received: 0,
+        stale_acknowledgements_ignored: 0,
+        stale_statuses_ignored: 0,
+    };
+    let response_started = Instant::now();
+    loop {
+        let mut response = [0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
+        match socket.recv(&mut response) {
+            Ok(received) => {
+                let frame = decode_frame(&response[..received]).map_err(|error| {
+                    format!("decode current-session duplicate response: {error}")
+                })?;
+                observe_restart_duplicate_response(
+                    &mut evidence,
+                    frame,
+                    session_id,
+                    previous_session,
+                )?;
+                if restart_duplicate_probe_is_complete(evidence) {
+                    return Ok(evidence);
+                }
+            }
+            Err(error)
+                if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut)
+                    && response_started.elapsed() < RESTART_PROBE_RESPONSE_TIMEOUT => {}
+            Err(error) if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => {
+                return Err("timed out waiting for current-session duplicate responses".to_owned());
+            }
+            Err(error) => {
+                return Err(format!(
+                    "receive current-session duplicate response: {error}"
+                ));
+            }
+        }
+    }
+}
+
+fn observe_restart_duplicate_response(
+    evidence: &mut RestartDuplicateEvidence,
+    frame: Frame<'_>,
+    session_id: u32,
+    previous_session: u32,
+) -> Result<(), String> {
+    if frame.header.session_id == session_id && frame.header.sequence == RESTART_DUPLICATE_SEQUENCE
+    {
+        return observe_current_session_duplicate_response(evidence, frame);
+    }
+    if frame.header.session_id == previous_session
+        && frame.header.sequence == RESTART_PREVIOUS_FINAL_SEQUENCE
+    {
+        return observe_retired_session_replay(evidence, frame);
+    }
+    Err(format!(
+        "unexpected response to current-session duplicate probe: session={} sequence={} type={:?}",
+        frame.header.session_id, frame.header.sequence, frame.header.message_type
+    ))
+}
+
+fn observe_current_session_duplicate_response(
+    evidence: &mut RestartDuplicateEvidence,
+    frame: Frame<'_>,
+) -> Result<(), String> {
+    match frame.header.message_type {
+        MessageType::Status => observe_restart_duplicate_status(evidence, frame.payload),
+        MessageType::Ack => observe_restart_duplicate_ack(evidence, frame.payload),
+        MessageType::Error => Err(format!(
+            "RTOS rejected duplicate sequence {} with {:?}",
+            RESTART_DUPLICATE_SEQUENCE, frame.header.error
+        )),
+        other => Err(format!(
+            "unexpected {:?} response to current-session duplicate probe",
+            other
+        )),
+    }
+}
+
+fn observe_restart_duplicate_status(
+    evidence: &mut RestartDuplicateEvidence,
+    payload: &[u8],
+) -> Result<(), String> {
+    let status = StatusReport::decode(payload).map_err(|error| error.to_string())?;
+    if status.applied_sequence != RESTART_DUPLICATE_SEQUENCE {
+        return Err(format!(
+            "duplicate STATUS identifies sequence {}, expected {}",
+            status.applied_sequence, RESTART_DUPLICATE_SEQUENCE
+        ));
+    }
+    evidence.statuses_received = evidence.statuses_received.saturating_add(1);
+    if evidence.statuses_received != 1 {
+        return Err("duplicate probe received more than one STATUS".to_owned());
+    }
+    Ok(())
+}
+
+fn observe_restart_duplicate_ack(
+    evidence: &mut RestartDuplicateEvidence,
+    payload: &[u8],
+) -> Result<(), String> {
+    let ack = AckPayload::decode(payload).map_err(|error| error.to_string())?;
+    if ack.acknowledged_sequence != RESTART_DUPLICATE_SEQUENCE
+        || ack.next_expected_sequence != RESTART_DUPLICATE_SEQUENCE + 1
+    {
+        return Err(format!(
+            "duplicate ACK identifies sequence {}/{}, expected {}/{}",
+            ack.acknowledged_sequence,
+            ack.next_expected_sequence,
+            RESTART_DUPLICATE_SEQUENCE,
+            RESTART_DUPLICATE_SEQUENCE + 1
+        ));
+    }
+    evidence.acknowledgements_received = evidence.acknowledgements_received.saturating_add(1);
+    if evidence.acknowledgements_received != 1 {
+        return Err("duplicate probe received more than one ACK".to_owned());
+    }
+    Ok(())
+}
+
+fn observe_retired_session_replay(
+    evidence: &mut RestartDuplicateEvidence,
+    frame: Frame<'_>,
+) -> Result<(), String> {
+    match frame.header.message_type {
+        MessageType::Ack => {
+            let ack = AckPayload::decode(frame.payload).map_err(|error| error.to_string())?;
+            if ack.acknowledged_sequence != RESTART_PREVIOUS_FINAL_SEQUENCE {
+                return Err(format!(
+                    "stale ACK identifies sequence {}, expected {}",
+                    ack.acknowledged_sequence, RESTART_PREVIOUS_FINAL_SEQUENCE
+                ));
+            }
+            evidence.stale_acknowledgements_ignored =
+                evidence.stale_acknowledgements_ignored.saturating_add(1);
+            Ok(())
+        }
+        MessageType::Status => {
+            let status = StatusReport::decode(frame.payload).map_err(|error| error.to_string())?;
+            if status.applied_sequence != RESTART_PREVIOUS_FINAL_SEQUENCE {
+                return Err(format!(
+                    "stale STATUS identifies sequence {}, expected {}",
+                    status.applied_sequence, RESTART_PREVIOUS_FINAL_SEQUENCE
+                ));
+            }
+            evidence.stale_statuses_ignored = evidence.stale_statuses_ignored.saturating_add(1);
+            Ok(())
+        }
+        other => Err(format!(
+            "unexpected {:?} response from retired session",
+            other
+        )),
+    }
+}
+
+fn restart_duplicate_probe_is_complete(evidence: RestartDuplicateEvidence) -> bool {
+    evidence.statuses_received == 1 && evidence.acknowledgements_received == 1
+}
+
+fn run_restart_stale_control_probe(
+    socket: &UdpSocket,
+    previous_session: u32,
+    command: ControlCommand,
+    clock: Instant,
+) -> Result<(), String> {
+    let mut datagram = [0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
+    let mut header = Header::new(
+        MessageType::Control,
+        previous_session,
+        RESTART_STALE_CONTROL_SEQUENCE,
+        elapsed_us(clock),
+    );
+    header.flags = FrameFlags::ACK_REQUIRED;
+    let payload = command.encode().map_err(|error| error.to_string())?;
+    let length =
+        encode_frame(header, &payload, &mut datagram).map_err(|error| error.to_string())?;
+    socket
+        .send(&datagram[..length])
+        .map_err(|error| format!("send retired-session control probe: {error}"))?;
+
+    let response_started = Instant::now();
+    loop {
+        let mut response = [0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
+        match socket.recv(&mut response) {
+            Ok(received) => {
+                let frame = decode_frame(&response[..received])
+                    .map_err(|error| format!("decode retired-session response: {error}"))?;
+                if frame.header.session_id != previous_session
+                    || frame.header.sequence != RESTART_STALE_CONTROL_SEQUENCE
+                    || frame.header.message_type != MessageType::Error
+                {
+                    return Err(format!(
+                        "unexpected response to retired-session probe: session={} sequence={} \
+                         type={:?}",
+                        frame.header.session_id, frame.header.sequence, frame.header.message_type
+                    ));
+                }
+                if frame.header.error != ErrorCode::SequenceOutsideWindow {
+                    return Err(format!(
+                        "retired-session probe returned {:?}, expected {:?}",
+                        frame.header.error,
+                        ErrorCode::SequenceOutsideWindow
+                    ));
+                }
+                let report =
+                    ErrorReport::decode(frame.payload).map_err(|error| error.to_string())?;
+                if report.offending_type != MessageType::Control
+                    || report.offending_sequence != RESTART_STALE_CONTROL_SEQUENCE
+                {
+                    return Err(format!(
+                        "retired-session ERROR payload identifies {:?}/{} instead of Control/{}",
+                        report.offending_type,
+                        report.offending_sequence,
+                        RESTART_STALE_CONTROL_SEQUENCE
+                    ));
+                }
+                return Ok(());
+            }
+            Err(error)
+                if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut)
+                    && response_started.elapsed() < RESTART_PROBE_RESPONSE_TIMEOUT => {}
+            Err(error) if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => {
+                return Err("timed out waiting for retired-session rejection".to_owned());
+            }
+            Err(error) => return Err(format!("receive retired-session response: {error}")),
+        }
+    }
+}
+
+fn run_controller(arguments: ControllerArguments) -> Result<(), String> {
+    let ControllerArguments {
+        peer,
+        count,
+        policy,
+        period_ms,
+        session_id,
+        backend,
+        raw_csv,
+        rknn_model,
+        rknn_evidence,
+        ort_model,
+        ort_evidence,
+        fault_profile,
+        restart_previous_session,
+        ack_timeout,
+    } = arguments;
     if count == 0 {
         return Err("command count must be nonzero".to_owned());
     }
-    let peer = SocketAddr::from_str(peer).map_err(|error| format!("peer address: {error}"))?;
+    let peer = SocketAddr::from_str(&peer).map_err(|error| format!("peer address: {error}"))?;
     let socket = UdpSocket::bind("0.0.0.0:0").map_err(|error| format!("bind: {error}"))?;
     socket
         .connect(peer)
@@ -353,12 +1207,38 @@ fn run_controller(
     socket
         .set_read_timeout(Some(SOCKET_TIMEOUT))
         .map_err(|error| format!("set read timeout: {error}"))?;
-    let reliability = ReliabilityConfig::new(SOCKET_TIMEOUT.as_micros() as u64, 20)
-        .map_err(|error| error.to_string())?;
+    let ack_timeout_us = u64::try_from(ack_timeout.as_micros())
+        .map_err(|_| "ACK timeout is too large to represent in microseconds".to_owned())?;
+    let reliability =
+        ReliabilityConfig::new(ack_timeout_us, 20).map_err(|error| error.to_string())?;
     let session_id = session_id.unwrap_or_else(generate_session_id);
+    if session_id == 0 {
+        return Err("session-id must be nonzero".to_owned());
+    }
+    if let Some(previous_session) = restart_previous_session {
+        if previous_session == 0 {
+            return Err("restart previous session must be nonzero".to_owned());
+        }
+        if previous_session == session_id {
+            return Err("restart previous and current sessions must differ".to_owned());
+        }
+    }
     let mut sender =
         StopAndWaitSender::new(session_id, reliability).map_err(|error| error.to_string())?;
+    let mut controller_engine = ControllerEngine::new(
+        policy,
+        backend,
+        rknn_model.as_deref(),
+        rknn_evidence.as_deref(),
+        ort_model.as_deref(),
+        ort_evidence.as_deref(),
+    )?;
     let clock = Instant::now();
+    let fault_errors_received = match fault_profile {
+        ControllerFaultProfile::None => 0,
+        ControllerFaultProfile::Error => run_error_fault_probes(&socket, session_id, clock)?,
+        ControllerFaultProfile::Restart => 0,
+    };
     let run_start = Instant::now();
     let mut measured_milli_c = 20_000;
     let mut previous_measured_milli_c = measured_milli_c;
@@ -366,15 +1246,22 @@ fn run_controller(
     let mut full_loop_latency_us = Vec::with_capacity(count as usize);
     let mut pre_send_latency_us = Vec::with_capacity(count as usize);
     let mut transport_latency_us = Vec::with_capacity(count as usize);
+    let mut controller_samples = raw_csv.as_ref().map(|_| Vec::with_capacity(count as usize));
     let mut protocol_errors = 0u64;
+    let mut stale_acknowledgements_ignored = 0u64;
+    let mut stale_statuses_ignored = 0u64;
+    let mut stale_controls_rejected = 0u64;
+    let mut restart_duplicate_evidence = None;
     let mut sum_squared_error = 0f64;
     let mut integrated_absolute_error = 0f64;
     let mut maximum_overshoot = 0i32;
 
     println!(
         "IVC-CONTROLLER-START peer={peer} count={count} policy={} period_ms={period_ms} \
-         session_id={session_id}",
-        policy_name(policy)
+         session_id={session_id} backend={} ack_timeout_ms={}",
+        policy_name(policy),
+        backend.name(),
+        ack_timeout.as_millis()
     );
     for sample in 1..=count {
         let cycle_start = Instant::now();
@@ -383,22 +1270,14 @@ fn run_controller(
             .begin(elapsed_us(clock))
             .map_err(|error| error.to_string())?;
         let setpoint = setpoint_for_sample(sample, count);
+        let observed_milli_c = measured_milli_c;
         let observation = ThermalObservation {
-            temperature_milli_c: measured_milli_c,
+            temperature_milli_c: observed_milli_c,
             setpoint_milli_c: setpoint,
             previous_actuator_permille: previous_actuator,
             temperature_rate_milli_c_per_s: (measured_milli_c - previous_measured_milli_c) * 10,
         };
-        let command = match policy {
-            Policy::ManualFixed { actuator_permille } => {
-                ManualFixedController::new(actuator_permille)
-                    .map_err(|error| error.to_string())?
-                    .command(observation, sample)
-            }
-            Policy::Neural => NeuralController
-                .command(observation, sample)
-                .map_err(|error| error.to_string())?,
-        };
+        let command = controller_engine.command(observation, sample)?;
         let sent_at_us = elapsed_us(clock);
         let mut datagram = [0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
         let mut header = Header::new(MessageType::Control, session_id, sequence, sent_at_us);
@@ -412,7 +1291,7 @@ fn run_controller(
 
         let mut got_ack = false;
         let mut status = None;
-        loop {
+        let (status, timeline, latency) = loop {
             let mut response = [0u8; HEADER_LEN + MAX_PAYLOAD_LEN];
             match socket.recv(&mut response) {
                 Ok(received) => match decode_frame(&response[..received]) {
@@ -442,6 +1321,40 @@ fn run_controller(
                             _ => protocol_errors += 1,
                         }
                     }
+                    Ok(frame)
+                        if fault_profile == ControllerFaultProfile::Restart
+                            && Some(frame.header.session_id) == restart_previous_session
+                            && frame.header.sequence == RESTART_PREVIOUS_FINAL_SEQUENCE =>
+                    {
+                        match frame.header.message_type {
+                            MessageType::Ack => {
+                                let ack = AckPayload::decode(frame.payload)
+                                    .map_err(|error| error.to_string())?;
+                                if ack.acknowledged_sequence != RESTART_PREVIOUS_FINAL_SEQUENCE {
+                                    return Err(format!(
+                                        "stale ACK identifies sequence {}, expected {}",
+                                        ack.acknowledged_sequence, RESTART_PREVIOUS_FINAL_SEQUENCE
+                                    ));
+                                }
+                                stale_acknowledgements_ignored =
+                                    stale_acknowledgements_ignored.saturating_add(1);
+                            }
+                            MessageType::Status => {
+                                let stale_status = StatusReport::decode(frame.payload)
+                                    .map_err(|error| error.to_string())?;
+                                if stale_status.applied_sequence != RESTART_PREVIOUS_FINAL_SEQUENCE
+                                {
+                                    return Err(format!(
+                                        "stale STATUS identifies sequence {}, expected {}",
+                                        stale_status.applied_sequence,
+                                        RESTART_PREVIOUS_FINAL_SEQUENCE
+                                    ));
+                                }
+                                stale_statuses_ignored = stale_statuses_ignored.saturating_add(1);
+                            }
+                            _ => protocol_errors += 1,
+                        }
+                    }
                     Ok(_) => protocol_errors += 1,
                     Err(error) => {
                         protocol_errors += 1;
@@ -465,15 +1378,19 @@ fn run_controller(
                         "acknowledgement state mismatch for sequence {sequence}"
                     ));
                 }
-                let latency = measure_control_cycle(ControlCycleTimeline {
+                let timeline = ControlCycleTimeline {
                     cycle_started_us: cycle_started_at_us,
                     command_sent_us: sent_at_us,
                     response_completed_us: now_us,
-                })?;
+                };
+                let latency = measure_control_cycle(timeline)?;
                 full_loop_latency_us.push(latency.full_loop_us);
                 pre_send_latency_us.push(latency.pre_send_us);
                 transport_latency_us.push(latency.transport_us);
-                break;
+                let status = status.ok_or_else(|| {
+                    format!("response loop completed without status for sequence {sequence}")
+                })?;
+                break (status, timeline, latency);
             }
 
             match sender
@@ -502,18 +1419,53 @@ fn run_controller(
                     return Err(format!("command {sequence} timed out"));
                 }
             }
+        };
+        if sample == 1 && fault_profile == ControllerFaultProfile::Restart {
+            let previous_session = restart_previous_session
+                .ok_or_else(|| "restart profile is missing its previous session".to_owned())?;
+            if sequence != RESTART_DUPLICATE_SEQUENCE {
+                return Err(format!(
+                    "restart duplicate sequence must be {}, got {sequence}",
+                    RESTART_DUPLICATE_SEQUENCE
+                ));
+            }
+            let evidence =
+                run_restart_duplicate_probe(&socket, session_id, previous_session, command, clock)?;
+            stale_acknowledgements_ignored = stale_acknowledgements_ignored
+                .saturating_add(evidence.stale_acknowledgements_ignored);
+            stale_statuses_ignored =
+                stale_statuses_ignored.saturating_add(evidence.stale_statuses_ignored);
+            restart_duplicate_evidence = Some(evidence);
+            run_restart_stale_control_probe(&socket, previous_session, command, clock)?;
+            stale_controls_rejected = stale_controls_rejected.saturating_add(1);
         }
-
-        let status = status.ok_or_else(|| {
-            format!("response loop completed without status for sequence {sequence}")
-        })?;
         previous_measured_milli_c = measured_milli_c;
         measured_milli_c = status.measured_milli_c;
         previous_actuator = status.actuator_permille;
-        let error = i64::from(setpoint) - i64::from(measured_milli_c);
+        let error_milli_c = setpoint
+            .checked_sub(measured_milli_c)
+            .ok_or_else(|| format!("temperature error overflow for sequence {sequence}"))?;
+        let error = i64::from(error_milli_c);
         sum_squared_error += (error * error) as f64;
         integrated_absolute_error += error.unsigned_abs() as f64 * 0.1;
         maximum_overshoot = maximum_overshoot.max(measured_milli_c - setpoint);
+        if let Some(samples) = &mut controller_samples {
+            samples.push(ControllerSample {
+                sequence,
+                cycle_started_us: timeline.cycle_started_us,
+                command_sent_us: timeline.command_sent_us,
+                response_completed_us: timeline.response_completed_us,
+                full_loop_us: latency.full_loop_us,
+                pre_send_us: latency.pre_send_us,
+                transport_us: latency.transport_us,
+                setpoint_milli_c: setpoint,
+                observed_milli_c,
+                measured_milli_c,
+                command_actuator_permille: command.actuator_permille,
+                status_actuator_permille: status.actuator_permille,
+                error_milli_c,
+            });
+        }
         if should_report_progress(sample, count) {
             println!(
                 "IVC-CONTROLLER-STATUS seq={sequence} mode={:?} actuator_permille={} \
@@ -528,43 +1480,124 @@ fn run_controller(
         }
     }
 
+    let elapsed = run_start.elapsed();
+    let backend_summary = controller_engine.finish()?;
+    if let (Some(path), Some(samples)) = (&raw_csv, &controller_samples) {
+        write_controller_samples(path, samples).map_err(|error| error.to_string())?;
+        println!(
+            "IVC-CONTROLLER-RAW path={} samples={}",
+            path.display(),
+            samples.len()
+        );
+    }
     full_loop_latency_us.sort_unstable();
     pre_send_latency_us.sort_unstable();
     transport_latency_us.sort_unstable();
-    let elapsed = run_start.elapsed();
     let metrics = sender.metrics();
-    println!(
-        "IVC-CONTROLLER-RESULT policy={} sent={} acknowledged={} errors={} timeouts={} \
-         retransmissions={} recoveries={} success_percent={:.3} full_loop_p50_us={} \
-         full_loop_p95_us={} full_loop_p99_us={} full_loop_max_us={} pre_send_p50_us={} \
-         pre_send_p95_us={} pre_send_p99_us={} pre_send_max_us={} transport_p50_us={} \
-         transport_p95_us={} transport_p99_us={} transport_max_us={} throughput_msg_s={:.3} \
-         rmse_milli_c={:.3} iae_milli_c_s={:.3} max_overshoot_milli_c={}",
-        policy_name(policy),
-        metrics.started,
-        metrics.acknowledged,
-        protocol_errors,
-        metrics.timeouts,
-        metrics.retransmissions,
-        metrics.retransmissions,
-        metrics.acknowledged as f64 / metrics.started as f64 * 100.0,
-        percentile(&full_loop_latency_us, 50),
-        percentile(&full_loop_latency_us, 95),
-        percentile(&full_loop_latency_us, 99),
-        full_loop_latency_us.last().copied().unwrap_or(0),
-        percentile(&pre_send_latency_us, 50),
-        percentile(&pre_send_latency_us, 95),
-        percentile(&pre_send_latency_us, 99),
-        pre_send_latency_us.last().copied().unwrap_or(0),
-        percentile(&transport_latency_us, 50),
-        percentile(&transport_latency_us, 95),
-        percentile(&transport_latency_us, 99),
-        transport_latency_us.last().copied().unwrap_or(0),
-        f64::from(count) / elapsed.as_secs_f64(),
-        (sum_squared_error / f64::from(count)).sqrt(),
-        integrated_absolute_error,
-        maximum_overshoot,
-    );
+    let summary = ControllerResultSummary {
+        policy: policy_name(policy),
+        sent: metrics.started,
+        acknowledged: metrics.acknowledged,
+        errors: protocol_errors,
+        timeouts: metrics.timeouts,
+        retransmissions: metrics.retransmissions,
+        recoveries: metrics.retransmissions,
+        success_percent: metrics.acknowledged as f64 / metrics.started as f64 * 100.0,
+        full_loop: LatencySummary::from_sorted_samples(&full_loop_latency_us),
+        pre_send: LatencySummary::from_sorted_samples(&pre_send_latency_us),
+        transport: LatencySummary::from_sorted_samples(&transport_latency_us),
+        throughput_msg_s: f64::from(count) / elapsed.as_secs_f64(),
+        rmse_milli_c: (sum_squared_error / f64::from(count)).sqrt(),
+        iae_milli_c_s: integrated_absolute_error,
+        max_overshoot_milli_c: maximum_overshoot,
+    };
+    let compact_records = summary.compact_records();
+    std::thread::sleep(BOARD_CONSOLE_SUMMARY_SETTLE);
+    for _ in 0..BOARD_CONSOLE_RECORD_COPIES {
+        for record in &compact_records {
+            debug_assert!(record.len() <= BOARD_CONSOLE_RECORD_MAX_BYTES);
+            println!("{record}");
+            std::io::stdout()
+                .flush()
+                .map_err(|error| format!("flush compact controller result: {error}"))?;
+            std::thread::sleep(BOARD_CONSOLE_RECORD_PAUSE);
+        }
+    }
+    println!("{}", summary.legacy_record());
+    if let Some(backend_summary) = backend_summary {
+        report_backend_summary(&backend_summary)?;
+    }
+    if fault_profile == ControllerFaultProfile::Error {
+        let fault_result_body = format!(
+            "profile=error injected={} received={} acknowledged={} continued=1",
+            ErrorFaultKind::ALL.len(),
+            fault_errors_received,
+            metrics.acknowledged
+        );
+        let fault_result = checksummed_console_record("IVC-ERROR-RESULT ", &fault_result_body);
+        debug_assert!(fault_result.len() <= ERROR_EVIDENCE_RECORD_MAX_BYTES);
+        // AxVisor reports the RTOS guest shutdown asynchronously on the same
+        // physical UART. Keep the terminal recovery proof outside that burst.
+        replay_verified_error_fault_records()?;
+        std::thread::sleep(ERROR_FAULT_RESULT_SETTLE);
+        for _ in 0..ERROR_FAULT_RESULT_RECORD_COPIES {
+            println!("{fault_result}");
+            std::io::stdout()
+                .flush()
+                .map_err(|error| format!("flush fault result: {error}"))?;
+            std::thread::sleep(ERROR_FAULT_RESULT_RECORD_PAUSE);
+        }
+    }
+    if fault_profile == ControllerFaultProfile::Restart {
+        let duplicate = restart_duplicate_evidence
+            .ok_or_else(|| "restart profile did not execute its duplicate probe".to_owned())?;
+        if duplicate.sequence != RESTART_DUPLICATE_SEQUENCE
+            || duplicate.statuses_received != 1
+            || duplicate.acknowledgements_received != 1
+        {
+            return Err(format!(
+                "restart duplicate evidence mismatch: sequence={} STATUS={} ACK={}",
+                duplicate.sequence,
+                duplicate.statuses_received,
+                duplicate.acknowledgements_received
+            ));
+        }
+        if stale_acknowledgements_ignored != 1
+            || stale_statuses_ignored != 1
+            || stale_controls_rejected != 1
+        {
+            return Err(format!(
+                "restart evidence mismatch: stale ACKs ignored={}, stale STATUS ignored={}, stale \
+                 controls rejected={}",
+                stale_acknowledgements_ignored, stale_statuses_ignored, stale_controls_rejected
+            ));
+        }
+        let previous_session = restart_previous_session
+            .ok_or_else(|| "restart profile is missing its previous session".to_owned())?;
+        let transport_body = format!(
+            "old={} new={} ack_ignored={} status_ignored={} control_rejected={}",
+            previous_session,
+            session_id,
+            stale_acknowledgements_ignored,
+            stale_statuses_ignored,
+            stale_controls_rejected
+        );
+        let result_body = format!(
+            "profile=restart sent={} acknowledged={} continued=1",
+            metrics.started, metrics.acknowledged
+        );
+        let duplicate_body = format!(
+            "seq={} status={} ack={}",
+            duplicate.sequence, duplicate.statuses_received, duplicate.acknowledgements_received
+        );
+        let duplicate_record = checksummed_console_record("IVC-RESTART-D ", &duplicate_body);
+        let transport_record = checksummed_console_record("IVC-RESTART-C ", &transport_body);
+        let result_record = checksummed_console_record("IVC-RESTART-RESULT ", &result_body);
+        // The RTOS guest shuts down on the same physical UART. Wait for that
+        // burst to drain, then pace every restart record independently.
+        std::thread::sleep(RESTART_RESULT_SETTLE);
+        report_restart_records(&[&duplicate_record, &transport_record, &result_record])?;
+    }
     Ok(())
 }
 
@@ -663,6 +1696,108 @@ fn print_scenario_metrics(name: &str, metrics: ScenarioMetrics) {
     );
 }
 
+fn report_backend_summary(summary: &BackendSummary) -> Result<(), String> {
+    match summary {
+        #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+        BackendSummary::Rknn(summary) => report_rknn_backend_summary(summary),
+        #[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+        BackendSummary::Ort(summary) => report_ort_backend_summary(summary),
+        #[cfg(not(any(
+            all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"),
+            all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu")
+        )))]
+        _ => unreachable!("a backend summary cannot exist without a compiled backend"),
+    }
+}
+
+#[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+fn report_rknn_backend_summary(summary: &RknnBackendSummary) -> Result<(), String> {
+    if summary.samples == 0
+        || summary.positive_device_times != summary.samples
+        || summary.device_p99_us == 0
+        || summary.wall_p99_ns == 0
+    {
+        return Err("RKNN backend summary contains incomplete timing evidence".to_owned());
+    }
+    let api_version = compatibility_version(&summary.api_version, "API")?;
+    let driver_version = compatibility_version(&summary.driver_version, "driver")?;
+    let records = [
+        format!(
+            "IVC-RKNN-RUNTIME api={api_version} driver={driver_version} core={} init_us={}",
+            summary.core_mask, summary.initialization_us
+        ),
+        format!(
+            "IVC-RKNN-RESULT samples={} positive_device_times={} device_p99_us={} wall_p99_ns={}",
+            summary.samples,
+            summary.positive_device_times,
+            summary.device_p99_us,
+            summary.wall_p99_ns
+        ),
+    ];
+    for _ in 0..RKNPU_RECORD_COPIES {
+        for record in &records {
+            if record.len() > BOARD_CONSOLE_RECORD_MAX_BYTES {
+                return Err("RKNN backend record exceeds the physical UART budget".to_owned());
+            }
+            println!("{record}");
+            std::io::stdout()
+                .flush()
+                .map_err(|error| format!("flush RKNN backend evidence: {error}"))?;
+            std::thread::sleep(RKNPU_RECORD_PAUSE);
+        }
+    }
+    Ok(())
+}
+
+#[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+fn report_ort_backend_summary(summary: &OrtBackendSummary) -> Result<(), String> {
+    if summary.samples == 0 || summary.wall_p99_ns == 0 || summary.initialization_us == 0 {
+        return Err("ORT backend summary contains incomplete timing evidence".to_owned());
+    }
+    let runtime_version = console_identity(&summary.runtime_version, "ORT runtime version")?;
+    let provider = console_identity(&summary.provider, "ORT execution provider")?;
+    let records = [
+        format!(
+            "IVC-ORT-CONTROL-RUNTIME version={runtime_version} provider={provider} init_us={}",
+            summary.initialization_us
+        ),
+        format!(
+            "IVC-ORT-CONTROL-RESULT samples={} wall_p99_ns={}",
+            summary.samples, summary.wall_p99_ns
+        ),
+    ];
+    for _ in 0..ORT_RECORD_COPIES {
+        for record in &records {
+            if record.len() > BOARD_CONSOLE_RECORD_MAX_BYTES {
+                return Err("ORT backend record exceeds the physical UART budget".to_owned());
+            }
+            println!("{record}");
+            std::io::stdout()
+                .flush()
+                .map_err(|error| format!("flush ORT backend evidence: {error}"))?;
+            std::thread::sleep(ORT_RECORD_PAUSE);
+        }
+    }
+    Ok(())
+}
+
+#[cfg(all(feature = "onnxruntime", target_arch = "aarch64", target_env = "gnu"))]
+fn console_identity<'a>(identity: &'a str, label: &str) -> Result<&'a str, String> {
+    if identity.is_empty() || !identity.bytes().all(|byte| byte.is_ascii_graphic()) {
+        return Err(format!("{label} is not a non-empty console-safe token"));
+    }
+    Ok(identity)
+}
+
+#[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
+fn compatibility_version<'a>(version: &'a str, label: &str) -> Result<&'a str, String> {
+    version
+        .split_ascii_whitespace()
+        .next()
+        .filter(|identity| !identity.is_empty())
+        .ok_or_else(|| format!("RKNN {label} compatibility version is empty"))
+}
+
 fn policy_name(policy: Policy) -> &'static str {
     match policy {
         Policy::ManualFixed { .. } => "manual-fixed",
@@ -680,6 +1815,224 @@ fn parse_policy(value: &str) -> Result<Policy, String> {
             "policy must be 'manual' or 'neural', got '{value}'"
         )),
     }
+}
+
+fn parse_controller_arguments(
+    arguments: impl Iterator<Item = String>,
+) -> Result<ControllerArguments, String> {
+    let mut arguments = arguments.peekable();
+    let peer = required(&mut arguments, "peer address")?;
+    let count = parse(&required(&mut arguments, "command count")?, "count")?;
+    let policy = parse_policy(&required(&mut arguments, "policy")?)?;
+    let mut period_ms = None;
+    let mut session_id = None;
+    let mut backend = InferenceBackend::Native;
+    let mut backend_was_set = false;
+    let mut raw_csv = None;
+    let mut rknn_model = None;
+    let mut rknn_evidence = None;
+    let mut ort_model = None;
+    let mut ort_evidence = None;
+    let mut fault_profile = ControllerFaultProfile::None;
+    let mut fault_profile_was_set = false;
+    let mut restart_previous_session = None;
+    let mut ack_timeout_ms: Option<u64> = None;
+
+    while let Some(argument) = arguments.next() {
+        match argument.as_str() {
+            "--backend" => {
+                if backend_was_set {
+                    return Err("--backend may only be specified once".to_owned());
+                }
+                let value = required(&mut arguments, "controller backend")?;
+                backend = match value.as_str() {
+                    "native" => InferenceBackend::Native,
+                    "rknn-npu" => InferenceBackend::RknnNpu,
+                    "onnxruntime" => InferenceBackend::OnnxRuntime,
+                    _ => {
+                        return Err(format!(
+                            "controller backend must be 'native', 'rknn-npu', or 'onnxruntime', \
+                             got '{value}'"
+                        ));
+                    }
+                };
+                backend_was_set = true;
+            }
+            "--raw-csv" => {
+                if raw_csv.is_some() {
+                    return Err("--raw-csv may only be specified once".to_owned());
+                }
+                raw_csv = Some(PathBuf::from(required(
+                    &mut arguments,
+                    "controller raw CSV path",
+                )?));
+            }
+            "--rknn-model" => {
+                if rknn_model.is_some() {
+                    return Err("--rknn-model may only be specified once".to_owned());
+                }
+                rknn_model = Some(PathBuf::from(required(&mut arguments, "RKNN model path")?));
+            }
+            "--rknn-evidence" => {
+                if rknn_evidence.is_some() {
+                    return Err("--rknn-evidence may only be specified once".to_owned());
+                }
+                rknn_evidence = Some(PathBuf::from(required(
+                    &mut arguments,
+                    "RKNN evidence path",
+                )?));
+            }
+            "--ort-model" => {
+                if ort_model.is_some() {
+                    return Err("--ort-model may only be specified once".to_owned());
+                }
+                ort_model = Some(PathBuf::from(required(&mut arguments, "ORT model path")?));
+            }
+            "--ort-evidence" => {
+                if ort_evidence.is_some() {
+                    return Err("--ort-evidence may only be specified once".to_owned());
+                }
+                ort_evidence = Some(PathBuf::from(required(
+                    &mut arguments,
+                    "ORT evidence path",
+                )?));
+            }
+            "--fault-profile" => {
+                if fault_profile_was_set {
+                    return Err("--fault-profile may only be specified once".to_owned());
+                }
+                let value = required(&mut arguments, "controller fault profile")?;
+                fault_profile = match value.as_str() {
+                    "none" => ControllerFaultProfile::None,
+                    "error" => ControllerFaultProfile::Error,
+                    "restart" => ControllerFaultProfile::Restart,
+                    _ => {
+                        return Err(format!(
+                            "controller fault profile must be 'none', 'error', or 'restart', got \
+                             '{value}'"
+                        ));
+                    }
+                };
+                fault_profile_was_set = true;
+            }
+            "--restart-previous-session" => {
+                if restart_previous_session.is_some() {
+                    return Err("--restart-previous-session may only be specified once".to_owned());
+                }
+                restart_previous_session = Some(parse(
+                    &required(&mut arguments, "restart previous session")?,
+                    "restart previous session",
+                )?);
+            }
+            "--ack-timeout-ms" => {
+                if ack_timeout_ms.is_some() {
+                    return Err("--ack-timeout-ms may only be specified once".to_owned());
+                }
+                ack_timeout_ms = Some(parse(
+                    &required(&mut arguments, "ACK timeout milliseconds")?,
+                    "ACK timeout milliseconds",
+                )?);
+            }
+            _ if argument.starts_with('-') => {
+                return Err(format!(
+                    "unsupported controller option '{argument}'\n{}",
+                    usage()
+                ));
+            }
+            _ if period_ms.is_none() => {
+                period_ms = Some(parse(&argument, "period-ms")?);
+            }
+            _ if session_id.is_none() => {
+                session_id = Some(parse(&argument, "session-id")?);
+            }
+            _ => {
+                return Err(format!(
+                    "unexpected controller argument '{argument}'\n{}",
+                    usage()
+                ));
+            }
+        }
+    }
+
+    let ack_timeout = match ack_timeout_ms {
+        Some(0) => return Err("ACK timeout milliseconds must be nonzero".to_owned()),
+        Some(milliseconds) => Duration::from_millis(milliseconds),
+        None => DEFAULT_ACK_TIMEOUT,
+    };
+
+    if fault_profile == ControllerFaultProfile::Restart {
+        if session_id.is_none() {
+            return Err("restart profile requires an explicit current session-id".to_owned());
+        }
+        if restart_previous_session.is_none() {
+            return Err(
+                "restart profile requires --restart-previous-session <session-id>".to_owned(),
+            );
+        }
+    } else if restart_previous_session.is_some() {
+        return Err("--restart-previous-session requires --fault-profile restart".to_owned());
+    }
+
+    match backend {
+        InferenceBackend::Native => {
+            if rknn_model.is_some()
+                || rknn_evidence.is_some()
+                || ort_model.is_some()
+                || ort_evidence.is_some()
+            {
+                return Err("backend artifact paths require their matching backend".to_owned());
+            }
+        }
+        InferenceBackend::RknnNpu => {
+            if ort_model.is_some() || ort_evidence.is_some() {
+                return Err("ORT paths require --backend onnxruntime".to_owned());
+            }
+            if policy != Policy::Neural {
+                return Err("RKNN NPU backend requires the neural policy".to_owned());
+            }
+            if fault_profile != ControllerFaultProfile::None {
+                return Err("RKNN NPU backend currently requires --fault-profile none".to_owned());
+            }
+            if rknn_model.is_none() || rknn_evidence.is_none() {
+                return Err("RKNN NPU backend requires --rknn-model and --rknn-evidence".to_owned());
+            }
+        }
+        InferenceBackend::OnnxRuntime => {
+            if rknn_model.is_some() || rknn_evidence.is_some() {
+                return Err("RKNN paths require --backend rknn-npu".to_owned());
+            }
+            if policy != Policy::Neural {
+                return Err("ONNX Runtime backend requires the neural policy".to_owned());
+            }
+            if fault_profile != ControllerFaultProfile::None {
+                return Err(
+                    "ONNX Runtime backend currently requires --fault-profile none".to_owned(),
+                );
+            }
+            if ort_model.is_none() || ort_evidence.is_none() {
+                return Err(
+                    "ONNX Runtime backend requires --ort-model and --ort-evidence".to_owned(),
+                );
+            }
+        }
+    }
+
+    Ok(ControllerArguments {
+        peer,
+        count,
+        policy,
+        period_ms: period_ms.unwrap_or(0),
+        session_id,
+        backend,
+        raw_csv,
+        rknn_model,
+        rknn_evidence,
+        ort_model,
+        ort_evidence,
+        fault_profile,
+        restart_previous_session,
+        ack_timeout,
+    })
 }
 
 fn setpoint_for_sample(sample: u32, count: u32) -> i32 {
@@ -701,6 +2054,25 @@ fn percentile(sorted: &[u64], percentage: usize) -> u64 {
     }
     let index = ((sorted.len() - 1) * percentage) / 100;
     sorted[index]
+}
+
+fn console_evidence_crc32(bytes: &[u8]) -> u32 {
+    let mut crc = u32::MAX;
+    for byte in bytes {
+        crc ^= u32::from(*byte);
+        for _ in 0..8 {
+            let mask = 0u32.wrapping_sub(crc & 1);
+            crc = (crc >> 1) ^ (0xedb8_8320 & mask);
+        }
+    }
+    !crc
+}
+
+fn checksummed_console_record(prefix: &str, body: &str) -> String {
+    format!(
+        "{prefix}{body} crc={:08x}",
+        console_evidence_crc32(body.as_bytes())
+    )
 }
 
 fn elapsed_us(clock: Instant) -> u64 {
@@ -747,7 +2119,10 @@ fn improvement(baseline: f64, candidate: f64) -> f64 {
 fn usage() -> &'static str {
     "usage:\n  ivcproto evaluate\n  ivcproto evaluate-csv <output.csv>\n  ivcproto rtos-sim <bind> \
      <expected-count> [drop-every]\n  ivcproto controller <peer> <count> <manual|neural> \
-     [period-ms] [session-id]"
+     [period-ms] [session-id] [--backend <native|rknn-npu|onnxruntime>] [--raw-csv <path>] \
+     [--rknn-model <path> --rknn-evidence <path>] [--ort-model <path> --ort-evidence <path>] \
+     [--fault-profile <none|error|restart>] [--restart-previous-session <session-id>] \
+     [--ack-timeout-ms <milliseconds>]"
 }
 
 #[cfg(test)]
@@ -774,10 +2149,479 @@ mod tests {
     }
 
     #[test]
+    fn console_evidence_crc32_matches_the_standard_check_value() {
+        assert_eq!(console_evidence_crc32(b"123456789"), 0xcbf4_3926);
+    }
+
+    #[test]
+    fn restart_duplicate_probe_replays_sequence_one_with_retransmission_flags() {
+        let command = ControlCommand {
+            operation: ControlOperation::SetActuator,
+            mode: ControlMode::Neural,
+            actuator_permille: 500,
+            setpoint_milli_c: 45_000,
+            sample_id: RESTART_DUPLICATE_SEQUENCE,
+        };
+
+        let datagram = build_restart_duplicate_datagram(572_662_306, command, 1234)
+            .expect("restart duplicate probe should be encodable");
+        let frame = decode_frame(&datagram).expect("restart duplicate probe should decode");
+
+        assert_eq!(frame.header.message_type, MessageType::Control);
+        assert_eq!(frame.header.session_id, 572_662_306);
+        assert_eq!(frame.header.sequence, RESTART_DUPLICATE_SEQUENCE);
+        assert_eq!(frame.header.timestamp_us, 1234);
+        assert!(frame.header.flags.contains(FrameFlags::ACK_REQUIRED));
+        assert!(frame.header.flags.contains(FrameFlags::RETRANSMISSION));
+        assert_eq!(
+            ControlCommand::decode(frame.payload).expect("probe payload should decode"),
+            command
+        );
+    }
+
+    #[test]
+    fn checksummed_error_evidence_records_fit_the_uart_mux_chunk() {
+        for kind in ErrorFaultKind::ALL {
+            let body = format!(
+                "kind={} seq=1005 expected={} observed={}",
+                kind.name(),
+                kind.expected_error() as u16,
+                kind.expected_error() as u16
+            );
+            let record = checksummed_console_record("IVC-ERROR-C ", &body);
+            assert!(record.len() <= ERROR_EVIDENCE_RECORD_MAX_BYTES, "{record}");
+        }
+        let terminal = checksummed_console_record(
+            "IVC-ERROR-RESULT ",
+            "profile=error injected=5 received=5 acknowledged=100 continued=1",
+        );
+        assert!(
+            terminal.len() <= ERROR_EVIDENCE_RECORD_MAX_BYTES,
+            "{terminal}"
+        );
+    }
+
+    #[test]
     fn progress_reporting_keeps_boundaries_and_hundred_sample_checkpoints() {
         assert!(should_report_progress(1, 250));
         assert!(should_report_progress(100, 250));
         assert!(should_report_progress(250, 250));
         assert!(!should_report_progress(99, 250));
+    }
+
+    #[test]
+    fn compact_controller_result_records_fit_physical_uart_budget() {
+        let summary = ControllerResultSummary {
+            policy: "neural",
+            sent: 1_800,
+            acknowledged: 1_800,
+            errors: 0,
+            timeouts: 0,
+            retransmissions: 0,
+            recoveries: 0,
+            success_percent: 100.0,
+            full_loop: LatencySummary {
+                p50_us: 6_644,
+                p95_us: 11_282,
+                p99_us: 11_719,
+                max_us: 20_115,
+            },
+            pre_send: LatencySummary {
+                p50_us: 17,
+                p95_us: 17,
+                p99_us: 17,
+                max_us: 365,
+            },
+            transport: LatencySummary {
+                p50_us: 6_628,
+                p95_us: 11_266,
+                p99_us: 11_702,
+                max_us: 20_098,
+            },
+            throughput_msg_s: 9.995,
+            rmse_milli_c: 5_932.491,
+            iae_milli_c_s: 686_993.400,
+            max_overshoot_milli_c: 13_428,
+        };
+
+        let records = summary.compact_records();
+
+        assert_eq!(records.len(), 6);
+        assert!(
+            records
+                .iter()
+                .all(|record| record.len() <= BOARD_CONSOLE_RECORD_MAX_BYTES),
+            "compact records must remain atomic-sized for the shared physical UART: {records:?}"
+        );
+        assert!(records[0].starts_with("IVC-CONTROLLER-OUTCOME "));
+        assert!(records[5].starts_with("IVC-CONTROLLER-CONTROL "));
+        const {
+            assert!(
+                BOARD_CONSOLE_RECORD_COPIES >= 2,
+                "physical UART evidence needs a redundant compact-record copy"
+            );
+        }
+        assert!(
+            BOARD_CONSOLE_SUMMARY_SETTLE >= Duration::from_millis(100),
+            "controller summary must wait for the RTOS to finish using the shared UART"
+        );
+        assert!(
+            ERROR_FAULT_RESULT_SETTLE >= Duration::from_millis(500),
+            "error terminal evidence must outlive asynchronous RTOS shutdown logs"
+        );
+        const {
+            assert!(
+                ERROR_FAULT_RESULT_RECORD_COPIES >= 3,
+                "error terminal evidence needs three copies on the multiplexed UART"
+            );
+        }
+        assert!(
+            ERROR_FAULT_RESULT_RECORD_PAUSE >= Duration::from_millis(15),
+            "error terminal records need enough time to drain at 1.5 Mbaud"
+        );
+        assert!(
+            RESTART_RESULT_SETTLE >= Duration::from_secs(2),
+            "restart terminal evidence must outlive the RTOS shutdown burst"
+        );
+        const {
+            assert!(
+                RESTART_RESULT_RECORD_COPIES >= 3,
+                "restart terminal evidence needs three copies on the multiplexed UART"
+            );
+        }
+        assert!(
+            RESTART_RESULT_RECORD_PAUSE >= Duration::from_millis(100),
+            "restart terminal records need independent UART drain windows"
+        );
+    }
+
+    #[test]
+    fn controller_arguments_accept_a_raw_csv_without_a_forced_session_id() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "20",
+            "manual",
+            "100",
+            "--backend",
+            "native",
+            "--raw-csv",
+            "/var/lib/ivc/raw.csv",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let parsed = parse_controller_arguments(arguments)
+            .expect("controller arguments should accept an explicit raw CSV path");
+
+        assert_eq!(parsed.peer, "10.0.0.2:5500");
+        assert_eq!(parsed.count, 20);
+        assert_eq!(
+            parsed.policy,
+            Policy::ManualFixed {
+                actuator_permille: 500
+            }
+        );
+        assert_eq!(parsed.period_ms, 100);
+        assert_eq!(parsed.session_id, None);
+        assert_eq!(parsed.backend, InferenceBackend::Native);
+        assert_eq!(
+            parsed.raw_csv.as_deref(),
+            Some(std::path::Path::new("/var/lib/ivc/raw.csv"))
+        );
+        assert_eq!(parsed.fault_profile, ControllerFaultProfile::None);
+        assert_eq!(parsed.ack_timeout, DEFAULT_ACK_TIMEOUT);
+    }
+
+    #[test]
+    fn controller_arguments_require_explicit_rknn_artifact_paths() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "20",
+            "neural",
+            "100",
+            "--backend",
+            "rknn-npu",
+            "--rknn-model",
+            "/opt/thermal-rknn/model.rknn",
+            "--rknn-evidence",
+            "/var/lib/ivc/rknn.csv",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let parsed = parse_controller_arguments(arguments)
+            .expect("RKNN controller arguments should be explicit and complete");
+
+        assert_eq!(parsed.backend, InferenceBackend::RknnNpu);
+        assert_eq!(
+            parsed.rknn_model.as_deref(),
+            Some(std::path::Path::new("/opt/thermal-rknn/model.rknn"))
+        );
+        assert_eq!(
+            parsed.rknn_evidence.as_deref(),
+            Some(std::path::Path::new("/var/lib/ivc/rknn.csv"))
+        );
+    }
+
+    #[test]
+    fn controller_arguments_accept_explicit_ort_artifact_paths() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "20",
+            "neural",
+            "100",
+            "--backend",
+            "onnxruntime",
+            "--ort-model",
+            "/opt/thermal-ort/model.ort",
+            "--ort-evidence",
+            "/var/lib/ivc/ort.csv",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let parsed = parse_controller_arguments(arguments)
+            .expect("ORT controller arguments should be explicit and complete");
+
+        assert_eq!(parsed.policy, Policy::Neural);
+        assert_eq!(parsed.backend, InferenceBackend::OnnxRuntime);
+        assert_eq!(
+            parsed.ort_model.as_deref(),
+            Some(std::path::Path::new("/opt/thermal-ort/model.ort"))
+        );
+        assert_eq!(
+            parsed.ort_evidence.as_deref(),
+            Some(std::path::Path::new("/var/lib/ivc/ort.csv"))
+        );
+    }
+
+    #[test]
+    fn controller_arguments_require_both_ort_artifact_paths() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "20",
+            "neural",
+            "100",
+            "--backend",
+            "onnxruntime",
+            "--ort-model",
+            "/opt/thermal-ort/model.ort",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let error = parse_controller_arguments(arguments)
+            .expect_err("ORT control must not run without its evidence path");
+
+        assert!(error.contains("requires --ort-model and --ort-evidence"));
+    }
+
+    #[test]
+    fn controller_arguments_reject_ort_for_the_manual_policy() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "20",
+            "manual",
+            "100",
+            "--backend",
+            "onnxruntime",
+            "--ort-model",
+            "/opt/thermal-ort/model.ort",
+            "--ort-evidence",
+            "/var/lib/ivc/ort.csv",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let error = parse_controller_arguments(arguments)
+            .expect_err("manual control must not be mislabeled as ORT inference");
+
+        assert!(error.contains("requires the neural policy"));
+    }
+
+    #[test]
+    fn controller_arguments_reject_rknn_for_the_manual_policy() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "20",
+            "manual",
+            "100",
+            "--backend",
+            "rknn-npu",
+            "--rknn-model",
+            "/opt/thermal-rknn/model.rknn",
+            "--rknn-evidence",
+            "/var/lib/ivc/rknn.csv",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let error = parse_controller_arguments(arguments)
+            .expect_err("manual control must not be mislabeled as RKNN inference");
+
+        assert!(error.contains("requires the neural policy"));
+    }
+
+    #[test]
+    fn controller_arguments_enable_the_error_evidence_profile_explicitly() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "100",
+            "neural",
+            "100",
+            "--fault-profile",
+            "error",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let parsed = parse_controller_arguments(arguments)
+            .expect("controller arguments should accept the error profile");
+
+        assert_eq!(parsed.fault_profile, ControllerFaultProfile::Error);
+    }
+
+    #[test]
+    fn controller_arguments_require_an_explicit_retired_session_for_restart() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "100",
+            "neural",
+            "100",
+            "572662306",
+            "--fault-profile",
+            "restart",
+            "--restart-previous-session",
+            "286331153",
+            "--ack-timeout-ms",
+            "1000",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let parsed = parse_controller_arguments(arguments)
+            .expect("controller arguments should accept the restart profile");
+
+        assert_eq!(parsed.fault_profile, ControllerFaultProfile::Restart);
+        assert_eq!(parsed.session_id, Some(572_662_306));
+        assert_eq!(parsed.restart_previous_session, Some(286_331_153));
+        assert_eq!(parsed.ack_timeout, Duration::from_secs(1));
+    }
+
+    #[test]
+    fn controller_arguments_reject_a_zero_ack_timeout() {
+        let arguments = [
+            "10.0.0.2:5500",
+            "20",
+            "manual",
+            "100",
+            "--ack-timeout-ms",
+            "0",
+        ]
+        .into_iter()
+        .map(str::to_owned);
+
+        let error =
+            parse_controller_arguments(arguments).expect_err("zero ACK timeout should be rejected");
+
+        assert!(error.contains("must be nonzero"));
+    }
+
+    #[test]
+    fn error_profile_builds_all_five_deterministic_fault_probes() {
+        let cases = [
+            (
+                ErrorFaultKind::UnsupportedVersion,
+                ErrorCode::UnsupportedVersion,
+            ),
+            (ErrorFaultKind::LengthMismatch, ErrorCode::MalformedFrame),
+            (
+                ErrorFaultKind::ChecksumMismatch,
+                ErrorCode::ChecksumMismatch,
+            ),
+            (
+                ErrorFaultKind::UnexpectedMessageType,
+                ErrorCode::InvalidControl,
+            ),
+            (
+                ErrorFaultKind::InvalidSessionTransition,
+                ErrorCode::SequenceOutsideWindow,
+            ),
+        ];
+
+        for (index, (kind, expected_error)) in cases.into_iter().enumerate() {
+            let probe = build_error_fault_probe(kind, 0x4354_524c, index as u32 + 1, 1234)
+                .expect("fault probe should be constructible");
+
+            assert_eq!(probe.expected_error, expected_error);
+            assert_eq!(probe.sequence, index as u32 + 1);
+            match kind {
+                ErrorFaultKind::UnsupportedVersion => assert!(matches!(
+                    decode_frame(&probe.datagram),
+                    Err(ivcproto::wire::ProtocolError::UnsupportedVersion(_))
+                )),
+                ErrorFaultKind::LengthMismatch => assert!(matches!(
+                    decode_frame(&probe.datagram),
+                    Err(ivcproto::wire::ProtocolError::LengthMismatch { .. })
+                )),
+                ErrorFaultKind::ChecksumMismatch => assert!(matches!(
+                    decode_frame(&probe.datagram),
+                    Err(ivcproto::wire::ProtocolError::ChecksumMismatch { .. })
+                )),
+                ErrorFaultKind::UnexpectedMessageType => {
+                    assert_eq!(
+                        decode_frame(&probe.datagram)
+                            .expect("unexpected-type probe remains a valid frame")
+                            .header
+                            .message_type,
+                        MessageType::Status
+                    );
+                }
+                ErrorFaultKind::InvalidSessionTransition => {
+                    assert_eq!(
+                        decode_frame(&probe.datagram)
+                            .expect("invalid-session probe remains a valid frame")
+                            .header
+                            .session_id,
+                        0
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn controller_raw_csv_retains_timing_and_control_values() {
+        let temporary = std::env::temp_dir().join(format!(
+            "ivcproto-controller-raw-{}-{}.csv",
+            std::process::id(),
+            generate_session_id()
+        ));
+        let sample = ControllerSample {
+            sequence: 7,
+            cycle_started_us: 100,
+            command_sent_us: 140,
+            response_completed_us: 210,
+            full_loop_us: 110,
+            pre_send_us: 40,
+            transport_us: 70,
+            setpoint_milli_c: 45_000,
+            observed_milli_c: 20_000,
+            measured_milli_c: 20_123,
+            command_actuator_permille: 650,
+            status_actuator_permille: 650,
+            error_milli_c: 24_877,
+        };
+
+        write_controller_samples(&temporary, &[sample])
+            .expect("one sample should be writable as CSV");
+        let csv = std::fs::read_to_string(&temporary)
+            .expect("controller CSV should be readable after writing");
+        std::fs::remove_file(&temporary).expect("temporary controller CSV should be removable");
+
+        assert!(
+            csv.starts_with("sequence,cycle_started_us,command_sent_us,response_completed_us,")
+        );
+        assert!(csv.contains("7,100,140,210,110,40,70,45000,20000,20123,650,650,24877\n"));
     }
 }

@@ -82,6 +82,27 @@ static bool frame_error_code_valid(enum ivc_message_type message_type,
 	return error_code == IVC_ERROR_NONE;
 }
 
+static uint32_t crc32_update(uint32_t crc, uint8_t byte)
+{
+	crc ^= byte;
+	for (unsigned int bit = 0; bit < 8U; ++bit) {
+		uint32_t mask = (uint32_t)-(int32_t)(crc & 1U);
+
+		crc = (crc >> 1) ^ (UINT32_C(0xedb88320) & mask);
+	}
+	return crc;
+}
+
+uint32_t ivc_crc32_bytes(const uint8_t *bytes, size_t length)
+{
+	uint32_t crc = UINT32_MAX;
+
+	for (size_t index = 0; index < length; ++index) {
+		crc = crc32_update(crc, bytes[index]);
+	}
+	return ~crc;
+}
+
 uint32_t ivc_crc32(const uint8_t *frame, size_t frame_length)
 {
 	uint32_t crc = UINT32_MAX;
@@ -92,12 +113,7 @@ uint32_t ivc_crc32(const uint8_t *frame, size_t frame_length)
 		if (index >= IVC_CHECKSUM_OFFSET && index < IVC_CHECKSUM_OFFSET + 4U) {
 			byte = 0U;
 		}
-		crc ^= byte;
-		for (unsigned int bit = 0; bit < 8U; ++bit) {
-			uint32_t mask = (uint32_t)-(int32_t)(crc & 1U);
-
-			crc = (crc >> 1) ^ (UINT32_C(0xedb88320) & mask);
-		}
+		crc = crc32_update(crc, byte);
 	}
 	return ~crc;
 }
@@ -190,6 +206,53 @@ enum ivc_decode_result ivc_decode_frame(const uint8_t *frame, size_t frame_lengt
 	};
 	view->payload = frame + IVC_HEADER_LENGTH;
 	return IVC_DECODE_OK;
+}
+
+bool ivc_decode_rejection_context(const uint8_t *frame, size_t frame_length,
+				  enum ivc_decode_result decode_result,
+				  struct ivc_decode_rejection *rejection)
+{
+	enum ivc_error_code response_error;
+	uint32_t session_id;
+	uint32_t sequence;
+
+	if (frame == NULL || rejection == NULL || frame_length < IVC_HEADER_LENGTH ||
+	    memcmp(frame, ivc_magic, sizeof(ivc_magic)) != 0 ||
+	    !message_type_valid(frame[5])) {
+		return false;
+	}
+	switch (decode_result) {
+	case IVC_DECODE_UNSUPPORTED_VERSION:
+		response_error = IVC_ERROR_UNSUPPORTED_VERSION;
+		break;
+	case IVC_DECODE_CHECKSUM_MISMATCH:
+		response_error = IVC_ERROR_CHECKSUM_MISMATCH;
+		break;
+	case IVC_DECODE_INVALID_FLAGS:
+	case IVC_DECODE_PAYLOAD_TOO_LARGE:
+	case IVC_DECODE_LENGTH_MISMATCH:
+	case IVC_DECODE_INVALID_ERROR_CODE:
+		response_error = IVC_ERROR_MALFORMED_FRAME;
+		break;
+	default:
+		return false;
+	}
+	session_id = get_le32(frame + 8);
+	sequence = get_le32(frame + 12);
+	if (session_id == 0U || sequence == 0U) {
+		return false;
+	}
+	rejection->request = (struct ivc_header){
+		.message_type = (enum ivc_message_type)frame[5],
+		.flags = get_le16(frame + 6),
+		.session_id = session_id,
+		.sequence = sequence,
+		.timestamp_us = get_le64(frame + 16),
+		.payload_length = get_le16(frame + 24),
+		.error_code = IVC_ERROR_NONE,
+	};
+	rejection->response_error = response_error;
+	return true;
 }
 
 const char *ivc_decode_result_name(enum ivc_decode_result result)

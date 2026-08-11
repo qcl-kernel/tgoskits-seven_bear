@@ -16,6 +16,8 @@ host-test = [
     "ax-std/host-test",
     "axdevice/host-test",
 ]
+rt-trace = []
+rt-trace-soak = ["rt-trace"]
 sstc = ["riscv_vcpu/sstc"]
 tls = ["ax-std/tls", "cpu-local/tls"]
 
@@ -88,6 +90,5 @@ rdif-clk.workspace = true
 
 [dev-dependencies]
 ax-percpu = { workspace = true, features = ["host-test"] }
-ax-kspin = { workspace = true, features = ["host-test"] }
-rdif-clk = { path = "../../drivers/interface/rdif-clk" }
+rdif-clk.workspace = true
 toml.workspace = true

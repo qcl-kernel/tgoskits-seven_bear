@@ -121,11 +121,10 @@ fn exception_vector_table_preserves_the_architectural_slot_layout() {
 
 #[test]
 fn tls_switch_occurs_only_inside_the_final_assembly_windows() {
-    let restore = section(
-        CONTEXT_FRAME,
-        "    pub unsafe fn restore(&self)",
-        "    }\n}",
-    );
+    let restore = CONTEXT_FRAME
+        .split_once("    pub unsafe fn restore(&self)")
+        .expect("missing guest system-register restore implementation")
+        .1;
     let store = section(
         CONTEXT_FRAME,
         "    pub unsafe fn store(&mut self)",
