@@ -7,8 +7,6 @@ workspace=$(git -C "$script_dir" rev-parse --show-toplevel)
 toolchain=${STARRY_RT_TOOLCHAIN:-nightly-2026-07-15}
 config=${STARRY_RT_CONFIG:-$script_dir/config/starry-aarch64-rt.toml}
 output=${STARRY_RT_KERNEL_OUTPUT:-$workspace/tmp/axvisor-rt/starryos-rt.bin}
-built_elf=$workspace/target/aarch64-unknown-linux-musl/release/starryos
-built_kernel=$workspace/target/aarch64-unknown-linux-musl/release/starryos.bin
 
 for input in "$config"; do
     if [[ ! -r "$input" ]]; then
@@ -16,12 +14,22 @@ for input in "$config"; do
         exit 1
     fi
 done
-for command_name in cargo install mkdir rustup sha256sum; do
+for command_name in cargo install mkdir rustup sed sha256sum; do
     command -v "$command_name" >/dev/null 2>&1 || {
         echo "required StarryOS RT build command not found: $command_name" >&2
         exit 1
     }
 done
+
+target=$(sed -n \
+    's/^[[:space:]]*target[[:space:]]*=[[:space:]]*"\([A-Za-z0-9_.-]*\)"[[:space:]]*$/\1/p' \
+    "$config")
+if [[ -z "$target" || "$target" == *$'\n'* ]]; then
+    echo "StarryOS RT build config must declare exactly one target: $config" >&2
+    exit 1
+fi
+built_elf=$workspace/target/$target/release/starryos
+built_kernel=$workspace/target/$target/release/starryos.bin
 
 cd "$workspace"
 cargo "+$toolchain" xtask starry build -c "$config" --smp 2
@@ -29,7 +37,7 @@ if [[ ! -s "$built_elf" ]]; then
     echo "StarryOS RT build did not produce $built_elf" >&2
     exit 1
 fi
-rustup run "$toolchain" llvm-objcopy --strip-all -O binary "$built_elf" "$built_kernel"
+rustup run "$toolchain" rust-objcopy --strip-all -O binary "$built_elf" "$built_kernel"
 if [[ ! -s "$built_kernel" ]]; then
     echo "StarryOS RT build did not produce $built_kernel" >&2
     exit 1

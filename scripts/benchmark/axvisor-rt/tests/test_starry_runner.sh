@@ -64,7 +64,7 @@ grep -q 'phys_cpu_sets = \[0x8\]' "$noise_partitioned_config" || \
 for noise_config in "$noise_shared_config" "$noise_partitioned_config"; do
     grep -q 'dedicated_cpus = false' "$noise_config" || \
         fail "$(basename "$noise_config") must remain a shared VM"
-    grep -q '^virtual = \[\]$' "$noise_config" || \
+    grep -q '^virtual = \[\][[:space:]]*$' "$noise_config" || \
         fail "noise guest must have an empty typed virtual-device set"
     if grep -q 'interrupt_mode' "$noise_config"; then
         fail "noise guest must not retain the legacy interrupt-mode shortcut"
@@ -168,6 +168,11 @@ grep -q '"rt-irq-trace-soak"' "$config_dir/starry-aarch64-rt-soak.toml" || \
     fail "StarryOS soak kernel must enable the enlarged guest IRQ trace"
 grep -q 'STARRY_RT_CONFIG' "$kernel_builder" || \
     fail "StarryOS RT kernel builder must accept an explicit soak config"
+if grep -q 'target/aarch64-unknown-linux-musl/release/starryos' "$kernel_builder"; then
+    fail "StarryOS RT kernel builder must not read a hard-coded target directory"
+fi
+grep -Fq 'built_elf=$workspace/target/$target/release/starryos' "$kernel_builder" || \
+    fail "StarryOS RT kernel builder must derive its ELF path from the selected config"
 grep -q '^iterations=10000$' "$soak_builder" || \
     fail "soak preparation must retain the formal 10,000 samples per metric"
 grep -q '^period_us=90000$' "$soak_builder" || \
@@ -176,7 +181,7 @@ grep -q '^minimum_duration_seconds=1800$' "$soak_builder" || \
     fail "soak preparation must enforce a 30-minute nominal timed window"
 grep -q 'starry-rt-soak-rootfs.img' "$soak_builder" || \
     fail "soak preparation must produce a distinct immutable rootfs artifact"
-grep -Fq 'rustup run "$toolchain" llvm-objcopy --strip-all -O binary "$built_elf" "$built_kernel"' \
+grep -Fq 'rustup run "$toolchain" rust-objcopy --strip-all -O binary "$built_elf" "$built_kernel"' \
     "$kernel_builder" || \
     fail "StarryOS RT kernel build must materialize a fresh BIN from the clean-tree ELF"
 grep -q 'tmp/axvisor-rt/starryos-rt.bin' "$stage_runner" || \

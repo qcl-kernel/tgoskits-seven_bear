@@ -3,3 +3,5 @@
 *.jpg binary
 *.bin binary
 *.img binary
+*.sh text eol=lf
+competition/ivc/model/*.json text eol=lf

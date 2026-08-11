@@ -4,6 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use axvmconfig::GuestConfig;
 use ostool::run::qemu::QemuConfig;
 use tempfile::tempdir;
 
@@ -131,14 +132,18 @@ fn axvisor_request(path: PathBuf, arch: &str, target: &str) -> ResolvedAxvisorRe
 }
 
 #[test]
-fn checked_in_test_build_vmconfigs_exist() {
-    let workspace_root = std::env::current_dir().unwrap();
-    let axvisor_suite = workspace_root.join("test-suit/axvisor");
-    if !axvisor_suite.is_dir() {
-        return;
-    }
-
-    let mut stack = vec![axvisor_suite];
+fn checked_in_axvisor_vmconfigs_exist_and_parse() {
+    let workspace_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let mut stack = [
+        "competition/ivc/config",
+        "docs/realtime",
+        "os/axvisor/configs/board",
+        "scripts/benchmark/axvisor-rt/config",
+        "test-suit/axvisor",
+    ]
+    .into_iter()
+    .map(|root| workspace_root.join(root))
+    .collect::<Vec<_>>();
     let mut checked = 0;
     while let Some(dir) = stack.pop() {
         for entry in fs::read_dir(&dir).unwrap() {
@@ -149,16 +154,15 @@ fn checked_in_test_build_vmconfigs_exist() {
                 continue;
             }
 
-            let Some(file_name) = path.file_name().and_then(|name| name.to_str()) else {
-                continue;
-            };
-            if !file_name.starts_with("build-")
-                || path.extension().and_then(|ext| ext.to_str()) != Some("toml")
-            {
+            if path.extension().and_then(|ext| ext.to_str()) != Some("toml") {
                 continue;
             }
 
             let content = fs::read_to_string(&path).unwrap();
+            let value: toml::Value = toml::from_str(&content).unwrap();
+            if value.get("vm_configs").is_none() {
+                continue;
+            }
             let config: TestBuildConfigVmConfigs = toml::from_str(&content).unwrap();
             for vm_config in config.vm_configs {
                 if vm_config.starts_with("os/axvisor/tmp/vmconfigs") {
@@ -176,6 +180,14 @@ fn checked_in_test_build_vmconfigs_exist() {
                     path.display(),
                     vm_config_path.display()
                 );
+                let guest_config = fs::read_to_string(&vm_config_path).unwrap();
+                GuestConfig::from_toml(&guest_config).unwrap_or_else(|error| {
+                    panic!(
+                        "{} references invalid vm_config {}: {error}",
+                        path.display(),
+                        vm_config_path.display()
+                    )
+                });
             }
         }
     }

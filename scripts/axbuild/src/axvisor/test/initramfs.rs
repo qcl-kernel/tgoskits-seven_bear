@@ -21,6 +21,7 @@ use crate::{axvisor::rootfs, context::ResolvedAxvisorRequest, rootfs::inject::re
 const OUTPUT_ENV: &str = "AXVISOR_TEST_BUSYBOX_INITRAMFS";
 const OVMF_OUTPUT_ENV: &str = "AXVISOR_TEST_X86_OVMF_OUTPUT";
 const BUSYBOX_PATH: &str = "/bin/busybox";
+const LINUX_KERNEL_PATH: &str = "/guest/linux/linux-qemu";
 const INIT_SCRIPT: &[u8] = br#"#!/bin/busybox sh
 /bin/busybox mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
 /bin/busybox mount -t proc proc /proc 2>/dev/null || true
@@ -120,7 +121,13 @@ pub(super) async fn prepare_configured_busybox_initramfs(
     if let Some(configured_output) = cargo.env.get(OUTPUT_ENV) {
         let output_path = resolve_output_path(workspace_root, configured_output, OUTPUT_ENV)?;
         let rootfs_path = rootfs::qemu_rootfs_path(request, workspace_root, None)?;
+        let kernel_output_path = qemu_linux_kernel_output_path(workspace_root, &request.arch);
+        prepare_linux_kernel(&rootfs_path, &kernel_output_path)?;
         prepare_busybox_initramfs(&rootfs_path, &output_path, &request.arch)?;
+        println!(
+            "prepared Axvisor QEMU test Linux kernel: {}",
+            kernel_output_path.display()
+        );
         println!(
             "prepared Axvisor QEMU test initramfs: {}",
             output_path.display()
@@ -164,9 +171,25 @@ fn prepare_busybox_initramfs(
     let loader = required_rootfs_file(rootfs_path, loader_path)?;
     let archive = build_busybox_initramfs(&busybox, loader_path, &loader)?;
 
+    install_generated_file(output_path, &archive)
+}
+
+fn qemu_linux_kernel_output_path(workspace_root: &Path, arch: &str) -> PathBuf {
+    workspace_root
+        .join("tmp/axbuild/images")
+        .join(format!("qemu-{arch}"))
+        .join("linux/linux-qemu")
+}
+
+fn prepare_linux_kernel(rootfs_path: &Path, output_path: &Path) -> anyhow::Result<()> {
+    let kernel = required_rootfs_file(rootfs_path, LINUX_KERNEL_PATH)?;
+    install_generated_file(output_path, &kernel)
+}
+
+fn install_generated_file(output_path: &Path, contents: &[u8]) -> anyhow::Result<()> {
     let output_parent = output_path.parent().with_context(|| {
         format!(
-            "initramfs output path has no parent: {}",
+            "generated output path has no parent: {}",
             output_path.display()
         )
     })?;
@@ -178,12 +201,12 @@ fn prepare_busybox_initramfs(
     })?;
     let mut temporary = NamedTempFile::new_in(output_parent).with_context(|| {
         format!(
-            "failed to create temporary initramfs in {}",
+            "failed to create temporary output in {}",
             output_parent.display()
         )
     })?;
     temporary
-        .write_all(&archive)
+        .write_all(contents)
         .with_context(|| format!("failed to write {}", output_path.display()))?;
     temporary
         .persist(output_path)
@@ -359,6 +382,17 @@ mod tests {
         );
         assert!(resolve_output_path(root.path(), "../outside", OUTPUT_ENV).is_err());
         assert!(resolve_output_path(root.path(), "/tmp/outside", OUTPUT_ENV).is_err());
+    }
+
+    #[test]
+    fn linux_kernel_output_uses_the_configured_qemu_image_layout() {
+        let root = tempdir().unwrap();
+
+        assert_eq!(
+            qemu_linux_kernel_output_path(root.path(), "aarch64"),
+            root.path()
+                .join("tmp/axbuild/images/qemu-aarch64/linux/linux-qemu")
+        );
     }
 
     #[test]

@@ -39,14 +39,14 @@ struct GuestRestartReport {
     after_status: VmStatus,
 }
 
-/// A build-configured worker that resets exactly one running guest once.
-pub(crate) struct GuestRestartTask {
-    worker: JoinHandle<Result<GuestRestartReport>>,
+/// A validated reset plan whose pristine guest memory has been captured.
+pub(crate) struct GuestRestartPreparation {
+    config: GuestRestartConfig,
 }
 
-impl GuestRestartTask {
-    /// Starts the one-shot reset worker when all three build settings exist.
-    pub(crate) fn start_configured() -> Result<Option<Self>> {
+impl GuestRestartPreparation {
+    /// Captures reset state before VM launch when all build settings exist.
+    pub(crate) fn prepare_configured() -> Result<Option<Self>> {
         let Some(config) = configured_guest_restart()? else {
             return Ok(None);
         };
@@ -66,6 +66,12 @@ impl GuestRestartTask {
             config.vm_id, config.host_cpu, config.delay_ms, config.ready_timeout_ms
         ))
         .context("write Axvisor guest-restart armed evidence")?;
+        Ok(Some(Self { config }))
+    }
+
+    /// Starts the one-shot reset worker after the default VMs are running.
+    pub(crate) fn start(self) -> Result<GuestRestartTask> {
+        let config = self.config;
         let worker_state = Arc::new(AtomicU8::new(WORKER_STARTING));
         let observed_worker_state = worker_state.clone();
         let worker = thread::Builder::new()
@@ -85,9 +91,16 @@ impl GuestRestartTask {
                 ),
             };
         }
-        Ok(Some(Self { worker }))
+        Ok(GuestRestartTask { worker })
     }
+}
 
+/// A running worker that resets exactly one guest once.
+pub(crate) struct GuestRestartTask {
+    worker: JoinHandle<Result<GuestRestartReport>>,
+}
+
+impl GuestRestartTask {
     /// Joins the worker, validates the single reset, and publishes its report.
     pub(crate) fn join_and_publish(self) -> Result<()> {
         let report = join_worker(self.worker)?;
@@ -252,7 +265,9 @@ fn run_restart(config: GuestRestartConfig) -> Result<GuestRestartReport> {
     ))
     .context("write Axvisor guest-restart trigger evidence")?;
 
+    let restore_console = crate::guest_console::attached_vm() == Some(config.vm_id);
     crate::manager::AxvmManager::reset_vm_with_spin_wait(config.vm_id)?;
+    crate::guest_console::restore_after_restart(config.vm_id, restore_console);
     let after_status = crate::manager::AxvmManager::with_vm(config.vm_id, |vm| vm.status())
         .with_context(|| format!("reset VM[{}] disappeared", config.vm_id))?;
     Ok(GuestRestartReport {

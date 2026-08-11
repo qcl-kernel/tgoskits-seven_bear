@@ -16,7 +16,9 @@ image_location = "fs"
 kernel_path = "/guest/linux/linux-qemu"
 kernel_load_addr = 0x8020_0000
 dtb_load_addr = 0x8000_0000
-cmdline = "console=ttyAMA0,115200 earlycon=pl011,0x09000000 root=/dev/vda ro init=/ivc-init.sh loglevel=7 ivc.mode=manual ivc.count=1800 ivc.period_ms=100"
+ramdisk_path = "/guest/linux/initramfs.cpio.gz"
+ramdisk_load_addr = 0x8800_0000
+cmdline = "console=ttyAMA0,115200 earlycon=pl011,0x09000000 devtmpfs.mount=1 loglevel=7 ivc.mode=manual ivc.count=1800 ivc.period_ms=100"
 
 memory_regions = [
   [0x8000_0000, 0x1000_0000, 0x7, 1],

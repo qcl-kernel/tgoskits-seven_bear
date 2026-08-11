@@ -240,6 +240,9 @@ case "$profile" in
         exit 2
         ;;
 esac
+if [[ "$inference_backend" == native ]]; then
+    profile_stager=$script_dir/stage-starry-control.sh
+fi
 
 require_positive_integer --repeat "$repeat_count"
 require_positive_integer --timeout "$timeout_seconds"
@@ -385,12 +388,19 @@ for ((run_number = 1; run_number <= repeat_count; run_number++)); do
         "$run_dir/checksums.sha256"
 
     if [[ -n "$profile_stager" ]]; then
-        if [[ "$inference_backend" == onnxruntime ]]; then
-            IVC_ORT_CONTROL_ROOTFS="$local_rootfs" \
+        case "$inference_backend" in
+            native)
+                IVC_STARRY_CONTROL_ROOTFS="$local_rootfs" \
+                    bash "$profile_stager" >"$run_dir/stage.log" 2>&1
+                ;;
+            onnxruntime)
+                IVC_ORT_CONTROL_ROOTFS="$local_rootfs" \
+                    bash "$profile_stager" >"$run_dir/stage.log" 2>&1
+                ;;
+            *)
                 bash "$profile_stager" >"$run_dir/stage.log" 2>&1
-        else
-            bash "$profile_stager" >"$run_dir/stage.log" 2>&1
-        fi
+                ;;
+        esac
     fi
 
     started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)

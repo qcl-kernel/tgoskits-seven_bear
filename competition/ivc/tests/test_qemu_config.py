@@ -12,6 +12,11 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 QEMU_CONFIG = REPOSITORY_ROOT / "competition/ivc/config/qemu-aarch64.toml"
+QEMU_LINUX_GUEST_CONFIGS = (
+    REPOSITORY_ROOT / "competition/ivc/config/linux-smp2.toml",
+    REPOSITORY_ROOT / "competition/ivc/config/linux-smp2-manual.toml",
+    REPOSITORY_ROOT / "competition/ivc/config/linux-smp2-ack-loss.toml",
+)
 ORANGEPI_BOARD_CONFIGS = (
     REPOSITORY_ROOT / "competition/ivc/config/board-orangepi-5-plus-smoke.toml",
     REPOSITORY_ROOT / "competition/ivc/config/board-orangepi-5-plus.toml",
@@ -38,6 +43,19 @@ ZEPHYR_GITIGNORE = REPOSITORY_ROOT / "competition/ivc/zephyr/.gitignore"
 
 
 class QemuConfigContractTests(unittest.TestCase):
+    def test_qemu_linux_guests_boot_from_the_embedded_initramfs(self) -> None:
+        for config_path in QEMU_LINUX_GUEST_CONFIGS:
+            with self.subTest(config=config_path.name), config_path.open("rb") as source:
+                config = tomllib.load(source)
+
+            kernel = config["kernel"]
+            self.assertEqual(
+                kernel["ramdisk_path"], "/guest/linux/initramfs.cpio.gz"
+            )
+            self.assertEqual(kernel["ramdisk_load_addr"], 0x8800_0000)
+            self.assertNotIn("root=/dev/vda", kernel["cmdline"])
+            self.assertNotIn("init=/ivc-init.sh", kernel["cmdline"])
+
     def test_success_waits_for_complete_linux_result_line(self) -> None:
         with QEMU_CONFIG.open("rb") as source:
             config = tomllib.load(source)

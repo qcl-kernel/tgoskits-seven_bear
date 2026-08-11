@@ -164,6 +164,78 @@ fn stopping_foreground_guest_returns_to_shell() {
 
 #[cfg_attr(axtest, axtest::axtest)]
 #[cfg_attr(not(axtest), test)]
+fn restarting_foreground_guest_restores_attachment_and_replays_early_output() {
+    let mux = GuestConsoleMux::new();
+    let stale_backend = mux.core.create_serial_backend(1);
+    let rtos_backend = mux.core.create_serial_backend(2);
+    assert_eq!(mux.attach_default([1, 2]), Some(1));
+
+    assert_eq!(mux.set_running([2]), Some(1));
+    let restarted_backend = mux.core.create_serial_backend(1);
+    assert_eq!(
+        mux.core.format_guest_output(
+            1,
+            restarted_backend.generation,
+            b"IVC-STARRY-RESTART-RESUME\n",
+        ),
+        Some(Vec::new())
+    );
+    assert_eq!(
+        mux.core.format_guest_output(
+            2,
+            rtos_backend.generation,
+            b"IVC-RTOS-OUTCOME profile=restart\n",
+        ),
+        Some(Vec::new())
+    );
+
+    assert_eq!(
+        mux.restore_after_restart(1, true),
+        Some(
+            b"[VM 1] IVC-STARRY-RESTART-RESUME\n\
+[VM 2] IVC-RTOS-OUTCOME profile=restart\n"
+                .to_vec()
+        )
+    );
+    assert_eq!(mux.attached_vm(), Some(1));
+    assert_eq!(
+        mux.core
+            .format_guest_output(1, stale_backend.generation, b"stale output"),
+        None
+    );
+    assert_eq!(
+        mux.core
+            .format_guest_output(1, restarted_backend.generation, b"IVC-STARRY-DONE\n"),
+        Some(b"[VM 1] IVC-STARRY-DONE\n".to_vec())
+    );
+    assert_eq!(
+        mux.core.format_guest_output(
+            2,
+            rtos_backend.generation,
+            b"IVC-RTOS-MESSAGES protocol_errors=1\n",
+        ),
+        Some(b"[VM 2] IVC-RTOS-MESSAGES protocol_errors=1\n".to_vec())
+    );
+}
+
+#[cfg_attr(axtest, axtest::axtest)]
+#[cfg_attr(not(axtest), test)]
+fn restart_completion_preserves_a_different_foreground_selected_while_stopped() {
+    let mux = GuestConsoleMux::new();
+    mux.core.create_serial_backend(1);
+    mux.core.create_serial_backend(2);
+    assert_eq!(mux.attach_default([1, 2]), Some(1));
+
+    assert_eq!(mux.set_running([2]), Some(1));
+    assert!(mux.attach(2));
+    assert_eq!(mux.restore_after_restart(1, true), None);
+
+    assert_eq!(mux.attached_vm(), Some(2));
+    assert!(mux.core.lock_state().running.contains(&1));
+}
+
+#[cfg_attr(axtest, axtest::axtest)]
+#[cfg_attr(not(axtest), test)]
 fn stopped_or_removed_guest_invalidates_its_serial_backend_generation() {
     let mux = GuestConsoleMux::new();
     let backend = mux.core.create_serial_backend(4);

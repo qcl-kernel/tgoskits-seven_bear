@@ -79,7 +79,7 @@ fn init_atomic_output_panic_hook() {
 /// 1. Configure the sole runtime host-console owner.
 /// 2. Print the startup banner through its output worker.
 /// 3. Check and enable hardware virtualization on every CPU.
-/// 4. Build the default guest VMs.
+/// 4. Build the default guest VMs and capture any requested reset state.
 /// 5. Spawn the management plane first — the HTTP server so the API is live
 ///    before any guest boots — then the VM lifecycle waiter and the shell.
 ///
@@ -113,7 +113,6 @@ fn main() {
         .unwrap_or_else(|error| panic!("failed to initialize AxVM manager: {error:#}"));
 
     manager.init_default_vms();
-
     // The management HTTP server accepts connections in a loop and needs its
     // own task so neither the shell nor the VMM blocks it. It is spawned first
     // so the management API is ready as early as possible. `ax_std::thread::spawn`
@@ -136,20 +135,20 @@ fn main() {
     // `Ready`) and the management plane boots them on demand, so nothing is
     // launched or waited on here.
     #[cfg(not(feature = "no-auto-start"))]
-    let guest_restart = guest_restart::GuestRestartTask::start_configured()
-        .unwrap_or_else(|error| panic!("failed to start guest restart: {error:#}"));
+    let guest_restart = guest_restart::GuestRestartPreparation::prepare_configured()
+        .unwrap_or_else(|error| panic!("failed to prepare guest restart: {error:#}"));
     #[cfg(not(feature = "no-auto-start"))]
     let host_noise = host_noise::HostNoiseTask::start_configured()
         .unwrap_or_else(|error| panic!("failed to start host interference: {error:#}"));
     #[cfg(not(feature = "no-auto-start"))]
-    let default_vms = manager::AxvmManager::vm_list();
-    #[cfg(not(feature = "no-auto-start"))]
-    guest_console::configure_host_console_reader(&default_vms)
-        .unwrap_or_else(|error| panic!("failed to configure host console input: {error:#}"));
-    #[cfg(not(feature = "no-auto-start"))]
     let started_vms = manager.launch_default_vms();
     #[cfg(not(feature = "no-auto-start"))]
     guest_console::attach_default(started_vms);
+    #[cfg(not(feature = "no-auto-start"))]
+    let guest_restart = guest_restart
+        .map(guest_restart::GuestRestartPreparation::start)
+        .transpose()
+        .unwrap_or_else(|error| panic!("failed to start guest restart: {error:#}"));
 
     #[cfg(not(feature = "no-auto-start"))]
     std::thread::Builder::new()
