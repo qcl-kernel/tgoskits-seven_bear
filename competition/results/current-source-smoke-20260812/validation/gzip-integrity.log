@@ -1,0 +1,13 @@
+GZIP_OK ivc/console.log.gz
+GZIP_OK ivc/raw.csv.gz
+GZIP_OK ivc/raw-before-reset.csv.gz
+GZIP_OK ivc/run-wrapper.log.gz
+GZIP_OK rt/partitioned/console.log.gz
+GZIP_OK rt/partitioned/guest-irq.log.gz
+GZIP_OK rt/partitioned/host.log.gz
+GZIP_OK rt/partitioned/raw.log.gz
+GZIP_OK rt/run-wrapper.log.gz
+GZIP_OK rt/shared/console.log.gz
+GZIP_OK rt/shared/guest-irq.log.gz
+GZIP_OK rt/shared/host.log.gz
+GZIP_OK rt/shared/raw.log.gz

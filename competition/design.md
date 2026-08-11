@@ -1,468 +1,271 @@
-# System and protocol design
+# 系统与协议设计
 
-## 1. Scope and assurance boundary
+## 1. 范围与声明边界
 
-The system targets the three required functions:
+系统在 Orange Pi 5 Plus 上由 AxVisor 同时运行双 vCPU StarryOS 与单 vCPU
+Zephyr，完成三项比赛任务：
 
-1. deterministic guest-vCPU placement and a two-vCPU Linux guest;
-2. bidirectional Linux-to-RTOS communication over an IP network; and
-3. neural inference in Linux driving an observable RTOS control loop.
+1. CPU partition、timer/IRQ 路径改造与可重复的实时测量；
+2. 基于虚拟以太网和 UDP/IPv4 的双向客户机通信；
+3. StarryOS 神经网络推理驱动 Zephyr 控制动作并回传状态的闭环。
 
-The selected, validated scheduling profile uses CPU partitioning with the existing FIFO
-host scheduler. It does not claim that AxVisor currently preempts a
-non-yielding passthrough guest on a bounded time slice. The repository's
-round-robin profile remains experimental because a timer-driven VM-exit to
-host-dispatch path has not been proven. See
-[`docs/realtime/preemptive-scheduling.md`](../docs/realtime/preemptive-scheduling.md).
+本设计证明确定性资源声明、固定 vCPU placement、受控干扰下的观测尾延迟改善、
+协议可靠性和完整板卡生命周期。它不把有限采样最大值称为 WCET，不声称隔离了
+全部宿主任务/物理中断，也不把当前单对 RT smoke 的退化数值包装成改善。
 
-Similarly, the software partition excludes other *registered guest vCPU
-tasks* from Linux's dedicated masks. It does not yet prove that all AxVisor
-kernel tasks or physical interrupts are excluded from those CPUs. QEMU TCG
-measurements are suitable for relative regression comparisons, not hardware
-real-time guarantees.
-
-## 2. Architecture
+## 2. 实体架构
 
 ```text
-                         QEMU virt, AArch64, GICv3, 4 pCPUs, 8 GiB
-+----------------------------------------------------------------------------+
-| AxVisor                                                                    |
-|                                                                            |
-|  CPU partition planner                  isolated software Ethernet switch   |
-|  - validates all VMs before start       - fixed per-port MAC and segment    |
-|  - reserves dedicated masks             - source anti-spoofing              |
-|  - prunes shared masks                   - exact known-unicast forwarding    |
-|  - fails closed on conflicts             - bounded same-segment multicast    |
-|                                                                            |
-|  +-----------------------------+        +-------------------------------+   |
-|  | Linux guest, VM 1           |        | Zephyr guest, VM 2            |   |
-|  | vCPU0 -> pCPU1 dedicated    |        | vCPU0 -> pCPU0 dedicated      |   |
-|  | vCPU1 -> pCPU2 dedicated    |        | 128 MiB allocated mapping     |   |
-|  | 256 MiB identity mapping    |        | virtio-mmio net, IRQ 64       |   |
-|  | virtio-mmio net, IRQ 56     |        | 10.0.0.2/24 UDP :5500         |   |
-|  | 10.0.0.1/24                |        | protocol + actuator + plant   |   |
-|  | neural/manual controller    |        +-------------------------------+   |
-|  +-----------------------------+                    ^                       |
-|             | CONTROL                               | STATUS, ACK, ERROR     |
-|             +---------- UDP/IPv4, segment 1 --------+                       |
-|                                                                            |
-|  pCPU3 is intentionally left out of guest affinity masks for housekeeping. |
-+----------------------------------------------------------------------------+
+Orange Pi 5 Plus / RK3588 / 4 AxVisor pCPU
+│
+├─ pCPU0 ─ Zephyr VM2 vCPU0 (dedicated)
+├─ pCPU1 ─ StarryOS VM1 vCPU0 (dedicated in partitioned profile)
+├─ pCPU2 ─ StarryOS VM1 vCPU1 (dedicated in partitioned profile)
+└─ pCPU3 ─ AxVisor housekeeping / restart worker / controlled-noise target
+
+StarryOS VM1                              Zephyr VM2
+2 vCPU, 256 MiB                          1 vCPU, 128 MiB
+virtio-blk disk0                         memory-loaded image
+virtio-net net0                          virtio-net net0
+52:54:00:00:00:01                        52:54:00:00:00:02
+10.0.0.1/24                              10.0.0.2:5500
+       │ CONTROL                               │ STATUS + ACK / ERROR
+       └────────── AxVisor segment 1 ──────────┘
 ```
 
-The outer QEMU machine exposes the Linux root image as a virtio block device
-for AxVisor's filesystem support. QEMU is configured with `-net none`; all
-guest Ethernet traffic is delivered by AxVisor's emulated virtio-net devices
-and internal switch.
+StarryOS 从板卡 Linux ext4 上的 kernel/DTB/rootfs 文件启动，但 guest 只看到
+自己的 256 MiB GPA 和 graph 实例化的设备。Zephyr raw image 在构建时嵌入
+AxVisor，运行于独立 128 MiB GPA。两者不共享 RAM 或裸 MMIO 应用通道。
 
-The physical Orange Pi 5 Plus profile preserves the guest GPA layout and
-three-vCPU partition on RK3588 hardware. AxVisor reads the Linux artifacts from
-the board's ext4 filesystem, embeds the Zephyr image at build time, and exposes
-separate output-only PL011 consoles instead of passing through the physical
-debug UART.
+## 3. Device graph 配置与生命周期
 
-## 3. Guest and platform configuration
+当前配置入口不再手工写一组易漂移的 MMIO/IRQ 元组，而是声明设备意图：
 
-The full profile is composed from:
+```toml
+[devices]
+passthrough = []
+disabled = []
+virtual = [
+  { id = "disk0", model = "virtio-blk-mmio", image_path = "/home/orangepi/axvisor-guest/starry-ivc-rootfs-restart.img" },
+  { id = "net0", model = "virtio-net-mmio", mac_suffix = 1, segment_id = 1 },
+]
+```
 
-- [`axvisor-aarch64.toml`](ivc/config/axvisor-aarch64.toml): AArch64 target,
-  four CPUs, the current 100 Hz `ax-runtime` default tick, filesystem and
-  virtio-block support;
-- [`qemu-aarch64.toml`](ivc/config/qemu-aarch64.toml): Cortex-A72, QEMU `virt`,
-  GICv3, multi-threaded TCG, four CPUs, 8 GiB, no host NIC;
-- [`linux-smp2.toml`](ivc/config/linux-smp2.toml): neural Linux controller VM;
-- [`linux-smp2-manual.toml`](ivc/config/linux-smp2-manual.toml): otherwise
-  identical 500-permille manual baseline VM;
-- [`linux-smp2-ack-loss.toml`](ivc/config/linux-smp2-ack-loss.toml): finite
-  100-command neural fault campaign;
-- [`zephyr-smp1.toml`](ivc/config/zephyr-smp1.toml): normal Zephyr endpoint VM;
-  and
-- [`zephyr-smp1-ack-loss.toml`](ivc/config/zephyr-smp1-ack-loss.toml) plus
-  [`ack-loss.conf`](ivc/zephyr/ack-loss.conf): otherwise identical Zephyr image
-  that suppresses selected first ACKs.
-
-The maintained physical profiles use
-[`axvisor-orangepi-5-plus.toml`](ivc/config/axvisor-orangepi-5-plus.toml) and
-its smoke variant, matching `board-orangepi-5-plus*.toml` lifecycle checks,
-`orangepi-5-plus-linux-smp2*.toml`, and
-`orangepi-5-plus-zephyr*.toml`. Linux artifacts are staged below
-`/home/orangepi/axvisor-guest`; no sudo password is stored in the WSL host
-automation.
-
-| Resource | Linux VM 1 | Zephyr VM 2 |
-| --- | --- | --- |
-| vCPUs | 2 | 1 |
-| Requested pCPU mask | vCPU0 `0x2` (pCPU1), vCPU1 `0x4` (pCPU2) | vCPU0 `0x1` (pCPU0) |
-| Partition policy | dedicated | dedicated |
-| Guest memory | `0x80000000..0x8fffffff`, 256 MiB, identity map | `0x40000000..0x47ffffff`, 128 MiB, allocated map |
-| Entry/load address | `0x80200000` | `0x40000000` |
-| DTB address | `0x80000000` | `0x47e00000` |
-| Image | QEMU: `/guest/linux/linux-qemu`; board: `/home/orangepi/axvisor-guest/linux-qemu` | QEMU: `ivc/zephyr/build/zephyr/zephyr.bin`; board: `ivc/zephyr/build-board/zephyr/zephyr.bin` |
-| virtio-net MMIO | `0x0b000000`, 4 KiB | `0x0b000000`, 4 KiB |
-| Guest interrupt | architectural INTID 32 (DTS `GIC_SPI 0`) | architectural INTID 32 (DTS `GIC_SPI 0`) |
-| MAC | `52:54:00:00:00:01` | `52:54:00:00:00:02` |
-| IPv4 | `10.0.0.1/24` | `10.0.0.2/24` |
-| UDP | ephemeral controller port -> `10.0.0.2:5500` | listen on `10.0.0.2:5500` |
-| Switch segment | 1 | 1 |
-
-Linux boots read-only from `/dev/vda` with `/ivc-init.sh`, configures `eth0`,
-adds only the connected `10.0.0.0/24` route, and starts the controller. The
-default run is neural mode, 1,800 samples, and a nominal 100 ms period.
-
-The exact normal Linux kernel command line is:
+设备建立流程：
 
 ```text
-console=ttyAMA0,115200 earlycon=pl011,0x09000000 root=/dev/vda ro init=/ivc-init.sh loglevel=7 ivc.mode=neural ivc.count=1800 ivc.period_ms=100
+TOML GuestDevices
+  → 校验 stable id / registered model / model-owned options
+  → code-registered model 生成 DeviceNodeSpec + resource requirements
+  → VM-local MMIO/IRQ/resource pools 统一分配
+  → ResolvedDeviceGraph
+  → instantiate device + carve stage-2 trap + emit guest FDT node
+  → start vCPU
 ```
 
-Manual changes only `ivc.mode=manual`; ACK-loss uses neural mode with
-`ivc.count=100`. The outer QEMU virtio block image is mounted by AxVisor's
-filesystem layer so the Linux kernel can be loaded from
-`/guest/linux/linux-qemu`; Linux receives its own identity-mapped 256 MiB
-region and an emulated virtio-net MMIO device. Zephyr is loaded directly from
-its raw binary into a separate allocated 128 MiB region. Both VM descriptions
-use `guest_type = "virtualized"`, so the machine profile owns the GIC and PL011
-while the code-registered `virtio-net-mmio` model receives the first automatic
-AArch64 MMIO window and SPI in each VM. Equal guest addresses and INTIDs are
-safe because the device graphs and interrupt controllers are VM-local.
+框架保留 MMIO base、wired IRQ、host IRQ 与 MSI 等资源字段；配置不能越过 model
+自行指定这些框架所有的 option。重复 ID、未知 model、非法 option、资源冲突或
+FDT 重复节点均 fail closed。
 
-Zephyr targets upstream `qemu_cortex_a53` v4.3.0. Its device-tree overlay
-declares the resolved automatic virtio-mmio window and fixes the link address.
-Startup rejects a runtime MAC mismatch before binding the UDP socket.
+在当前 IVC Starry VM 中，graph 解析得到：
 
-For physical Linux boot, the supplied minimal guest DTB describes GICv3 at
-`0x08000000`, one 128 KiB redistributor frame per vCPU starting at
-`0x080a0000`, the architectural timer, PL011 at `0x09000000`, and virtio-net at
-`0x0b000000`. Host CPU IDs still replace the placeholder CPU nodes, but AxVisor
-removes `cpu-idle-states` because its PSCI implementation does not support
-`CPU_SUSPEND`. Only the last redistributor advertises `GICR_TYPER.Last`.
+| 节点 | Guest MMIO | Guest IRQ | 说明 |
+| --- | --- | --- | --- |
+| `disk0` | `0x0b000000..0x0b000fff` | INTID 32 | 64 MiB volatile ext4 backing；结果可 snapshot |
+| machine PL011 | `0x09000000` | INTID 33 | VM-local 输出 console，由 mux 加前缀 |
+| `net0` | `0x0b001000..0x0b001fff` | INTID 34 | MAC suffix 1，segment 1 |
 
-The virtio-net backend uses Linux-compatible feature negotiation: the 10-byte
-header is limited to a legacy driver that accepts neither
-`VIRTIO_NET_F_MRG_RXBUF` nor `VIRTIO_F_VERSION_1`; accepting either feature
-selects the modern 12-byte layout. Upstream Zephyr v4.3.0 accepts VERSION_1 and
-uses 12 bytes without accepting MRG_RXBUF, so its VM sets
-`header_mode = "fixed-twelve-byte"` to pin that integration contract. The Linux
-VM remains on the negotiated path.
+Zephyr 只有一个 graph virtual device，因此 `net0` 使用首个 MMIO slot
+`0x0b000000` 和 INTID 32。相同 guest 地址/INTID 不冲突，因为 graph、stage-2
+address space 和虚拟中断域都是 VM-local。
 
-### CPU-partition invariants
+基础 Starry/Zephyr DTB 不预声明 graph-owned virtio 节点。AxVM 在资源解析后写入
+最终 FDT，避免“配置地址、模拟设备地址、DTB 地址”三份真相。
 
-The planner consumes all VM placements before any vCPU task affinity is used:
+## 4. 资源配置
 
-- a dedicated vCPU mask must be present, nonzero, and contained in the online
-  pCPU mask;
-- dedicated VM masks must not overlap;
-- every shared vCPU mask is pruned against the union of dedicated masks;
-- an empty effective shared mask is an error, not a scheduler-default fallback;
-- VM registration order does not change the result; and
-- the planner uses maximum matching to choose unique initial pCPUs instead of
-  making a greedy order-dependent choice;
-- the guest FDT exposes exactly the enabled vCPU set and the selected initial
-  placement;
-- vCPU tasks are prepared before any are activated, then activation rechecks
-  the current online CPU mask and effective affinity;
-- a failed activation rolls back all tasks prepared for that VM; and
-- the validated registry is frozen when runtime task lookup begins.
+### 4.1 IVC restart profile
 
-These rules prevent a later-registered VM from silently restoring access to a
-dedicated CPU, and prevent an online-CPU change between planning and activation
-from silently weakening the placement contract.
-
-### AArch64 passthrough SPI ownership
-
-The emulated virtio-net devices signal physical GICv3 SPIs because these guests
-use passthrough interrupt mode. That path has an explicit host/guest ownership
-contract:
-
-- the EL2 host initially configures its CPU interface for split
-  EOI/deactivation, while the passthrough guests complete interrupts with
-  `EOIR` alone; before the first passthrough guest entry on a pinned CPU, AxVM
-  changes that interface to combined-EOI mode so the guest cannot leave the
-  first SPI permanently active;
-- `ArmVcpu::run` saves the caller's complete DAIF state, masks host IRQs, invokes
-  the before-entry and after-exit hooks while IRQs remain masked, and restores
-  the exact saved DAIF state instead of unconditionally enabling interrupts;
-- every vCPU owns a preallocated SPI gate with `Host` and `Guest` phases. The
-  lock order is the global GIC lock followed by the per-vCPU gate;
-- while the host owns the interface, a device signal is queued and the target
-  vCPU task is notified. Guest entry validates the whole batch, routes only
-  inactive SPIs, enables them, and makes them pending after all fallible route
-  work succeeds;
-- while the guest owns the interface, a signal uses the already armed route and
-  pends the physical SPI without sending a host IPI. On VM exit, pending state
-  is reclaimed before ownership returns to the host; an active route is
-  preserved across re-entry; and
-- an emulated passthrough SPI requires a vCPU with one enabled, pinned physical
-  CPU. The current check fails the first device interrupt rather than VM
-  registration, so a future boot-time validation would improve diagnostic
-  timing without changing the safety boundary.
-
-This gate prevents the host from acknowledging a guest-targeted SPI in the
-entry/exit race window. It does not prove bounded physical interrupt latency,
-exclude unrelated host interrupts from dedicated CPUs, or make a migratable
-passthrough CPU interface safe.
-
-### Real-time validation result
-
-The standalone Task 1 harness uses the same two-vCPU Linux image in two policy
-profiles on one four-pCPU Cortex-A72 QEMU TCG machine. `shared` lets both vCPUs
-use pCPUs 0-3 (initial placement 0/1); `partitioned` gives vCPU0 only pCPU2 and
-vCPU1 only pCPU3. This is a same-source feature-off/feature-on comparison, not
-a historical unmodified-`dev` binary baseline.
-
-Every normal row below has 10,000 post-warm-up samples per metric at 1 ms. The
-soak has 10,000 samples at 10 ms per metric, giving three 100-second measured
-windows. Values are p99/maximum nanoseconds; load is guest CPU0/CPU1 busy time
-from paired `/proc/stat` records.
-
-| Profile/workload | Guest load | Jitter | Dispatch | Timer-IRQ proxy |
-| --- | ---: | ---: | ---: | ---: |
-| shared idle | 35.563% / 0.142% | 236,864 / 1,183,648 | 164,704 / 398,832 | 229,424 / 433,488 |
-| shared stress | 2.124% / 100.000% | 245,120 / 694,096 | 148,240 / 541,376 | 226,608 / 438,800 |
-| partitioned idle | 36.301% / 0.176% | 231,328 / 1,222,368 | 154,080 / 372,928 | 225,056 / 1,298,736 |
-| partitioned stress | 1.995% / 100.000% | 237,264 / 944,512 | 137,584 / 372,256 | 240,832 / 454,880 |
-| partitioned stress soak | 1.667% / 100.000% | 333,072 / 6,690,800 | 145,440 / 275,760 | 280,720 / 6,388,560 |
-
-| Capture | UTC interval | Uncompressed raw-log SHA-256 |
+| 资源 | StarryOS VM1 | Zephyr VM2 |
 | --- | --- | --- |
-| shared idle | `2026-07-30T23:34:37Z` - `23:41:54Z` | `638c72d723ead40f7f4ca2ae5fb7362219c95e8bd9b482588035848f155003fd` |
-| shared stress | `2026-07-30T23:51:12Z` - `2026-07-31T00:01:08Z` | `5179ad02eba344606dff53853c312b295b89b7ae89135697fa68c194655590cc` |
-| partitioned idle | `2026-07-31T00:02:08Z` - `00:09:31Z` | `0010d39af45494b01e359d9ddb9b85553591431ae5592bc8d608d169e5434d37` |
-| partitioned stress | `2026-07-31T00:10:20Z` - `00:20:18Z` | `9361542d542a141462c1504d12cc450438e2f05fce0c5bd044731de7aff4d76c` |
-| partitioned stress soak | `2026-07-31T00:21:24Z` - `00:34:24Z` | `729a04ad0572a14c0c268910dc73e739a40709f4f508835827e0b4f3767883c2` |
+| vCPU | 2 | 1 |
+| affinity | `0x2`, `0x4` → pCPU1/2 | `0x1` → pCPU0 |
+| dedicated | true | true |
+| memory | `0x80000000..0x8fffffff`，256 MiB | `0x40000000..0x47ffffff`，128 MiB |
+| kernel | fs: `/home/orangepi/axvisor-guest/starryos.bin` | embedded `zephyr.bin` |
+| entry | `0x80200000` | `0x4000100c` |
+| DTB | `0x80000000` | `0x47e00000` |
+| block | typed `virtio-blk-mmio` | none |
+| network | typed `virtio-net-mmio`, segment 1 | typed `virtio-net-mmio`, segment 1, fixed 12-byte header |
 
-In the paired stress runs, partitioning improved dispatch p99/maximum by
-7.19%/31.24% and jitter p99 by 3.20%, but jitter maximum and both timer-IRQ
-proxy tails worsened. Idle dispatch p99/maximum improved by 6.45%/6.49%, while
-the idle timer-IRQ maximum worsened sharply. The structural isolation and
-selected dispatch-tail improvements are supported; universal latency
-improvement is not. The retained evidence is under
-[`results/axvisor-rt-reference`](results/axvisor-rt-reference/).
+AxVisor restart worker 固定在 pCPU3，等待 20,000 ms，在 StarryOS 完成 20 条旧
+session 命令后执行 VM1 running → reset → running。reset 过程停止 vCPU、恢复
+pristine guest RAM，重新准备 VM/device state，再启动 vCPU；不能沿用 reset 前
+的可变 guest RAM 或 console selection。
 
-## 4. Network isolation and access control
+### 4.2 RT shared / partitioned
 
-The emulated device configuration values are
-`[MAC suffix, segment ID, optional header compatibility]`. Thus `[1, 1]` and
-`[2, 1, 1]` produce the two MAC addresses above and place both ports in segment
-1; the Zephyr-only final value selects the compatibility mode described above.
+两侧的 kernel、DTB、rootfs、vCPU 数、内存、block device、测量参数和 guest
+CPU1 stress 完全相同，只切换 `dedicated_cpus`：
 
-Each forwarding pass builds a bounded topology snapshot (at most 256 ports)
-and applies these rules:
+| Profile | `phys_cpu_sets` | `dedicated_cpus` | 含义 |
+| --- | --- | --- | --- |
+| shared | `[0x2, 0x4]` | false | vCPU 仍固定以保护 RK3588 virtual timer PPI，但不保留 pCPU；host task 可竞争 |
+| partitioned | `[0x2, 0x4]` | true | planner 为 VM 独占 pCPU1/2，其他 registered vCPU task 被排除 |
 
-- port IDs are unique and per-segment MAC addresses are unique;
-- configured port MACs must be nonzero unicast addresses;
-- the source MAC must equal the ingress port's configured MAC;
-- known unicast reaches exactly one port in the ingress segment;
-- unknown and reflected unicast is dropped rather than flooded;
-- broadcast and multicast reach only other ports in the ingress segment; and
-- topology/allocation/destination-buffer failures are contained and counted.
+“shared”并不等于允许迁移到任意核；它是 reservation off 的对照。这样只改变
+host/guest 竞争隔离变量，不引入 timer PPI 因迁移丢失的额外故障。
 
-The switch exposes counters for transmitted frames/bytes, unicast and
-multicast decisions, forwarding attempts/copies, each policy drop reason,
-topology failures, unavailable receive buffers, and delivery errors. These are
-observability counters only; relaxed atomics do not publish switch state.
+CPU planner 在任何 vCPU 激活前解析所有 VM：专用 mask 必须非零、在线、互不
+重叠；shared mask 会减去所有 dedicated mask；减完为空是错误。初始 placement
+使用最大匹配而不是注册顺序相关的贪心选择，运行前再次检查 online mask。
 
-No bridge, NAT, or firewall rule is needed because this profile has no
-host-facing link. The segment and anti-spoof policy are the access-control
-boundary. Adding an external NIC later requires a separate explicit route,
-firewall policy, and threat review.
+## 5. 实时路径与测量
 
-vsock is not used. Shared memory, hypercalls, and bare MMIO are not application
-data channels.
+### 5.1 关键改造
 
-## 5. IVC/1 application protocol
+- vCPU affinity 与 dedicated reservation 分离，允许正交 policy-off/on 配置；
+- AArch64 guest timer state 在 VM exit 保存并关闭，在下一次 entry 恢复，避免
+  宿主任务运行时产生未归属 PPI27 风暴；
+- GIC acknowledge、hardware LR 转移、timer disable/restore 保持明确顺序；
+- guest/host 直接 IRQ trace 使用预分配固定环，测量热路径不分配、不打印；
+- trace 同时记录 vCPU run/wait、pCPU running/idle、affinity mask 和 migration；
+- 有界 host-noise 记录 requested/observed pCPU、覆盖时间和 stop reason；
+- guest 完成后先 snapshot block backing，再同步 AxVisor host filesystem，最后
+  才允许冷启动恢复 Linux。
 
-One IVC frame occupies one UDP datagram. Multi-byte integers are little-endian.
-The maximum application payload is 1,200 bytes, keeping the 1,232-byte maximum
-frame below a conventional Ethernet MTU.
+### 5.2 指标语义
 
-### Fixed 32-byte header
+| 指标 | 权威边界 |
+| --- | --- |
+| `periodic_jitter` | StarryOS 内 absolute `clock_nanosleep` 到实际 wake 的 lateness |
+| `dispatch_latency` | 同 guest CPU 的 eventfd signal 到高优先级 reader 运行 |
+| `emulated_irq_response` | timerfd expiration 到 userspace read；是 proxy，不是 direct IRQ |
+| `virtual_timer_injection_to_guest_irq` | AxVisor 注入到 StarryOS timer IRQ handler entry，共用 24 MHz guest virtual counter domain |
 
-| Offset | Size | Field | Rule |
+每项在 warm-up 后采样；串口只在测量完成后输出。analyzer 要求完整序号、频率一致、
+零 dropped/incomplete/failed injection，并从 raw 重算 nearest-rank percentile。
+
+当前 100-sample C0 对照的 pipeline 完整，但多个 tail 退化。正式改善只来自历史
+五配对 controlled host interference 活动：该活动的 shared 干扰在 pCPU1、
+partitioned 干扰在 pCPU3，五对 direct IRQ p99 全部通过，worst-of-runs 改善
+87.771%，并有 shared/partitioned 双侧至少 1,800 秒 soak。两个证据层不得互换。
+
+## 6. 网络隔离
+
+`virtio-net-mmio` model 根据 `mac_suffix` 生成固定 MAC，并把 port 注册到
+`segment_id`。switch 的边界规则：
+
+- port ID 和同 segment MAC 必须唯一；MAC 必须是非零单播；
+- ingress source MAC 必须等于该 port 的配置 MAC，防止 spoof；
+- known unicast 只送到同 segment 的唯一目的 port；
+- unknown/reflected unicast 丢弃，不 flood；
+- broadcast/multicast 只送到同 segment 的其他 port；
+- topology、buffer 与 delivery 失败被计数并局部隔离。
+
+本 profile 没有 host-facing NIC、bridge、NAT、default route、vsock、共享内存或
+HyperCall 应用通道，因此不需要 host firewall rule。将来增加外部 NIC 必须单独
+设计 route/firewall/threat model，不能沿用当前“无出口 segment”的结论。
+
+## 7. IVC/1 协议
+
+每个 UDP datagram 恰好承载一个 IVC frame；最大 payload 1,200 bytes。固定
+32-byte little-endian header：
+
+| Offset | Size | Field | 约束 |
 | --- | ---: | --- | --- |
 | 0 | 4 | magic | ASCII `IVC1` |
-| 4 | 1 | version | `1` |
-| 5 | 1 | message type | `1` CONTROL, `2` STATUS, `3` ERROR, `4` ACK, `5` TELEMETRY |
-| 6 | 2 | flags | bit 0 ACK-required, bit 1 retransmission; other bits rejected |
-| 8 | 4 | session ID | zero is reserved |
-| 12 | 4 | sequence | zero is reserved |
-| 16 | 8 | sender timestamp | monotonic microseconds in the sender's clock domain |
-| 24 | 2 | payload length | exact datagram length must be `32 + length` |
-| 26 | 2 | error code | zero except ERROR frames; ERROR must be nonzero |
-| 28 | 4 | checksum | CRC-32/IEEE of header and payload with these four bytes zeroed |
+| 4 | 1 | version | 1 |
+| 5 | 1 | type | CONTROL=1, STATUS=2, ERROR=3, ACK=4, TELEMETRY=5 |
+| 6 | 2 | flags | ACK-required / retransmission；未知 bit 拒绝 |
+| 8 | 4 | session | 非零 |
+| 12 | 4 | sequence | 非零 |
+| 16 | 8 | sender timestamp | 发送端 monotonic µs；不与另一 guest 时钟直接相减 |
+| 24 | 2 | payload length | datagram 长度必须精确匹配 |
+| 26 | 2 | error code | 仅 ERROR 为非零 |
+| 28 | 4 | checksum | header checksum 字段清零后的 CRC-32/IEEE |
 
-Both implementations run the same checked-in golden frame and CONTROL payload
-vector. This catches byte-order, layout, and checksum drift before Zephyr
-opens the socket.
+CONTROL 携带 operation、mode、actuator permille、setpoint 和 sample ID；STATUS
+携带状态、当前 mode、actuator、temperature、setpoint、applied sequence 与 fault；
+ACK 携带 acknowledged sequence、next expected 与 receive-window mask；ERROR
+携带 offending type/sequence 和 typed error code。
 
-### Payloads
+### 7.1 可靠性
 
-CONTROL is 12 bytes:
+- controller 一次只保留一个 in-flight command，必须同时收到匹配 STATUS 与 ACK；
+- timeout 后 retransmit 同一 session/sequence；
+- endpoint 的 64-sequence window 对 fresh command 只应用一次；duplicate 只重发
+  STATUS/ACK，不重复 actuator side effect 或 plant step；
+- 不在 window 内的乱序/过远 sequence 返回 typed error；
+- 新 session 只能从 sequence 1 开始；八项 retired-session ring 拒绝延迟旧流量；
+- 超过 500,000 µs 没有有效控制即进入 actuator=0 safe fallback；
+- malformed version/length/checksum/type/session 分别映射到 ERROR，随后仍可继续正常控制。
 
-| Offset | Size | Field |
-| --- | ---: | --- |
-| 0 | 1 | operation: set actuator, enter safe state, or heartbeat |
-| 1 | 1 | mode: safe, manual fixed, or neural |
-| 2 | 2 | actuator command, `0..=1000` permille |
-| 4 | 4 | signed setpoint in milli-degrees Celsius, `-40000..=150000` |
-| 8 | 4 | monotonically increasing sample ID |
+restart 测试额外验证旧 session CONTROL、stale STATUS 与 stale ACK 均不能污染
+新 session。C0 实体结果正好各拒绝一次，并在新 session 完成 100/100。
 
-STATUS is 20 bytes: state and active mode (one byte each), actuator permille
-(two bytes), measured temperature, setpoint, and applied sequence (four bytes
-each), fault code (two bytes), then two reserved zero bytes. States are ready,
-applied, safe fallback, and fault.
+## 8. AI 控制闭环
 
-ACK is 12 bytes: acknowledged sequence, next expected sequence, and the low 32
-bits of the receive-window mask. ERROR is 8 bytes: offending message type,
-three zero reserved bytes, and offending sequence. TELEMETRY is reserved by
-the type registry but is not part of the current control loop.
-
-Error codes distinguish malformed frame, unsupported version, checksum
-mismatch, sequence outside the window, invalid or stale control, actuator
-range, controller timeout, and internal failure.
-
-## 6. UDP reliability and safety
-
-The Linux controller uses one in-flight command at a time. Its current runtime
-configuration waits 100 ms for a response and allows up to 20 retransmissions
-after the original send. A command completes only after both matching STATUS
-and ACK arrive. Session ID and sequence must match; unexpected responses are
-counted as protocol errors.
-
-The receiver keeps a fixed 64-sequence window per session:
-
-- a new in-order command is applied exactly once;
-- a duplicate returns the current STATUS and ACK without applying again;
-- an out-of-order packet is recorded, but the current endpoint rejects it with
-  `SequenceOutsideWindow` rather than applying out of order;
-- a sequence beyond the bounded window is rejected; and
-- only sequence 1 may begin a different nonzero session;
-- replacing the current session retires its ID in an eight-entry bounded ring;
-  delayed datagrams from a retained session are rejected instead of replacing
-  a restarted controller; and
-- a fresh controller session begins at sequence 1 and resets the active
-  receive-window state.
-
-The deterministic fault image suppresses only the first ACK for every fifth
-fresh sequence. It still returns STATUS, so the Linux timeout retransmits the
-same sequence. Zephyr recognizes that datagram as a duplicate and returns
-current STATUS plus ACK without applying the actuator or advancing the plant a
-second time. Normal images compile with both fault settings equal to zero.
-
-Wire decode rejects truncated, oversized, length-mismatched, unknown-version,
-unknown-flag, invalid-error, and bad-checksum datagrams before payload use.
-Payload decode then enforces exact sizes, ranges, reserved zeros, and compatible
-state/error combinations.
-
-The endpoint enters safe mode with actuator 0 after more than 500,000 us
-without a valid command. The reusable endpoint API rejects command ages above
-250,000 us, but Linux and Zephyr monotonic clocks have unrelated epochs. The
-Zephyr integration therefore supplies its local receive time as both age
-endpoints and relies on session/sequence ordering for stale network datagrams;
-it uses the same local clock for the silence timer. The sender timestamp remains
-useful for sender-side round-trip measurement, but it must not be subtracted
-directly from the Zephyr clock.
-
-## 7. Neural control loop
-
-`thermal-4x6x1-v1` is a dependency-free dense neural controller with four
-normalized inputs, six ReLU hidden units, and one clamped output. Inputs are:
-
-1. setpoint error;
-2. setpoint relative to the 20 C ambient point;
-3. measured temperature rate; and
-4. previous actuator value.
-
-Weights and biases are checked into
-[`neural.rs`](../tools/ivcproto/src/neural.rs), so inference is deterministic
-and requires no runtime model download or random number generator. The output
-is converted to `0..=1000` actuator permille and encoded as a CONTROL payload.
-
-The weights are hand-parameterized for this deterministic thermal plant; there
-is no external training dataset or download pipeline. The compact 4x6x1
-dense/ReLU form was selected to make inference observable, dependency-free,
-`no_std`-compatible, and reproducible in a static Linux guest. The retained
-controller binary hash binds the compiled weights. This is a neural inference
-demonstration, not a claim of data-trained generalization.
-
-The RTOS endpoint applies the command, advances a deterministic thermal plant,
-and returns the resulting measured temperature and applied sequence in STATUS.
-That status becomes the next Linux observation, forming the intended closed
-loop:
+canonical 模型为 `thermal-4x6x1-v1`：4 输入、6 ReLU hidden、1 clamped 输出。
+输入为 setpoint error、相对 ambient setpoint、temperature rate 和 previous
+actuator。输出量化为 `0..=1000` actuator permille。
 
 ```text
-status/initial observation -> inference -> CONTROL/UDP -> RTOS actuator
-        ^                                                   |
-        +-------------------- STATUS/UDP <- plant step <-----+
+STATUS / initial observation
+      → native Rust / ONNX Runtime CPU / RKNN NPU inference
+      → CONTROL over UDP/IP
+      → Zephyr actuator + deterministic thermal plant
+      → STATUS + ACK
+      └──────────────────────── next observation
 ```
 
-The comparison baseline holds the actuator at 500 permille. The common
-scenario uses 1,800 samples at 100 ms, setpoints 45/65/50 C for 60 seconds each,
-and a `-0.35 C/s` disturbance during samples 850 through 949.
+三后端共用 canonical weights、golden vectors、ONNX 来源与同一 IVC payload：
 
-The controller timestamps every cycle on one Linux `Instant` clock before it
-builds the observation or runs the selected policy, and stops after both the
-matching STATUS and ACK are decoded. `full_loop_*` therefore includes policy
-evaluation (including neural inference), payload/frame encoding, UDP/IP and
-virtio transport, RTOS command application, the plant step, STATUS/ACK return,
-and response decoding. `pre_send_*` isolates work through policy evaluation;
-`transport_*` covers the remaining pre-send encoding plus request/response
-path. This same-clock round trip avoids subtracting unrelated Linux and Zephyr
-clock epochs. Reported resolution is one microsecond because nanosecond
-`Instant` durations are truncated when serialized into the metric vectors.
+| Backend | 用途 | 证据边界 |
+| --- | --- | --- |
+| native Rust | dependency-free/current restart smoke | C0 source `neural.rs` hash绑定 |
+| RKNN NPU | RK3588 hardware inference | 历史 clean commit 5×1,800，API 2.3.2 / driver 0.9.8 |
+| ONNX Runtime CPU | 标准 CPU runtime 对照 | 历史 clean commit 5×1,800，ORT 1.25.0 CPUExecutionProvider |
 
-## 8. Retained closed-loop and fault captures
+手动基线固定 500 permille。五对 AB/BA 正式活动中 neural 相比 manual 的 RMSE
+改善 35.93%、IAE 改善 51.94%，但 maximum overshoot 从 6,840 mC 增至
+13,428 mC（退化 96.32%）。报告必须同时给出这项负向结果。
 
-The final neural and manual QEMU runs each completed 1,800/1,800 commands with
-zero application errors, timeouts, retransmissions, RTOS duplicates, or RTOS
-protocol errors:
+`full_loop` 从 observation/policy 前开始，在匹配 STATUS+ACK decode 后结束；
+`pre_send` 隔离 policy 与编码前工作；`transport` 覆盖余下编码及 UDP/virtio/
+RTOS action/response。三者均用 StarryOS 同一个 monotonic clock 做 round trip，
+不相减 Starry/Zephyr 的独立时钟 epoch。
 
-| Policy | Source-log SHA-256 | Full-loop p50 / p95 / p99 / max | Throughput |
-| --- | --- | ---: | ---: |
-| Neural | `6c7f7e2e404a5c8ef8a9a3f632a24169b35d8be6a8c0ac496775bf9d32a07eb8` | 3,894 / 4,652 / 5,657 / 20,917 us | 9.962 msg/s |
-| Manual fixed | `39ac8deaf5382490a007bfd47ec7384989c64c6092eed70ac8ff682c076d8a57` | 3,902 / 4,670 / 5,423 / 19,656 us | 9.963 msg/s |
+## 9. 板端安全生命周期
 
-The neural policy produced RMSE 5,932.491 mC and IAE 686,993.400 mC*s,
-improving the manual values of 9,258.906 mC and 1,429,224.700 mC*s by 35.93%
-and 51.93%, respectively. Its maximum overshoot was worse: 13,428 mC versus
-6,840 mC. These same-clock QEMU values are observed sample maxima and
-percentiles, not hardware real-time bounds.
+stager 与 runner 的状态机：
 
-The separate cross-guest ACK-loss run completed 100/100 commands and has source
-log SHA-256
-`f15c88c6671db67934ce178e3f113b65ac2811a1538a0c36412f6c156bd279fd`.
-It contains exactly 20 first-ACK suppressions at sequences 5 through 100 in
-steps of five, 20 retransmissions/recoveries and duplicates, 100 fresh
-applications, 120 STATUS frames, 100 ACK frames, and zero ERROR frames,
-protocol errors, or terminal timeouts. Full-loop p50/p95/p99/maximum was
-3,953/110,808/111,484/111,548 us; the intentional retry delay dominates the
-tail.
+```text
+Linux + board lease
+  → upload *.new
+  → atomic rename + sync + remote sha256sum -c
+  → Linux sync/reboot
+  → U-Boot loads AxVisor
+  → guests run and emit compact markers
+  → guest block snapshot + fsck identity
+  → AXVISOR_HOST_FILESYSTEM_SYNCED
+  → smart-plug cold cycle if needed
+  → U-Boot boots TF-card Linux
+  → hostname + findmnt ext4,rw gate
+  → harvest/analyze/checksum
+```
 
-The compressed raw logs, analyzer summaries, QEMU exits, source snapshot,
-configuration hashes, rootfs/controller hashes, and both normal/fault Zephyr
-image hashes are retained under
-[`results/axvisor-ivc-reference`](results/axvisor-ivc-reference/).
+runner 未见 host filesystem sync 时拒绝断电；restore 未确认 Linux rootfs 为 rw
+时运行失败。上传路径限制在 `/home/orangepi`，文件名使用安全 basename，board
+lease 覆盖 staging 和串口操作。仓库不保存 SSH/smart-plug 凭据。
 
-## 9. Extension points and residual assurance limits
+## 10. 剩余保证边界
 
-- A port can be placed in another `u16` segment without changing the switch;
-  it will be isolated from segment 1.
-- Message types and typed errors permit future telemetry without changing the
-  fixed header.
-- The `no_std` Rust protocol library can be reused by another RTOS port.
-- More controller policies can implement the same observation-to-command
-  boundary and retain the on-wire contract.
-
-The required shared/partitioned idle/stress/soak campaign, deterministic
-cross-guest ACK-loss campaign, durable QEMU evidence, and one complete physical
-Orange Pi neural run are complete. The actual approximately five-minute video
-and dev-target PR remain outstanding.
-
-Cross-guest malformed-ERROR, controller-restart, and a third-guest runtime
-cross-segment negative capture would strengthen the evidence, but the current
-ERROR behavior is covered by Rust/C tests, restart by a host reference, and
-access control by the no-external-NIC topology plus switch policy regressions.
-Those scopes are labeled honestly in the test report. Low-overhead evidence is
-still required before claiming bounded guest preemption or direct IRQ latency.
-The native Zephyr baseline is an explicitly different QEMU platform and is
-suitable only for the qualified comparison documented with its results.
+- 当前 C0 RT 只有一对 100-sample cpu-stress，不满足正式 M2 五对+双 soak；
+- 历史 formal raw 全量约 844 MiB，compact summary 已提交，但仍需公开不可变下载；
+- native Zephyr baseline 在 QEMU，不是同一 RK3588 裸机等价平台；
+- switch 有完整 policy tests，但没有恶意第三 guest 的动态负例 capture；
+- observed maximum 不是数学/静态证明的 WCET；
+- pCPU partition 不等于全部宿主任务、cache/memory bus 和物理 IRQ 的硬隔离；
+- 串口共享会造成日志粘连，所以成功以短 marker、snapshot raw 和 checksum 的冗余
+  证据判定，不能只看一段终端文本。

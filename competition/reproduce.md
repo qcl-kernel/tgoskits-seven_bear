@@ -1,620 +1,382 @@
-# Reproduction guide
+# 复现说明
 
-This guide reproduces the completed QEMU captures and the physical Orange Pi 5
-Plus flow, and identifies the video and upstream PR work separately. Run all
-commands from the repository root unless a step says otherwise.
+本文从源码固定、离线验证、镜像构建、实体板 staging、AxVisor 启动、结果
+harvest 到证据校验给出可执行步骤。默认从仓库根目录执行。当前已归档的实体冒烟
+绑定到源码 commit `069c911c1de02cecdc0c1fe891f5d5a288065ef0`。
 
-## 1. Pin and record the source
+## 1. 固定源码与工作区
 
-The retained evidence and current QEMU captures were produced on branch
-`feat/rt-axvisor-partition-virtio-net` while `HEAD` was the base commit below
-plus uncommitted competition changes:
-
-```text
-263f89d8f3d0481d2712224a7b517a73b1165fb3
-```
-
-That base hash alone does **not** contain the historical QEMU implementation.
-The physical-board support is contained in the repository revision that last
-changes this guide; do not relabel the older retained QEMU archives as though
-they came from that later revision. For every new run, capture:
+推荐在 WSL2 的 Linux ext4 文件系统中使用独立 clone，避免 `/mnt/c` checkout
+同时被 Windows Git (`core.autocrlf`) 和 WSL Git 解释为不同的换行状态：
 
 ```sh
-git rev-parse HEAD
-git status --short
-git submodule status --recursive
+git clone git@github.com:yueneiqi/tgoskits-rt-ivc.git
+cd tgoskits-rt-ivc
+git checkout 069c911c1de02cecdc0c1fe891f5d5a288065ef0
+git config core.autocrlf false
+
+test -z "$(git status --porcelain=v1)"
+test "$(git rev-parse HEAD^{tree})" = \
+  c13efe6409b3a720828c224147bc1e2ca5682ffe
 ```
 
-Do not compare measurements from different source states without recording the
-difference.
-
-The five retained AxVisor RT captures and the three final IVC captures used the
-same implementation source state. The harness recorded:
+当前实体证据的完整 source attestation 在
+[`results/current-source-smoke-20260812/provenance.json`](results/current-source-smoke-20260812/provenance.json)：
 
 ```text
-source snapshot     8594ab76e903dd179db5f1aa91546c03a7d759454d300b2ac6c665933ab0216a
-tracked binary diff 13e7a0689bd1e2606c76b8373b2701cf1bbc6f2bed4201e60269e1915d9cc7f5
-untracked manifest  4f8072e04fb5619c5157bb7b58682474a55c5c1b5b2a48567fd09330f78c0eaf (89 files)
+upstream/dev              fad09ebd3a05f5e7a13ee6bb3cb7e4076cfdb0a1
+tested commit             069c911c1de02cecdc0c1fe891f5d5a288065ef0
+tested tree               c13efe6409b3a720828c224147bc1e2ca5682ffe
+git archive SHA-256       6b65153c727a31edebf3829ef02e34a65090450d98042f1d8d6fbe0256581102
+upstream diff SHA-256     1bf1f0e696c95ccd0de6eb73a8f7812138035eebccc35a7c89ee93bf12bcdfb8
 ```
 
-This is an honest dirty-worktree attestation, not a replacement for a future
-committed revision. Generated build trees, `tmp/`, and retained result files
-are pruned from the source manifest.
+验证 source archive：
 
-## 2. Environment
+```sh
+git archive --format=tar HEAD | sha256sum
+git diff --binary upstream/dev...HEAD | sha256sum
+```
 
-The successful AxVisor checks used WSL Ubuntu with:
+每次新测量必须记录 `HEAD`、tree、clean/dirty、完整命令、输入/输出哈希、UTC
+开始结束时间和板卡身份。不同源码状态的数值不得拼接为一组配对。
 
-| Dependency | Recorded or required value |
+## 2. 环境
+
+已验证环境的关键版本：
+
+| 项目 | 版本/要求 |
 | --- | --- |
-| Rust | repository-pinned `nightly-2026-07-15`; observed `rustc 1.99.0-nightly (da80ed070 2026-07-14)` |
-| QEMU | `qemu-system-aarch64 10.0.3` |
-| device-tree compiler | `dtc 1.7.2` |
-| libclang used by Rust bindings | `/usr/lib/llvm-14/lib` |
-| Linux image | repository image manager's AArch64 Alpine image, observed release `v0.0.10` |
-| Zephyr source | upstream tag `v4.3.0`, commit `3568e1b6d5cdd51a6b964a2a1d6d29200fea2056` |
-| Zephyr guest compiler | `aarch64-linux-gnu-gcc 11.4.0`, selected through the recorded `cross-compile` prefix shim |
-| Physical board | Xunlong Orange Pi 5 Plus, RK3588, 16 GiB DRAM |
-| Board automation host | WSL2 Ubuntu with a CH340 serial adapter at 1,500,000 baud and SSH access to the board Linux image |
+| Rust | 仓库固定 `nightly-2026-07-15` |
+| Python | 3.11+；3.10 需 `competition/requirements-host.txt` |
+| Zephyr | upstream v4.3.0，commit `3568e1b6d5cdd51a6b964a2a1d6d29200fea2056` |
+| Board | Orange Pi 5 Plus / RK3588 / 16 GiB |
+| 串口 | CH340，1,500,000 baud，由 board service 独占 |
+| Board Linux | SSH、`rsync`、无密码 `sudo sync/reboot`；rootfs 为 ext4 rw |
+| 其他 | `dtc`, `fdtget`, `e2fsprogs`, `rsync`, `libclang`, AArch64 toolchain |
 
-Typical Ubuntu packages are:
+Ubuntu/WSL 常用依赖：
 
 ```sh
 sudo apt-get update
 sudo apt-get install -y \
   build-essential clang libclang-14-dev llvm-14-dev \
-  qemu-system-arm device-tree-compiler e2fsprogs cpio fakeroot rsync \
-  git cmake ninja-build python3 python3-pip python3-venv
-```
+  device-tree-compiler e2fsprogs rsync git cmake ninja-build \
+  python3 python3-pip python3-venv gcc-aarch64-linux-gnu
 
-Python 3.11 and newer provide `tomllib` in the standard library. On Ubuntu
-22.04 and other hosts using Python 3.10 or older, install the pinned backport
-used by the configuration contract tests:
-
-```sh
-python3 -m pip install --user -r competition/requirements-host.txt
-```
-
-Rebuilding the AxVisor RT probe needs a static AArch64 musl compiler named
-`aarch64-linux-musl-gcc`. For exact campaign reproduction, use the retained
-718,296-byte static AArch64 ELF at
-[`results/axvisor-rt-reference/axvisor-rt-probe`](results/axvisor-rt-reference/axvisor-rt-probe)
-with `run.sh --probe PATH`. Its SHA-256 is
-`8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da`.
-The compiler version that produced this already-built artifact was not
-separately captured, so no compiler-version provenance is claimed for it. If
-the probe is rebuilt, record the compiler version and resulting hash, and do
-not silently mix different probe binaries within a comparison pair.
-
-The repository's [`rust-toolchain.toml`](../rust-toolchain.toml) supplies the
-Rust components and bare-metal targets. Add the static Linux target used for
-the guest controller:
-
-```sh
 rustup +nightly-2026-07-15 target add aarch64-unknown-linux-musl
-rustc +nightly-2026-07-15 --version --verbose
-qemu-system-aarch64 --version
-dtc --version
+cargo +nightly-2026-07-15 xtask image pull rootfs-aarch64-busybox.img
 ```
 
-The validated Zephyr source resolves to the exact upstream `v4.3.0` tag. The
-retained Windows-hosted checkout uses `core.autocrlf=true`; Git's post-run
-status is clean after applying that canonical line-ending filter. The
-provenance records the tag object, peeled commit, Git-index hash, and clean
-status after both native QEMU runs. The guest was built with Ubuntu's AArch64
-GCC 11.4.0 and binutils 2.38 through the repo-local prefix shim described in
-[`ivc/zephyr/README.md`](ivc/zephyr/README.md). An official Zephyr SDK remains
-the preferred reproduction route; do not mix artifacts from the two toolchain
-routes without recording new hashes.
-
-## 3. Host protocol and policy gates
-
-These commands were exercised during implementation:
+实体板环境变量示例：
 
 ```sh
-cargo +nightly-2026-07-15 test -p ivcproto
-cargo +nightly-2026-07-15 check -p ivcproto --no-default-features --lib
-cargo +nightly-2026-07-15 clippy -p ivcproto --all-targets -- -D warnings
+export ORANGEPI_SSH_TARGET=orangepi@192.168.31.33
+export ORANGEPI_SSH_IDENTITY="$HOME/.ssh/orangepi_automation"
+export ORANGEPI_SERIAL=/dev/serial/by-path/<your-ch340-path>
+export ORANGEPI_AXVISOR_HOST_ROOT=PARTUUID=<board-linux-root-partuuid>
 
-cargo +nightly-2026-07-15 test -p axvmconfig
-cargo +nightly-2026-07-15 test -p axvm-net
-cargo +nightly-2026-07-15 test -p axdevice
+# 冷启动/恢复 Linux 时使用；不要提交含凭据的配置。
+export TGOS_BOARD_POWER_CONFIG="$HOME/.config/tgos/board-power.toml"
+export ORANGEPI_POWER_PYTHON="$HOME/.local/share/tgos-board-power-venv/bin/python"
 ```
 
-Validate all five full-profile guest descriptions independently with the
-current CLI:
+在板上运行以下命令发现 root selector，不要复制本机示例 PARTUUID：
 
 ```sh
-cargo +nightly-2026-07-15 run -p axvmconfig -- \
-  check --config-path competition/ivc/config/linux-smp2.toml
-
-cargo +nightly-2026-07-15 run -p axvmconfig -- \
-  check --config-path competition/ivc/config/linux-smp2-manual.toml
-
-cargo +nightly-2026-07-15 run -p axvmconfig -- \
-  check --config-path competition/ivc/config/zephyr-smp1.toml
-
-cargo +nightly-2026-07-15 run -p axvmconfig -- \
-  check --config-path competition/ivc/config/linux-smp2-ack-loss.toml
-
-cargo +nightly-2026-07-15 run -p axvmconfig -- \
-  check --config-path competition/ivc/config/zephyr-smp1-ack-loss.toml
+findmnt -no SOURCE,FSTYPE,OPTIONS /
+blkid
 ```
 
-All five invocations above exited zero and reported their configurations valid
-during final validation.
-
-Compile and run the Zephyr protocol/endpoint logic on the host with strict C11
-warnings before acquiring the full Zephyr tree:
+预检 board service 与 Linux：
 
 ```sh
-bash competition/ivc/zephyr/run-host-tests.sh
+cargo xtask board ls
+ssh -i "$ORANGEPI_SSH_IDENTITY" -o IdentitiesOnly=yes \
+  "$ORANGEPI_SSH_TARGET" \
+  'hostname; findmnt -no SOURCE,FSTYPE,OPTIONS /; sync'
 ```
 
-The success line is `host-logic-tests: PASS`.
+必须先取得 board lease 再 staging/reboot。不要让 SSH、串口终端和
+`cargo xtask ... board` 分别抢占同一个 CH340。
 
-The real-time result analyzer has a standalone deterministic test suite:
+## 3. 离线门
 
 ```sh
+python3 -m unittest discover -s competition/ivc/tests -p 'test_*.py'
 python3 -m unittest discover \
-  -s scripts/benchmark/axvisor-rt/tests \
-  -p 'test_*.py'
+  -s scripts/benchmark/axvisor-rt/tests -p 'test_*.py'
+bash competition/ivc/zephyr/run-host-tests.sh
+bash scripts/benchmark/axvisor-rt/tests/test_runner.sh
+bash scripts/benchmark/axvisor-rt/tests/test_starry_runner.sh
 ```
 
-After all source changes, use the repository orchestration for the final
-clippy sweep where supported, then format:
+device-graph 配置门至少覆盖：
 
 ```sh
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask clippy --package ivcproto
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask clippy --package axvm-net
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask clippy --package axdevice
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask clippy --package axvmconfig
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask clippy --package axvm
-cargo +nightly-2026-07-15 fmt --all -- --check
+cargo run -p axvmconfig -- \
+  check --config-path competition/ivc/config/orangepi-5-plus-starry-smp2-restart.toml
+cargo run -p axvmconfig -- \
+  check --config-path competition/ivc/config/orangepi-5-plus-zephyr-restart.toml
+cargo run -p axvmconfig -- \
+  check --config-path scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml
+cargo run -p axvmconfig -- \
+  check --config-path scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml
 ```
 
-If an `xtask clippy` command is blocked by an unrelated workspace/platform
-build, record that failure and run the corresponding direct Cargo clippy with
-the same target/features rather than silently dropping the check.
+新格式的要点是 typed `[devices]`：`virtual` 项只给稳定 `id`、注册的
+`model` 与 model-owned option。MMIO/IRQ 由 device graph 分配并写入 guest
+FDT；基础 DTB 不得重复声明 `virtio_mmio@...`。
 
-## 4. Regenerate host evidence
+## 4. 构建 IVC 客户机
 
-### UDP fault injection
+### 4.1 StarryOS
 
-The checked-in run used 100 commands and dropped the first ACK for every fifth
-new sequence. Generate a new, non-overwriting result directory:
+以下单命令构建双 vCPU StarryOS kernel、无 graph-owned virtio 节点的 DTB，
+以及 native neural/manual/fault rootfs：
 
 ```sh
-IVC_COUNT=100 IVC_DROP_EVERY=5 IVC_PORT=45500 \
-  bash competition/ivc/run-host-loopback.sh \
-  tmp/competition/ivc/host-loopback-100-drop5
+bash competition/ivc/starry/build.sh 2>&1 | tee tmp/ivc-starry-build.log
 ```
 
-Expected functional invariants are 100 acknowledged commands, 20
-retransmissions, 20 suppressed duplicates, zero protocol errors/timeouts, and
-safe fallback after controller silence. Latency values vary with the host and
-must not be forced to match the retained log.
-
-### Deterministic neural/manual comparison
-
-```sh
-cargo +nightly-2026-07-15 run -p ivcproto -- \
-  evaluate-csv tmp/competition/ivc/host-ai.csv
-
-sha256sum tmp/competition/ivc/host-ai.csv
-```
-
-The deterministic raw CSV should match the retained
-[`raw.csv`](results/host-ai-reference/raw.csv), whose recorded SHA-256 is:
+restart 路线的三个关键输出：
 
 ```text
-9e2f2e8f471413afc08066898621e7e00ddd0f844a3d043adf64fd181f3be584
+tmp/competition/ivc/starry/starryos.bin
+tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb
+tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img
 ```
 
-## 5. Build the Linux controller image
-
-The script pulls the managed AArch64 image when missing, builds a static
-`aarch64-unknown-linux-musl` controller with `rust-lld`, makes a private image
-copy, and injects `/usr/local/bin/ivcproto` plus `/ivc-init.sh`:
-
-```sh
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  bash competition/ivc/linux/build-rootfs.sh
-```
-
-Output:
+当前证据对应 SHA-256：
 
 ```text
-tmp/competition/ivc/linux/rootfs.img
+starryos.bin                         97fce5daaa9103768736b9a54a690e5f4612a221ac67672c56cebaadaf4c4b05
+starry-orangepi-5-plus.dtb           bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981
+starry-ivc-rootfs-restart.img        1c51f3fc84ee543ded52ab6626ba8fb6f60edefff1367b362a872597d403e1d8
 ```
 
-The physical-board profile boots the same controller from a compact initramfs
-and a guest-specific DTB. Build both without mounting the ext4 image:
+构建脚本使用 `rustup run nightly-2026-07-15 rust-objcopy`，不会依赖 PATH 中
+另一个 nightly 的 `rust-objcopy`。
+
+### 4.2 Zephyr v4.3.0
+
+建立 upstream Zephyr workspace 后构建 restart image：
 
 ```sh
-bash competition/ivc/linux/build-initramfs.sh
-bash competition/ivc/linux/build-guest-dtb.sh
-```
-
-The resulting files are
-`tmp/competition/ivc/linux/initramfs.cpio.gz` and
-`tmp/competition/ivc/linux/orangepi-5-plus.dtb`. The physical run also needs
-an AArch64 Linux `Image` with PL011, PSCI, GICv3, and virtio-mmio support at
-`tmp/competition/ivc/linux/linux-qemu`, or at the path supplied through
-`IVC_LINUX_KERNEL`. Record its provenance and SHA-256; the validated image hash
-was `c9ef196e448390a1bb94263c33a4cc9d80b5d98d9d966bc1a1f51254599c06c0`.
-
-The controller used by the final QEMU captures is 758,608 bytes with SHA-256
-`73a825d12ac79a268a28e10ff5e572a313a57f4ce4e2780a5de4df824e430965`.
-The freshly built 2 GiB rootfs before the campaign had SHA-256
-`3dad2a5733e066b09def9dcbd063adaaf1407df0f344c0be6a4b566f1aa945d5`.
-Each run used a private copy. Guest mounting/ext4 recovery changed filesystem
-metadata in those copies, so the post-run image hash is not a content ID and
-the mutable images are not retained. A rebuilt image may differ because of
-filesystem timestamps; always record the new pre-run hash.
-
-## 6. Build the Zephyr endpoint
-
-Create an upstream workspace pinned to v4.3.0. `<repo>` below must be the
-absolute path to this repository:
-
-```sh
-python3 -m venv .venv-zephyr
-. .venv-zephyr/bin/activate
-python -m pip install --upgrade pip west
-
-west init -m https://github.com/zephyrproject-rtos/zephyr \
-  --mr v4.3.0 zephyrproject
-cd zephyrproject
-west update
-west zephyr-export
-python -m pip install -r zephyr/scripts/requirements.txt
-git -C zephyr describe --tags --exact-match
-```
-
-The final command above must print `v4.3.0`. With an installed and recorded
-Zephyr SDK, build directly into the path referenced by the VM configuration:
-
-```sh
-export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
-export ZEPHYR_SDK_INSTALL_DIR=<absolute-zephyr-sdk-directory>
-
 west build -p always -b qemu_cortex_a53 \
-  -d <repo>/competition/ivc/zephyr/build \
-  <repo>/competition/ivc/zephyr
-
-west build -p always -b qemu_cortex_a53 \
-  -d <repo>/competition/ivc/zephyr/build-ack-loss \
+  -d <repo>/competition/ivc/zephyr/build-board-restart \
   <repo>/competition/ivc/zephyr -- \
-  -DEXTRA_CONF_FILE=ack-loss.conf
+  -DEXTRA_CONF_FILE=board-restart.conf
 
 sha256sum \
-  <repo>/competition/ivc/zephyr/build/zephyr/zephyr.elf \
-  <repo>/competition/ivc/zephyr/build/zephyr/zephyr.bin \
-  <repo>/competition/ivc/zephyr/build-ack-loss/zephyr/zephyr.elf \
-  <repo>/competition/ivc/zephyr/build-ack-loss/zephyr/zephyr.bin
+  <repo>/competition/ivc/zephyr/build-board-restart/zephyr/zephyr.bin
 ```
 
-Build the finite physical-board images into the paths referenced by the
-Orange Pi VM configurations:
+当前证据使用 `393026c1702d33115b42bdf72528efe49eeb4f0d9e93f3755d6be57354b5791f`。
+完整 Zephyr SDK/非 SDK 构建说明见 [`ivc/zephyr/README.md`](ivc/zephyr/README.md)。
+
+## 5. 当前源码 IVC 实体冒烟
+
+`run-orangepi-5-plus.sh` 对 native profile 会先调用仓库内
+`stage-starry-control.sh`。stager 持有 lease，以 `.new` 上传 kernel/DTB/rootfs，
+原子 rename，执行 `sync`，并在板端 `sha256sum -c`；因此不会误用上次运行残留
+的 guest image。
 
 ```sh
-west build -p always -b qemu_cortex_a53 \
-  -d <repo>/competition/ivc/zephyr/build-board-smoke \
-  <repo>/competition/ivc/zephyr -- \
-  -DEXTRA_CONF_FILE=board-smoke.conf
+result_root=tmp/reproduction/ivc-restart-$(date -u +%Y%m%dT%H%M%SZ)
 
-west build -p always -b qemu_cortex_a53 \
-  -d <repo>/competition/ivc/zephyr/build-board \
-  <repo>/competition/ivc/zephyr -- \
-  -DEXTRA_CONF_FILE=board.conf
+bash competition/ivc/run-orangepi-5-plus.sh fault-restart \
+  --result-dir "$result_root" \
+  --timeout 900 \
+  --restore-linux
 ```
 
-The validated non-SDK builds used the same source tag with
-`ZEPHYR_TOOLCHAIN_VARIANT=cross-compile` and the recorded GCC prefix. Its final
-layout was `PT_LOAD` at `0x40000000` with entry `0x4000100c`:
+runner 只在以下链路全部成立时返回 0：
+
+1. StarryOS 与 Zephyr 从 device graph 创建的设备启动；
+2. 20 条旧 session 命令完成；
+3. AxVisor 对 Starry VM 做实际 reset，并从 pristine RAM 恢复；
+4. 新 session 完成 100 条命令，旧 CONTROL/STATUS/ACK 被拒绝；
+5. 客户机结果盘 snapshot 与 host filesystem 显式同步；
+6. Linux 冷启动恢复，rootfs 再次为 ext4 rw；
+7. raw/console/summary/metadata 与 checksum 写完。
+
+关键成功标记：
 
 ```text
-normal zephyr.elf  2170024 bytes  0643a85c9f999cc3780a4f57f9992262e535d2889d0b1d08b3dd1b544acfe7ac
-normal zephyr.bin   121568 bytes  13b7bd6cca6398824a947cc7e038b996dd9a29227873bd065158e9873e723f68
-fault  zephyr.elf  2170920 bytes  81749add8e14a4db9f3c2d388c07ba7f0f803242745b8c2bc4c2ee47b20227d4
-fault  zephyr.bin   121568 bytes  c2ea50effd0b1e910a88b75c6c57b89052269877867e1ef670ecdd20102d1550
+AXVISOR_GUEST_RESTART_COMPLETE
+IVC-STARRY-DONE exit=0
+IVC-RTOS-OUTCOME profile=restart accepted=120 applied=120
+AXVISOR_SNAPSHOT_SYNC_OK
+AXVISOR_HOST_FILESYSTEM_SYNCED
+BOARD_LINUX_RESTORED
+ORANGEPI_IVC_RUNS_COMPLETE
 ```
 
-A native QEMU smoke test produced `IVC-RTOS-SELFTEST PASS`, the configured MAC,
-and `IVC-RTOS-READY bind=10.0.0.2:5500`. Exact host-package versions, the
-compiler-prefix rationale, and the standalone command are retained in
-[`ivc/zephyr/README.md`](ivc/zephyr/README.md).
-
-## 7. Build and boot AxVisor
-
-### Completed Linux-only build
-
-This exact command passed in the recorded WSL environment:
+重新分析已归档 current-source 结果：
 
 ```sh
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask axvisor build \
-  --arch aarch64 \
-  --smp 4 \
-  --config competition/ivc/config/axvisor-aarch64.toml \
-  --vmconfigs competition/ivc/config/linux-smp2.toml
+python3 competition/ivc/analyze_board.py \
+  competition/results/current-source-smoke-20260812/ivc/console.log.gz \
+  --raw-csv competition/results/current-source-smoke-20260812/ivc/raw.csv.gz \
+  --pre-reset-raw-csv competition/results/current-source-smoke-20260812/ivc/raw-before-reset.csv.gz \
+  --expected-count 100 \
+  --expected-pre-reset-count 20 \
+  --profile restart \
+  --output tmp/reproduction/ivc-reanalyzed.json
 ```
 
-### Completed two-vCPU Linux boot gate
+不要直接用裸 `cargo xtask axvisor board` 替代仓库 runner：裸命令不负责
+staging、snapshot harvest、供电恢复和最终 Linux rootfs gate。
 
-This separate validated partition test passed 1/1 and observed two online Linux
-CPUs:
+## 6. 当前源码 RT shared/partitioned 冒烟
+
+重建内核与 64 MiB capture rootfs：
 
 ```sh
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask axvisor test qemu \
-  --arch aarch64 \
-  --test-group normal \
-  --test-case dedicated-smp2
+bash scripts/benchmark/axvisor-rt/build-starry-kernel.sh
+
+bash scripts/benchmark/axvisor-rt/build-starry-rootfs.sh \
+  --mode capture \
+  --workload cpu-stress \
+  --iterations 100 \
+  --output tmp/axvisor-rt/starry-rt-capture-rootfs.img
+
+bash scripts/benchmark/axvisor-rt/stage-starry-board.sh
 ```
 
-The success marker is `AXVISOR_DEDICATED_PARTITION_PASS`; the guest command
-uses `getconf _NPROCESSORS_ONLN` and requires exactly 2. This test uses the
-standalone pCPU2/pCPU3 partition profile, not the complete two-guest IVC
-profile.
-
-### Completed Linux + Zephyr neural, manual, and ACK-loss runs
-
-Each campaign used a private copy of the freshly built rootfs so ext4 recovery
-or guest writes could not contaminate another run:
-
-```sh
-mkdir -p \
-  tmp/competition/ivc/reference-20260731-neural \
-  tmp/competition/ivc/reference-20260731-manual \
-  tmp/competition/ivc/reference-20260731-ack-loss
-
-cp --reflink=auto tmp/competition/ivc/linux/rootfs.img \
-  tmp/competition/ivc/reference-20260731-neural/rootfs-pre-run.img
-cp --reflink=auto tmp/competition/ivc/linux/rootfs.img \
-  tmp/competition/ivc/reference-20260731-manual/rootfs-pre-run.img
-cp --reflink=auto tmp/competition/ivc/linux/rootfs.img \
-  tmp/competition/ivc/reference-20260731-ack-loss/rootfs-pre-run.img
-```
-
-The final neural command was:
-
-```sh
-set -o pipefail
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask axvisor qemu \
-  --arch aarch64 --smp 4 \
-  --config competition/ivc/config/axvisor-aarch64.toml \
-  --qemu-config competition/ivc/config/qemu-aarch64.toml \
-  --rootfs tmp/competition/ivc/reference-20260731-neural/rootfs-pre-run.img \
-  --vmconfigs competition/ivc/config/linux-smp2.toml \
-  --vmconfigs competition/ivc/config/zephyr-smp1.toml \
-  2>&1 | tee tmp/competition/ivc/reference-20260731-neural/qemu.log
-
-python3 competition/ivc/analyze_qemu.py \
-  tmp/competition/ivc/reference-20260731-neural/qemu.log \
-  --output tmp/competition/ivc/reference-20260731-neural/summary.json \
-  --expected-count 1800
-```
-
-For manual fixed control, use the manual rootfs/output paths and replace the
-Linux VM description with
-`competition/ivc/config/linux-smp2-manual.toml`; the Zephyr description is
-unchanged. Both analyzers require `IVC-RTOS-SELFTEST`, both network-ready
-markers, exactly 1,800 terminal records, `IVC-LINUX-DONE exit=0`, zero
-errors/timeouts, and monotonic latency families.
+当前输入哈希：
 
 ```text
-neural log  6c7f7e2e404a5c8ef8a9a3f632a24169b35d8be6a8c0ac496775bf9d32a07eb8
-             full-loop 3894 / 4652 / 5657 / 20917 us (p50/p95/p99/max)
-manual log  39ac8deaf5382490a007bfd47ec7384989c64c6092eed70ac8ff682c076d8a57
-             full-loop 3902 / 4670 / 5423 / 19656 us (p50/p95/p99/max)
+Starry RT kernel       46badacbfbaeda4c396c16925f6cf8d0193cac2bf638534c101369f8d4b21b56
+guest DTB              bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981
+capture rootfs         8f43624c491fc784331426feb297287bec647bd145f367045b0b55e44b9969f3
+static RT probe        8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da
+guest capture runner   38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b
 ```
 
-The deterministic ACK-loss campaign uses both fault-specific VM descriptions:
+对每个 profile 执行完整冷启动和恢复。下面的 `result_dir` 必须不存在：
 
 ```sh
-set -o pipefail
-LIBCLANG_PATH=/usr/lib/llvm-14/lib \
-  cargo +nightly-2026-07-15 xtask axvisor qemu \
-  --arch aarch64 --smp 4 \
-  --config competition/ivc/config/axvisor-aarch64.toml \
-  --qemu-config competition/ivc/config/qemu-aarch64.toml \
-  --rootfs tmp/competition/ivc/reference-20260731-ack-loss/rootfs-pre-run.img \
-  --vmconfigs competition/ivc/config/linux-smp2-ack-loss.toml \
-  --vmconfigs competition/ivc/config/zephyr-smp1-ack-loss.toml \
-  2>&1 | tee tmp/competition/ivc/reference-20260731-ack-loss/qemu.log
+result_root=tmp/reproduction/rt-pair-$(date -u +%Y%m%dT%H%M%SZ)
 
-python3 competition/ivc/analyze_qemu.py \
-  tmp/competition/ivc/reference-20260731-ack-loss/qemu.log \
-  --output tmp/competition/ivc/reference-20260731-ack-loss/summary.json \
-  --expected-count 100 --profile ack-loss --drop-ack-every 5
+for profile in shared partitioned; do
+  result_dir="$result_root/$profile"
+  mkdir -p "$result_dir"
+
+  env \
+    ORANGEPI_AXVISOR_BUILD_CONFIG="scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-$profile.toml" \
+    ORANGEPI_AXVISOR_BOARD_CONFIG="scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-$profile.toml" \
+    ORANGEPI_AXVISOR_SHUTDOWN_MARKER_REQUIRED=1 \
+    ORANGEPI_RESTORE_LINUX=1 \
+    ORANGEPI_RUN_TIMEOUT_SECONDS=900 \
+    bash competition/ivc/orangepi/board-runner.sh \
+    2>&1 | tee "$result_dir/console.log"
+
+  env \
+    ORANGEPI_RT_RESULT_IMAGE=/home/rt \
+    ORANGEPI_RT_RAW_LOG="$result_dir/raw.log" \
+    ORANGEPI_RT_SUMMARY_JSON="$result_dir/summary.json" \
+    ORANGEPI_RT_GUEST_IRQ_LOG="$result_dir/guest-irq.log.gz" \
+    ORANGEPI_RT_HOST_TRACE_LOG="$result_dir/host.log" \
+    ORANGEPI_RT_PROFILE="$profile" \
+    ORANGEPI_RT_EXPECTED_WORKLOAD=cpu-stress \
+    ORANGEPI_RT_EXPECTED_ITERATIONS=100 \
+    ORANGEPI_RT_SOAK=0 \
+    bash scripts/benchmark/axvisor-rt/harvest-starry-board.sh \
+    2>&1 | tee "$result_dir/harvest.log"
+done
+
+python3 scripts/benchmark/axvisor-rt/compare_starry_board.py \
+  "$result_root/shared/summary.json" \
+  "$result_root/partitioned/summary.json" \
+  --output "$result_root/comparison.json"
 ```
 
-Its log SHA-256 is
-`f15c88c6671db67934ce178e3f113b65ac2811a1538a0c36412f6c156bd279fd`.
-The analyzer requires the exact sequence set 5, 10, ..., 100 for all 20
-injections and duplicate recoveries, 100 fresh applications, 100/100
-acknowledgements, and zero terminal errors/timeouts.
+比较器的 `improvement_percent` 正数表示 partitioned 更低。它故意把单对结果的
+`m2_exit_gate_met` 置为 false；正式 M2 至少需要五个预注册正交配对和两侧 soak。
 
-The complete compressed logs, summaries, and image/config/source provenance
-are retained in
-[`results/axvisor-ivc-reference`](results/axvisor-ivc-reference/). Do not
-compare neural and manual unless every non-policy input remains identical.
+## 7. 正式活动规则
 
-### Completed Orange Pi 5 Plus Linux + Zephyr runs
+正式活动与 smoke 的差别不是目录名，而是以下 fail-closed 条件：
 
-The physical profile loads Linux and Zephyr through AxVisor on the RK3588 and
-uses the board's Linux ext4 filesystem only as the AxVisor image store. Stage
-the three Linux guest files while holding a board lease; the maintained script
-uses the ordinary `orangepi` home directory, atomically renames each upload,
-calls `sync`, and prints the remote hashes:
+- 在第一轮前固定完整 40 位 commit、AB/BA 顺序、阈值、profile 和输入哈希；
+- clean worktree，且同一 campaign 内不得换 commit/镜像/config；
+- 每个 half 全新板卡会话、完整 snapshot、fsck、Linux restore；
+- RT 五对使用 controlled host interference，shared 固定 pCPU1、partitioned
+  固定 pCPU3，并验证观测 affinity 与覆盖区间；
+- RT shared/partitioned 各做至少 1,800 秒 soak；
+- IVC manual/neural 使用 AB/BA/AB/BA/AB 五对；fault profile 各 3 次；
+- 任何失败尝试保留原始状态，不用离线 replay 改写为成功 run。
+
+RT 聚合：
 
 ```sh
-export ORANGEPI_SSH_TARGET=orangepi@<board-ip>
-export ORANGEPI_SSH_IDENTITY=<board-ssh-private-key>
-export IVC_LINUX_KERNEL=tmp/competition/ivc/linux/linux-qemu
-
-bash competition/ivc/stage-orangepi-5-plus.sh
+python3 scripts/benchmark/axvisor-rt/aggregate_starry_board.py \
+  <pair-1-comparison.json> <pair-2-comparison.json> \
+  <pair-3-comparison.json> <pair-4-comparison.json> \
+  <pair-5-comparison.json> \
+  --shared-soak <shared-soak-summary.json> \
+  --partitioned-soak <partitioned-soak-summary.json> \
+  --output <campaign-summary.json>
 ```
 
-The run selector delegates reset/serial orchestration to
-`ORANGEPI_AXVISOR_RUNNER`, which defaults to the WSL host helper
-`orangepi-axvisor-board-run`. That host integration must acquire the local
-board lease, reboot Linux only after `sync`, run `cargo xtask axvisor board`,
-require `AXVISOR_HOST_FILESYSTEM_SYNCED`, and restore the TF-card Linux system.
-With the validated board root selector:
+IVC manual/neural 的冻结顺序由 `run-control-campaign.sh formal` 生成：
 
 ```sh
-export ORANGEPI_AXVISOR_HOST_ROOT=PARTUUID=5874edd8-1582-a144-a298-b139acd7b0e6
-
-bash competition/ivc/run-orangepi-5-plus.sh smoke
-bash competition/ivc/run-orangepi-5-plus.sh full
+bash competition/ivc/run-control-campaign.sh formal \
+  --result-dir <new-result-root> \
+  --expected-commit "$(git rev-parse HEAD)" \
+  --timeout 900
 ```
 
-Discover and record the root selector on a different board with
-`findmnt -no SOURCE,FSTYPE,OPTIONS /` and `blkid`; do not copy this PARTUUID
-blindly. Without the host integration helper, the underlying command is:
+## 8. AI 模型与后端
+
+确定性模型链：
 
 ```sh
-cargo xtask axvisor board \
-  -c competition/ivc/config/axvisor-orangepi-5-plus-smoke.toml \
-  --board-config competition/ivc/config/board-orangepi-5-plus-smoke.toml \
-  -b OrangePi-5-Plus
+bash competition/ivc/model/rebuild-check.sh
+bash competition/ivc/model/rebuild-rknn-check.sh
+bash competition/ivc/model/rebuild-ort-check.sh
 ```
 
-The operator must still arrange the Linux-to-U-Boot reboot after the runner
-acquires the serial lease and restore Linux after AxVisor shuts down.
+这些脚本分别验证 canonical weights/golden vectors → ONNX、ONNX → RK3588
+FP16 RKNN、ONNX → ORT format。RKNN Toolkit2、ONNX Runtime、模型、required
+operators 和数值容差由 [`ivc/model/README.md`](ivc/model/README.md) 与
+`model-manifest.json` 固定。不要把 native Rust、RKNN NPU 与 ORT CPU 的
+初始化/推理时间混成一个统计系列。
 
-The full neural capture completed 1,800/1,800 commands with zero errors,
-timeouts, retransmissions, or recoveries. Its full-loop p50/p95/p99/maximum was
-4,195/4,228/7,812/23,216 us and throughput was 9.992 msg/s. The local serial
-log SHA-256 is
-`134bbd6b308c6babb0b43bb1f8906f4d4a74bb422ab1f0cae59f05fcf9209da5`.
-The later maintained-tree smoke completed 20/20, observed two Linux CPUs, zero
-repeated unsupported PSCI `CPU_SUSPEND` calls, confirmed host filesystem sync,
-and restored `/dev/mmcblk1p2` as ext4 `rw`; its local log SHA-256 is
-`4432964c3bf5746f9cb3a0a55f50f98cec7bbc270fe6c20be16b572d7f8afcf7`.
-These local physical logs are not part of the committed QEMU result archive.
+## 9. 证据包与视频
 
-## 8. Real-time benchmarks
-
-### Completed AxVisor shared-versus-partitioned campaign
-
-Pull the managed rootfs and run the guest probe without modifying the source
-image:
+验证当前 compact bundle：
 
 ```sh
-cargo +nightly-2026-07-15 xtask image pull --arch aarch64
-
-scripts/benchmark/axvisor-rt/run.sh \
-  --rootfs tmp/axbuild/rootfs/rootfs-aarch64-alpine.img \
-  --probe competition/results/axvisor-rt-reference/axvisor-rt-probe \
-  --profile partitioned \
-  --iterations 10000 \
-  --warmup 100 \
-  --period-us 1000 \
-  --workload idle
+cd competition/results/current-source-smoke-20260812
+sha256sum -c checksums.sha256
+python3 -m json.tool provenance.json >/dev/null
+python3 -m json.tool ivc/summary.json >/dev/null
+python3 -m json.tool rt/comparison.json >/dev/null
 ```
 
-The rootfs argument may name the managed image directory; the runner resolves
-its same-named image file. The runner requires `aarch64-linux-musl-gcc`, or the
-recorded static probe supplied with `--probe PATH`.
+五分钟成片：
 
-Run the four paired cases into new, non-overwriting directories while keeping
-rootfs, probe, QEMU, sample count, warm-up, period, and workload pair identical:
-
-```sh
-scripts/benchmark/axvisor-rt/run.sh \
-  --rootfs tmp/axbuild/rootfs/rootfs-aarch64-alpine.img \
-  --probe competition/results/axvisor-rt-reference/axvisor-rt-probe \
-  --output tmp/competition/axvisor-rt/reproduction-shared-idle \
-  --profile shared --iterations 10000 --warmup 100 \
-  --period-us 1000 --workload idle
-
-scripts/benchmark/axvisor-rt/run.sh \
-  --rootfs tmp/axbuild/rootfs/rootfs-aarch64-alpine.img \
-  --probe competition/results/axvisor-rt-reference/axvisor-rt-probe \
-  --output tmp/competition/axvisor-rt/reproduction-shared-stress \
-  --profile shared --iterations 10000 --warmup 100 \
-  --period-us 1000 --workload cpu-stress
-
-scripts/benchmark/axvisor-rt/run.sh \
-  --rootfs tmp/axbuild/rootfs/rootfs-aarch64-alpine.img \
-  --probe competition/results/axvisor-rt-reference/axvisor-rt-probe \
-  --output tmp/competition/axvisor-rt/reproduction-partitioned-idle \
-  --profile partitioned --iterations 10000 --warmup 100 \
-  --period-us 1000 --workload idle
-
-scripts/benchmark/axvisor-rt/run.sh \
-  --rootfs tmp/axbuild/rootfs/rootfs-aarch64-alpine.img \
-  --probe competition/results/axvisor-rt-reference/axvisor-rt-probe \
-  --output tmp/competition/axvisor-rt/reproduction-partitioned-stress \
-  --profile partitioned --iterations 10000 --warmup 100 \
-  --period-us 1000 --workload cpu-stress
+```text
+competition/results/current-source-smoke-20260812/demo-5min.mp4
 ```
 
-The final soak used the partitioned stress profile at a 10 ms period:
+它是实际串口日志和机器 summary 的后制证据回放，不伪装成同步拍摄的板卡视频。
+镜头和重新生成说明见 [`video-storyboard.md`](video-storyboard.md)。
 
-```sh
-scripts/benchmark/axvisor-rt/run.sh \
-  --rootfs tmp/axbuild/rootfs/rootfs-aarch64-alpine.img \
-  --probe competition/results/axvisor-rt-reference/axvisor-rt-probe \
-  --output tmp/competition/axvisor-rt/reproduction-partitioned-soak \
-  --profile partitioned --iterations 10000 --warmup 100 \
-  --period-us 10000 --workload cpu-stress
-```
+## 10. 复现成功判定
 
-Each normal metric loop measures about 10 seconds. The soak measures 100
-seconds per metric, 300 seconds total; its complete metadata interval was 13
-minutes because build, boot, setup, warm-up, inter-metric transitions, and
-shutdown are outside those loops. Reported CPU percentages are Linux guest CPU
-load, not host-pCPU utilization.
+一次实体运行只有同时满足以下条件才算成功：
 
-The five validated summaries, metadata files, compressed raw logs, hashes, and
-qualified comparison are retained under
-[`results/axvisor-rt-reference`](results/axvisor-rt-reference/). Follow the
-metric definitions and analyzer command in
-[`scripts/benchmark/axvisor-rt/README.md`](../scripts/benchmark/axvisor-rt/README.md).
+- runner exit 0，未命中 panic/exception/timeout/fail regex；
+- guest 完成 marker、期望样本数、协议计数与 workload 生命周期通过 analyzer；
+- snapshot hash、raw hash、guest IRQ hash、host trace hash一致；
+- ext4 snapshot 为 clean，且 AxVisor host filesystem 已同步；
+- 板卡最终回到预期 Linux hostname，根文件系统为 ext4 rw；
+- metadata、summary、raw、console 和 checksum 全部落盘。
 
-### Completed native Zephyr comparison baseline
-
-The retained native Zephyr v4.3.0 QEMU baseline includes one 10,000-sample idle
-run and one verified CPU-stress run at a 1 ms period:
-
-```sh
-bash competition/rt-baseline/zephyr/prepare.sh
-bash competition/rt-baseline/zephyr/run.sh all \
-  tmp/competition/rt-baseline/zephyr/reproduction-1
-```
-
-See [`results/native-zephyr-reference`](results/native-zephyr-reference/) for
-validated summaries, source provenance, artifact hashes, load distribution,
-and platform-difference analysis. It is not an AxVisor capture, a soak, or a
-hardware worst-case bound.
-
-## 9. Evidence retention checklist
-
-For every QEMU, native-RTOS, stress, and soak run, retain in a new directory:
-
-- source commit and clean/dirty status;
-- UTC start/end, requested duration, actual duration, and exit status;
-- host OS/kernel, CPU, QEMU, Rust, compiler/SDK, and image versions;
-- exact command and full console log;
-- guest and image SHA-256 hashes;
-- workload command plus CPU affinity/load evidence;
-- raw samples before derived statistics when the benchmark emits them; the
-  native Zephyr baseline is an explicit exception whose retained console has
-  aggregate records only and no serialized individual-sample series;
-- analyzer version/command and derived JSON/CSV; and
-- a limitations note for clock source, QEMU TCG, logging perturbation, and any
-  platform difference.
-
-Never copy the planned metadata template into `competition/results` as though
-it were a completed measurement.
+QEMU/host tests、离线 replay、串口中看到一行成功 marker 都不能单独替代上述实体
+生命周期门。

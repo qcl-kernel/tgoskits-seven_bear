@@ -1,185 +1,47 @@
-# Approximately five-minute demonstration storyboard
+# 五分钟演示视频脚本与证据索引
 
-This is a recording plan and evidence checklist. It is **not** a generated or
-completed video. The post-IRQ-gate neural/manual cross-guest runs and native
-Zephyr baseline are available, as are the final shared/partitioned
-idle/stress/soak results and deterministic cross-guest ACK-loss run. The actual
-video still has to be recorded.
+成片：[`demo-5min.mp4`](results/current-source-smoke-20260812/demo-5min.mp4)。
 
-## Before recording
+这是一次**当前源码实体板结果的后验证据回放**：画面使用 2026-08-12 已归档的
+Orange Pi 5 Plus 串口标记、机器 JSON、哈希和源码入口制作，不冒充同时发生的现场
+录屏。完整原始输入保留在
+[`current-source-smoke-20260812`](results/current-source-smoke-20260812/)，观众可以在
+视频结束后逐项复核。
 
-- Use the committed implementation revision and show its hash plus a clean
-  worktree when commit/PR work is authorized. Until then, show the base commit,
-  dirty status, and source snapshot hash honestly.
-- Pre-build the Linux and Zephyr images; retain their hashes and build logs.
-- Retain the full QEMU console log independently of the screen recording.
-- Prepare two readable terminal panes: one following Linux/controller lines,
-  the other following Zephyr/AxVisor lines from the same raw log. Do not imply
-  separate serial devices if both panes are filtered views of one console.
-- Prepare the exact normal, fault-injection, manual, neural, idle, stress, and
-  native-baseline result directories used in the video.
-- Verify the retained normal-run source-log hashes before recording:
-  `6c7f7e2e404a5c8ef8a9a3f632a24169b35d8be6a8c0ac496775bf9d32a07eb8`
-  for neural and
-  `39ac8deaf5382490a007bfd47ec7384989c64c6092eed70ac8ff682c076d8a57`
-  for manual. Also verify ACK-loss log
-  `f15c88c6671db67934ce178e3f113b65ac2811a1538a0c36412f6c156bd279fd`.
-- Generate RT sample-series plots from the retained AxVisor RT logs and control
-  time-series plots from `results/host-ai-reference/raw.csv`, labeling the
-  latter as host functional evidence. Use the validated cross-guest and native
-  summaries for their aggregate tables. The native console retains aggregate
-  records only, not individual samples; do not reconstruct or imply a native
-  sample-series plot.
-- Disable notifications and enlarge terminal fonts; keep command lines and
-  timestamps visible.
+## 时间轴
 
-## Timeline
+| 时间 | 画面与讲解 | 对应证据 |
+| --- | --- | --- |
+| 0:00–0:20 | 赛题目标、Orange Pi 5 Plus / RK3588、StarryOS + Zephyr + AxVisor | `provenance.json` |
+| 0:20–0:45 | 当前源码 `069c911c1…`、`upstream/dev` 基线、tree/archive/input 哈希链 | `provenance.json`、`runtime-inputs.sha256` |
+| 0:45–1:15 | typed device graph：两个 VM、CPU/内存、两个独立 virtio-net、Starry block | `design.md`、两份 board TOML |
+| 1:15–1:40 | 双客户机 IP 拓扑与协议：`10.0.0.1 ↔ 10.0.0.2:5500`，CONTROL/STATUS/ACK/ERROR | `ivcproto`、IVC summary |
+| 1:40–2:20 | 实际 Zephyr VM restart：pCPU3 worker、20 s、session 切换、旧流量拒绝、safe fallback | `ivc/console.log.gz`、`ivc/summary.json` |
+| 2:20–2:45 | 重启后 100/100、0 error/timeout/retransmission，full-loop percentiles 和 clean snapshot | `ivc/summary.json` |
+| 2:45–3:20 | 当前 RT shared/partitioned 各 3×100 样本，冷启动、lossless IRQ trace、Linux restore | `rt/shared`、`rt/partitioned` |
+| 3:20–3:50 | 如实展示当前 pair 的负向结果和 `m2_exit_gate_met=false` | `rt/comparison.json` |
+| 3:50–4:20 | 历史正式五配对受控 host-noise 门通过，同时说明它不是当前源码复跑 | `historical-formal/rt-host-noise` |
+| 4:20–4:43 | manual/neural 五配对：RMSE、IAE 改善，overshoot 退化 | `historical-formal/ivc-control` |
+| 4:43–4:55 | ACK-loss / ERROR / restart 各 3/3，RKNN/ORT 各 9,000/9,000 | `historical-formal/` |
+| 4:55–5:00 | 复现入口、总校验清单和剩余缺口 | `reproduce.md`、`checksums.sha256` |
 
-### 0:00-0:25 — Goal and provenance
+## 必须说清的边界
 
-Show the title, repository revision, platform, QEMU version, Rust toolchain,
-Zephyr version/compiler, and image hashes. State the one-sentence goal:
-two-vCPU Linux neural control of a Zephyr endpoint over isolated UDP/IP on
-AxVisor.
+- 当前源码的 IVC restart 和 RT 管线在实体板通过，但当前 RT 单对性能门失败。
+- 正式五配对改善属于记录在各自 clean commit 的历史 F 层活动，不能改标成当前提交。
+- neural 相对 manual 改善 RMSE 35.93%、IAE 51.94%，但最大超调退化 96.32%。
+- 当前原生 Zephyr 基线不是同一 RK3588，隔离也缺恶意第三客户机动态 capture。
+- 精简包不包含本地约 844 MiB 的完整历史 raw archive。
 
-Evidence on screen:
+## 录制与验收清单
 
-```sh
-git rev-parse HEAD
-git status --short
-qemu-system-aarch64 --version
-rustc +nightly-2026-07-15 --version
-```
-
-### 0:25-1:05 — Resource and isolation design
-
-Show the CPU/memory/device table from [`design.md`](design.md) and briefly point
-out:
-
-- Linux vCPUs dedicated to pCPUs 1 and 2;
-- Zephyr on pCPU0 and pCPU3 left out of guest affinity masks;
-- non-overlapping guest memory regions;
-- virtio-net MMIO/IRQ assignments 56 and 64;
-- fixed MAC/IP identities in switch segment 1; and
-- no host NIC, NAT, bridge, vsock, shared-memory, or hypercall data channel.
-
-Say the limitation aloud: guest-vCPU partitioning does not yet isolate every
-AxVisor task/interrupt, and RR guest preemption is not claimed.
-
-### 1:05-1:45 — Boot both guests
-
-Run or replay an uncut capture of the exact full QEMU command in
-[`reproduce.md`](reproduce.md). Show AxVisor accepting the partition, the
-Zephyr golden-vector pass, both MAC/IP values, and `IVC-RTOS-READY`. The mixed
-IVC log does not emit an online CPU-count assertion. Replay the separate
-validated two-vCPU Linux RT/partition gate for that proof, and label it as a
-separate run.
-
-Do not use an edited success marker without keeping the original complete log.
-If either guest fails, stop the recording and fix/rerun instead of narrating it
-as success.
-
-### 1:45-2:35 — Bidirectional protocol and reliability
-
-Use split filtered views of the same run:
-
-- left: Linux CONTROL sequence, returned STATUS, and aggregate result;
-- right: Zephyr applied sequence, actuator/temperature, ACK, and counters.
-
-Overlay the 32-byte header fields briefly. Then replay the retained
-deterministic ACK-loss run and show a retransmission, a duplicate suppressed
-without a second actuator application, and eventual recovery. Show a malformed
-request producing a typed ERROR only from the host/unit evidence unless a new
-cross-guest capture is recorded; do not imply that the retained ACK-loss QEMU
-run injected malformed traffic. Show its controller-silence interval producing
-safe mode with actuator 0.
-
-End this section with the measured request success, errors, timeouts,
-recoveries, RTT percentiles/max, throughput, and the positive
-`IVC-SWITCH-TX`/`FORWARD`/`NOTIFY` forwarding counters from the retained
-cross-guest result—not the host loopback reference. Show anti-spoof and drop
-policy counters from the focused unit/regression evidence unless a new
-malicious-traffic cross-guest capture is recorded; the retained QEMU runs do
-not provide runtime drop totals.
-
-### 2:35-3:45 — Neural closed loop
-
-Show one complete sample path:
-
-```text
-temperature/status -> 4 inputs -> 4x6x1 inference -> actuator CONTROL
--> Zephyr applies/steps plant -> STATUS -> next observation
-```
-
-Replay the same setpoint/disturbance scenario once with the fixed 500-permille
-baseline and once with the neural policy. Show live actuator and measured
-temperature changes, then show the validated cross-guest aggregate table for
-RMSE, integrated absolute error, and maximum overshoot. If a time-series plot
-or settling time is shown, derive it from
-`results/host-ai-reference/raw.csv`, label it as deterministic host functional
-evidence, and state that manual settling was not reached while neural settling
-was 27.9 seconds. Do not present those host-series values as cross-guest timing
-or imply that the cross-guest summaries retain individual control samples.
-
-Show the full input-before-inference to matching-status latency definition and
-its p50/p95/p99/maximum. The retained `full_loop` metric includes observation,
-policy evaluation, encoding, transport, RTOS application/plant step, returned
-STATUS plus ACK, and response decoding; keep the `pre_send` and `transport`
-sub-intervals visibly distinguished.
-
-### 3:45-4:35 — Real-time validation
-
-Show the guest probe definitions and retained idle/stress/soak summaries for
-periodic jitter, scheduler dispatch, and the emulated timer-IRQ response proxy.
-Show actual duration, pCPU/vCPU affinity, CPU load distribution, and maximum
-latency. Then show the native Zephyr/equivalent baseline using the same nominal
-period and comparable load.
-
-State the mixed outcome: partitioned stress improved dispatch p99/maximum by
-7.19%/31.24%, but jitter maximum and both timer-IRQ proxy tails worsened. Show
-the 300-second measured soak and its 6.69 ms largest observed jitter rather
-than presenting partitioning as globally faster.
-
-Label QEMU TCG results as relative engineering measurements and the timerfd
-metric as a userspace IRQ-response proxy, not a direct hypervisor injection
-measurement.
-
-### 4:35-5:00 — Reproduction and conclusion
-
-Show the `competition/` entry page, image-build commands, exact QEMU command,
-and result directories. Recap only claims backed by the displayed artifacts:
-
-- two-vCPU Linux boot and deterministic guest placement;
-- isolated IP-based bidirectional Linux/Zephyr link;
-- reliable typed protocol and safe fallback;
-- observable neural-to-RTOS closed loop; and
-- measured control and real-time comparisons.
-
-Close with any remaining limitations. Keep the final frame on the source hash,
-reproduction guide, and test report.
-
-## Final integrity checklist
-
-- [ ] Video duration is close to five minutes.
-- [ ] Source revision is committed and shown, or the pre-commit source
-      fingerprint and dirty state are explicitly disclosed.
-- [ ] Commands shown match retained metadata.
-- [ ] Linux visibly has at least two online vCPUs.
-- [ ] Both guest MAC/IP identities and UDP port are visible.
-- [ ] Data visibly flows in both directions over IP.
-- [ ] Retry, duplicate suppression, error notification, timeout safe fallback,
-      and recovery are demonstrated.
-- [ ] Neural inference is visibly upstream of the network command.
-- [ ] RTOS control action and status feedback are visible.
-- [ ] Manual and neural runs use the same scenario.
-- [ ] Cross-guest aggregate control metrics are shown; any sample-series plot
-      or settling time is derived from and labeled as host functional CSV
-      evidence.
-- [ ] Full-loop latency includes inference and states its clock/error method.
-- [ ] Idle, stress, and soak results show sample-log provenance; native RTOS
-      results show exact aggregate-console provenance and the no-sample-series
-      limitation.
-- [ ] QEMU/IRQ/partition limitations are spoken or shown.
-- [ ] No host-loopback number is labeled cross-guest.
-- [ ] No planned/template value is presented as measured.
-- [ ] The complete unedited console log and all plotted raw data are archived.
+- [x] 时长约五分钟，1280×720，H.264。
+- [x] 明示后验回放，不冒充现场串口直播。
+- [x] 展示测试 source commit、upstream base、板卡 identity 与关键输入哈希。
+- [x] 展示 StarryOS 双 vCPU、Zephyr、IP/UDP 和 typed device graph。
+- [x] 展示实际 VM reset、新旧 session、安全回退和 Linux restore。
+- [x] 展示当前 RT 单对的退化及 M2 fail。
+- [x] 历史正式数据与当前源码证据使用不同标签。
+- [x] AI 改善和超调退化同时出现。
+- [x] 视频文件纳入同一 `checksums.sha256`。
+- [ ] 发布完整历史 raw archive 的不可变下载 URL 和顶层 SHA-256。

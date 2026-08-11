@@ -5,3 +5,14 @@
 *.img binary
 *.sh text eol=lf
 competition/ivc/model/*.json text eol=lf
+competition/results/current-source-smoke-20260812/**/*.json text eol=lf
+competition/results/current-source-smoke-20260812/**/*.log text eol=lf
+competition/results/current-source-smoke-20260812/**/*.md text eol=lf
+competition/results/current-source-smoke-20260812/**/*.sha256 text eol=lf
+competition/results/current-source-smoke-20260812/**/*.txt text eol=lf
+competition/results/current-source-smoke-20260812/**/*.gz binary
+competition/results/current-source-smoke-20260812/*.mp4 binary
+competition/video/*.ass text eol=lf
+competition/video/*.json text eol=lf
+competition/video/*.md text eol=lf
+competition/video/*.ps1 text eol=lf

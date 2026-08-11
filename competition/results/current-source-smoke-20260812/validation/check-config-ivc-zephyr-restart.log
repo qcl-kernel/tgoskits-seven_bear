@@ -1,0 +1,75 @@
+   Compiling serde_json v1.0.151
+   Compiling schemars v1.2.2
+   Compiling axvmconfig v0.8.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvmconfig)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.23s
+     Running `target/debug/axvmconfig check --config-path competition/ivc/config/orangepi-5-plus-zephyr-restart.toml`
+Config file 'competition/ivc/config/orangepi-5-plus-zephyr-restart.toml' is valid.
+Config: GuestConfig {
+    base: VMBaseConfig {
+        id: 0x2,
+        name: "zephyr-ivc-orangepi-restart",
+        guest_type: Virtualized,
+        cpu_num: 0x1,
+        phys_cpu_ids: Some(
+            [
+                0x0,
+            ],
+        ),
+        phys_cpu_sets: Some(
+            [
+                0x1,
+            ],
+        ),
+        dedicated_cpus: true,
+    },
+    kernel: VMKernelConfig {
+        entry_point: 0x4000100c,
+        kernel_path: "../zephyr/build-board-restart/zephyr/zephyr.bin",
+        kernel_load_addr: 0x40000000,
+        enable_bios: false,
+        boot_protocol: None,
+        bios_path: None,
+        uefi_firmware_path: None,
+        bios_load_addr: None,
+        dtb_path: None,
+        dtb_load_addr: Some(
+            0x47e00000,
+        ),
+        ramdisk_path: None,
+        ramdisk_load_addr: None,
+        image_location: Some(
+            "memory",
+        ),
+        cmdline: None,
+        memory_regions: [
+            VmMemConfig {
+                gpa: 0x40000000,
+                size: 0x8000000,
+                flags: 0x7,
+                map_type: MapAlloc,
+            },
+        ],
+        configured_memory_region_count: 0x1,
+    },
+    devices: GuestDevices {
+        passthrough: [],
+        disabled: [],
+        virtual_devices: [
+            VirtualDeviceRequest {
+                id: "net0",
+                model: "virtio-net-mmio",
+                options: {
+                    "header_mode": String(
+                        "fixed-twelve-byte",
+                    ),
+                    "mac_suffix": Integer(
+                        0x2,
+                    ),
+                    "segment_id": Integer(
+                        0x1,
+                    ),
+                },
+            },
+        ],
+    },
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "duration_seconds": 20,
+    "text": "这是基于 AxVisor 的混合关键控制演示。测试平台是瑞芯微 RK3588 的 Orange Pi 5 Plus。一个双核 StarryOS 客户机运行神经控制器，一个 Zephyr 客户机执行实时控制。画面是二零二六年八月十二日实体板结果的后验证据回放，不是伪装的现场直播。"
+  },
+  {
+    "duration_seconds": 25,
+    "text": "两次实体运行都绑定到源码提交零六九 c 九一一 c。它已经变基到指定的 upstream dev 基线，落后提交数为零。证据包同时保存 Git tree、源码 archive、相对上游 diff 和全部运行输入的 SHA 二五六，因此文档提交之后仍能定位当时真正执行的代码和二进制。"
+  },
+  {
+    "duration_seconds": 30,
+    "text": "新的配置入口使用 typed device graph。配置先反序列化成设备声明，再校验地址、中断和后端，随后分配资源并实例化设备。StarryOS 使用两个虚拟 CPU、二百五十六兆内存、块设备和虚拟网卡；Zephyr 使用独立虚拟网卡。两个客户机的 MMIO 和中断资源都由图统一描述，不再依赖失效的旧版配置旁路。"
+  },
+  {
+    "duration_seconds": 25,
+    "text": "主数据通道是隔离网段一上的 UDP 和 IPv4。StarryOS 地址是一零点零点零点一，Zephyr 地址是一零点零点零点二，端口五五零零。应用帧包含版本、类型、长度、会话、序号、时间戳、错误码和 CRC，支持 CONTROL、STATUS、ACK 与 ERROR。没有把共享内存、裸 MMIO、hypercall 或 vsock 当作主通道。"
+  },
+  {
+    "duration_seconds": 40,
+    "text": "现在回放实际客户机重启。控制器先完成二十个样本并声明旧会话。二十秒后，AxVisor 在物理 CPU 三上的 worker 把 Zephyr 从运行态转为 reset，再重新启动。控制器超时期间，RTOS 把执行器降为零，进入安全回退。StarryOS 重启后的控制进程使用新会话。Zephyr 接受新会话，拒绝退休会话的一条 CONTROL，并故意重放旧 STATUS 和 ACK，控制器都正确忽略。恢复标记、session reset 和 typed ERROR 均出现在原始串口中。"
+  },
+  {
+    "duration_seconds": 25,
+    "text": "重启后是一百条神经控制命令：发送一百，确认一百，错误、超时、重传和控制器恢复都是零。Zephyr 在重启前后合计接受并应用一百二十条。完整闭环 p 五十为二点三零七毫秒，p 九十九为三十四点九零七毫秒，最大六十七点三八八毫秒。快照文件系统检查 clean，主机文件系统同步，最后自动恢复板上 Linux。"
+  },
+  {
+    "duration_seconds": 35,
+    "text": "实时性冒烟从同一源码重建 StarryOS 内核。shared 和 partitioned 各进行一次完整冷启动，每次采集周期抖动、调度唤醒和 timerfd 代理三项各一百个样本，并保留 AxVisor 注入到客户机中断入口的直接跨层 trace。两次 vCPU migration 都是零，guest 和 host trace 没有丢记录，块快照 clean，Linux 均恢复。这证明当前设备图和采集流水线可运行。"
+  },
+  {
+    "duration_seconds": 30,
+    "text": "但这一次当前源码对照不能证明性能改善。partitioned 的周期抖动 p 九十九退化百分之五十三点七一，dispatch p 九十九退化百分之一百五十四点九二五，直接中断 p 九十九退化百分之五点七一四。只有 timerfd 代理略微改善。比较器因此明确输出 M 二门失败。原因不仅是负向尾部，也因为只有一个未受控配对。"
+  },
+  {
+    "duration_seconds": 30,
+    "text": "性能评分引用的是单独标记的历史正式活动，而不是把它重命名为当前结果。该活动有五个预注册 AB BA 配对，每项每次一万个样本，并完成 shared 和 partitioned 两个至少一千八百秒 soak。在受控 host interference 下，直接中断 p 九十九五对全部改善，worst of runs 改善百分之九十九点六三九，最大值改善百分之八十七点七七一。这个结论只适用于冻结的干扰模型。"
+  },
+  {
+    "duration_seconds": 23,
+    "text": "AI 控制也保留负向指标。五个 manual neural 配对中，神经策略的均方根误差改善百分之三十五点九三，积分绝对误差改善百分之五十一点九四；但最大超调从六千八百四十毫摄氏度升到一万三千四百二十八，退化百分之九十六点三二。完整闭环 p 九十九也只有两对有利于神经策略，所以不宣称神经推理更低延迟。"
+  },
+  {
+    "duration_seconds": 12,
+    "text": "可靠性正式活动中，ACK 丢失、typed ERROR 和实际 VM restart 各三次全部通过。RKNN 与 ONNX Runtime 后端也分别完成九千条闭环命令，首周期之后没有 miss、error 或 timeout。"
+  },
+  {
+    "duration_seconds": 5,
+    "text": "复现命令、原始证据和剩余缺口都在 competition 目录。"
+  }
+]

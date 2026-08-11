@@ -1,0 +1,107 @@
+   Compiling serde_json v1.0.151
+   Compiling aho-corasick v1.1.5
+   Compiling jiff-core v0.1.0
+   Compiling syn v3.0.3
+   Compiling jiff v0.2.35
+   Compiling regex-automata v0.4.18
+   Compiling serde_derive_internals v0.30.0
+   Compiling ref-cast-impl v1.0.26
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.20
+   Compiling clap_derive v4.6.4
+   Compiling serde_repr v0.1.21
+   Compiling schemars_derive v1.2.2
+   Compiling regex v1.13.1
+   Compiling env_filter v2.0.0
+   Compiling ref-cast v1.0.26
+   Compiling env_logger v0.11.11
+   Compiling thiserror v2.0.20
+   Compiling axvm-types v0.7.3 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvm-types)
+   Compiling clap v4.6.6
+   Compiling serde v1.0.229
+   Compiling schemars v1.2.2
+   Compiling axvmconfig v0.8.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvmconfig)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.33s
+     Running `target/debug/axvmconfig check --config-path competition/ivc/config/orangepi-5-plus-starry-smp2-restart.toml`
+Config file 'competition/ivc/config/orangepi-5-plus-starry-smp2-restart.toml' is valid.
+Config: GuestConfig {
+    base: VMBaseConfig {
+        id: 0x1,
+        name: "starry-ivc-orangepi-restart",
+        guest_type: Virtualized,
+        cpu_num: 0x2,
+        phys_cpu_ids: Some(
+            [
+                0x100,
+                0x200,
+            ],
+        ),
+        phys_cpu_sets: Some(
+            [
+                0x2,
+                0x4,
+            ],
+        ),
+        dedicated_cpus: true,
+    },
+    kernel: VMKernelConfig {
+        entry_point: 0x80200000,
+        kernel_path: "/home/orangepi/axvisor-guest/starryos.bin",
+        kernel_load_addr: 0x80200000,
+        enable_bios: false,
+        boot_protocol: None,
+        bios_path: None,
+        uefi_firmware_path: None,
+        bios_load_addr: None,
+        dtb_path: Some(
+            "/home/orangepi/axvisor-guest/starry-orangepi-5-plus.dtb",
+        ),
+        dtb_load_addr: Some(
+            0x80000000,
+        ),
+        ramdisk_path: None,
+        ramdisk_load_addr: None,
+        image_location: Some(
+            "fs",
+        ),
+        cmdline: Some(
+            "console=ttyAMA0,115200 earlycon=pl011,0x09000000 root=/dev/vda rw",
+        ),
+        memory_regions: [
+            VmMemConfig {
+                gpa: 0x80000000,
+                size: 0x10000000,
+                flags: 0x7,
+                map_type: MapAlloc,
+            },
+        ],
+        configured_memory_region_count: 0x1,
+    },
+    devices: GuestDevices {
+        passthrough: [],
+        disabled: [],
+        virtual_devices: [
+            VirtualDeviceRequest {
+                id: "disk0",
+                model: "virtio-blk-mmio",
+                options: {
+                    "image_path": String(
+                        "/home/orangepi/axvisor-guest/starry-ivc-rootfs-restart.img",
+                    ),
+                },
+            },
+            VirtualDeviceRequest {
+                id: "net0",
+                model: "virtio-net-mmio",
+                options: {
+                    "mac_suffix": Integer(
+                        0x1,
+                    ),
+                    "segment_id": Integer(
+                        0x1,
+                    ),
+                },
+            },
+        ],
+    },
+}

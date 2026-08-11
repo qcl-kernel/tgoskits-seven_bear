@@ -1,0 +1,15 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.60s
+     Running `target/debug/tg-xtask clippy --package axbuild`
+clippy started at: 2026-08-12 02:10:11 +0800
+running clippy for 1 package(s) with 1 check(s) from /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc
+[1/1] axbuild (base)
+          cd /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc && cargo clippy --no-deps -p axbuild -- -D warnings
+    Checking axvmconfig v0.8.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvmconfig)
+    Checking axbuild v0.4.23 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/scripts/axbuild)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 22.40s
+ok: axbuild (base)
+clippy summary: 1 package(s), 1 check(s), 1 package(s) passed, 0 package(s) failed
+passed checks: 1, failed checks: 0
+clippy finished at: 2026-08-12 02:10:36 +0800
+clippy elapsed: 25s
+all clippy checks passed

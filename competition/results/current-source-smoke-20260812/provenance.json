@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "scope": "current-source Orange Pi 5 Plus smoke plus compact historical-formal indexes",
+  "source": {
+    "branch": "feat/rt-axvisor-partition-virtio-net",
+    "commit": "069c911c1de02cecdc0c1fe891f5d5a288065ef0",
+    "tree": "c13efe6409b3a720828c224147bc1e2ca5682ffe",
+    "git_archive_sha256": "6b65153c727a31edebf3829ef02e34a65090450d98042f1d8d6fbe0256581102",
+    "upstream_dev": "fad09ebd3a05f5e7a13ee6bb3cb7e4076cfdb0a1",
+    "upstream_dev_diff_sha256": "1bf1f0e696c95ccd0de6eb73a8f7812138035eebccc35a7c89ee93bf12bcdfb8",
+    "ahead_of_upstream_dev": 37,
+    "behind_upstream_dev": 0,
+    "tracked_worktree_clean_in_windows_git": true,
+    "runtime_input_hashes": "runtime-inputs.sha256",
+    "git_object_index": "source-files.git-ls-tree.txt"
+  },
+  "source_status_note": {
+    "original_ivc_metadata_path": "ivc/metadata.original.json",
+    "original_ivc_metadata_reports_dirty": true,
+    "explanation": "The run-side metadata helper invoked WSL Git against a Windows core.autocrlf checkout and counted line-ending-only worktree differences plus excluded generated evidence. Windows Git, which owns the checkout filters, reported no tracked index or worktree changes before either run. The source assertion in both archived command wrappers required the exact commit above, and runtime-inputs.sha256 records the bytes consumed by the runners.",
+    "treatment": "The original metadata is retained unchanged. This file is an additive provenance clarification, not a rewrite of captured evidence."
+  },
+  "board": {
+    "type": "OrangePi-5-Plus",
+    "soc": "RK3588",
+    "hardware_id": "bf61f4d4a1d994ad",
+    "hostname": "orangepi5plus",
+    "linux_root_after_runs": "/dev/mmcblk1p2 ext4 rw,noatime,errors=remount-ro,commit=600",
+    "ivc_harvest_temperature_milli_c": 42538
+  },
+  "ivc_fault_restart": {
+    "started_at_utc": "2026-08-11T17:15:49Z",
+    "finished_at_utc": "2026-08-11T17:21:14Z",
+    "exit_status": 0,
+    "inputs": {
+      "starry_kernel_sha256": "97fce5daaa9103768736b9a54a690e5f4612a221ac67672c56cebaadaf4c4b05",
+      "starry_dtb_sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "starry_rootfs_sha256": "1c51f3fc84ee543ded52ab6626ba8fb6f60edefff1367b362a872597d403e1d8",
+      "zephyr_guest_sha256": "393026c1702d33115b42bdf72528efe49eeb4f0d9e93f3755d6be57354b5791f",
+      "native_model_source_sha256": "c075fb7462a0bd7e52afe1a88b9ffc7d31f7f6502ec0c25288919189348e4938"
+    },
+    "outputs": {
+      "summary_sha256": "af9672d2ab3c0139910e83da28cc5cb80c3f46bb4c8b6d73f3aa4515a0537be0",
+      "console_gzip_sha256": "02d179dccb4a89f56673bf0665e273c2cf4f3ea4deb987f0e172314c4bbd8593",
+      "post_reset_raw_content_sha256": "6870eb9b97bc27fdcbeb05f20818177e97d1d7a6b4d535fdbe7d66b9510ed65d",
+      "pre_reset_raw_content_sha256": "7a096de50bc024c379cfa09ef0e867ee6bfdd58549d7cc93f635751fb31f8adc",
+      "snapshot_sha256": "8bd3bee0d2b9abde71775d30cf85ad60b00ba21dd82969f808e0e18d38358960",
+      "snapshot_filesystem_state": "clean"
+    },
+    "result": {
+      "actual_vm_reset": true,
+      "reset_count": 1,
+      "pre_reset_samples": 20,
+      "post_reset_samples": 100,
+      "controller_acknowledged": 100,
+      "controller_errors": 0,
+      "controller_timeouts": 0,
+      "rtos_accepted": 120,
+      "rtos_applied": 120,
+      "safe_fallbacks": 1,
+      "retired_control_rejected": 1,
+      "stale_status_ignored": 1,
+      "stale_ack_ignored": 1,
+      "board_linux_restored": true
+    }
+  },
+  "rt_shared_partitioned_smoke": {
+    "exit_status": 0,
+    "inputs": {
+      "starry_kernel_sha256": "46badacbfbaeda4c396c16925f6cf8d0193cac2bf638534c101369f8d4b21b56",
+      "starry_dtb_sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "capture_rootfs_sha256": "8f43624c491fc784331426feb297287bec647bd145f367045b0b55e44b9969f3",
+      "probe_sha256": "8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da",
+      "guest_runner_sha256": "38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b"
+    },
+    "shared": {
+      "summary_sha256": "ec1b5c1f041d80171e039b3318f997f40b4aeaa85b23a4434dbee5af1164a4d4",
+      "raw_sha256": "4ac0ebd9c05456952902e64e57751fdd9827f5460ac25fba2a15167c33498647",
+      "guest_irq_sha256": "c9b4f2b02ed9bf163754c758aac2651652477a7c59c9d86f4f03faf4b0969c75",
+      "host_trace_sha256": "7b55c46104ff2e00ad2e030e942504959244a76e37f80eca4a006c7461fa8aa5",
+      "snapshot_sha256": "fe1c6bc54ce85c8222d701b0a4143f0c65e059cf19a7e7c4db53f603fa66b959",
+      "snapshot_filesystem_state": "clean",
+      "samples_per_guest_metric": 100
+    },
+    "partitioned": {
+      "summary_sha256": "ad610d12a3c49544210ef666e219802221198e518eee302610e4088b02e2628d",
+      "raw_sha256": "2e6288ffdf6de307aee212428e968ffdf572b652220f0ac0eddf8028134b89f0",
+      "guest_irq_sha256": "6e277a5c234b55046ec74f80c2901e557b25a48a20df9a6afceb294d831f5727",
+      "host_trace_sha256": "ad826aed3966683cdb12e5f19fd283431c16c5a892979088cc93fd9389f0a68a",
+      "snapshot_sha256": "fe609595916ab09430322937269f9bf2ddd18a1f3904c7c9dd382b05f477ec15",
+      "snapshot_filesystem_state": "clean",
+      "samples_per_guest_metric": 100
+    },
+    "comparison_sha256": "ec0585147c6a0fbe4f9ab4fb13669fe807bdabb9510c3e2cdea12f6e8fd542eb",
+    "m2_exit_gate_met": false,
+    "scope": "One uncontrolled cpu-stress pair validates the current source path and evidence pipeline; it is not the preregistered five-pair controlled-interference campaign."
+  }
+}

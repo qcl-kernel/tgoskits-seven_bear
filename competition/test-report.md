@@ -1,344 +1,193 @@
-# Test and evidence report
+# 测试与证据报告
 
-Report date: 2026-08-02. The retained QEMU evidence was produced from base
-commit `263f89d8f3d0481d2712224a7b517a73b1165fb3` plus the then-uncommitted
-competition implementation. The final AxVisor RT and QEMU IVC campaigns share
-source snapshot SHA-256
-`8594ab76e903dd179db5f1aa91546c03a7d759454d300b2ac6c665933ab0216a`.
-The base commit alone does not contain the implementation. The later physical
-Orange Pi support belongs to the revision that last changes this report and is
-reported separately rather than relabeling the historical QEMU archives.
+报告日期：2026-08-12。当前实体板冒烟绑定到源码提交
+`069c911c1de02cecdc0c1fe891f5d5a288065ef0`，其上游基线为
+`upstream/dev` 的 `fad09ebd3a05f5e7a13ee6bb3cb7e4076cfdb0a1`。运行前 Windows Git
+确认 tracked worktree 干净；所有实际输入、输出、Git tree 和板卡身份均记录在
+[`current-source-smoke-20260812/provenance.json`](results/current-source-smoke-20260812/provenance.json)。
 
-## 1. Requirement status
+本报告严格区分四类证据：
 
-| Requirement/evidence | Status | What the retained evidence establishes |
+| 标签 | 证据范围 | 可以支持的结论 |
 | --- | --- | --- |
-| CPU-partition implementation | Complete | Global mask validation, maximum-matched initial placement, FDT CPU consistency, two-phase vCPU task preparation, activation-time revalidation, rollback, and frozen-registry behavior fail closed. |
-| Linux guest with at least two vCPUs | Complete QEMU and physical gates | The dedicated QEMU gate requires exactly two online CPUs; the maintained Orange Pi smoke observes `smp: Brought up 1 node, 2 CPUs`. |
-| AxVisor idle/stress/soak validation | Complete | Five 10,000-sample runs retain raw logs, metadata, guest load, p99/max tails, QEMU exit, and source/config/image hashes. |
-| Native RTOS comparison | Complete retained reference | Native Zephyr v4.3.0 runs comparable periodic/dispatch loops under idle and verified CPU stress, with platform differences stated. |
-| Bidirectional guest IP path | Complete | Linux `10.0.0.1` and Zephyr `10.0.0.2` exchange CONTROL, STATUS, and ACK over UDP/IPv4 and two virtio-net devices on isolated segment 1. |
-| Application protocol and reliability | Complete | Versioned framing, CRC, typed errors, receive window, retry, duplicate suppression, timeout, session restart logic, and safe fallback are implemented and tested. |
-| Cross-guest normal communication | Complete retained reference | Neural and manual runs each complete 1,800/1,800 with zero application errors/timeouts and zero RTOS duplicates/protocol errors. |
-| Physical Orange Pi communication | Complete local validation | One 1,800-command neural run and the maintained 20-command smoke complete on RK3588, synchronize the host filesystem, and restore Linux automatically. |
-| Cross-guest ACK-loss recovery | Complete retained reference | A deterministic 1-in-5 first-ACK loss campaign recovers all 20 losses and applies every command once. |
-| Neural/RTOS closed loop and manual comparison | Complete retained reference | Linux neural inference drives Zephyr actuator/plant state and uses returned status as the next observation; two aggregate error metrics improve. |
-| Error notification | Implemented and host-tested | ERROR encode/decode and malformed-input behavior are covered by Rust/C tests; no retained malformed-packet cross-guest QEMU capture is claimed. |
-| Isolation/access control | Implemented and regression-tested | No host NIC/default route exists; segment separation, exact unicast, anti-spoofing, and secure unknown-unicast drop are unit-tested. No third-guest runtime negative capture is claimed. |
-| Demonstration video | Outstanding | The storyboard is complete; the actual approximately five-minute recording is not. |
-| Dev-target PR | Outstanding | The Windows/WSL local synchronization does not claim an upstream push, conflict check, or PR. |
+| C0 | 当前源码提交的 Orange Pi 5 Plus 实体板冒烟 | 当前 device graph、构建、部署、启动、采集、故障恢复和 Linux 回切链可用 |
+| F | 历史 clean commit 上预注册的正式实体板多轮活动 | 统计性性能、可靠性和 AI 对照结论；不得改标为当前源码结果 |
+| H | host、QEMU、单元、契约和静态测试 | 软件边界与失败路径正确；不得替代实体板时延 |
+| D | 设计、配置和源码溯源 | 机制存在及资源契约可审查；不得单独证明运行效果 |
 
-## 2. AxVisor real-time campaign
+## 1. 结论摘要
 
-### Method
+| 目标 | 结果 | 证据边界 |
+| --- | --- | --- |
+| StarryOS + Zephyr 从 typed device graph 启动 | PASS | C0，两次完整冷启动；StarryOS 为 2 vCPU |
+| 双客户机 UDP/IPv4 控制闭环 | PASS | C0，当前 restart run 共应用 120 条 CONTROL |
+| 实际 Zephyr VM 重启与会话恢复 | PASS | C0，pCPU3 上 `running → reset → running`，新旧 session 分离 |
+| RT shared/partitioned 采集链 | PASS | C0，各三项客户机指标 × 100 样本，直接 IRQ trace 无丢失，快照 clean，Linux 恢复 |
+| 当前 RT 性能门 M2 | **FAIL** | C0 只有一对且多个尾延迟退化；不能声称当前源码已复现性能改善 |
+| RT 正式受控干扰门 | PASS | F，五配对、每指标每 run 10,000 样本、shared/partitioned 双 soak ≥1,800 秒 |
+| manual/neural 控制效果 | 混合结果 | F，RMSE 和 IAE 改善，最大超调退化；完整披露 |
+| ACK-loss、ERROR、VM restart 故障活动 | PASS | F，各 3/3；C0 另有一次实际 restart |
+| 完整历史 raw 可公开下载 | **尚未完成** | 本地约 844 MiB，提交中只有精简索引和当前 C0 raw |
 
-The same source, QEMU 10.0.3 Cortex-A72 TCG machine, two-vCPU Linux image,
-probe, and 1 ms measurement inputs are used for the four paired cases.
-`shared` permits both vCPUs on pCPUs 0-3; `partitioned` assigns vCPU0 only
-pCPU2 and vCPU1 only pCPU3. This is a feature-off/feature-on policy comparison,
-not an unmodified-`dev` historical binary comparison.
+## 2. 当前源码实体板：IVC 重启恢复
 
-Each metric retains exactly 10,000 samples after 100 warm-up iterations:
+板卡为 Orange Pi 5 Plus / RK3588，hardware ID `bf61f4d4a1d994ad`，hostname
+`orangepi5plus`。runner 在持有板卡 lease 时通过 Linux 原子暂存当前 StarryOS
+kernel、DTB、重启用 rootfs 和 Zephyr image，远端逐项执行 `sha256sum -c`，然后
+`sync` 并冷启动 AxVisor。结束后快照文件系统检查为 clean，板卡恢复到
+`/dev/mmcblk1p2` ext4 读写 Linux；采集温度为 42.538 °C。
 
-- `periodic_jitter`: lateness of absolute `clock_nanosleep` deadlines;
-- `dispatch_latency`: eventfd signal to a higher-priority same-CPU reader; and
-- `emulated_irq_response`: timerfd deadline to userspace resume, a virtual
-  timer IRQ proxy rather than direct interrupt-injection latency.
+输入哈希：
 
-Stress is a separately pinned busy-loop probe on guest CPU1. The analyzer
-requires exact READY/ACTIVE/STOPPED/CLEANED PID/CPU/affinity records,
-non-zombie liveness, explicit termination, and at least 50% CPU1 busy time.
-The percentages below are guest CPU0/CPU1 `/proc/stat` load, not host-pCPU
-utilization.
+| 输入 | SHA-256 |
+| --- | --- |
+| StarryOS kernel | `97fce5daaa9103768736b9a54a690e5f4612a221ac67672c56cebaadaf4c4b05` |
+| Orange Pi DTB | `bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981` |
+| StarryOS restart rootfs | `1c51f3fc84ee543ded52ab6626ba8fb6f60edefff1367b362a872597d403e1d8` |
+| Zephyr guest | `393026c1702d33115b42bdf72528efe49eeb4f0d9e93f3755d6be57354b5791f` |
 
-### Results
+实际重启由 pCPU3 worker 延时 20,000 ms 触发，`reset_count=1`。旧 session
+`286331153` 被退休，新 session `572662306` 被接受。重启前保留 20 个样本，重启后
+100/100 指令确认，controller error/timeout/retransmission/recovery 均为 0；Zephyr
+合计 accepted/applied 为 120/120。故障探针还确认：safe fallback、session reset、
+retired CONTROL rejection、stale STATUS ignore、stale ACK ignore 各发生一次，且产生
+1 条 typed ERROR。该结果证明的是重启安全性和闭环恢复，不是无扰动稳态性能。
 
-All latency cells are p99/maximum nanoseconds.
+重启后 100 样本的测量为：
 
-| Profile/workload | Guest load | Jitter | Dispatch | Timer-IRQ proxy | Raw-log SHA-256 |
-| --- | ---: | ---: | ---: | ---: | --- |
-| shared idle | 35.563% / 0.142% | 236,864 / 1,183,648 | 164,704 / 398,832 | 229,424 / 433,488 | `638c72d723ead40f7f4ca2ae5fb7362219c95e8bd9b482588035848f155003fd` |
-| shared stress | 2.124% / 100.000% | 245,120 / 694,096 | 148,240 / 541,376 | 226,608 / 438,800 | `5179ad02eba344606dff53853c312b295b89b7ae89135697fa68c194655590cc` |
-| partitioned idle | 36.301% / 0.176% | 231,328 / 1,222,368 | 154,080 / 372,928 | 225,056 / 1,298,736 | `0010d39af45494b01e359d9ddb9b85553591431ae5592bc8d608d169e5434d37` |
-| partitioned stress | 1.995% / 100.000% | 237,264 / 944,512 | 137,584 / 372,256 | 240,832 / 454,880 | `9361542d542a141462c1504d12cc450438e2f05fce0c5bd044731de7aff4d76c` |
-| partitioned stress soak | 1.667% / 100.000% | 333,072 / 6,690,800 | 145,440 / 275,760 | 280,720 / 6,388,560 | `729a04ad0572a14c0c268910dc73e739a40709f4f508835827e0b4f3767883c2` |
-
-Partitioned stress improved dispatch p99/maximum by 7.19%/31.24% and jitter
-p99 by 3.20%, but jitter maximum and both timer-IRQ proxy tails worsened.
-Partitioned idle improved dispatch p99/maximum by 6.45%/6.49% and jitter p99
-by 2.34%, while jitter maximum and especially timer-IRQ maximum worsened. The
-claim is deterministic placement and selected dispatch-tail improvement, not
-universal latency improvement.
-
-The soak uses a 10 ms period: 10,000 samples give 100 seconds per metric and
-300 seconds measured total. Its metadata interval is
-`2026-07-31T00:21:24Z` through `00:34:24Z` (13 minutes), including build, boot,
-warm-up, setup, transitions, and shutdown. The 6.69 ms largest observed jitter
-is retained rather than hidden.
-
-Complete summaries, per-run provenance, and compressed analyzer-input logs are
-under [`results/axvisor-rt-reference`](results/axvisor-rt-reference/).
-
-## 3. Final cross-guest normal runs
-
-Both runs use four AxVisor pCPUs, dedicated Linux vCPUs on pCPUs1/2, Zephyr on
-pCPU0, identical memory/device/network configuration, 1,800 commands, and a
-100 ms nominal control period. The analyzer requires one terminal controller
-record, final RTOS progress, exact counts, `IVC-LINUX-DONE exit=0`, successful
-QEMU completion, monotonic percentile families, and zero normal-run fault
-counters.
-
-| Metric | Manual fixed | Neural |
-| --- | ---: | ---: |
-| Sent / acknowledged | 1,800 / 1,800 | 1,800 / 1,800 |
-| Application errors / timeouts | 0 / 0 | 0 / 0 |
-| Retransmissions / recoveries | 0 / 0 | 0 / 0 |
-| RTOS accepted / duplicates / protocol errors | 1,800 / 0 / 0 | 1,800 / 0 / 0 |
-| Full-loop p50 / p95 / p99 / max | 3,902 / 4,670 / 5,423 / 19,656 us | 3,894 / 4,652 / 5,657 / 20,917 us |
-| Pre-send p50 / p95 / p99 / max | 3 / 4 / 8 / 269 us | 13 / 17 / 45 / 376 us |
-| Transport p50 / p95 / p99 / max | 3,898 / 4,667 / 5,420 / 19,555 us | 3,880 / 4,632 / 5,645 / 20,622 us |
-| Effective throughput | 9.963 msg/s | 9.962 msg/s |
-| RMSE | 9,258.906 mC | 5,932.491 mC |
-| Integrated absolute error | 1,429,224.700 mC*s | 686,993.400 mC*s |
-| Maximum overshoot | 6,840 mC | 13,428 mC |
-
-Neural control improves RMSE by 35.93% and integrated absolute error by
-51.93%, while maximum overshoot is worse. The weights are checked-in,
-hand-parameterized 4x6x1 dense/ReLU controller parameters; there is no external
-training dataset claim.
-
-For Task 2, `transport_*` covers pre-send serialization plus the UDP/IP,
-virtio, RTOS action/status, ACK, and response-decode path. For Task 3,
-`full_loop_*` additionally starts before observation construction and selected
-policy inference. Both are Linux same-clock round trips; they do not subtract
-unrelated guest clock epochs, and recorded resolution is one microsecond.
-
-The neural raw-log SHA-256 is
-`6c7f7e2e404a5c8ef8a9a3f632a24169b35d8be6a8c0ac496775bf9d32a07eb8`;
-manual is
-`39ac8deaf5382490a007bfd47ec7384989c64c6092eed70ac8ff682c076d8a57`.
-Both compressed logs and summaries are retained in
-[`results/axvisor-ivc-reference`](results/axvisor-ivc-reference/).
-
-## 4. Physical Orange Pi 5 Plus validation
-
-The physical profile ran on an RK3588 Orange Pi 5 Plus with 16 GiB DRAM. WSL2
-owned the CH340 serial connection at 1,500,000 baud, staged the Linux kernel,
-initramfs, and guest DTB over SSH while holding the board lease, started
-AxVisor through U-Boot, and restored the TF-card Linux system afterward.
-
-The full neural run completed the same 1,800-command plant trajectory used by
-the QEMU neural profile:
-
-| Metric | Physical result |
+| 指标 | 结果 |
 | --- | ---: |
-| Sent / acknowledged | 1,800 / 1,800 |
-| Errors / timeouts / retransmissions / recoveries | 0 / 0 / 0 / 0 |
-| Full-loop p50 / p95 / p99 / max | 4,195 / 4,228 / 7,812 / 23,216 us |
-| Pre-send p50 / p95 / p99 / max | 1 / 2 / 2 / 3 us |
-| Transport p50 / p95 / p99 / max | 4,194 / 4,227 / 7,810 / 23,213 us |
-| Effective throughput | 9.992 msg/s |
-| RMSE / integrated absolute error | 5,932.491 mC / 686,993.400 mC*s |
-| Maximum overshoot | 13,428 mC |
+| success / throughput | 100% / 9.956 msg/s |
+| full-loop p50 / p95 / p99 / max | 2,307 / 8,235 / 34,907 / 67,388 µs |
+| RMSE | 20,435.735 m°C |
+| IAE | 185,638.1 m°C·s |
+| 最大超调 | 0 m°C |
 
-The RTOS progress marker reached 1,800 with zero duplicates and protocol
-errors, both guests entered `SystemDown`, AxVisor confirmed host filesystem
-sync, and the board returned to `/dev/mmcblk1p2` ext4 `rw`. The local serial-log
-SHA-256 is
-`134bbd6b308c6babb0b43bb1f8906f4d4a74bb422ab1f0cae59f05fcf9209da5`.
+机器结果、原始 CSV、串口和 wrapper 在
+[`ivc/`](results/current-source-smoke-20260812/ivc/)。原始 metadata 中的
+`dirty=true` 没有被改写：它来自 WSL Git 对 Windows `core.autocrlf` checkout 的
+换行差异判断。Windows Git 的运行前 clean 断言、源码 tree/archive 哈希和实际输入
+字节哈希作为增量澄清记录在 provenance 中。
 
-After hardening PL011 byte/word access, GICR `Last` semantics, CPU idle-state
-filtering, guest-console locking, and the newline-complete success regex, the
-maintained 20-command smoke returned exit 0. It observed two online Linux
-CPUs, 20/20 acknowledgements, zero controller faults, zero recurring
-unsupported PSCI `CPU_SUSPEND` calls, a confirmed host sync, and automatic
-Linux restore. Its local log SHA-256 is
-`4432964c3bf5746f9cb3a0a55f50f98cec7bbc270fe6c20be16b572d7f8afcf7`.
+## 3. 当前源码实体板：RT shared/partitioned 冒烟
 
-These are local physical captures, not files in the committed QEMU result
-archive. The 1,800-command run is one observed hardware run, not a repeated
-statistical campaign. Long terminal records can lose spans on the shared
-physical UART; unattended success therefore uses the short newline-terminated
-`IVC-LINUX-DONE exit=0` marker, while the controller and RTOS progress records
-provide the detailed application evidence.
+两次运行均从当前源码重建 StarryOS kernel，使用同一 64 MiB capture rootfs、同一
+DTB 和同一探针。每次完整经历部署、冷启动、StarryOS 双 vCPU 采集、volatile block
+快照、host filesystem sync、关机和 Linux 恢复。每个客户机指标保留 100 样本；
+guest/host 直接 IRQ trace 均通过 lossless 校验且 vCPU migration 为 0。
 
-## 5. Cross-guest deterministic ACK-loss run
+| 指标（ns） | shared p99 / max | partitioned p99 / max | 改善率 p99 / max |
+| --- | ---: | ---: | ---: |
+| periodic jitter | 215,042 / 238,834 | 330,542 / 412,375 | **-53.710% / -72.662%** |
+| dispatch latency | 56,291 / 145,833 | 143,500 / 144,958 | **-154.925% / +0.600%** |
+| timerfd IRQ proxy | 8,723,208 / 9,661,667 | 8,561,333 / 9,500,083 | +1.856% / +1.672% |
+| virtual timer injection → guest IRQ | 10,913,875 / 421,827,291 | 11,537,458 / 423,535,000 | **-5.714% / -0.405%** |
 
-The fault Zephyr image suppresses only the first ACK for each selected fresh
-sequence while returning STATUS. Linux retransmits after 100 ms; Zephyr treats
-that command as a duplicate and returns STATUS plus ACK without reapplying the
-actuator or stepping the plant.
+正值表示 partitioned 更低。该对照的
+[`comparison.json`](results/current-source-smoke-20260812/rt/comparison.json)
+明确给出 `m2_exit_gate_met=false`：单对、未受控 host interference，且 jitter、
+dispatch p99 和直接 IRQ 尾部退化。它只验证当前源码端到端管线，不能替代五配对
+正式活动，也不能用“平均更好”掩盖最坏值。
 
-| Metric | Result |
+## 4. 历史正式 RT 活动
+
+### 4.1 受控 host interference
+
+精简材料位于
+[`historical-formal/rt-host-noise`](results/current-source-smoke-20260812/historical-formal/rt-host-noise/)。
+预注册、三次执行前 amendment、soak 预注册和分析契约均被保留。正式 batch 的
+measurement commit 为 `0588743ecb807d7363a3dec90c17a159179933b0`，soak 的
+measurement commit 为 `2e97430f2171667d4ec16c3a02931653f7ddedf8`。
+
+五个 AB/BA 配对各对 shared 和 partitioned 采集，每个客户机指标每 run 10,000
+样本，并完成两侧 ≥1,800 秒 soak。`m2_exit_gate_met=true`。受控干扰模型刻意把
+host activity 放入 shared 客户机的 CPU 路径，因此周期和 timerfd proxy 的极大改善
+是该 treatment 的效果，不应外推到普通无干扰 workload。
+
+| 正式门指标 | 五对结果 / worst-of-runs |
 | --- | ---: |
-| Sent / acknowledged | 100 / 100 |
-| Application errors / terminal timeouts | 0 / 0 |
-| Retransmissions / recoveries | 20 / 20 |
-| Fresh accepted / applied | 100 / 100 |
-| ACKs dropped / duplicates suppressed | 20 / 20 |
-| STATUS / ACK / ERROR frames sent | 120 / 100 / 0 |
-| RTOS protocol errors | 0 |
-| Full-loop p50 / p95 / p99 / max | 3,953 / 110,808 / 111,484 / 111,548 us |
-| Effective throughput | 9.769 msg/s |
+| direct IRQ p99 | 5/5 改善；worst-of-runs 改善 99.639% |
+| direct IRQ max | 5/5 改善；worst-of-runs 改善 87.771% |
+| dispatch p99 | 5/5 非退化；worst-of-runs 改善 28.111% |
+| dispatch max | 5/5 改善；worst-of-runs 改善 99.773% |
 
-The analyzer verifies the identical exact injection and duplicate sequence set
-`{5, 10, 15, ..., 100}`, terminal counters, ordering, and source-log SHA-256
-`f15c88c6671db67934ce178e3f113b65ac2811a1538a0c36412f6c156bd279fd`.
-The 100 ms retry delay intentionally dominates p95 and above. The terminal log
-also observes controller-silence safe fallback to actuator zero.
+### 4.2 同 VM 客户机 CPU1 stress
 
-## 6. Native Zephyr real-time baseline
+[`historical-formal/rt-stress`](results/current-source-smoke-20260812/historical-formal/rt-stress/)
+包含五对、十次 lossless capture 和 300,000 个客户机用户态样本，固定 vCPU 放置均
+通过。该 workload 与被测任务处于同一 StarryOS VM，不能作为隔离 treatment。
+结果也是混合的：dispatch p99 五对均退化，worst-of-runs max 退化 10.443%。因此
+报告只主张受控 host-noise 场景的 M2 改善，不主张 partitioning 对所有压力源普遍
+降低时延。
 
-The native comparison runs upstream Zephyr v4.3.0 directly on QEMU
-`qemu_cortex_a53`, without AxVisor or a Linux guest. Both cases use a 1 ms
-absolute period, 100 warm-up expirations, 10,000 measured deadlines, no console
-output during measurement, and explicit runtime-accounted load.
+## 5. 历史正式 IVC 与 AI 活动
 
-| Workload | Metric | p50 | p99 | p99.9 | Maximum | Actual duration |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| idle | periodic wake lateness | 65,104 ns | 186,256 ns | 597,792 ns | 841,264 ns | 10,000,197 us |
-| idle | timer-to-task dispatch | 22,896 ns | 40,288 ns | 101,280 ns | 162,896 ns | 10,000,197 us |
-| CPU stress | periodic wake lateness | 65,472 ns | 669,408 ns | 3,943,120 ns | 6,236,608 ns | 10,000,313 us |
-| CPU stress | timer-to-task dispatch | 26,368 ns | 134,912 ns | 281,024 ns | 1,141,536 ns | 10,000,313 us |
+### 5.1 manual/neural AB/BA 五配对
 
-The idle case reports 988 permille idle; stress reports 1,000 permille
-non-idle and 985 permille stress work. The final isolated runs recorded zero
-idle coalescings and 68 measured stress coalescings; every coalesced deadline
-remains in the fixed sample set. The validated summaries are retained under
-[`results/native-zephyr-reference`](results/native-zephyr-reference/).
-The exact console and build logs are retained there as deterministic gzip
-streams. The console records are post-measurement aggregates: the native
-benchmark did not serialize an individual-sample series, so the summaries
-cannot be independently recomputed from per-sample native data.
+正式 v5 活动绑定 source commit
+`f4ced37584964aba56e07ff060ae58374608bc26`，同一实体板完成五个 AB/BA 配对，
+10/10 run 均有效。精简 summary/preregistration 位于
+[`historical-formal/ivc-control`](results/current-source-smoke-20260812/historical-formal/ivc-control/)。
 
-This is an equivalent-method comparison, not the same platform: CPU model,
-CPU count, OS, timer/dispatch implementation, virtualization boundary, and
-stress placement differ. It is neither an AxVisor result nor a hardware bound.
+| 控制指标 | manual | neural | neural 相对变化 |
+| --- | ---: | ---: | ---: |
+| RMSE (m°C) | 9,258.906 | 5,932.491 | 改善 35.93% |
+| IAE (m°C·s) | 1,429,224.7 | 686,993.4 | 改善 51.94% |
+| 最大超调 (m°C) | 6,840 | 13,428 | **退化 96.32%** |
 
-## 7. Supplemental host evidence
+full-loop p99 只有 2/5 配对有利于 neural，所以不声称神经策略更低延迟。它的
+价值是以更高超调换取更低累计控制误差，取舍由结果显式呈现。
 
-The host UDP reference uses the same Rust protocol/state machines and 100
-commands with first-ACK loss every fifth sequence. It records 100/100 success,
-20 recoveries, 20 exactly-once duplicate suppressions, and no terminal error.
-It is useful regression evidence but is not labeled cross-guest or Zephyr
-latency. See [`results/host-network-reference`](results/host-network-reference/).
+### 5.2 可靠性故障活动
 
-The host restart reference accepts sequence 1 from one session, then sequence
-1 from a new controller session, and rejects delayed traffic from the retired
-session. It does not demonstrate a cross-guest reconnect. See
-[`results/host-restart-reference`](results/host-restart-reference/).
+| 活动 | source commit | 正式结果 | 被验证的机制 |
+| --- | --- | ---: | --- |
+| ACK loss | `bac4ad16b4adf673942e6c31897872c2c5c116dc` | 3/3 | timeout、重传、重复抑制、exactly-once apply |
+| typed ERROR | `29be4fc4c8668b8e94cd253fb4484bbeba1d8481` | 3/3 | 错误通知和失败闭合 |
+| actual VM restart | `6adf49e09ce91b53d2573cb8d34c60dc6a9ec47c` | 3/3 | 新 session、旧流量拒绝、safe fallback、恢复 |
 
-The deterministic host CSV independently binds the 1,800-step manual/neural
-plant comparison and is retained under
-[`results/host-ai-reference`](results/host-ai-reference/). It is functional
-cross-check evidence, not guest timing.
+三类活动都通过 raw gzip、manifest、lifecycle 和 Linux restore gate；精简材料分别在
+`historical-formal/ivc-ack-loss`、`ivc-error` 和 `ivc-restart`。
 
-## 8. Isolation and protocol assurance
+### 5.3 神经推理后端
 
-The full profile has no host NIC, default route, bridge, NAT, vsock data path,
-shared-memory channel, or hypercall application channel. Its network identities
-are fixed as follows:
+| 后端 | source commit | 样本 | 结果 |
+| --- | --- | ---: | --- |
+| RKNN / RK3588 NPU | `c3f01dc34b83695eddf8da83cf4ed71622f64f7c` | 5 × 1,800 | 9,000/9,000；仅每 run 首周期 miss，共 5 次；首周期后 0 miss/error/timeout；device p99 ≈1.67 ms |
+| ONNX Runtime / CPU | `0110647de52f5e2ad6b550cb594780d7506ffecf` | 5 × 1,800 | 9,000/9,000；同样仅 5 次首周期 miss；ORT wall p99 约 174–176 µs |
 
-| Endpoint | MAC | IPv4 | UDP role |
-| --- | --- | --- | --- |
-| Linux controller | `52:54:00:00:00:01` | `10.0.0.1/24` | ephemeral source port to `10.0.0.2:5500` |
-| Zephyr endpoint | `52:54:00:00:00:02` | `10.0.0.2/24` | listens on UDP port `5500` |
+两种后端的 full-loop p99 约为 12–13.5 ms。后端结果用于证明 StarryOS 内推理部署和
+网络闭环，不把不同执行设备的墙钟值直接当作公平加速比。
 
-Linux installs only the connected `10.0.0.0/24` route. The guest init script
-installs no firewall rule, and no host firewall rule is part of this experiment
-because the segment has no host-facing interface. Isolation is instead enforced
-at the AxVisor switch boundary by segment membership, exact unicast identity,
-source-MAC anti-spoofing, and secure unknown-unicast drop.
+## 6. 源码与产物溯源
 
-Regressions cover no cross-segment delivery, no unknown-unicast flood, source
-anti-spoofing, no reflected unicast, same-segment multicast only, duplicate
-identity rejection, bounded topology, and virtio descriptor/address/header
-validation. This is strong policy and parser/driver evidence, but not a runtime
-penetration test with a malicious third guest.
+精简包提供三层绑定：
 
-The Rust and C protocol suites cover version, type, payload length, session,
-sequence/timestamp, error code, CRC, exact payloads, malformed input, typed
-ERROR behavior, ACK retry, duplicate/out-of-order handling, session restart,
-and safe fallback. CONTROL, STATUS, and ACK are demonstrated cross-guest;
-ERROR is implemented and host-tested but not malformed-injected in the retained
-cross-guest run.
+1. `provenance.json` 绑定 commit、tree、`git archive`、相对 upstream diff、板卡身份和运行结论；
+2. `runtime-inputs.sha256` 绑定配置、stager、runner、analyzer、guest 程序、模型和探针的实际字节；
+3. `source-files.git-ls-tree.txt` 把相关路径映射到 Git blob ID，当前 raw/console/summary 再由总 manifest 覆盖。
 
-## 9. Executed validation
+`commands/` 中的两个 wrapper 是运行时原始命令记录，包含绝对工作区路径，因此用于
+审计而不是跨机器直接复制。可移植命令见 [`reproduce.md`](reproduce.md)。历史目录中
+原始 `checksums.sha256` 是完整 844 MiB archive 的索引；精简包自己的
+`checksums.sha256` 才是本目录可直接执行的完整性入口。
 
-The final implementation sweep completed against the synchronized working tree:
+## 7. 已执行验证
 
-- the AxVisor RT harness passed 24 Python tests plus its shell/C integration
-  test; the IVC harness passed 15 Python and eight C tests; the isolated Zephyr
-  baseline passed five Python and seven C tests;
-- syntax/static harness checks passed for nine Bash scripts, two POSIX shell
-  scripts, ten Python modules, and the applicable shellcheck rules;
-- all five full-profile `axvmconfig check --config-path` invocations returned a
-  valid configuration;
-- the final `axvm`/`axvm-types` run passed 106 `axvm` unit tests, 18 architecture
-  boundary tests, 20 focused error/FDT/passthrough/vCPU integration tests, two
-  `axvm-types` unit tests, three `axvm-types` error-contract tests, and doc tests;
-- the duplicate secondary `CPU_ON` regression was demonstrated failing before
-  the startup-reservation fix, then passing in the four-test initial-placement
-  contract suite after the fix;
-- focused suites passed for GICv3, `ax-task`, `somehal`, `arm_vcpu`, virtio-net,
-  the virtual switch, `axvmconfig`, and `ivcproto`, including parser, isolation,
-  DAIF/entry-hook, passthrough-SPI, restart, and ACK-recovery contracts;
-- targeted `cargo xtask clippy --package ...` checks passed across 37 relevant
-  package/feature combinations, including the final `axvm-types` and `axvm`
-  variants, and `cargo +nightly-2026-07-15 fmt --all -- --check` passed;
-- final-tree AArch64 AxVisor Linux+Zephyr compilation passed, followed by the
-  dedicated two-vCPU Linux QEMU gate (`1/1` pass with
-  `AXVISOR_DEDICATED_PARTITION_PASS`); a final RISC-V SMP compile-only AxVisor
-  build also passed;
-- both normal/fault Zephyr v4.3.0 endpoint builds passed with verified
-  entry/load layout; and
-- all 21 retained JSON records parsed, all 12 gzip archives passed integrity
-  validation, all documented relative links resolved, retained-artifact hashes
-  matched their metadata, and the final `git diff --check` passed.
+与当前实体运行对应的回归已通过：IVC test discovery 183/183、Starry staging contract
+20/20、AxVisor AArch64 `axtest` 79/79、相关 `axbuild` 107/107、RT shell runner，以及
+targeted clippy 和 rustfmt。最终文档/证据提交另保留 JSON、gzip、Markdown 链接、
+checksum 和 `git diff --check` 的验证日志于
+[`validation/`](results/current-source-smoke-20260812/validation/)。
 
-The later physical-board additions additionally passed six PL011 integration
-tests, the GICv3 redistributor unit regression, the AxVM guest-FDT idle-state
-regression, both Orange Pi success-regex contracts, four physical VM-config
-checks, targeted clippy for `axdevice`, `arm_vgic`, and `axvm`, and final Rust
-formatting. Both finite Zephyr board images and both physical AxVisor build
-profiles compiled. The final 20-command board smoke returned exit 0 and
-restored Linux after confirming the AxVisor filesystem sync marker.
+完整 `axbuild` sweep 曾遇到一个与本工作无关、已存在的 Starry grouped-QEMU failure
+并在后续矩阵中超时；本报告没有把那次 sweep 写成全绿，也没有降低测试断言。
 
-The retained five-run RT comparison and three-run IVC campaign remain pinned to
-the source/config/image hashes recorded with those measurements. The later
-secondary-CPU startup hardening was validated by the complete host contract
-suites, both final target builds, and the dedicated two-vCPU QEMU gate; the
-performance campaign was not silently relabelled as a final-working-tree capture.
+## 8. 测量限制与待补强项
 
-One configured lint limitation remains explicit: the target-specific AxVisor
-`-D warnings` command stops in existing dependency warnings in
-`axdevice::adapter` and `someboot::fdt` before linting the AxVisor binary. The
-xtask clippy driver intentionally skips that target-configured binary; AxVisor
-itself compiled successfully in the final AArch64, RISC-V, and QEMU gates. The
-default `arm_vcpu` umbrella test also requires the external
-`scripts/.axci/lib/test_flow.sh` fixture, which is absent in this checkout; its
-library and repository-owned integration contracts passed.
-
-## 10. Measurement limits and remaining work
-
-QEMU TCG, WSL2 host scheduling, host activity, guest scheduling, and platform
-differences contribute to observed tails. Serial output is outside individual
-RT sample intervals; IVC progress logging can still perturb surrounding guest
-scheduling. At 1,500,000 baud, long records on the shared physical UART may
-lose spans even when software print locking prevents interleaving, so compact
-completion markers are the automation contract. Reported maxima are observed
-sample maxima, not proven WCET or hardware bounds. The timerfd metric is a
-userspace IRQ-response proxy, not direct injection/handler timing. FIFO CPU
-partitioning does not establish bounded preemption of a non-yielding
-passthrough guest or isolate every host task/physical interrupt.
-
-The three technical tasks, reproducible commands, source/config/image hashes,
-and retained result archives are present. Formal remaining deliverables are:
-
-1. record the actual approximately five-minute demonstration video; and
-2. when authorized, verify a conflict-free dev target, push, and submit the
-   required PR.
-
-Additional cross-guest malformed-ERROR, restart, or third-guest isolation
-captures would strengthen the evidence, but are not misrepresented as existing
-or treated as completed artifacts here.
+- 当前 C0 RT 只有一对，且 M2 fail；最终提交应重跑正式五对与双 soak，闭合源码版本差。
+- 完整历史 raw archive 仍只在本地 `results/orangepi-5-plus/`，提交的精简 summary 无法重算所有历史统计；应发布不可变下载和总 SHA-256。
+- 原生 Zephyr 基线目前是等价 QEMU 平台，不是同一 RK3588；不能消除硬件与时钟源差异。
+- 隔离由 device graph、switch policy 和 H 层负例支持，但没有恶意第三客户机的实体/QEMU 动态 capture。
+- 当前视频是对已归档实体串口和机器结果的五分钟后验回放，不是伪装成现场实时采集的录像。
+- 所有 maximum 都是观察样本最大值，不是 WCET 证明或硬实时上界。

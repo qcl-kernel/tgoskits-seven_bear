@@ -1,0 +1,6 @@
+{     "programs": [      ],     "stream_groups": [      ],     "streams": [         {             "index": 0,             "codec_name": "h264",             "width": 1280,             "height": 720,             "r_frame_rate": "30/1"         },         {             "index": 1,             "codec_name": "aac",             "sample_rate": "48000",             "channels": 1,             "r_frame_rate": "0/0"         }     ],     "format": {         "duration": "300.000000",         "size": "6101134"     } }
+full_decode=PASS
+narration_timeline_seconds=300
+mean_volume_db=-24.7
+max_volume_db=-2.3
+sha256=8368a7439513a80b1dbda1066acf5074d63481637df6b31461cabf2954bd2d65

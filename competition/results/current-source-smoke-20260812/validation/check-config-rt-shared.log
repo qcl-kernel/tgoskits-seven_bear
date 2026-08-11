@@ -1,0 +1,72 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.17s
+     Running `target/debug/axvmconfig check --config-path scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml`
+Config file 'scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml' is valid.
+Config: GuestConfig {
+    base: VMBaseConfig {
+        id: 0x1,
+        name: "starry-rt-shared-orangepi",
+        guest_type: Virtualized,
+        cpu_num: 0x2,
+        phys_cpu_ids: Some(
+            [
+                0x100,
+                0x200,
+            ],
+        ),
+        phys_cpu_sets: Some(
+            [
+                0x2,
+                0x4,
+            ],
+        ),
+        dedicated_cpus: false,
+    },
+    kernel: VMKernelConfig {
+        entry_point: 0x80200000,
+        kernel_path: "/home/orangepi/axvisor-guest/starryos.bin",
+        kernel_load_addr: 0x80200000,
+        enable_bios: false,
+        boot_protocol: None,
+        bios_path: None,
+        uefi_firmware_path: None,
+        bios_load_addr: None,
+        dtb_path: Some(
+            "/home/orangepi/axvisor-guest/starry-orangepi-5-plus.dtb",
+        ),
+        dtb_load_addr: Some(
+            0x80000000,
+        ),
+        ramdisk_path: None,
+        ramdisk_load_addr: None,
+        image_location: Some(
+            "fs",
+        ),
+        cmdline: Some(
+            "console=ttyAMA0,115200 earlycon=pl011,0x09000000 root=/dev/vda rw",
+        ),
+        memory_regions: [
+            VmMemConfig {
+                gpa: 0x80000000,
+                size: 0x10000000,
+                flags: 0x7,
+                map_type: MapAlloc,
+            },
+        ],
+        configured_memory_region_count: 0x1,
+    },
+    devices: GuestDevices {
+        passthrough: [],
+        disabled: [],
+        virtual_devices: [
+            VirtualDeviceRequest {
+                id: "disk0",
+                model: "virtio-blk-mmio",
+                options: {
+                    "image_path": String(
+                        "/home/orangepi/axvisor-guest/starry-rt-capture-rootfs.img",
+                    ),
+                },
+            },
+        ],
+    },
+}

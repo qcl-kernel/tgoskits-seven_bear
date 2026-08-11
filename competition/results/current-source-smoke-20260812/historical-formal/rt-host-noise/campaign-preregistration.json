@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "preregistered",
+  "created_at_utc": "2026-08-03T07:58:19Z",
+  "board": {
+    "type": "OrangePi-5-Plus",
+    "service_id": "orangepi-5-plus-1",
+    "hardware_fingerprint": "bf61f4d4a1d994ad",
+    "soc": "RK3588",
+    "dram_gib": 16
+  },
+  "source": {
+    "branch": "experiment/m2-formal-20260803",
+    "commit": "3dc2779841c8e55a089fc30441d39f62213f6b45",
+    "clean_worktree_required": true,
+    "uboot_shell_patch": {
+      "upstream_pr": "https://github.com/drivercraft/ostool/pull/164",
+      "commit": "edf4169",
+      "requested_release": "0.2.7"
+    }
+  },
+  "artifacts": {
+    "base_rootfs_sha256": "c6a64b7bbfffe066cc7b45813234178c6de59da45418480c0eeff09db07fbda8",
+    "starry_kernel_sha256": "3308e76241e62d34760f946e76e7f6558820eb470dd3274c2fda3354e0eebde7",
+    "starry_guest_dtb_sha256": "0f533e1107894dd9b3f062f726fee012519c3e55ef0a2e81e2507e7e3ef303cd",
+    "starry_rootfs_sha256": "23770f2b87ddeaf1f47d3e772cafe1c92c633e44cc6212b99343d68a75dd5d8c",
+    "probe_sha256": "8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da",
+    "shared_build_config_sha256": "06a8fe03f123ff33d74d765e98b74a00e23b1ff904fda5df212d97d3f5bdb22e",
+    "partitioned_build_config_sha256": "1262c996a781f2f72690f65cee48349b15e5b945cd15ae6564145aa0c3909846",
+    "shared_board_config_sha256": "715f5d51d918125e77bd1e884376691a27ae91c8081cf63e62103aab55fed563",
+    "partitioned_board_config_sha256": "715f5d51d918125e77bd1e884376691a27ae91c8081cf63e62103aab55fed563",
+    "shared_vm_config_sha256": "c356e1a1f6c5faaed2d54560686f1e0bba3c02f2b08f7a324d098ca8b80d09a0",
+    "partitioned_vm_config_sha256": "0698da8872fda13691fbf1e9cf869ff5adcd5ab00d630172b70a584ebb305d9a"
+  },
+  "measurement": {
+    "workload": "idle",
+    "iterations_per_metric": 10000,
+    "warmup_iterations": 100,
+    "period_us": 1000,
+    "guest_vcpus": 2,
+    "measurement_cpu": 0,
+    "stress_cpu": 1,
+    "fifo_priority": 80,
+    "host_noise": {
+      "implementation": "busy-loop",
+      "shared_pcpu": 1,
+      "partitioned_pcpu": 3,
+      "max_duration_ms": 180000
+    }
+  },
+  "pair_order": [
+    { "pair": 1, "order": ["shared", "partitioned"] },
+    { "pair": 2, "order": ["partitioned", "shared"] },
+    { "pair": 3, "order": ["shared", "partitioned"] },
+    { "pair": 4, "order": ["partitioned", "shared"] },
+    { "pair": 5, "order": ["shared", "partitioned"] }
+  ],
+  "acceptance": {
+    "direct_irq_p99_non_regression_limit_percent": 5.0,
+    "direct_irq_max_improvement_target_percent": 10.0,
+    "direct_irq_max_must_improve_in_at_least_pairs": 4,
+    "pair_count": 5,
+    "required_zero_counters": [
+      "dropped",
+      "incomplete",
+      "failed_injections",
+      "unowned_virtual_timer_irqs",
+      "counter_frequency_mismatches"
+    ],
+    "required_console_absence": [
+      "Unhandled IRQ",
+      "ESR_EL2",
+      "panicked at",
+      "AXVM_NESTED_VCPU_OPERATION"
+    ],
+    "snapshot_fsck": "clean",
+    "linux_restore_root": "/dev/mmcblk1p2 ext4 rw",
+    "harvest_each_half_before_next_boot": true
+  },
+  "pre_run_validation": {
+    "python_axvisor_rt": "49/49 passed",
+    "python_competition_ivc": "57/57 passed",
+    "shell_runner": "passed",
+    "cargo_fmt_check": "passed",
+    "targeted_clippy": "55/55 passed; axvisor validated through target build flow",
+    "starry_kernel_clean_build": "passed",
+    "remote_stage_hash_and_sync": "passed"
+  }
+}
