@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "amendment_id": "stress-amendment-004-analysis-null-metadata",
+  "campaign_id": "starry-rt-stress-formal-20260803",
+  "created_at_utc": "2026-08-03T14:52:35Z",
+  "status": "applied",
+  "preregistration_sha256": "9fb8e46eb402aad5c06231d3d96189ba61b51ef134395c9bb2d561537a519347",
+  "preregistration_modified": false,
+  "trigger": {
+    "stage": "post-capture analysis",
+    "all_preregistered_halves_completed": true,
+    "failure": "the stress aggregator rejected comparison files containing controlled_interference: null"
+  },
+  "root_cause": "compare_starry_board.py always serializes the optional controlled_interference field. For this no-host-noise campaign its value is null, but the stress aggregator rejected the field based on key presence instead of rejecting only a non-null interference payload.",
+  "change": {
+    "scope": "post-capture analysis code and deterministic tests only",
+    "capture_commit": "96ff161270f5d16c7a08e491f19436b925e8b3e1",
+    "analysis_commit": "6f1cd83b2d3330ef5813e7283a68d692d73d28bb",
+    "analysis_tree": "28220b751fd359bdcab76562da486abb747e5c93",
+    "files": {
+      "scripts/benchmark/axvisor-rt/aggregate_starry_stress.py": "face0e179c509b62c117ef10e12e9fc6f1094aac40fd6b7252da931a15933b1e",
+      "scripts/benchmark/axvisor-rt/tests/test_aggregate_starry_stress.py": "3de30962ccbf0b79546db475dcef4058a378e7aad31f09d7edd19a11d7f1fd5f"
+    },
+    "fixes": [
+      "accept the canonical absent-interference representation controlled_interference: null",
+      "continue rejecting every non-null controlled-interference payload",
+      "make the test fixture match the comparison producer output"
+    ]
+  },
+  "regression_first_validation": {
+    "pre_fix": "fixture with controlled_interference: null failed at pair 1 with 'must not contain controlled host interference'",
+    "post_fix_focused_tests": "6/6 passed",
+    "post_fix_full_python_tests": "64/64 passed",
+    "shell_contract_test": "PASS",
+    "python_compile": "PASS",
+    "cargo_fmt_check": "PASS",
+    "git_diff_check": "PASS",
+    "cargo_xtask_clippy_axvisor": "SKIPPED_BY_PROJECT: requires an AxVisor target/build configuration; no Rust source changed"
+  },
+  "data_handling": {
+    "board_rerun": false,
+    "raw_artifacts_modified": false,
+    "summary_artifacts_modified": false,
+    "trace_artifacts_modified": false,
+    "comparison_artifacts_modified": false,
+    "measurement_disposition": "all ten preregistered halves remain accepted unchanged"
+  },
+  "claim_boundary": {
+    "formal_stress_coverage_only": true,
+    "isolation_claim_allowed": false,
+    "reason": "this campaign has guest CPU1 stress but no controlled host interference"
+  }
+}

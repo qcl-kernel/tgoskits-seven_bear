@@ -1,0 +1,148 @@
+   Compiling ax-percpu v0.4.17 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/components/percpu/percpu)
+   Compiling ax-driver v0.12.3 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/ax-driver)
+   Compiling axplat-dyn v0.7.15 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/platforms/axplat-dyn)
+   Compiling ax-errno v0.6.3 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/components/axerrno)
+   Compiling ax-hal v0.5.31 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/modules/axhal)
+   Compiling scope-local v0.4.5 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/components/scope-local)
+   Compiling ax-task v0.6.7 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/modules/axtask)
+    Checking ax-sync v0.5.31 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/modules/axsync)
+    Checking someboot v0.3.8 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/platforms/someboot)
+    Checking ax-ctor-bare v0.4.9 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/components/ctor_bare/ctor_bare)
+   Compiling ax-runtime v0.10.7 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/modules/axruntime)
+   Compiling ax-posix-api v0.5.32 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/api/arceos_posix_api)
+    Checking arm_vcpu v0.5.19 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/arm_vcpu)
+    Checking axvm-net v0.1.0 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvm-net)
+    Checking axvmconfig v0.8.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvmconfig)
+   Compiling axvisor v0.5.24 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/axvisor)
+    Checking ax-memory-set v0.6.14 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/memory/memory_set)
+    Checking ax-io v0.6.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/components/axio)
+    Checking dma-api v0.9.5 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/memory/dma-api)
+    Checking rdrive v0.23.9 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/rdrive)
+    Checking buddy-slab-allocator v0.4.8 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/memory/buddy-slab-allocator)
+    Checking arm-scmi-rs v0.1.9 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/firmware/arm-scmi-rs)
+    Checking axpoll v0.5.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/components/axpoll)
+    Checking rsext4 v0.7.8 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/fs/rsext4)
+    Checking axfs-ng-vfs v0.5.8 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/fs/axfs-ng-vfs)
+    Checking axdevice v0.5.7 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axdevice)
+    Checking arm_vgic v0.5.6 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/arm_vgic)
+    Checking axaddrspace v0.5.19 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axaddrspace)
+    Checking axvirtio-common v0.1.0 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvirtio-common)
+    Checking rdif-block v0.11.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/interface/rdif-block)
+    Checking sdio-host2 v0.1.6 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/blk/sdio-host2)
+    Checking rockchip-soc v0.4.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/soc/rockchip/rockchip-soc)
+    Checking ax-plat v0.12.3 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/platforms/ax-plat)
+    Checking axvirtio-net v0.1.0 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvirtio-net)
+    Checking sdmmc-protocol v0.4.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/blk/sdmmc-protocol)
+    Checking nvme-driver v0.7.5 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/blk/nvme-driver)
+    Checking somehal v0.8.3 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/platforms/somehal)
+    Checking ax-alloc v0.8.15 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/memory/ax-alloc)
+    Checking phytium-mci-host v0.3.5 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/blk/phytium-mci-host)
+    Checking sdhci-host v0.4.4 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/blk/sdhci-host)
+    Checking dwmmc-host v0.3.5 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/drivers/blk/dwmmc-host)
+    Checking axklib v0.7.8 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/components/axklib)
+    Checking ax-fs-ng v0.8.7 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/fs/ax-fs-ng)
+    Checking ax-ipi v0.5.30 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/modules/axipi)
+    Checking ax-mm v0.5.31 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/modules/axmm)
+    Checking ax-log v0.5.20 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/modules/axlog)
+    Checking ax-api v0.7.7 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/api/arceos_api)
+    Checking ax-std v0.5.31 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/arceos/ulib/axstd)
+    Checking axvm v0.5.26 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/virtualization/axvm)
+warning: associated function `after_external_interrupt` is never used
+   --> virtualization/axvm/src/architecture/ops.rs:118:8
+    |
+ 12 | pub(crate) trait ArchOps {
+    |                  ------- associated function in this trait
+...
+118 |     fn after_external_interrupt(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `host_console_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:101:15
+    |
+101 | pub(crate) fn host_console_irq() -> Option<modules::ax_hal::irq::IrqId> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `dispatch_host_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:105:15
+    |
+105 | pub(crate) fn dispatch_host_irq(vector: usize) {
+    |               ^^^^^^^^^^^^^^^^^
+
+warning: function `with_vm` is never used
+   --> virtualization/axvm/src/manager.rs:165:15
+    |
+165 | pub(crate) fn with_vm<F, R>(vm_id: VMId, f: F) -> Option<R>
+    |               ^^^^^^^
+
+warning: function `active_vcpu_mask` is never used
+   --> virtualization/axvm/src/manager.rs:195:15
+    |
+195 | pub(crate) fn active_vcpu_mask(vm_id: VMId) -> Option<usize> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `inject_interrupt` is never used
+   --> virtualization/axvm/src/manager.rs:207:15
+    |
+207 | pub(crate) fn inject_interrupt(vm_id: VMId, vcpu_id: usize, vector: usize) -> AxVmResult {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: variant `Generic` is never constructed
+  --> virtualization/axvm/src/runtime/hvc.rs:26:5
+   |
+25 | pub(crate) enum HyperCallAbi {
+   |                 ------------ variant in this enum
+26 |     Generic,
+   |     ^^^^^^^
+   |
+   = note: `HyperCallAbi` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `handle` is never used
+   --> virtualization/axvm/src/timer.rs:158:8
+    |
+113 | impl TimerWheels {
+    | ---------------- method in this implementation
+...
+158 |     fn handle(&self, token: usize) -> Option<VmTimerHandle> {
+    |        ^^^^^^
+
+warning: function `cancel_timer` is never used
+   --> virtualization/axvm/src/timer.rs:236:15
+    |
+236 | pub(crate) fn cancel_timer(token: usize) {
+    |               ^^^^^^^^^^^^
+
+warning: associated items `try_handle_port_write`, `handle_nested_page_fault`, and `debug_nested_page_fault` are never used
+    --> virtualization/axvm/src/vm/mod.rs:1543:19
+     |
+ 869 | impl AxVM {
+     | --------- associated items in this implementation
+...
+1543 |     pub(crate) fn try_handle_port_write(
+     |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+1556 |     pub(crate) fn handle_nested_page_fault(
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+1571 |     fn debug_nested_page_fault(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `SimpleVmPlan` is never constructed
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:60:19
+   |
+60 | pub(crate) struct SimpleVmPlan(VmDevicePlan);
+   |                   ^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:63:25
+   |
+62 | impl SimpleVmPlan {
+   | ----------------- associated function in this implementation
+63 |     pub(crate) const fn new(devices: VmDevicePlan) -> Self {
+   |                         ^^^
+
+warning: `axvm` (lib) generated 12 warnings
+    Finished `release` profile [optimized] target(s) in 31.87s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 7`

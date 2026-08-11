@@ -1,0 +1,32 @@
+commit=069c911c1de02cecdc0c1fe891f5d5a288065ef0
+tree=c13efe6409b3a720828c224147bc1e2ca5682ffe
+git_archive_sha256=6b65153c727a31edebf3829ef02e34a65090450d98042f1d8d6fbe0256581102
+upstream_dev=fad09ebd3a05f5e7a13ee6bb3cb7e4076cfdb0a1
+upstream_diff_sha256=1bf1f0e696c95ccd0de6eb73a8f7812138035eebccc35a7c89ee93bf12bcdfb8
+competition/ivc/config/axvisor-orangepi-5-plus-restart.toml: OK
+competition/ivc/config/board-orangepi-5-plus-restart.toml: OK
+competition/ivc/config/orangepi-5-plus-starry-smp2-restart.toml: OK
+competition/ivc/config/orangepi-5-plus-zephyr-restart.toml: OK
+competition/ivc/run-orangepi-5-plus.sh: OK
+competition/ivc/stage-starry-control.sh: OK
+competition/ivc/orangepi/board-runner.sh: OK
+competition/ivc/orangepi/harvest-result.sh: OK
+competition/ivc/analyze_board.py: OK
+competition/ivc/write_board_metadata.py: OK
+tools/ivcproto/src/neural.rs: OK
+scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-shared.toml: OK
+scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-shared.toml: OK
+scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml: OK
+scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-partitioned.toml: OK
+scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-partitioned.toml: OK
+scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml: OK
+scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml: OK
+scripts/benchmark/axvisor-rt/build-starry-kernel.sh: OK
+scripts/benchmark/axvisor-rt/build-starry-rootfs.sh: OK
+scripts/benchmark/axvisor-rt/stage-starry-board.sh: OK
+scripts/benchmark/axvisor-rt/harvest-starry-board.sh: OK
+scripts/benchmark/axvisor-rt/analyze_starry_board.py: OK
+scripts/benchmark/axvisor-rt/analyze_irq_trace.py: OK
+scripts/benchmark/axvisor-rt/compare_starry_board.py: OK
+scripts/benchmark/axvisor-rt/guest/starry_rt_capture_run.sh: OK
+competition/results/axvisor-rt-reference/axvisor-rt-probe: OK

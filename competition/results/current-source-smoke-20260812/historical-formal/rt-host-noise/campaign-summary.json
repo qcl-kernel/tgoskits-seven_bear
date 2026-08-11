@@ -1,0 +1,284 @@
+{
+  "assessment": {
+    "direct_irq_max_direction_gate_met": true,
+    "direct_irq_max_target_pairs": 5,
+    "direct_irq_p99_all_pairs": true,
+    "direct_irq_worst_of_runs_gate_met": true,
+    "five_pair_matrix_gate_met": true,
+    "m2_exit_gate_met": true,
+    "primary_guest_max_direction_gate_met": true,
+    "primary_guest_p99_all_pairs": true,
+    "primary_guest_worst_of_runs_gate_met": true,
+    "reason": "five-pair matrix and required shared/partitioned soak evidence passed",
+    "soak_evidence_collected": true
+  },
+  "campaign": {
+    "inputs": [
+      {
+        "pair": 1,
+        "partitioned_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-1/partitioned/raw.log",
+          "sha256": "cf8380ab697145531653fadd949506847624314aa3eea2dd9d9dfe8f15714814"
+        },
+        "shared_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-1/shared/raw.log",
+          "sha256": "ffd3e509e4ed6b2199f3b8384bd02a5b20657402f355214caddbe7ae0a639ab3"
+        }
+      },
+      {
+        "pair": 2,
+        "partitioned_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-2/partitioned/raw.log",
+          "sha256": "76edd6073ce861235d41d7f058374e1a03b33a903b4cfdc590b8080806ddeecd"
+        },
+        "shared_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-2/shared/raw.log",
+          "sha256": "5c7cd76053f9e143a58e6232b9b7871289985368994109f91f2f9c806ea865a0"
+        }
+      },
+      {
+        "pair": 3,
+        "partitioned_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-3/partitioned/raw.log",
+          "sha256": "96b866cad24202b5e6530903014197319f70e0822963fff91c4c860d343629ff"
+        },
+        "shared_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-3/shared/raw.log",
+          "sha256": "14be37c6dca9efc1cc32bb1c6a368351bb9168c944168bff1d388c5c39c80c5b"
+        }
+      },
+      {
+        "pair": 4,
+        "partitioned_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-4/partitioned/raw.log",
+          "sha256": "922d9303a12e56078859ff22220470b864aca20b94cf49da5d008496851d4333"
+        },
+        "shared_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-4/shared/raw.log",
+          "sha256": "16e82099dbfa1f0cb9547d3ed8a51ef12cb4838f2f040dd89691007f79529f9d"
+        }
+      },
+      {
+        "pair": 5,
+        "partitioned_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-5/partitioned/raw.log",
+          "sha256": "88c7193aea23e35c0cab3683ebc78b267692768f409a64c3bdc3b6f1be7a31fb"
+        },
+        "shared_raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/pair-5/shared/raw.log",
+          "sha256": "7be55f4fe21d3be986dd1e63836e69a57b2ecc92147270c8ee4f5ea8bfb6e1f3"
+        }
+      }
+    ],
+    "iterations_per_metric": 10000,
+    "pair_count": 5,
+    "workload": "idle"
+  },
+  "metrics": {
+    "dispatch_latency": {
+      "max": {
+        "improved_pair_count": 5,
+        "maximum_improvement_percent": 99.84,
+        "median_improvement_percent": 99.814,
+        "minimum_improvement_percent": 99.773,
+        "pair_improvement_percent": [
+          99.814,
+          99.84,
+          99.821,
+          99.773,
+          99.804
+        ],
+        "partitioned_worst_of_runs_ns": 113458.0,
+        "shared_worst_of_runs_ns": 50087917.0,
+        "target_pair_count": 5,
+        "worst_of_runs_improvement_percent": 99.773,
+        "worst_of_runs_meets_ten_percent_target": true
+      },
+      "p99": {
+        "maximum_improvement_percent": 30.232,
+        "median_improvement_percent": 22.335,
+        "minimum_improvement_percent": 19.371,
+        "non_regression_pair_count": 5,
+        "pair_improvement_percent": [
+          30.232,
+          20.527,
+          19.371,
+          22.335,
+          28.111
+        ],
+        "partitioned_worst_of_runs_ns": 45500.0,
+        "shared_worst_of_runs_ns": 63292.0,
+        "worst_of_runs_improvement_percent": 28.111
+      }
+    },
+    "emulated_irq_response": {
+      "max": {
+        "improved_pair_count": 5,
+        "maximum_improvement_percent": 99.819,
+        "median_improvement_percent": 99.814,
+        "minimum_improvement_percent": 99.806,
+        "pair_improvement_percent": [
+          99.819,
+          99.806,
+          99.81,
+          99.814,
+          99.816
+        ],
+        "partitioned_worst_of_runs_ns": 95333.0,
+        "shared_worst_of_runs_ns": 49420041.0,
+        "target_pair_count": 5,
+        "worst_of_runs_improvement_percent": 99.807,
+        "worst_of_runs_meets_ten_percent_target": true
+      },
+      "p99": {
+        "maximum_improvement_percent": 99.886,
+        "median_improvement_percent": 99.886,
+        "minimum_improvement_percent": 99.869,
+        "non_regression_pair_count": 5,
+        "pair_improvement_percent": [
+          99.886,
+          99.869,
+          99.886,
+          99.886,
+          99.886
+        ],
+        "partitioned_worst_of_runs_ns": 63291.0,
+        "shared_worst_of_runs_ns": 48495458.0,
+        "worst_of_runs_improvement_percent": 99.869
+      }
+    },
+    "periodic_jitter": {
+      "max": {
+        "improved_pair_count": 5,
+        "maximum_improvement_percent": 99.884,
+        "median_improvement_percent": 99.883,
+        "minimum_improvement_percent": 99.881,
+        "pair_improvement_percent": [
+          99.881,
+          99.882,
+          99.883,
+          99.884,
+          99.884
+        ],
+        "partitioned_worst_of_runs_ns": 59041.0,
+        "shared_worst_of_runs_ns": 50041208.0,
+        "target_pair_count": 5,
+        "worst_of_runs_improvement_percent": 99.882,
+        "worst_of_runs_meets_ten_percent_target": true
+      },
+      "p99": {
+        "maximum_improvement_percent": 99.922,
+        "median_improvement_percent": 99.921,
+        "minimum_improvement_percent": 99.921,
+        "non_regression_pair_count": 5,
+        "pair_improvement_percent": [
+          99.921,
+          99.922,
+          99.921,
+          99.922,
+          99.921
+        ],
+        "partitioned_worst_of_runs_ns": 38334.0,
+        "shared_worst_of_runs_ns": 49063667.0,
+        "worst_of_runs_improvement_percent": 99.922
+      }
+    },
+    "virtual_timer_injection_to_guest_irq": {
+      "max": {
+        "improved_pair_count": 5,
+        "maximum_improvement_percent": 87.999,
+        "median_improvement_percent": 87.728,
+        "minimum_improvement_percent": 86.704,
+        "pair_improvement_percent": [
+          87.728,
+          87.935,
+          86.704,
+          87.999,
+          86.773
+        ],
+        "partitioned_worst_of_runs_ns": 6116833.0,
+        "shared_worst_of_runs_ns": 50019083.0,
+        "target_pair_count": 5,
+        "worst_of_runs_improvement_percent": 87.771,
+        "worst_of_runs_meets_ten_percent_target": true
+      },
+      "p99": {
+        "maximum_improvement_percent": 99.643,
+        "median_improvement_percent": 99.641,
+        "minimum_improvement_percent": 99.639,
+        "non_regression_pair_count": 5,
+        "pair_improvement_percent": [
+          99.641,
+          99.639,
+          99.643,
+          99.641,
+          99.64
+        ],
+        "partitioned_worst_of_runs_ns": 154000.0,
+        "shared_worst_of_runs_ns": 42714291.0,
+        "worst_of_runs_improvement_percent": 99.639
+      }
+    }
+  },
+  "schema_version": 1,
+  "soak": {
+    "iterations_per_metric": 10000,
+    "minimum_duration_seconds": 1800,
+    "period_us": 90000,
+    "profiles": {
+      "partitioned": {
+        "direct_irq_pair_count": 456620,
+        "elapsed_ns": 1962161014916,
+        "elapsed_seconds": 1962.161,
+        "guest_records": 456620,
+        "host_records": 460214,
+        "observed_pcpu_mask": 8,
+        "profile": "partitioned",
+        "raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/soak/partitioned/raw.log",
+          "sha256": "a58fe20849a86bb088805c01a7867cbadbf3f9554c4196ed378c817bf56f034e"
+        },
+        "requested_pcpu": 3,
+        "trace_inputs": {
+          "guest": {
+            "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/soak/partitioned/guest-irq.log.gz",
+            "sha256": "9f9638d81d46a08df5cea3b7c6aa2f008fdb1ee4a788635737d36cfca33391aa"
+          },
+          "host": {
+            "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/soak/partitioned/host.log",
+            "sha256": "3d5f65ff1967162516ef53820b268849594e40d3d60e5ae1d27330322539d303"
+          }
+        }
+      },
+      "shared": {
+        "direct_irq_pair_count": 387684,
+        "elapsed_ns": 2101161087958,
+        "elapsed_seconds": 2101.161,
+        "guest_records": 387684,
+        "host_records": 392752,
+        "observed_pcpu_mask": 2,
+        "profile": "shared",
+        "raw": {
+          "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/soak/shared/raw.log",
+          "sha256": "271ccbe450480d956b8b8776b8a5e2bd008618d898ccee60010421f194ee50f3"
+        },
+        "requested_pcpu": 1,
+        "trace_inputs": {
+          "guest": {
+            "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/soak/shared/guest-irq.log.gz",
+            "sha256": "13f70e39d7c2a5296ea04019b5c76809364b3930e9ece85629672588b0ee36a8"
+          },
+          "host": {
+            "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-host-noise-formal-20260803/soak/shared/host.log",
+            "sha256": "9e120458e6b1c22253cd2be69ae79d30de5b740dec43b1236dd3fcf856bda6ce"
+          }
+        }
+      }
+    }
+  },
+  "thresholds": {
+    "direct_irq_max_required_pairs": 4,
+    "max_improvement_target_percent": 10.0,
+    "p99_non_regression_limit_percent": 5.0
+  }
+}

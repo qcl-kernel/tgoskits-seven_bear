@@ -1,123 +1,78 @@
-# AxVisor mixed-criticality control demonstration
+# AxVisor + StarryOS 混合关键控制演示
 
-This directory is the entry point for the competition implementation. It
-combines a two-vCPU Linux controller guest and a Zephyr RTOS control guest on
-AxVisor, an isolated in-hypervisor Ethernet segment, a versioned reliable UDP
-protocol, and a deterministic neural thermal controller.
-
-The implementation worktree now has retained, analyzer-validated evidence for
-the complete neural/manual Linux-to-Zephyr loop, deterministic cross-guest ACK
-loss and exact-once recovery, AxVisor shared/partitioned idle and CPU-stress
-runs, a 300-second measured partitioned soak, and a native Zephyr idle/stress
-baseline. Neural and manual each completed 1,800/1,800 commands with no
-application error or timeout; the fault campaign recovered all 20 intentionally
-dropped ACKs among 100 commands.
-
-The same neural profile now also boots on a physical Orange Pi 5 Plus from a
-WSL2 automation host. One full hardware run completed 1,800/1,800 commands with
-zero controller error, timeout, retransmission, or recovery, then powered down
-both guests, synchronized the AxVisor host filesystem, and restored the board's
-Linux TF-card system. A maintained 20-command smoke profile repeats that
-lifecycle and asserts the Linux guest brought up two vCPUs.
-
-The evidence supports deterministic vCPU placement and selected dispatch-tail
-improvements, not universal latency improvement, bounded guest preemption, or
-a hardware real-time guarantee. The actual demonstration video remains to be
-recorded. Upstream push, dev-target conflict checking, and PR creation are not
-claimed by this local Windows/WSL synchronization. See
-[test-report.md](test-report.md) for the exact claims and limitations.
-
-## Requirement status
-
-| Competition deliverable | Repository status |
-| --- | --- |
-| Task 1: AxVisor real-time changes, two-vCPU Linux, idle/stress/soak | Implemented and retained under [`results/axvisor-rt-reference`](results/axvisor-rt-reference/) |
-| Task 1: native RTOS comparison | Implemented with Zephyr v4.3.0 under [`results/native-zephyr-reference`](results/native-zephyr-reference/) |
-| Task 2: bidirectional IP link and versioned reliable protocol | Implemented; normal and ACK-loss runs retained under [`results/axvisor-ivc-reference`](results/axvisor-ivc-reference/) |
-| Task 3: Linux neural inference, RTOS action/feedback, manual comparison | Implemented; two error metrics improve while overshoot regresses |
-| Physical Orange Pi 5 Plus lifecycle | Validated for full 1,800-command neural and maintained 20-command smoke profiles; automatic Linux restore passes |
-| Design, test, and reproduction documents | Present in this directory |
-| Approximately five-minute video | Storyboard present; actual recording outstanding |
-| Source PR to `dev` | Outstanding; no upstream submission is claimed here |
-
-This submission profile uses Linux plus one Zephyr RTOS baseline. It does not
-claim either StarryOS bonus or a multi-RTOS/multi-board bonus. The competition
-code remains under the repository's Apache-2.0 license.
-
-## Documents
-
-- [design.md](design.md) defines the architecture, guest resources, isolation
-  policy, wire protocol, reliability rules, control loop, and known limits.
-- [reproduce.md](reproduce.md) gives pinned build, validation, image, and QEMU
-  commands and explains retained provenance and remaining formal deliverables.
-- [test-report.md](test-report.md) separates retained measurements, host/unit
-  checks, platform-qualified comparisons, and unclaimed evidence scopes.
-- [video-storyboard.md](video-storyboard.md) is a recording checklist and
-  approximately five-minute storyboard. It is not a substitute for a video.
-- [requirement.md](requirement.md) is the original competition specification.
-
-## Implementation map
-
-| Area | Primary files |
-| --- | --- |
-| CPU partition validation and runtime placement | [`axvmconfig`](../virtualization/axvmconfig/src/partition.rs), [`axvm`](../virtualization/axvm/src/manager.rs) |
-| Emulated virtio-net device | [`axdevice`](../virtualization/axdevice/src/virtio_net/mod.rs) |
-| Isolated switch policy and integration | [`axvm-net`](../virtualization/axvm-net/src/lib.rs), [`axvm` network metrics](../virtualization/axvm/src/network.rs) |
-| Shared Rust wire protocol and controller | [`ivcproto`](../tools/ivcproto/src/lib.rs) |
-| Linux guest image/init | [`ivc/linux`](ivc/linux/) |
-| Zephyr endpoint | [`ivc/zephyr`](ivc/zephyr/) |
-| AxVisor/QEMU/Orange Pi guest configuration | [`ivc/config`](ivc/config/) |
-| Orange Pi artifact staging and run entry points | [`stage-orangepi-5-plus.sh`](ivc/stage-orangepi-5-plus.sh), [`run-orangepi-5-plus.sh`](ivc/run-orangepi-5-plus.sh) |
-| Real-time benchmark harness | [`scripts/benchmark/axvisor-rt`](../scripts/benchmark/axvisor-rt/) |
-| Retained AxVisor, IVC, host, and native-RTOS evidence | [`results`](results/) |
-| Cross-guest log validator | [`analyze_qemu.py`](ivc/analyze_qemu.py) |
-
-## Demonstration contract
-
-The intended full run uses four emulated host CPUs:
+本目录是比赛材料入口。当前实现让 AxVisor 在 Orange Pi 5 Plus
+(RK3588) 上同时运行双 vCPU StarryOS 与 Zephyr RTOS，通过 device graph
+声明的两张 `virtio-net-mmio` 网卡建立隔离 UDP/IPv4 链路。StarryOS 侧执行
+神经网络推理，Zephyr 应用控制量、推进热模型并回传状态；ACK、重传、去重、
+错误通知、安全回退和客户机重启恢复均有自动化验证。
 
 ```text
-pCPU 0: Zephyr vCPU 0          pCPU 1: Linux vCPU 0 (dedicated)
-pCPU 3: excluded from guests   pCPU 2: Linux vCPU 1 (dedicated)
-
-Linux 10.0.0.1/24 -- virtio-net -- AxVisor segment 1 -- virtio-net -- 10.0.0.2/24 Zephyr
-                     UDP CONTROL -> STATUS + ACK
+Orange Pi 5 Plus / AxVisor (4 pCPU)
+├─ StarryOS: 2 vCPU, 256 MiB, typed virtio-net + virtio-blk
+│  └─ observation → neural/ORT/RKNN inference → CONTROL
+├─ Zephyr: 1 vCPU, isolated RAM, typed virtio-net
+│  └─ CONTROL → actuator/plant → STATUS + ACK / ERROR
+└─ AxVisor segment 1: 10.0.0.1/24 ⇄ 10.0.0.2:5500
 ```
 
-Linux performs the checked-in `thermal-4x6x1-v1` inference and sends the
-actuator command over UDP. Zephyr applies a fresh command once, steps the
-deterministic thermal plant, and returns status. Duplicate packets do not
-repeat the control side effect, and command silence drives the endpoint to a
-zero-actuator safe state.
+主数据通道只有虚拟以太网与 UDP/IP；没有 host-facing NIC、bridge、NAT、
+default route、vsock、共享内存或 HyperCall 应用数据通道。
 
-There is no host-facing NIC, bridge, NAT rule, default route, vsock data path,
-shared-memory data path, or hypercall data path in this profile.
+## 当前交付状态
 
-pCPU3 is excluded from guest affinity masks for intended AxVisor
-housekeeping; the implementation does not prove that every host task or
-physical interrupt is pinned there.
+| 项目 | 状态 | 主证据 |
+| --- | --- | --- |
+| device-graph 配置入口 | 完成 | typed `[devices]`、initramfs、配置解析回归 |
+| 当前源码实体 IVC 重启恢复 | 通过 | [`current-source-smoke-20260812/ivc`](results/current-source-smoke-20260812/ivc/) |
+| 当前源码实体 RT shared/partitioned | 两侧运行与采集通过；本对性能门未通过 | [`rt/comparison.json`](results/current-source-smoke-20260812/rt/comparison.json) |
+| 正式 RT 五配对 + 双 soak | 历史 clean-commit 活动通过 | [`historical-formal/rt-host-noise`](results/current-source-smoke-20260812/historical-formal/rt-host-noise/) |
+| manual/neural 五配对闭环 | 历史活动通过；RMSE/IAE 改善，overshoot 退化 | [`historical-formal/ivc-control`](results/current-source-smoke-20260812/historical-formal/ivc-control/) |
+| ACK-loss / ERROR / restart | 历史活动各 3/3；当前 restart 再次通过 | [`historical-formal`](results/current-source-smoke-20260812/historical-formal/) |
+| RKNN NPU / ONNX Runtime CPU | 历史活动各 5×1,800 通过 | [`historical-formal/rknpu`](results/current-source-smoke-20260812/historical-formal/rknpu/)、[`ort`](results/current-source-smoke-20260812/historical-formal/ort/) |
+| 五分钟视频 | 已生成实体串口证据回放版 | [`demo-5min.mp4`](results/current-source-smoke-20260812/demo-5min.mp4) |
+| upstream `dev` rebase | 当前运行源码基于 `fad09ebd3a05…`，0 behind / 37 ahead | [`provenance.json`](results/current-source-smoke-20260812/provenance.json) |
 
-The Orange Pi profile keeps the same three-vCPU partition but replaces the
-outer QEMU machine with RK3588 hardware. Linux receives a minimal guest DTB
-for the emulated GICv3, timer, PL011, and virtio-mmio network device; host CPU
-idle-state nodes are removed because AxVisor does not implement PSCI
-`CPU_SUSPEND`.
+当前 100 样本 RT 冒烟不能作为“partitioned 一定更快”的证据：periodic、
+dispatch 和 direct IRQ 的 p99 在这一对中退化。正式改善结论严格限定在
+“受控 host interference、预注册五配对、相同输入”的历史活动。详见
+[`test-report.md`](test-report.md) 和 [`scorecard.md`](scorecard.md)。
 
-## Quick host-only checks
+## 文档导航
 
-These checks do not prove cross-guest operation, but they are fast regression
-gates from the repository root:
+- [`scorecard.md`](scorecard.md)：逐项对应 100+10 分，给出实现、证据、
+  可主张范围和最有价值的补强项。
+- [`design.md`](design.md)：device graph、资源分配、网络协议、可靠性、
+  AI 控制和测量边界。
+- [`test-report.md`](test-report.md)：当前源码实体结果与历史正式活动，明确
+  区分 smoke、formal、host/QEMU 证据。
+- [`reproduce.md`](reproduce.md)：从 source pin、构建、staging、实体运行、
+  harvest 到 checksum 的可执行步骤。
+- [`video-storyboard.md`](video-storyboard.md)：五分钟成片的镜头、字幕、
+  真实性边界与重新录制方法。
+- [`requirement.md`](requirement.md)：比赛原始要求，不作为完成状态声明。
+
+## 源码入口
+
+| 边界 | 入口 |
+| --- | --- |
+| VM device graph 配置/校验 | [`axvmconfig`](../virtualization/axvmconfig/src/lib.rs)、[`device_plan`](../virtualization/axvm/src/vm/prepare/device_plan/mod.rs) |
+| 虚拟网卡与隔离交换 | [`virtio_net`](../virtualization/axdevice/src/virtio_net/mod.rs)、[`axvm-net`](../virtualization/axvm-net/src/lib.rs) |
+| CPU partition / timer / IRQ | [`axvm`](../virtualization/axvm/src/)、[`RT harness`](../scripts/benchmark/axvisor-rt/) |
+| IVC/1 协议与神经控制 | [`ivcproto`](../tools/ivcproto/src/lib.rs) |
+| Starry/Zephyr 镜像与配置 | [`ivc`](ivc/)、[`RT configs`](../scripts/benchmark/axvisor-rt/config/) |
+| 板端生命周期 | [`board-runner.sh`](ivc/orangepi/board-runner.sh)、[`run-orangepi-5-plus.sh`](ivc/run-orangepi-5-plus.sh) |
+| 当前源码原始证据与溯源 | [`current-source-smoke-20260812`](results/current-source-smoke-20260812/) |
+
+## 最快的离线检查
 
 ```sh
-cargo +nightly-2026-07-15 test -p ivcproto
-cargo +nightly-2026-07-15 test -p axvm-net
+python3 -m unittest discover -s competition/ivc/tests -p 'test_*.py'
+python3 -m unittest discover -s scripts/benchmark/axvisor-rt/tests -p 'test_*.py'
+bash scripts/benchmark/axvisor-rt/tests/test_runner.sh
+bash scripts/benchmark/axvisor-rt/tests/test_starry_runner.sh
 
-bash competition/ivc/run-host-loopback.sh \
-  tmp/competition/ivc/host-loopback
-
-cargo +nightly-2026-07-15 run -p ivcproto -- \
-  evaluate-csv tmp/competition/ivc/host-ai.csv
+cd competition/results/current-source-smoke-20260812
+sha256sum -c checksums.sha256
 ```
 
-Do not present the host loopback latency as AxVisor or cross-guest latency. Do
-not present the host plant comparison as an in-guest timing result.
+这些命令验证配置、协议、分析器和归档完整性；它们不能替代实体板时延或故障恢复。

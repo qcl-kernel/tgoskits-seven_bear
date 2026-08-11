@@ -1,0 +1,98 @@
+{
+  "board": {
+    "cpu_temp_milli_c": 42538,
+    "hostname": "orangepi5plus",
+    "id": "bf61f4d4a1d994ad",
+    "type": "OrangePi-5-Plus"
+  },
+  "inputs": {
+    "board_config": {
+      "path": "competition/ivc/config/board-orangepi-5-plus-restart.toml",
+      "sha256": "b3b3468e08cf92482e60ef30fea0b085c3720268c0a82b7477cbcc11966ab54b",
+      "size_bytes": 638
+    },
+    "build_config": {
+      "path": "competition/ivc/config/axvisor-orangepi-5-plus-restart.toml",
+      "sha256": "d949805fd82000a97064652f7f69e71d6ff6735f65aaebd636e56a7cb1779039",
+      "size_bytes": 421
+    },
+    "rootfs": {
+      "path": "tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img",
+      "sha256": "1c51f3fc84ee543ded52ab6626ba8fb6f60edefff1367b362a872597d403e1d8",
+      "size_bytes": 67108864
+    },
+    "starry_dtb": {
+      "path": "tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb",
+      "sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "size_bytes": 1534
+    },
+    "starry_kernel": {
+      "path": "tmp/competition/ivc/starry/starryos.bin",
+      "sha256": "97fce5daaa9103768736b9a54a690e5f4612a221ac67672c56cebaadaf4c4b05",
+      "size_bytes": 13836288
+    },
+    "zephyr_guest": {
+      "path": "competition/ivc/zephyr/build-board-restart/zephyr/zephyr.bin",
+      "sha256": "393026c1702d33115b42bdf72528efe49eeb4f0d9e93f3755d6be57354b5791f",
+      "size_bytes": 121568
+    }
+  },
+  "model": {
+    "artifact": {
+      "path": "tools/ivcproto/src/neural.rs",
+      "sha256": "c075fb7462a0bd7e52afe1a88b9ffc7d31f7f6502ec0c25288919189348e4938",
+      "size_bytes": 14635
+    },
+    "backend": "native",
+    "id": "thermal-4x6x1-v1",
+    "runtime_version": "native"
+  },
+  "outputs": {
+    "console_log": {
+      "path": "tmp/competition/current-source-069c911c1/ivc/fault-restart/run-001/console.log.gz",
+      "sha256": "02d179dccb4a89f56673bf0665e273c2cf4f3ea4deb987f0e172314c4bbd8593",
+      "size_bytes": 25842
+    },
+    "ort_csv": null,
+    "raw_csv": {
+      "path": "tmp/competition/current-source-069c911c1/ivc/fault-restart/run-001/raw.csv.gz",
+      "sha256": "bae3542762876dc179b5d6c6290bba55c6d42adcbc8f8f8bb3419892b1503d5d",
+      "size_bytes": 3136
+    },
+    "rknn_csv": null,
+    "summary": {
+      "path": "tmp/competition/current-source-069c911c1/ivc/fault-restart/run-001/summary.json",
+      "sha256": "af9672d2ab3c0139910e83da28cc5cb80c3f46bb4c8b6d73f3aa4515a0537be0",
+      "size_bytes": 4381
+    }
+  },
+  "result": {
+    "controller_policy": "neural",
+    "deadline_misses": 0,
+    "dropped_samples": 0,
+    "ort_sample_count": null,
+    "rknn_sample_count": null,
+    "sample_count": 100,
+    "successful_marker": true,
+    "validated": true
+  },
+  "run": {
+    "board_type": "OrangePi-5-Plus",
+    "execution_order": 1,
+    "exit_status": 0,
+    "finished_at": "2026-08-11T17:21:14Z",
+    "profile": "fault-restart",
+    "repeat_count": 1,
+    "run_id": "run-001",
+    "run_number": 1,
+    "started_at": "2026-08-11T17:15:49Z"
+  },
+  "schema_version": 1,
+  "source": {
+    "branch": "feat/rt-axvisor-partition-virtio-net",
+    "commit": "069c911c1de02cecdc0c1fe891f5d5a288065ef0",
+    "dirty": true,
+    "tracked_change_count": 6980,
+    "untracked_file_count": 1134
+  }
+}

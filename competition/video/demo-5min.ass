@@ -1,0 +1,85 @@
+[Script Info]
+Title: AxVisor StarryOS RT/IVC evidence replay
+ScriptType: v4.00+
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+PlayResX: 1280
+PlayResY: 720
+YCbCr Matrix: TV.709
+
+[V4+ Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: Title,Microsoft YaHei,44,&H00F5FAFF,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.6,0,7,72,72,58,1
+Style: Accent,Microsoft YaHei,24,&H004FDDD5,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.2,0,7,76,76,126,1
+Style: Body,Microsoft YaHei,28,&H00E4EDF7,&H000000FF,&H00111D2E,&H00000000,0,0,0,0,100,100,0,0,1,1.2,0,7,84,84,178,1
+Style: Good,Microsoft YaHei,29,&H006FE8A8,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.2,0,7,84,84,188,1
+Style: Bad,Microsoft YaHei,29,&H006B8CFF,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.2,0,7,84,84,188,1
+Style: Code,Cascadia Mono,22,&H00C9D7E6,&H000000FF,&H00202D40,&H9A101B2A,0,0,0,0,100,100,0,0,3,1,0,7,82,82,330,1
+Style: Footer,Microsoft YaHei,18,&H008FA4BA,&H000000FF,&H00111D2E,&H00000000,0,0,0,0,100,100,0,0,1,0.8,0,1,72,72,34,1
+Style: Badge,Microsoft YaHei,17,&H004FDDD5,&H000000FF,&H00111D2E,&H7A142337,-1,0,0,0,100,100,0,0,3,1,0,9,32,52,26,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:05:00.00,Badge,,0,0,0,,实体板证据后验回放 · 2026-08-12
+
+Dialogue: 0,0:00:00.00,0:00:20.00,Title,,0,0,0,,AxVisor + StarryOS 混合关键控制
+Dialogue: 0,0:00:00.00,0:00:20.00,Accent,,0,0,0,,Orange Pi 5 Plus · RK3588 · StarryOS 2 vCPU + Zephyr
+Dialogue: 0,0:00:00.00,0:00:20.00,Body,,0,0,0,,同一物理板上运行智能控制客户机与实时控制客户机\N通过隔离 UDP/IPv4 形成 CONTROL → ACTION → STATUS 闭环\N\N本片是已归档实体串口与机器结果的证据回放，不冒充现场直播。
+Dialogue: 0,0:00:00.00,0:00:20.00,Footer,,0,0,0,,证据：competition/results/current-source-smoke-20260812/provenance.json
+
+Dialogue: 0,0:00:20.00,0:00:45.00,Title,,0,0,0,,1 · 当前源码与可追溯链
+Dialogue: 0,0:00:20.00,0:00:45.00,Accent,,0,0,0,,tested source commit 069c911c1de02cecdc0c1fe891f5d5a288065ef0
+Dialogue: 0,0:00:20.00,0:00:45.00,Body,,0,0,0,,upstream/dev base   fad09ebd3a05f5e7a13ee6bb3cb7e4076cfdb0a1\Nahead / behind      37 / 0\NGit tree            c13efe6409b3a720828c224147bc1e2ca5682ffe\NGit archive SHA-256 6b65153c…6581102\N\Ncommit → tree/archive → source blobs → runtime inputs → raw/summary
+Dialogue: 0,0:00:20.00,0:00:45.00,Footer,,0,0,0,,证据：provenance.json · source-files.git-ls-tree.txt · runtime-inputs.sha256
+
+Dialogue: 0,0:00:45.00,0:01:15.00,Title,,0,0,0,,2 · typed device graph 配置入口
+Dialogue: 0,0:00:45.00,0:01:15.00,Accent,,0,0,0,,parse → validate → allocate → instantiate → register
+Dialogue: 0,0:00:45.00,0:01:15.00,Body,,0,0,0,,StarryOS VM 1   2 vCPU · 256 MiB · virtio-blk · virtio-net\NZephyr VM 2    1 vCPU · 64 MiB  · virtio-net\N\NStarry block  MMIO 0xb000000 · INTID 32\NStarry net    MMIO 0xb001000 · INTID 34\NZephyr net    MMIO 0xb000000 · INTID 32\N\N地址、中断、后端和 CPU mask 在构建前 fail closed 校验。
+Dialogue: 0,0:00:45.00,0:01:15.00,Footer,,0,0,0,,源码：virtualization/axvmconfig · virtualization/axvm · competition/ivc/config
+
+Dialogue: 0,0:01:15.00,0:01:40.00,Title,,0,0,0,,3 · 双客户机 IP 数据通道
+Dialogue: 0,0:01:15.00,0:01:40.00,Accent,,0,0,0,,StarryOS 10.0.0.1/24  ⇄  10.0.0.2:5500 Zephyr
+Dialogue: 0,0:01:15.00,0:01:40.00,Body,,0,0,0,,isolated switch segment 1 · UDP/IPv4 · exact unicast\N\N32-byte header：magic · version · type · length · session\Nsequence · timestamp · error code · CRC\N\N消息：CONTROL · STATUS · ACK · ERROR\N可靠性：timeout · retransmit · duplicate suppression · session retirement
+Dialogue: 0,0:01:15.00,0:01:40.00,Footer,,0,0,0,,无 host NIC / NAT / bridge；无 shared-memory / MMIO / hypercall / vsock 主通道
+
+Dialogue: 0,0:01:40.00,0:02:00.00,Title,,0,0,0,,4 · 当前源码：实际 Zephyr VM 重启
+Dialogue: 0,0:01:40.00,0:02:00.00,Accent,,0,0,0,,pCPU3 restart worker · requested 20,000 ms · reset_count = 1
+Dialogue: 0,0:01:40.00,0:02:00.00,Body,,0,0,0,,① old session 完成 20 个控制样本\N② VM 2：running → reset → running\N③ controller timeout → actuator = 0 safe fallback\N④ new session 接管；retired CONTROL 被拒绝\N⑤ stale STATUS / stale ACK 均被忽略\N⑥ 恢复 100 个 post-reset 样本
+Dialogue: 0,0:01:40.00,0:02:00.00,Footer,,0,0,0,,原始串口：ivc/console.log.gz · 机器结论：ivc/summary.json
+
+Dialogue: 0,0:02:00.00,0:02:20.00,Title,,0,0,0,,4 · 串口原始标记（节选）
+Dialogue: 0,0:02:00.00,0:02:20.00,Code,,0,0,0,,IVC-STARRY-RESTART-ARMED session_id=286331153 samples=20\NIVC-RTOS-SAFE-FALLBACK actuator_permille=0\NIVC-STARRY-RESTART-RESUME new_session=572662306\NIVC-RTOS-STALE-REPLAY stale_status_sent=1 stale_acks_sent=1\NIVC-RTOS-RECOVERY sequence=1 recoveries=1\NIVC-ERROR-Z code=4 reason=retired-or-invalid-session
+Dialogue: 0,0:02:00.00,0:02:20.00,Footer,,0,0,0,,完整日志保留 ANSI 与原始顺序；画面仅为可读节选
+
+Dialogue: 0,0:02:20.00,0:02:45.00,Title,,0,0,0,,5 · 重启后闭环与生命周期
+Dialogue: 0,0:02:20.00,0:02:45.00,Good,,0,0,0,,100 sent / 100 acknowledged · 0 error · 0 timeout · 0 retransmission
+Dialogue: 0,0:02:20.00,0:02:45.00,Body,,0,0,0,,full-loop p50 / p95 / p99 / max\N2,307 / 8,235 / 34,907 / 67,388 µs\N\NZephyr accepted / applied = 120 / 120\Nclean 64 MiB snapshot · host filesystem synced\N双方 SystemDown · Linux 自动恢复为 ext4 rw
+Dialogue: 0,0:02:20.00,0:02:45.00,Footer,,0,0,0,,board bf61f4d4a1d994ad · harvest 42.538 °C
+
+Dialogue: 0,0:02:45.00,0:03:20.00,Title,,0,0,0,,6 · 当前源码 RT 实体板冒烟
+Dialogue: 0,0:02:45.00,0:03:20.00,Accent,,0,0,0,,shared + partitioned · guest CPU1 stress · full cold boot each
+Dialogue: 0,0:02:45.00,0:03:20.00,Body,,0,0,0,,每个 profile：\N• periodic jitter / dispatch / timerfd proxy 各 100 样本\N• AxVisor injection → StarryOS IRQ entry 直接跨层 trace\N• guest/host trace lossless · vCPU migrations = 0\N• volatile block snapshot = clean\N• AXVISOR_HOST_FILESYSTEM_SYNCED\N• Linux 自动恢复\N\N结论：当前 device graph、构建、部署、采集与恢复管线通过。
+Dialogue: 0,0:02:45.00,0:03:20.00,Footer,,0,0,0,,证据：rt/shared · rt/partitioned · rt/run-wrapper.log.gz
+
+Dialogue: 0,0:03:20.00,0:03:50.00,Title,,0,0,0,,7 · 当前 RT pair：性能门失败
+Dialogue: 0,0:03:20.00,0:03:50.00,Bad,,0,0,0,,m2_exit_gate_met = false
+Dialogue: 0,0:03:20.00,0:03:50.00,Body,,0,0,0,,partitioned 相对 shared（正值才是更低）：\N\Nperiodic jitter p99       -53.710%\Ndispatch latency p99     -154.925%\Ntimerfd proxy p99          +1.856%\Nvirtual timer → IRQ p99    -5.714%\N\N只有一对、没有受控 host interference；不得声称当前源码性能改善。
+Dialogue: 0,0:03:20.00,0:03:50.00,Footer,,0,0,0,,机器判定：rt/comparison.json（负向结果原样保留）
+
+Dialogue: 0,0:03:50.00,0:04:20.00,Title,,0,0,0,,8 · 历史正式 RT 证据（F 层）
+Dialogue: 0,0:03:50.00,0:04:20.00,Accent,,0,0,0,,5 个 AB/BA 配对 · 每指标每 run 10,000 样本 · 双 soak ≥ 1,800 s
+Dialogue: 0,0:03:50.00,0:04:20.00,Good,,0,0,0,,受控 host interference：m2_exit_gate_met = true
+Dialogue: 0,0:03:50.00,0:04:20.00,Body,,0,0,0,,direct IRQ p99    5/5 改善 · worst-of-runs +99.639%\Ndirect IRQ max    5/5 改善 · worst-of-runs +87.771%\Ndispatch p99      5/5 非退化 · worst-of-runs +28.111%\Ndispatch max      5/5 改善 · worst-of-runs +99.773%\N\Nmeasurement commit 0588743…；不改标成当前源码结果。
+Dialogue: 0,0:03:50.00,0:04:20.00,Footer,,0,0,0,,边界：结论只适用于预注册的受控干扰 treatment
+
+Dialogue: 0,0:04:20.00,0:04:43.00,Title,,0,0,0,,9 · AI 控制：收益与代价同时披露
+Dialogue: 0,0:04:20.00,0:04:43.00,Body,,0,0,0,,五个 manual / neural AB/BA 配对\N\NRMSE     9,258.906 → 5,932.491 m°C    改善 35.93%\NIAE      1,429,224.7 → 686,993.4       改善 51.94%\Novershoot 6,840 → 13,428 m°C            退化 96.32%\N\Nfull-loop p99 仅 2/5 有利于 neural：不声称神经策略更低延迟。
+Dialogue: 0,0:04:20.00,0:04:43.00,Footer,,0,0,0,,证据：historical-formal/ivc-control · source f4ced375…
+
+Dialogue: 0,0:04:43.00,0:04:55.00,Title,,0,0,0,,10 · 可靠性与推理后端
+Dialogue: 0,0:04:43.00,0:04:55.00,Body,,0,0,0,,ACK-loss 3/3 · typed ERROR 3/3 · actual VM restart 3/3\NRKNN / RK3588 NPU：9,000 / 9,000\NONNX Runtime / CPU：9,000 / 9,000\N两后端均仅每 run 首周期 miss；首周期后 0 miss/error/timeout。
+Dialogue: 0,0:04:43.00,0:04:55.00,Footer,,0,0,0,,各历史活动保留自己的 clean source commit 与 preregistration
+
+Dialogue: 0,0:04:55.00,0:05:00.00,Title,,0,0,0,,复现与核验
+Dialogue: 0,0:04:55.00,0:05:00.00,Body,,0,0,0,,competition/reproduce.md\Ncompetition/test-report.md\Ncompetition/results/current-source-smoke-20260812/checksums.sha256
+Dialogue: 0,0:04:55.00,0:05:00.00,Footer,,0,0,0,,剩余：重跑当前正式五对 · 发布 844 MiB raw · 同板原生 Zephyr · 第三客户机隔离负例
