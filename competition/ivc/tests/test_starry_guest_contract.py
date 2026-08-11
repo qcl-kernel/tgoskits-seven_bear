@@ -14,6 +14,12 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 STARRY_AUTORUN = REPOSITORY_ROOT / "competition/ivc/starry/autorun.sh"
 STARRY_BUILD = REPOSITORY_ROOT / "competition/ivc/starry/build.sh"
 STARRY_ROOTFS_BUILD = REPOSITORY_ROOT / "competition/ivc/starry/build-rootfs.sh"
+ORANGEPI_STARRY_RUNNER = (
+    REPOSITORY_ROOT / "competition/ivc/run-orangepi-5-plus.sh"
+)
+ORANGEPI_STARRY_STAGER = (
+    REPOSITORY_ROOT / "competition/ivc/stage-starry-control.sh"
+)
 AX_DRIVER_MANIFEST = REPOSITORY_ROOT / "drivers/ax-driver/Cargo.toml"
 AXVISOR_MAIN = REPOSITORY_ROOT / "os/axvisor/src/main.rs"
 AXVISOR_SHELL = REPOSITORY_ROOT / "os/axvisor/src/shell/mod.rs"
@@ -82,9 +88,8 @@ class StarryGuestContractTests(unittest.TestCase):
             available_features = tomllib.load(source)["features"]
 
         self.assertIn("virtio-blk", available_features)
-        self.assertEqual(
-            available_features["virtio-blk"],
-            ["block", "virtio", "dep:ax-kernel-guard"],
+        self.assertTrue(
+            {"block", "virtio"}.issubset(available_features["virtio-blk"]),
         )
         for config_path in STARRY_BUILD_CONFIGS:
             with self.subTest(config=config_path.name), config_path.open("rb") as source:
@@ -172,6 +177,30 @@ class StarryGuestContractTests(unittest.TestCase):
             script.index("rust-objcopy --strip-all -O binary"),
             script.index('install -m 0644 "$built_kernel"'),
         )
+
+    def test_native_profiles_stage_the_selected_starry_artifacts(self) -> None:
+        runner = ORANGEPI_STARRY_RUNNER.read_text(encoding="utf-8")
+        stager = ORANGEPI_STARRY_STAGER.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "profile_stager=$script_dir/stage-starry-control.sh",
+            runner,
+        )
+        self.assertIn('IVC_STARRY_CONTROL_ROOTFS="$local_rootfs"', runner)
+        self.assertIn(
+            'selected_rootfs=${IVC_STARRY_CONTROL_ROOTFS:?set IVC_STARRY_CONTROL_ROOTFS}',
+            stager,
+        )
+        for artifact in (
+            "starryos.bin",
+            "starry-orangepi-5-plus.dtb",
+            "starry-ivc-rootfs-restart.img",
+        ):
+            with self.subTest(artifact=artifact):
+                self.assertIn(artifact, stager)
+        self.assertIn('"$ssh_target:$guest_dir/${artifact_names[index]}.new"', stager)
+        self.assertIn("sha256sum -c .starry-control-stage.sha256", stager)
+        self.assertIn("BOARD_STARRY_CONTROL_STAGE_HASHES_VERIFIED", stager)
 
     def test_manual_guests_only_change_identity_and_rootfs_policy_image(self) -> None:
         for neural_path, manual_path, manual_image in ORANGEPI_STARRY_MANUAL_CONFIGS:

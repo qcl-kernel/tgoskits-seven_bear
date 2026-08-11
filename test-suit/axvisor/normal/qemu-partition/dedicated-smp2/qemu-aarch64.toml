@@ -6,12 +6,8 @@ args = [
   "virt,virtualization=on,gic-version=3",
   "-smp",
   "4",
-  "-device",
-  "virtio-blk-device,drive=disk0",
-  "-drive",
-  "id=disk0,if=none,format=raw,file=${workspace}/tmp/axbuild/rootfs/rootfs-aarch64-alpine.img",
   "-append",
-  "root=/dev/vda rw init=/bin/sh",
+  "console=ttyAMA0,115200 earlycon=pl011,0x09000000 rdinit=/init devtmpfs.mount=1 loglevel=7",
   "-m",
   "8g",
 ]

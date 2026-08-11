@@ -58,5 +58,13 @@ fakeroot -- sh -s -- "$extract_root" <<'FAKEROOT' | gzip -9 >"$output_archive"
 FAKEROOT
 
 gzip -t "$output_archive"
+
+# AxVisor loads guest images from its own root filesystem. Embed the compact
+# archive there so the virtualized Linux guest does not depend on a block
+# device owned by the outer QEMU machine.
+debugfs -w -R "rm /guest/linux/initramfs.cpio.gz" "$rootfs_image" >/dev/null 2>&1 || true
+debugfs -w -R "write $output_archive /guest/linux/initramfs.cpio.gz" "$rootfs_image"
+debugfs -R "stat /guest/linux/initramfs.cpio.gz" "$rootfs_image"
+
 sha256sum "$output_archive"
 echo "IVC Linux initramfs ready at $output_archive"
