@@ -48,6 +48,7 @@ def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     preregister.add_argument("--hardware-id", required=True)
     preregister.add_argument("--hostname", required=True)
     preregister.add_argument("--base-rootfs", type=Path, required=True)
+    preregister.add_argument("--host-toolchain", type=Path, required=True)
     preregister.add_argument("--probe", type=Path, required=True)
     preregister.add_argument("--pair-kernel", type=Path, required=True)
     preregister.add_argument("--pair-rootfs", type=Path, required=True)
@@ -91,6 +92,7 @@ def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
 def preregistration_artifacts(arguments: argparse.Namespace) -> dict[str, Path]:
     return {
         "base_rootfs": arguments.base_rootfs,
+        "host_toolchain": arguments.host_toolchain,
         "probe": arguments.probe,
         "pair_kernel": arguments.pair_kernel,
         "pair_rootfs": arguments.pair_rootfs,

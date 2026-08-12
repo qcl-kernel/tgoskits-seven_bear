@@ -168,3 +168,13 @@ The design and alternatives are recorded in
 [`book/design/axvisor-rt-formal-campaign.md`](../../../book/design/axvisor-rt-formal-campaign.md).
 The exact physical-board commands are in
 [`competition/reproduce.md`](../../../competition/reproduce.md#7-正式活动规则).
+
+Formal StarryOS kernel builds require `aarch64-linux-gnu-gcc`,
+`aarch64-linux-gnu-ar`, and an AArch64 header sysroot (normally
+`/usr/aarch64-linux-gnu/include`). The formal entry creates scoped
+`aarch64-linux-musl-gcc/ar` command aliases because `lwprintf-rs 0.3.3`
+hard-codes those names for its bare-metal build. The aliases compile only
+`-ffreestanding -fno-builtin` objects and bindings; they do not link or emulate
+musl libc. `prepare` records the real tools, aliases, target, versions, sysroot,
+sizes, and SHA-256 values in `build/host-toolchain.json`, freezes that manifest
+in the preregistration, and revalidates it before every board slot.

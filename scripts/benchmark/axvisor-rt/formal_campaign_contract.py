@@ -50,6 +50,7 @@ PAIR_ORDER = (
 SOAK_ORDER = ("shared", "partitioned")
 ARTIFACT_NAMES = (
     "base_rootfs",
+    "host_toolchain",
     "probe",
     "pair_kernel",
     "pair_rootfs",
@@ -75,6 +76,7 @@ FROZEN_SOURCE_PATHS = (
     "scripts/benchmark/axvisor-rt/guest/starry_rt_capture_run.sh",
     "scripts/benchmark/axvisor-rt/harvest-starry-board.sh",
     "scripts/benchmark/axvisor-rt/prepare-starry-soak.sh",
+    "scripts/benchmark/axvisor-rt/prepare-freestanding-c-toolchain.sh",
     "scripts/benchmark/axvisor-rt/run-formal-campaign.sh",
     "scripts/benchmark/axvisor-rt/stage-starry-board.sh",
     "scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml",
@@ -226,8 +228,13 @@ def build_preregistration(
         relative: artifact_record(workspace / relative, workspace)
         for relative in FROZEN_SOURCE_PATHS
     }
+    artifact_records = {
+        name: artifact_record(artifacts[name], workspace)
+        for name in ARTIFACT_NAMES
+    }
+    validate_host_toolchain_manifest(artifact_records["host_toolchain"], workspace)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "preregistered",
         "created_at_utc": timestamp.isoformat().replace("+00:00", "Z"),
         "source": {
@@ -242,10 +249,7 @@ def build_preregistration(
             "hardware_id": hardware_id,
             "hostname": hostname,
         },
-        "artifacts": {
-            name: artifact_record(artifacts[name], workspace)
-            for name in ARTIFACT_NAMES
-        },
+        "artifacts": artifact_records,
         "source_inputs": source_inputs,
         "pair_order": pair_order_document(),
         "soak_order": list(SOAK_ORDER),
@@ -298,13 +302,96 @@ def validate_record(
         raise ContractError(f"{name} SHA-256 differs from the preregistration")
 
 
+def command_output(path: Path, *arguments: str) -> str:
+    try:
+        completed = subprocess.run(
+            [str(path), *arguments],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise ContractError(f"cannot execute host tool {path}: {error}") from error
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip()
+        raise ContractError(f"host tool {path} failed: {detail}")
+    return completed.stdout.strip()
+
+
+def validate_host_toolchain_manifest(
+    record: Mapping[str, object], workspace: Path
+) -> None:
+    manifest_path = resolve_record_path(
+        require_string(record, "path", "host_toolchain"), workspace
+    )
+    manifest = read_json(manifest_path, "host toolchain manifest")
+    if manifest.get("schema_version") != 1:
+        raise ContractError("host toolchain manifest schema is invalid")
+    if manifest.get("purpose") != "StarryOS freestanding C objects and bindings":
+        raise ContractError("host toolchain purpose differs from the contract")
+    target = require_object(manifest, "target", "host toolchain")
+    if set(target) != {"machine", "sysroot"}:
+        raise ContractError("host toolchain target has the wrong fields")
+    machine = require_string(target, "machine", "host toolchain target")
+    if machine != "aarch64-linux-gnu":
+        raise ContractError("host toolchain target machine differs from the contract")
+    sysroot = Path(require_string(target, "sysroot", "host toolchain target"))
+    if not sysroot.is_absolute() or not sysroot.is_dir():
+        raise ContractError("host toolchain sysroot is missing or not absolute")
+
+    tools: dict[str, tuple[Path, str]] = {}
+    for name in ("compiler", "archiver"):
+        tool = require_object(manifest, name, "host toolchain")
+        if set(tool) != {"path", "sha256", "size_bytes", "version"}:
+            raise ContractError(f"host toolchain {name} has the wrong fields")
+        validate_record(
+            name,
+            {key: tool[key] for key in ("path", "sha256", "size_bytes")},
+            workspace,
+        )
+        tools[name] = (
+            resolve_record_path(require_string(tool, "path", name), workspace),
+            require_string(tool, "version", name),
+        )
+
+    wrappers = require_object(manifest, "wrappers", "host toolchain")
+    if set(wrappers) != {"compiler", "archiver"}:
+        raise ContractError("host toolchain wrapper set differs from the contract")
+    wrapper_paths: dict[str, Path] = {}
+    for name in ("compiler", "archiver"):
+        wrapper = require_object(wrappers, name, "host toolchain wrappers")
+        validate_record(f"{name} wrapper", wrapper, workspace)
+        wrapper_paths[name] = resolve_record_path(
+            require_string(wrapper, "path", f"{name} wrapper"), workspace
+        )
+
+    compiler, compiler_version = tools["compiler"]
+    archiver, archiver_version = tools["archiver"]
+    if command_output(compiler, "-dumpmachine") != machine:
+        raise ContractError("host compiler target differs from the manifest")
+    if command_output(compiler, "-dumpfullversion", "-dumpversion") != compiler_version:
+        raise ContractError("host compiler version differs from the manifest")
+    if command_output(archiver, "--version").splitlines()[:1] != [archiver_version]:
+        raise ContractError("host archiver version differs from the manifest")
+    if command_output(wrapper_paths["compiler"], "-print-sysroot") != str(sysroot):
+        raise ContractError("host compiler wrapper sysroot differs from the manifest")
+    if command_output(wrapper_paths["compiler"], "-dumpmachine") != machine:
+        raise ContractError("host compiler wrapper target differs from the manifest")
+    wrapper_archiver_version = command_output(
+        wrapper_paths["archiver"], "--version"
+    ).splitlines()[:1]
+    if wrapper_archiver_version != [archiver_version]:
+        raise ContractError("host archiver wrapper differs from the manifest")
+
+
 def validate_preregistration(
     document: Mapping[str, object], workspace: Path, require_clean: bool = True
 ) -> None:
     """Revalidate every frozen source and runtime input before a campaign step."""
 
     workspace = workspace.resolve()
-    if document.get("schema_version") != 1 or document.get("status") != "preregistered":
+    if document.get("schema_version") != 2 or document.get("status") != "preregistered":
         raise ContractError("formal preregistration schema or status is invalid")
     source = require_object(document, "source", "preregistration")
     commit = require_string(source, "commit", "source")
@@ -332,6 +419,9 @@ def validate_preregistration(
         raise ContractError("preregistered runtime artifact set differs from the contract")
     for name in ARTIFACT_NAMES:
         validate_record(name, require_object(artifacts, name, "artifacts"), workspace)
+    validate_host_toolchain_manifest(
+        require_object(artifacts, "host_toolchain", "artifacts"), workspace
+    )
 
     if document.get("pair_order") != pair_order_document():
         raise ContractError("pair order differs from the frozen AB/BA contract")

@@ -66,6 +66,13 @@ sudo apt-get install -y \
 
 rustup +nightly-2026-07-15 target add aarch64-unknown-linux-musl
 cargo +nightly-2026-07-15 xtask image pull rootfs-aarch64-busybox.img
+
+# Starry freestanding C objects and bindgen headers (Ubuntu package names:
+# gcc-aarch64-linux-gnu, binutils-aarch64-linux-gnu, libc6-dev-arm64-cross).
+command -v aarch64-linux-gnu-gcc aarch64-linux-gnu-ar
+test "$(aarch64-linux-gnu-gcc -dumpmachine)" = aarch64-linux-gnu
+test -r /usr/aarch64-linux-gnu/include/stdint.h
+bash scripts/benchmark/axvisor-rt/prepare-freestanding-c-toolchain.sh
 ```
 
 实体板环境变量示例：
@@ -329,6 +336,12 @@ bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh prepare \
   --service-id orangepi-5-plus-1 \
   --board OrangePi-5-Plus
 ```
+
+`prepare` 会重新生成并 smoke-test 仅限本次构建的 freestanding C shim。它把
+`lwprintf-rs` 对 `aarch64-linux-musl-gcc/ar` 命令名的硬编码映射到已验证的
+`aarch64-linux-gnu-gcc/ar`；该路径不链接 musl libc。真实工具、wrapper、target、
+版本、header sysroot、大小和 SHA-256 写入 `build/host-toolchain.json` 并纳入预注册；
+后续每个 slot 开始前都会重新核验。
 
 每次只跑下一个冻结 slot，适合在首次 pair 通过后检查再继续，也适合中断恢复：
 
