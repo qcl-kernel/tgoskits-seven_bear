@@ -148,3 +148,23 @@ bash scripts/benchmark/axvisor-rt/tests/test_runner.sh
 `metadata.schema.json` is the JSON Schema for captured provenance.
 `metadata.example.json` is explicitly marked `planned` and has no artifact or
 measurement values; it is a template, not a benchmark result.
+
+## OrangePi formal campaign
+
+Use [`run-formal-campaign.sh`](run-formal-campaign.sh) for competition-grade
+StarryOS RT evidence. It builds pair and soak artifacts once, freezes the clean
+Git commit/tree, critical source inputs, artifact hashes, thresholds, board
+identity, and the AB/BA order before the first measured boot. Each invocation
+of `run-next` completes exactly one frozen slot; only a fully validated stage,
+console, harvest, summary, and file-identity set can create the immutable
+`receipt.json`. Failed attempts remain under `attempts/` and do not advance the
+campaign.
+
+The twelve slots are ten pair halves from five pairs in AB/BA/AB/BA/AB order,
+followed by one shared and one partitioned soak. `run-all` is resumable because
+it delegates to `run-next`, and `aggregate` refuses incomplete evidence or an
+M2 gate failure.
+The design and alternatives are recorded in
+[`book/design/axvisor-rt-formal-campaign.md`](../../../book/design/axvisor-rt-formal-campaign.md).
+The exact physical-board commands are in
+[`competition/reproduce.md`](../../../competition/reproduce.md#7-正式活动规则).

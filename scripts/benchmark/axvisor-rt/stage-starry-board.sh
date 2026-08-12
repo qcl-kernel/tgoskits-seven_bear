@@ -8,6 +8,7 @@ board_type=${ORANGEPI_BOARD_TYPE:-OrangePi-5-Plus}
 ssh_target=${ORANGEPI_SSH_TARGET:-orangepi@192.168.31.33}
 ssh_identity=${ORANGEPI_SSH_IDENTITY:-${HOME}/.ssh/orangepi_automation}
 guest_dir=${ORANGEPI_RT_GUEST_DIR:-/home/orangepi/axvisor-guest}
+result_image=${ORANGEPI_RT_RESULT_IMAGE:-/home/rt}
 kernel=$workspace/tmp/axvisor-rt/starryos-rt.bin
 dtb=$workspace/tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb
 rootfs=$workspace/tmp/axvisor-rt/starry-rt-capture-rootfs.img
@@ -56,6 +57,17 @@ case "$rootfs_name" in
 esac
 if [[ "$guest_dir" =~ [^A-Za-z0-9_./-] ]]; then
     echo "--guest-dir contains unsupported characters: $guest_dir" >&2
+    exit 1
+fi
+case "$result_image" in
+    /home/rt|/home/orangepi/*) ;;
+    *)
+        echo "ORANGEPI_RT_RESULT_IMAGE is outside the approved /home paths: $result_image" >&2
+        exit 1
+        ;;
+esac
+if [[ "$result_image" =~ [^A-Za-z0-9_./-] ]]; then
+    echo "ORANGEPI_RT_RESULT_IMAGE contains unsupported characters: $result_image" >&2
     exit 1
 fi
 
@@ -115,6 +127,27 @@ while ! grep -q '^Allocated board session:' "$lease_log"; do
     fi
     sleep 0.2
 done
+service_board_id=
+identity_deadline=$((SECONDS + 5))
+while [[ -z "$service_board_id" ]]; do
+    service_board_id=$(sed -n \
+        's/^[[:space:]]*board_id:[[:space:]]*\([A-Za-z0-9._:-][A-Za-z0-9._:-]*\)[[:space:]]*$/\1/p' \
+        "$lease_log")
+    if [[ -n "$service_board_id" ]]; then
+        break
+    fi
+    if ! kill -0 "$lease_pid" 2>/dev/null || ((SECONDS >= identity_deadline)); then
+        break
+    fi
+    sleep 0.1
+done
+if [[ -z "$service_board_id" || "$service_board_id" == *$'\n'* ]]; then
+    echo "board lease did not identify exactly one allocated board" >&2
+    sed -n '1,160p' "$lease_log" >&2
+    exit 1
+fi
+printf 'AXVISOR_RT_BOARD_SERVICE_ID board_type=%s board_id=%s\n' \
+    "$board_type" "$service_board_id"
 
 ssh_options=(
     -i "$ssh_identity"
@@ -135,20 +168,76 @@ done
 rsync -a -e "$rsync_shell" "$manifest" "$ssh_target:$guest_dir/.rt-stage.sha256.new"
 
 ssh "${ssh_options[@]}" "$ssh_target" sh -s -- \
-    "$guest_dir" "${artifact_names[@]}" <<'REMOTE'
+    "$guest_dir" "$result_image" "${artifact_names[@]}" <<'REMOTE'
 set -eu
 guest_dir=$1
-shift
+result_image=$2
+shift 2
 for artifact_name in "$@"; do
     mv -f -- "$guest_dir/$artifact_name.new" "$guest_dir/$artifact_name"
 done
 mv -f -- "$guest_dir/.rt-stage.sha256.new" "$guest_dir/.rt-stage.sha256"
+sudo -n rm -f -- "$result_image" "${result_image}.host.log"
 sync
 (
     cd "$guest_dir"
     sha256sum -c .rt-stage.sha256
 )
 findmnt -n -o SOURCE,FSTYPE,OPTIONS /
+
+board_id=
+if [ -r /proc/device-tree/serial-number ]; then
+    board_id=$(tr -d '\000\r\n ' </proc/device-tree/serial-number)
+fi
+if [ -z "$board_id" ] && [ -r /etc/machine-id ]; then
+    board_id=$(tr -d '\r\n ' </etc/machine-id)
+fi
+hostname_value=$(hostname | tr -cd 'A-Za-z0-9._-')
+cpu_temp_milli_c=
+for thermal_zone in /sys/class/thermal/thermal_zone*; do
+    [ -r "$thermal_zone/type" ] || continue
+    thermal_type=$(cat "$thermal_zone/type")
+    case "$thermal_type" in
+        *cpu*|*CPU*|*soc*|*SOC*)
+            cpu_temp_milli_c=$(cat "$thermal_zone/temp")
+            break
+            ;;
+    esac
+done
+if [ -z "$cpu_temp_milli_c" ]; then
+    for thermal_zone in /sys/class/thermal/thermal_zone*; do
+        if [ -r "$thermal_zone/temp" ]; then
+            cpu_temp_milli_c=$(cat "$thermal_zone/temp")
+            break
+        fi
+    done
+fi
+[ -n "$board_id" ] || {
+    echo "physical board ID is unavailable" >&2
+    exit 1
+}
+[ -n "$hostname_value" ] || {
+    echo "physical board hostname is unavailable" >&2
+    exit 1
+}
+case "$board_id:$hostname_value:$cpu_temp_milli_c" in
+    *[!A-Za-z0-9._:-]*)
+        echo "physical board identity contains unsupported characters" >&2
+        exit 1
+        ;;
+esac
+case "$cpu_temp_milli_c" in
+    ''|*[!0-9-]*)
+        echo "physical board CPU temperature is unavailable" >&2
+        exit 1
+        ;;
+esac
+if [ "$cpu_temp_milli_c" -lt -40000 ] || [ "$cpu_temp_milli_c" -gt 150000 ]; then
+    echo "physical board CPU temperature is outside the valid range" >&2
+    exit 1
+fi
+printf 'AXVISOR_RT_BOARD_IDENTITY board_id=%s hostname=%s cpu_temp_milli_c=%s\n' \
+    "$board_id" "$hostname_value" "$cpu_temp_milli_c"
 echo AXVISOR_RT_BOARD_STAGE_PASS
 REMOTE
 

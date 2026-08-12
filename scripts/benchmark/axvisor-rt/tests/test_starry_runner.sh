@@ -9,6 +9,10 @@ soak_builder=$benchmark_dir/prepare-starry-soak.sh
 noise_builder=$benchmark_dir/build-aarch64-noise-guest.sh
 stage_runner=$benchmark_dir/stage-starry-board.sh
 harvest_runner=$benchmark_dir/harvest-starry-board.sh
+formal_contract=$benchmark_dir/formal_campaign.py
+formal_contract_core=$benchmark_dir/formal_campaign_contract.py
+formal_receipt=$benchmark_dir/formal_campaign_receipt.py
+formal_runner=$benchmark_dir/run-formal-campaign.sh
 guest_runner=$benchmark_dir/guest/starry_rt_compat_run.sh
 capture_runner=$benchmark_dir/guest/starry_rt_capture_run.sh
 irq_analyzer=$benchmark_dir/analyze_irq_trace.py
@@ -41,10 +45,17 @@ bash -n "$soak_builder"
 bash -n "$noise_builder"
 bash -n "$stage_runner"
 bash -n "$harvest_runner"
+bash -n "$formal_runner"
 sh -n "$guest_runner"
 sh -n "$capture_runner"
 python3 -m py_compile "$irq_analyzer"
 python3 -m py_compile "$stress_aggregator"
+python3 -m py_compile "$formal_contract"
+python3 -m py_compile "$formal_contract_core"
+python3 -m py_compile "$formal_receipt"
+"$formal_runner" --help >/dev/null
+grep -q 'sha256sum -c preregistration.sha256' "$formal_runner" || \
+    fail "formal campaign must verify the immutable preregistration checksum"
 
 grep -q 'mrs.*cntvct_el0' "$noise_source" || \
     fail "noise guest must use the guest virtual counter for a bounded run"
@@ -179,6 +190,8 @@ grep -q '^period_us=90000$' "$soak_builder" || \
     fail "soak preparation must use two 15-minute timed phases"
 grep -q '^minimum_duration_seconds=1800$' "$soak_builder" || \
     fail "soak preparation must enforce a 30-minute nominal timed window"
+grep -q 'STARRY_RT_BASE_ROOTFS' "$soak_builder" || \
+    fail "soak preparation must accept the same frozen base rootfs as pair capture"
 grep -q 'starry-rt-soak-rootfs.img' "$soak_builder" || \
     fail "soak preparation must produce a distinct immutable rootfs artifact"
 grep -Fq 'rustup run "$toolchain" rust-objcopy --strip-all -O binary "$built_elf" "$built_kernel"' \
@@ -245,6 +258,16 @@ grep -q 'cargo xtask board connect -b "$board_type"' "$stage_runner" || \
     fail "board staging must hold a board-service lease"
 grep -q 'sha256sum -c .rt-stage.sha256' "$stage_runner" || \
     fail "board staging must verify the remote artifact manifest"
+grep -q 'AXVISOR_RT_BOARD_IDENTITY board_id=' "$stage_runner" || \
+    fail "board staging must record the physical hardware identity"
+grep -q 'AXVISOR_RT_BOARD_SERVICE_ID board_type=' "$stage_runner" || \
+    fail "board staging must record the board-service allocation identity"
+grep -q '/proc/device-tree/serial-number' "$stage_runner" || \
+    fail "board staging must prefer the hardware serial number"
+grep -q '/etc/machine-id' "$stage_runner" || \
+    fail "board staging must retain a deterministic identity fallback"
+grep -Fq 'sudo -n rm -f -- "$result_image" "${result_image}.host.log"' "$stage_runner" || \
+    fail "board staging must remove only the exact stale RT result files"
 grep -q 'e2fsck_path.*-fn.*"$result_image"' "$harvest_runner" || \
     fail "board harvest must read-only check the snapshot filesystem"
 grep -q 'cat "$fsck_log" >&2' "$harvest_runner" || \
@@ -263,6 +286,8 @@ grep -q 'analyze_irq_trace.py' "$harvest_runner" || \
     fail "board harvest must validate direct IRQ and host accounting evidence"
 grep -q 'analyze_starry_board.py' "$harvest_runner" || \
     fail "board harvest must validate extracted raw evidence"
+grep -q 'AXVISOR_RT_BOARD_IDENTITY board_id=' "$harvest_runner" || \
+    fail "board harvest must revalidate the physical hardware identity"
 
 set +e
 output=$(
