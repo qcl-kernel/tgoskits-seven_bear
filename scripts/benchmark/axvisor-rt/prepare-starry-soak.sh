@@ -25,7 +25,7 @@ fi
 
 STARRY_RT_CONFIG=$kernel_config \
 STARRY_RT_KERNEL_OUTPUT=$kernel_output \
-    "$kernel_builder"
+    bash "$kernel_builder"
 
 rootfs_arguments=(
     --mode capture \
@@ -41,7 +41,7 @@ rootfs_arguments=(
 if [[ -n "$base_rootfs" ]]; then
     rootfs_arguments+=(--base-rootfs "$base_rootfs")
 fi
-"$rootfs_builder" "${rootfs_arguments[@]}"
+bash "$rootfs_builder" "${rootfs_arguments[@]}"
 
 sha256sum "$kernel_config" "$kernel_output" "$rootfs_output"
 echo "AXVISOR_RT_STARRY_SOAK_READY kernel=$kernel_output rootfs=$rootfs_output iterations=$iterations period_us=$period_us nominal_duration_seconds=$nominal_duration_seconds"
