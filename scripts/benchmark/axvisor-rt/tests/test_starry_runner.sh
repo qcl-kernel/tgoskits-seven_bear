@@ -198,6 +198,10 @@ grep -q '^minimum_duration_seconds=1800$' "$soak_builder" || \
     fail "soak preparation must enforce a 30-minute nominal timed window"
 grep -q 'STARRY_RT_BASE_ROOTFS' "$soak_builder" || \
     fail "soak preparation must accept the same frozen base rootfs as pair capture"
+grep -Fq 'bash "$kernel_builder"' "$soak_builder" || \
+    fail "soak preparation must run the kernel builder through bash in a clean clone"
+grep -Fq 'bash "$rootfs_builder" "${rootfs_arguments[@]}"' "$soak_builder" || \
+    fail "soak preparation must run the rootfs builder through bash in a clean clone"
 grep -q 'starry-rt-soak-rootfs.img' "$soak_builder" || \
     fail "soak preparation must produce a distinct immutable rootfs artifact"
 grep -Fq 'rustup run "$toolchain" rust-objcopy --strip-all -O binary "$built_elf" "$built_kernel"' \
