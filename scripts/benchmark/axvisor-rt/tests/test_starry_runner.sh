@@ -301,7 +301,7 @@ grep -q 'AXVISOR_RT_BOARD_IDENTITY board_id=' "$harvest_runner" || \
 
 set +e
 output=$(
-    "$builder" --iterations 0 2>&1
+    bash "$builder" --iterations 0 2>&1
 )
 status=$?
 set -e
