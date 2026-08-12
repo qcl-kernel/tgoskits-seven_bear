@@ -69,6 +69,9 @@ kernel 和 rootfs 哈希；它不读取设备图内部状态，也不重新分�
 `formal_campaign_receipt.py` 拥有顺序状态机、不可覆盖收据及已完成 slot 的完整性
 重验；`formal_campaign.py` 只是 CLI；`run-formal-campaign.sh` 编排已有边界。四者被
 一并列入 `source_inputs`，所以活动进行中修改任一实现都会使后续 `verify` 失败。
+编排器通过 `bash` 调用所有 shell helper；因此全新克隆会遵循脚本解释器合同，而不
+依赖 helper 在 Git 树中是否带可执行位。集成测试固定这一约束，避免正式构建在上板
+前因宿主文件模式差异退出。
 
 ## 状态、所有权与失败语义
 

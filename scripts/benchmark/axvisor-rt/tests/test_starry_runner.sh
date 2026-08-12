@@ -56,6 +56,12 @@ python3 -m py_compile "$formal_receipt"
 "$formal_runner" --help >/dev/null
 grep -q 'sha256sum -c preregistration.sha256' "$formal_runner" || \
     fail "formal campaign must verify the immutable preregistration checksum"
+for helper_variable in \
+    kernel_builder rootfs_builder soak_builder dtb_builder \
+    stage_runner board_runner harvest_runner; do
+    grep -Fq "bash \"\$$helper_variable\"" "$formal_runner" || \
+        fail "formal campaign must run $helper_variable through bash in a clean clone"
+done
 
 grep -q 'mrs.*cntvct_el0' "$noise_source" || \
     fail "noise guest must use the guest virtual counter for a bounded run"

@@ -216,8 +216,8 @@ case "$action" in
         fi
         mkdir -p "$result_root/build"
 
-        "$kernel_builder" 2>&1 | tee "$result_root/build/pair-kernel.log"
-        "$rootfs_builder" \
+        bash "$kernel_builder" 2>&1 | tee "$result_root/build/pair-kernel.log"
+        bash "$rootfs_builder" \
             --base-rootfs "$base_rootfs" \
             --mode capture \
             --workload idle \
@@ -230,8 +230,8 @@ case "$action" in
             --output "$pair_rootfs" \
             2>&1 | tee "$result_root/build/pair-rootfs.log"
         STARRY_RT_BASE_ROOTFS="$base_rootfs" \
-            "$soak_builder" 2>&1 | tee "$result_root/build/soak.log"
-        "$dtb_builder" 2>&1 | tee "$result_root/build/guest-dtb.log"
+            bash "$soak_builder" 2>&1 | tee "$result_root/build/soak.log"
+        bash "$dtb_builder" 2>&1 | tee "$result_root/build/guest-dtb.log"
 
         python3 "$contract" preregister \
             --workspace "$workspace" \
@@ -330,7 +330,7 @@ case "$action" in
 
         ORANGEPI_BOARD_TYPE="$board_type" \
         ORANGEPI_RT_RESULT_IMAGE=/home/rt \
-            "$stage_runner" \
+            bash "$stage_runner" \
             --kernel "$kernel" \
             --dtb "$guest_dtb_path" \
             --rootfs "$rootfs" \
@@ -347,7 +347,7 @@ case "$action" in
         ORANGEPI_AXVISOR_SHUTDOWN_MARKER_REQUIRED=1 \
         ORANGEPI_RESTORE_LINUX=1 \
         ORANGEPI_RUN_TIMEOUT_SECONDS="$timeout_seconds" \
-            "$board_runner" 2>&1 | tee "$console_log"
+            bash "$board_runner" 2>&1 | tee "$console_log"
 
         ORANGEPI_BOARD_TYPE="$board_type" \
         ORANGEPI_RT_RESULT_IMAGE=/home/rt \
@@ -360,7 +360,7 @@ case "$action" in
         ORANGEPI_RT_EXPECTED_ITERATIONS=10000 \
         ORANGEPI_RT_EXPECTED_HOST_NOISE_PCPU="$expected_pcpu" \
         ORANGEPI_RT_SOAK="$soak" \
-            "$harvest_runner" 2>&1 | tee "$harvest_log"
+            bash "$harvest_runner" 2>&1 | tee "$harvest_log"
 
         finished_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
         receipt_arguments=(
@@ -398,9 +398,9 @@ case "$action" in
             if [[ $(jq -r '.next == null' <<<"$status_json") == true ]]; then
                 break
             fi
-            "$0" run-next --result-dir "$result_root"
+            bash "$0" run-next --result-dir "$result_root"
         done
-        "$0" aggregate --result-dir "$result_root"
+        bash "$0" aggregate --result-dir "$result_root"
         ;;
     aggregate)
         [[ -r "$preregistration" ]] || fail "preregistration is missing"
