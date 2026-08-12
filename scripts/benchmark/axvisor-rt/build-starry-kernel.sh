@@ -4,22 +4,32 @@ set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 workspace=$(git -C "$script_dir" rev-parse --show-toplevel)
+host_toolchain_preparer=$script_dir/prepare-freestanding-c-toolchain.sh
 toolchain=${STARRY_RT_TOOLCHAIN:-nightly-2026-07-15}
 config=${STARRY_RT_CONFIG:-$script_dir/config/starry-aarch64-rt.toml}
 output=${STARRY_RT_KERNEL_OUTPUT:-$workspace/tmp/axvisor-rt/starryos-rt.bin}
 
-for input in "$config"; do
+for input in "$config" "$host_toolchain_preparer"; do
     if [[ ! -r "$input" ]]; then
         echo "required StarryOS RT build input is not readable: $input" >&2
         exit 1
     fi
 done
-for command_name in cargo install mkdir rustup sed sha256sum; do
+for command_name in bash cargo install mkdir rustup sed sha256sum; do
     command -v "$command_name" >/dev/null 2>&1 || {
         echo "required StarryOS RT build command not found: $command_name" >&2
         exit 1
     }
 done
+
+bash "$host_toolchain_preparer"
+host_toolchain_environment=${STARRY_RT_HOST_TOOLCHAIN_ENV:-$workspace/tmp/axvisor-rt/host-toolchain.env}
+[[ -r "$host_toolchain_environment" ]] || {
+    echo "StarryOS RT host toolchain environment is missing: $host_toolchain_environment" >&2
+    exit 1
+}
+# shellcheck disable=SC1090
+source "$host_toolchain_environment"
 
 target=$(sed -n \
     's/^[[:space:]]*target[[:space:]]*=[[:space:]]*"\([A-Za-z0-9_.-]*\)"[[:space:]]*$/\1/p' \

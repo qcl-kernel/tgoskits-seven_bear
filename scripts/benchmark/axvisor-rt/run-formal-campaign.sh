@@ -6,6 +6,7 @@ script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 workspace=$(git -C "$script_dir" rev-parse --show-toplevel)
 contract=$script_dir/formal_campaign.py
 kernel_builder=$script_dir/build-starry-kernel.sh
+host_toolchain_preparer=$script_dir/prepare-freestanding-c-toolchain.sh
 rootfs_builder=$script_dir/build-starry-rootfs.sh
 soak_builder=$script_dir/prepare-starry-soak.sh
 dtb_builder=$workspace/competition/ivc/starry/build-guest-dtb.sh
@@ -179,6 +180,7 @@ for command_name in cmp date git jq mktemp mv python3 realpath sha256sum tee; do
 done
 for input_path in \
     "$contract" "$kernel_builder" "$rootfs_builder" "$soak_builder" \
+    "$host_toolchain_preparer" \
     "$dtb_builder" "$stage_runner" "$board_runner" "$harvest_runner" \
     "$pair_comparator" "$campaign_aggregator" "$probe"; do
     [[ -r "$input_path" ]] || fail "required campaign input is unreadable: $input_path"
@@ -215,6 +217,7 @@ case "$action" in
                 fail "result root inside the worktree must be ignored by Git"
         fi
         mkdir -p "$result_root/build"
+        export STARRY_RT_HOST_TOOLCHAIN_MANIFEST=$result_root/build/host-toolchain.json
 
         bash "$kernel_builder" 2>&1 | tee "$result_root/build/pair-kernel.log"
         bash "$rootfs_builder" \
@@ -242,6 +245,7 @@ case "$action" in
             --hardware-id "$hardware_id" \
             --hostname "$hostname_value" \
             --base-rootfs "$base_rootfs" \
+            --host-toolchain "$result_root/build/host-toolchain.json" \
             --probe "$probe" \
             --pair-kernel "$pair_kernel" \
             --pair-rootfs "$pair_rootfs" \

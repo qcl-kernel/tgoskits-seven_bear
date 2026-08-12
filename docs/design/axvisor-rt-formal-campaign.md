@@ -48,7 +48,7 @@
 ## 分层和唯一事实来源
 
 ```text
-clean Git commit + base rootfs
+clean Git commit + base rootfs + host C toolchain
               |
        prepare（构建一次）
               |
@@ -65,10 +65,23 @@ clean Git commit + base rootfs
 `ResolvedDeviceGraph` 解析和构建。正式活动仅冻结生成该运行时的源码、TOML、DTB、
 kernel 和 rootfs 哈希；它不读取设备图内部状态，也不重新分配数字资源。
 
+StarryOS 的 `lwprintf-rs 0.3.3` 在 `target_os = "none"` 时硬编码查找
+`aarch64-linux-musl-gcc/ar`，但该路径只编译 `-ffreestanding -fno-builtin` C 对象并
+生成 `core` bindings，不链接 musl libc。`prepare-freestanding-c-toolchain.sh` 因此
+只在 RT 构建进程的 PATH 前生成受控命令别名，委托给已验证 target 为
+`aarch64-linux-gnu` 的 GNU cross compiler/binutils；它不改变 Rust target、最终链接器
+或运行时 libc。构建前会实际编译并归档一个 freestanding smoke object。
+
+`host-toolchain.json` 冻结真实 compiler/ar 与生成 wrapper 的绝对路径、大小、SHA-256、
+版本、target 和 header sysroot。预注册写盘前及每次 `verify` 都重新检查文件指纹并
+执行 compiler/ar/wrapper 查询，因此依赖缺失、替换、target 漂移或 sysroot 不存在都
+会在上板前 fail-closed。
+
 `formal_campaign_contract.py` 拥有预注册 schema、测量合同和 analyzer 证据校验；
 `formal_campaign_receipt.py` 拥有顺序状态机、不可覆盖收据及已完成 slot 的完整性
 重验；`formal_campaign.py` 只是 CLI；`run-formal-campaign.sh` 编排已有边界。四者被
-一并列入 `source_inputs`，所以活动进行中修改任一实现都会使后续 `verify` 失败。
+连同 host-toolchain 准备器一并列入 `source_inputs`，所以活动进行中修改任一实现都会
+使后续 `verify` 失败。
 编排器通过 `bash` 调用所有 shell helper；因此全新克隆会遵循脚本解释器合同，而不
 依赖 helper 在 Git 树中是否带可执行位。集成测试固定这一约束，避免正式构建在上板
 前因宿主文件模式差异退出。

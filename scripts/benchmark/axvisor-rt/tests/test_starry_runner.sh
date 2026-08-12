@@ -13,6 +13,8 @@ formal_contract=$benchmark_dir/formal_campaign.py
 formal_contract_core=$benchmark_dir/formal_campaign_contract.py
 formal_receipt=$benchmark_dir/formal_campaign_receipt.py
 formal_runner=$benchmark_dir/run-formal-campaign.sh
+host_toolchain_preparer=$benchmark_dir/prepare-freestanding-c-toolchain.sh
+host_toolchain_test=$benchmark_dir/tests/test_host_toolchain.sh
 guest_runner=$benchmark_dir/guest/starry_rt_compat_run.sh
 capture_runner=$benchmark_dir/guest/starry_rt_capture_run.sh
 irq_analyzer=$benchmark_dir/analyze_irq_trace.py
@@ -46,6 +48,7 @@ bash -n "$noise_builder"
 bash -n "$stage_runner"
 bash -n "$harvest_runner"
 bash -n "$formal_runner"
+bash -n "$host_toolchain_preparer"
 sh -n "$guest_runner"
 sh -n "$capture_runner"
 python3 -m py_compile "$irq_analyzer"
@@ -53,9 +56,18 @@ python3 -m py_compile "$stress_aggregator"
 python3 -m py_compile "$formal_contract"
 python3 -m py_compile "$formal_contract_core"
 python3 -m py_compile "$formal_receipt"
+bash "$host_toolchain_test"
 "$formal_runner" --help >/dev/null
 grep -q 'sha256sum -c preregistration.sha256' "$formal_runner" || \
     fail "formal campaign must verify the immutable preregistration checksum"
+grep -Fq 'export STARRY_RT_HOST_TOOLCHAIN_MANIFEST=$result_root/build/host-toolchain.json' \
+    "$formal_runner" || \
+    fail "formal campaign must persist the measured host toolchain manifest"
+grep -Fq -- '--host-toolchain "$result_root/build/host-toolchain.json"' \
+    "$formal_runner" || \
+    fail "formal campaign must freeze the host toolchain in preregistration"
+grep -Fq 'bash "$host_toolchain_preparer"' "$kernel_builder" || \
+    fail "StarryOS RT kernel builds must prepare the freestanding C toolchain"
 for helper_variable in \
     kernel_builder rootfs_builder soak_builder dtb_builder \
     stage_runner board_runner harvest_runner; do

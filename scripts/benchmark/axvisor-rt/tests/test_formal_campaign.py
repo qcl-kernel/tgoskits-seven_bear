@@ -41,9 +41,72 @@ class FormalCampaignContractTests(unittest.TestCase):
         artifact_root.mkdir(parents=True)
         self.artifacts: dict[str, Path] = {}
         for name in campaign.ARTIFACT_NAMES:
+            if name == "host_toolchain":
+                continue
             path = artifact_root / f"{name}.bin"
             path.write_bytes((name + "\n").encode() * 3)
             self.artifacts[name] = path
+        self.host_compiler = artifact_root / "aarch64-linux-gnu-gcc"
+        self.host_archiver = artifact_root / "aarch64-linux-gnu-ar"
+        self.host_sysroot = artifact_root / "aarch64-sysroot"
+        self.host_sysroot.mkdir()
+        self.host_compiler.write_text(
+            "#!/bin/sh\n"
+            "case \"$*\" in\n"
+            "  -dumpmachine) echo aarch64-linux-gnu ;;\n"
+            "  '-dumpfullversion -dumpversion') echo 11.4.0-test ;;\n"
+            f"  -print-sysroot) echo {self.host_sysroot} ;;\n"
+            "  *) exit 2 ;;\n"
+            "esac\n",
+            encoding="utf-8",
+        )
+        self.host_archiver.write_text(
+            "#!/bin/sh\n"
+            "[ \"${1:-}\" = --version ] || exit 2\n"
+            "echo 'GNU ar test'\n",
+            encoding="utf-8",
+        )
+        self.host_compiler.chmod(0o755)
+        self.host_archiver.chmod(0o755)
+
+        def file_record(path: Path, *, version: str | None = None) -> dict[str, object]:
+            record: dict[str, object] = {
+                "path": str(path.resolve()),
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "size_bytes": path.stat().st_size,
+            }
+            if version is not None:
+                record["version"] = version
+            return record
+
+        host_toolchain = artifact_root / "host-toolchain.json"
+        host_toolchain.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "purpose": "StarryOS freestanding C objects and bindings",
+                    "target": {
+                        "machine": "aarch64-linux-gnu",
+                        "sysroot": str(self.host_sysroot.resolve()),
+                    },
+                    "compiler": file_record(
+                        self.host_compiler, version="11.4.0-test"
+                    ),
+                    "archiver": file_record(
+                        self.host_archiver, version="GNU ar test"
+                    ),
+                    "wrappers": {
+                        "compiler": file_record(self.host_compiler),
+                        "archiver": file_record(self.host_archiver),
+                    },
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        self.artifacts["host_toolchain"] = host_toolchain
         self.document = campaign.build_preregistration(
             workspace=self.workspace,
             expected_commit=self.commit,
@@ -70,6 +133,12 @@ class FormalCampaignContractTests(unittest.TestCase):
         ).stdout
 
     def test_preregistration_binds_source_artifacts_and_order(self) -> None:
+        self.assertEqual(self.document["schema_version"], 2)
+        self.assertIn("host_toolchain", campaign.ARTIFACT_NAMES)
+        self.assertIn(
+            "scripts/benchmark/axvisor-rt/prepare-freestanding-c-toolchain.sh",
+            campaign.FROZEN_SOURCE_PATHS,
+        )
         self.assertEqual(self.document["source"]["commit"], self.commit)
         self.assertEqual(
             [entry["order"] for entry in self.document["pair_order"]],
@@ -89,6 +158,14 @@ class FormalCampaignContractTests(unittest.TestCase):
         source = self.workspace / campaign.FROZEN_SOURCE_PATHS[0]
         source.write_text("mutated source\n", encoding="utf-8")
         with self.assertRaisesRegex(campaign.ContractError, "clean Git worktree"):
+            campaign.validate_preregistration(
+                self.document, self.workspace, require_clean=True
+            )
+
+    def test_validation_rejects_mutated_host_compiler(self) -> None:
+        original = self.host_compiler.read_bytes()
+        self.host_compiler.write_bytes(bytes([original[0] ^ 1]) + original[1:])
+        with self.assertRaisesRegex(campaign.ContractError, "compiler.*SHA-256"):
             campaign.validate_preregistration(
                 self.document, self.workspace, require_clean=True
             )
