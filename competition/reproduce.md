@@ -309,17 +309,56 @@ python3 scripts/benchmark/axvisor-rt/compare_starry_board.py \
 - IVC manual/neural 使用 AB/BA/AB/BA/AB 五对；fault profile 各 3 次；
 - 任何失败尝试保留原始状态，不用离线 replay 改写为成功 run。
 
-RT 聚合：
+RT 正式入口先在 clean worktree 中构建并冻结全部输入。`base_rootfs` 使用已由
+`cargo xtask image pull rootfs-aarch64-busybox.img` 获取的受管镜像；`result_root`
+必须是尚不存在的新目录：
 
 ```sh
-python3 scripts/benchmark/axvisor-rt/aggregate_starry_board.py \
-  <pair-1-comparison.json> <pair-2-comparison.json> \
-  <pair-3-comparison.json> <pair-4-comparison.json> \
-  <pair-5-comparison.json> \
-  --shared-soak <shared-soak-summary.json> \
-  --partitioned-soak <partitioned-soak-summary.json> \
-  --output <campaign-summary.json>
+commit=$(git rev-parse HEAD)
+source_ref=$(git symbolic-ref --quiet --short HEAD || printf 'detached-head')
+base_rootfs=.tgos-images/rootfs-aarch64-busybox.img/rootfs-aarch64-busybox.img
+result_root=/home/$USER/Workspace/starry/results/rt-formal-20260812-$commit
+
+bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh prepare \
+  --result-dir "$result_root" \
+  --expected-commit "$commit" \
+  --source-ref "$source_ref" \
+  --base-rootfs "$base_rootfs" \
+  --hardware-id bf61f4d4a1d994ad \
+  --hostname orangepi5plus \
+  --service-id orangepi-5-plus-1 \
+  --board OrangePi-5-Plus
 ```
+
+每次只跑下一个冻结 slot，适合在首次 pair 通过后检查再继续，也适合中断恢复：
+
+```sh
+bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh status \
+  --result-dir "$result_root"
+
+bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh run-next \
+  --result-dir "$result_root"
+
+bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh run-all \
+  --result-dir "$result_root"
+```
+
+`run-all` 完成十二个 slot 后自动聚合。若需要单独重验派生结果：
+
+```sh
+bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh aggregate \
+  --result-dir "$result_root"
+
+jq -e '.assessment.m2_exit_gate_met == true' \
+  "$result_root/campaign-summary.json"
+(cd "$result_root" && sha256sum -c checksums.sha256)
+```
+
+正式入口在每个 half 前重验 commit/tree、关键源码和所有制品哈希，并验证 stage 与
+harvest 都是同一 `bf61f4d4a1d994ad/orangepi5plus` 实体板。任一步失败时不会创建
+`receipt.json`；修复源码后必须新提交并使用新的 `result_root` 重新预注册，不能编辑
+旧收据或降低阈值。设计、替代方案和状态机见
+[`book/design/axvisor-rt-formal-campaign.md`](../book/design/axvisor-rt-formal-campaign.md)。
 
 IVC manual/neural 的冻结顺序由 `run-control-campaign.sh formal` 生成：
 

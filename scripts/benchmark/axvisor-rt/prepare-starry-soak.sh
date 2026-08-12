@@ -9,6 +9,7 @@ rootfs_builder=$script_dir/build-starry-rootfs.sh
 kernel_config=$script_dir/config/starry-aarch64-rt-soak.toml
 kernel_output=$workspace/tmp/axvisor-rt/starryos-rt-soak.bin
 rootfs_output=$workspace/tmp/axvisor-rt/starry-rt-soak-rootfs.img
+base_rootfs=${STARRY_RT_BASE_ROOTFS:-}
 
 iterations=10000
 warmup=100
@@ -26,7 +27,7 @@ STARRY_RT_CONFIG=$kernel_config \
 STARRY_RT_KERNEL_OUTPUT=$kernel_output \
     "$kernel_builder"
 
-"$rootfs_builder" \
+rootfs_arguments=(
     --mode capture \
     --workload idle \
     --iterations "$iterations" \
@@ -36,6 +37,11 @@ STARRY_RT_KERNEL_OUTPUT=$kernel_output \
     --stress-cpu 1 \
     --fifo-priority 80 \
     --output "$rootfs_output"
+)
+if [[ -n "$base_rootfs" ]]; then
+    rootfs_arguments+=(--base-rootfs "$base_rootfs")
+fi
+"$rootfs_builder" "${rootfs_arguments[@]}"
 
 sha256sum "$kernel_config" "$kernel_output" "$rootfs_output"
 echo "AXVISOR_RT_STARRY_SOAK_READY kernel=$kernel_output rootfs=$rootfs_output iterations=$iterations period_us=$period_us nominal_duration_seconds=$nominal_duration_seconds"

@@ -348,6 +348,63 @@ printf 'AXVISOR_RT_SNAPSHOT_IDENTITY path=%s bytes=%s sha256=%s\n' \
     "$result_image" "$image_bytes" "$image_sha256"
 REMOTE
 )
+board_identity=$(ssh "${ssh_options[@]}" "$ssh_target" sh -s <<'REMOTE'
+set -eu
+board_id=
+if [ -r /proc/device-tree/serial-number ]; then
+    board_id=$(tr -d '\000\r\n ' </proc/device-tree/serial-number)
+fi
+if [ -z "$board_id" ] && [ -r /etc/machine-id ]; then
+    board_id=$(tr -d '\r\n ' </etc/machine-id)
+fi
+hostname_value=$(hostname | tr -cd 'A-Za-z0-9._-')
+cpu_temp_milli_c=
+for thermal_zone in /sys/class/thermal/thermal_zone*; do
+    [ -r "$thermal_zone/type" ] || continue
+    thermal_type=$(cat "$thermal_zone/type")
+    case "$thermal_type" in
+        *cpu*|*CPU*|*soc*|*SOC*)
+            cpu_temp_milli_c=$(cat "$thermal_zone/temp")
+            break
+            ;;
+    esac
+done
+if [ -z "$cpu_temp_milli_c" ]; then
+    for thermal_zone in /sys/class/thermal/thermal_zone*; do
+        if [ -r "$thermal_zone/temp" ]; then
+            cpu_temp_milli_c=$(cat "$thermal_zone/temp")
+            break
+        fi
+    done
+fi
+[ -n "$board_id" ] || {
+    echo "physical board ID is unavailable" >&2
+    exit 1
+}
+[ -n "$hostname_value" ] || {
+    echo "physical board hostname is unavailable" >&2
+    exit 1
+}
+case "$board_id:$hostname_value:$cpu_temp_milli_c" in
+    *[!A-Za-z0-9._:-]*)
+        echo "physical board identity contains unsupported characters" >&2
+        exit 1
+        ;;
+esac
+case "$cpu_temp_milli_c" in
+    ''|*[!0-9-]*)
+        echo "physical board CPU temperature is unavailable" >&2
+        exit 1
+        ;;
+esac
+if [ "$cpu_temp_milli_c" -lt -40000 ] || [ "$cpu_temp_milli_c" -gt 150000 ]; then
+    echo "physical board CPU temperature is outside the valid range" >&2
+    exit 1
+fi
+printf 'AXVISOR_RT_BOARD_IDENTITY board_id=%s hostname=%s cpu_temp_milli_c=%s\n' \
+    "$board_id" "$hostname_value" "$cpu_temp_milli_c"
+REMOTE
+)
 
 mv -f -- "$temporary_raw" "$raw_output"
 temporary_raw=
@@ -363,5 +420,6 @@ wait "$lease_pid" 2>/dev/null || true
 lease_pid=
 
 printf '%s\n' "$result_evidence"
+printf '%s\n' "$board_identity"
 host_noise_pcpu=${expected_host_noise_pcpu:-none}
 echo "AXVISOR_RT_STARRY_HARVESTED profile=$profile workload=$expected_workload host_noise_pcpu=$host_noise_pcpu soak=$soak samples_per_metric=$expected_iterations lines=$raw_lines sha256=$raw_sha256 guest_irq_sha256=$guest_irq_sha256 host_trace_sha256=$host_trace_sha256 filesystem_state=$filesystem_state raw=$raw_output guest_irq=$guest_irq_output host_trace=$host_trace_output summary=$summary_output"
