@@ -1305,6 +1305,75 @@ BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=4250
 
         self.assertTrue(result["restart_recovery"]["recovered"])
 
+    def test_restart_profile_recovers_a_uniquely_truncated_stale_replay_prefix(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        stale_replay = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-STALE-REPLAY "
+            "old_session=286331153 old_sequence=20 new_session=572662306 "
+            "stale_status_sent=1 stale_acks_sent=1"
+        )
+        recovery = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-RECOVERY "
+            "session=572662306 seq=1 from=controller-timeout mode=Neural "
+            "actuator_permille=500 recoveries=1"
+        )
+        collided_emissions = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-ST"
+            f"{recovery}\n{stale_replay}"
+        )
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            f"{stale_replay}\n{recovery}",
+            collided_emissions,
+            1,
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertTrue(result["restart_recovery"]["recovered"])
+
+    def test_restart_profile_rejects_an_ambiguous_truncated_rtos_prefix(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        stale_replay = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-STALE-REPLAY "
+            "old_session=286331153 old_sequence=20 new_session=572662306 "
+            "stale_status_sent=1 stale_acks_sent=1"
+        )
+        recovery = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-RECOVERY "
+            "session=572662306 seq=1 from=controller-timeout mode=Neural "
+            "actuator_permille=500 recoveries=1"
+        )
+        collided_emissions = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-S"
+            f"{recovery}\n{stale_replay}"
+        )
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            f"{stale_replay}\n{recovery}",
+            collided_emissions,
+            1,
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "causal order"):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="restart",
+                pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+                expected_pre_reset_count=20,
+            )
+
     def test_restart_profile_orders_replayed_safe_fallback_from_its_first_prefix(
         self,
     ) -> None:

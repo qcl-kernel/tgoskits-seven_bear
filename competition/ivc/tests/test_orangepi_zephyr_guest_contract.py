@@ -91,6 +91,20 @@ class OrangePiZephyrGuestContractTests(unittest.TestCase):
         )
         self.assertIn("k_sleep(K_MSEC(IVC_RESTART_RECORD_PAUSE_MS));", source)
 
+    def test_restart_transition_evidence_is_repeated_before_the_next_event(self) -> None:
+        source = ZEPHYR_MAIN.read_text(encoding="utf-8")
+
+        self.assertRegex(
+            source,
+            r"(?m)^#define IVC_RESTART_EVENT_RECORD_COPIES 2U$",
+        )
+        self.assertIn("report_stale_replay_evidence(server);", source)
+        self.assertIn("report_recovery_evidence(server);", source)
+        self.assertIn(
+            "copy + 1U < IVC_RESTART_EVENT_RECORD_COPIES",
+            source,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

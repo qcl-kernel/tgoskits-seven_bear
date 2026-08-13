@@ -37,6 +37,11 @@ RTOS_RESTART_READY_PREFIX = "IVC-RTOS-RESTART-READY "
 RTOS_SAFE_FALLBACK_PREFIX = "IVC-RTOS-SAFE-FALLBACK "
 RTOS_RECOVERY_PREFIX = "IVC-RTOS-RECOVERY "
 RTOS_STALE_REPLAY_PREFIX = "IVC-RTOS-STALE-REPLAY "
+REPLAYABLE_RECORD_UNIQUE_PREFIXES = {
+    RTOS_SAFE_FALLBACK_PREFIX: "IVC-RTOS-SA",
+    RTOS_RECOVERY_PREFIX: "IVC-RTOS-REC",
+    RTOS_STALE_REPLAY_PREFIX: "IVC-RTOS-ST",
+}
 ACK_LOSS_INJECT_PREFIX = "IVC-RTOS-INJECT "
 DUPLICATE_PREFIX = "IVC-RTOS-DUPLICATE "
 CONTROLLER_ERROR_PREFIX = "IVC-ERROR-C "
@@ -2433,11 +2438,15 @@ def first_record_start_index(lines: list[str], prefix: str) -> int:
     """Return the initial emission point for a replayable UART record.
 
     Record contents are validated separately from an intact replay. The exact
-    prefix of a truncated first copy is still sufficient to preserve causal
-    order when the complete durability copy is emitted later.
+    unique prefix of a truncated first copy is still sufficient to preserve
+    causal order when the complete durability copy is emitted later.
     """
+    unique_prefix = REPLAYABLE_RECORD_UNIQUE_PREFIXES[prefix]
+    complete_marker = prefix.rstrip()
     for index, line in enumerate(lines):
         if line.startswith(prefix):
+            return index
+        if line.startswith(unique_prefix) and complete_marker.startswith(line):
             return index
     raise AnalysisError(f"missing {prefix.strip()} record prefix")
 
