@@ -1214,6 +1214,66 @@ BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=4250
 
         self.assertLessEqual(len(line.encode("ascii")), 160)
 
+    def test_restart_profile_allows_safe_fallback_before_starry_armed(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        starry_armed = (
+            "[guest-console:pl011-starry] IVC-STARRY-RESTART-ARMED "
+            "phase=before-reset session_id=286331153 samples=20"
+        )
+        safe_fallback = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-SAFE-FALLBACK "
+            "reason=controller-timeout actuator_permille=0 last_sequence=20 "
+            "session=286331153 safe_fallbacks=1"
+        )
+        placeholder = "SAFE-FALLBACK-BEFORE-STARRY-ARMED"
+        log = (
+            self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw)
+            .replace(starry_armed, placeholder, 1)
+            .replace(safe_fallback, starry_armed, 1)
+            .replace(placeholder, safe_fallback, 1)
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertTrue(result["restart_recovery"]["safe_fallback_observed"])
+
+    def test_restart_profile_rejects_safe_fallback_after_reset_trigger(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        safe_fallback = (
+            "[guest-console:pl011-zephyr] IVC-RTOS-SAFE-FALLBACK "
+            "reason=controller-timeout actuator_permille=0 last_sequence=20 "
+            "session=286331153 safe_fallbacks=1"
+        )
+        trigger = (
+            "AXVISOR_GUEST_RESTART_TRIGGER schema=1 vm_id=1 host_cpu=3 "
+            "requested_delay_ms=20000 observed_delay_ms=20001 "
+            "before_status=running reset_count=1"
+        )
+        placeholder = "SAFE-FALLBACK-AFTER-RESET-TRIGGER"
+        log = (
+            self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw)
+            .replace(safe_fallback, placeholder, 1)
+            .replace(trigger, f"{trigger}\n{safe_fallback}", 1)
+            .replace(placeholder, "", 1)
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "causal order"):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="restart",
+                pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+                expected_pre_reset_count=20,
+            )
+
     def test_restart_duplicate_probe_record_fits_the_shared_uart_budget(self) -> None:
         line = (
             "[guest-console:pl011-starry] "
