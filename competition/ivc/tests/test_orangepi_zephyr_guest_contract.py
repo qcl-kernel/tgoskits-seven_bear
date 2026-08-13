@@ -72,6 +72,16 @@ class OrangePiZephyrGuestContractTests(unittest.TestCase):
             source.count("report_combined_result(server, profile);"), 2
         )
 
+    def test_restart_summary_is_replayed_in_the_quiet_poweroff_window(self) -> None:
+        source = ZEPHYR_MAIN.read_text(encoding="utf-8")
+        poweroff_function = source.split(
+            "static void report_poweroff_evidence", maxsplit=1
+        )[1].split("#endif", maxsplit=1)[0]
+
+        self.assertIn("static void report_restart_summary", source)
+        self.assertGreaterEqual(source.count("report_restart_summary(server);"), 2)
+        self.assertIn("report_restart_summary(server);", poweroff_function)
+
     def test_restart_ready_contract_uses_a_separate_compact_record(self) -> None:
         source = ZEPHYR_MAIN.read_text(encoding="utf-8")
 

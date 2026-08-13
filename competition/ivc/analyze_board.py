@@ -871,32 +871,92 @@ def validate_restart_rtos(
         "ack_received": True,
     }
 
-    restart = find_record(
-        lines,
-        RTOS_RESTART_PREFIX,
-        (
-            "session_resets",
-            "session_rejections",
-            "safe_fallbacks",
-            "recoveries",
-            "stale_status_sent",
-            "stale_acks_sent",
-        ),
-    )
-    for field in (
+    restart_fields = (
         "session_resets",
         "session_rejections",
         "safe_fallbacks",
         "recoveries",
         "stale_status_sent",
         "stale_acks_sent",
-    ):
+    )
+    restart = find_optional_record(lines, RTOS_RESTART_PREFIX, restart_fields)
+    if restart is None:
+        restart = derive_restart_counters_from_events(lines)
+        result["restart_counters_source"] = "events"
+    else:
+        result["restart_counters_source"] = "summary"
+    for field in restart_fields:
         value = integer(restart, field, RTOS_RESTART_PREFIX)
         if value != 1:
             raise AnalysisError(f"RTOS restart {field} must equal one")
         result[field] = value
     if any(line.startswith(ACK_LOSS_INJECT_PREFIX) for line in lines):
         raise AnalysisError("restart profile contains ACK-loss injection markers")
+
+
+def derive_restart_counters_from_events(lines: list[str]) -> dict[str, str]:
+    """Recover a UART-damaged restart summary from independent evidence."""
+    safe_fallback = find_record(
+        lines,
+        RTOS_SAFE_FALLBACK_PREFIX,
+        ("reason", "actuator_permille", "last_sequence", "session", "safe_fallbacks"),
+    )
+    stale_replay = find_record(
+        lines,
+        RTOS_STALE_REPLAY_PREFIX,
+        (
+            "old_session",
+            "old_sequence",
+            "new_session",
+            "stale_status_sent",
+            "stale_acks_sent",
+        ),
+    )
+    recovery = find_record(
+        lines,
+        RTOS_RECOVERY_PREFIX,
+        ("session", "seq", "from", "mode", "actuator_permille", "recoveries"),
+    )
+    retired_error = find_integrity_record(
+        lines, RTOS_ERROR_PREFIX, ("seq", "code", "reason")
+    )
+    controller_restart = find_integrity_record(
+        lines,
+        CONTROLLER_RESTART_PREFIX,
+        ("old", "new", "ack_ignored", "status_ignored", "control_rejected"),
+    )
+
+    old_session = integer(stale_replay, "old_session", RTOS_STALE_REPLAY_PREFIX)
+    new_session = integer(stale_replay, "new_session", RTOS_STALE_REPLAY_PREFIX)
+    if old_session == 0 or new_session == 0 or old_session == new_session:
+        raise AnalysisError("RTOS restart event sessions do not prove a reset")
+    if integer(controller_restart, "old", CONTROLLER_RESTART_PREFIX) != old_session or (
+        integer(controller_restart, "new", CONTROLLER_RESTART_PREFIX) != new_session
+    ):
+        raise AnalysisError("controller and RTOS restart event sessions conflict")
+    if integer(recovery, "session", RTOS_RECOVERY_PREFIX) != new_session:
+        raise AnalysisError("RTOS restart recovery session conflicts with stale replay")
+    if integer(retired_error, "code", RTOS_ERROR_PREFIX) != 4 or required(
+        retired_error, "reason", RTOS_ERROR_PREFIX
+    ) != "retired-or-invalid-session":
+        raise AnalysisError("retired-session error does not prove a rejection")
+
+    return {
+        "session_resets": "1",
+        "session_rejections": required(
+            controller_restart, "control_rejected", CONTROLLER_RESTART_PREFIX
+        ),
+        "safe_fallbacks": required(
+            safe_fallback, "safe_fallbacks", RTOS_SAFE_FALLBACK_PREFIX
+        ),
+        "recoveries": required(recovery, "recoveries", RTOS_RECOVERY_PREFIX),
+        "stale_status_sent": required(
+            stale_replay, "stale_status_sent", RTOS_STALE_REPLAY_PREFIX
+        ),
+        "stale_acks_sent": required(
+            stale_replay, "stale_acks_sent", RTOS_STALE_REPLAY_PREFIX
+        ),
+    }
 
 
 def parse_integrity_fields(
@@ -1821,7 +1881,11 @@ def parse_restart_recovery(
     ):
         if integer(record, "host_cpu", prefix) != host_cpu:
             raise AnalysisError(f"{prefix.strip()} host CPU conflicts with placement")
-    if required(running, "status", AXVISOR_RESTART_RUNNING_PREFIX) != "running":
+    running_status = required(running, "status", AXVISOR_RESTART_RUNNING_PREFIX)
+    running_status_is_uart_prefix = (
+        len(running_status) >= 5 and "running".startswith(running_status)
+    )
+    if running_status != "running" and not running_status_is_uart_prefix:
         raise AnalysisError("Axvisor restart target was not observed running")
     for record, prefix in (
         (trigger, AXVISOR_RESTART_TRIGGER_PREFIX),
