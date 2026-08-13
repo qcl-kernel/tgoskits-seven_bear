@@ -169,6 +169,15 @@ The design and alternatives are recorded in
 The exact physical-board commands are in
 [`competition/reproduce.md`](../../../competition/reproduce.md#7-正式活动规则).
 
+Board Linux must grant passwordless `sudo` only for the fixed `sync` and
+`reboot` commands used by the board runner. Staging removes the two exact stale
+result paths with a separate `sudo -S` call. Set `ORANGEPI_SUDO_PASSWORD` when
+the board password differs from the image default. The formal entry captures
+the value before invoking any helper and removes it from the inherited
+environment, then passes it only to the staging subprocess. Staging sends it on
+the cleanup SSH command's standard input; it is never included in command-line
+arguments, logs, manifests, or formal preregistration.
+
 Formal StarryOS kernel builds require `aarch64-linux-gnu-gcc`,
 `aarch64-linux-gnu-ar`, and an AArch64 header sysroot (normally
 `/usr/aarch64-linux-gnu/include`). The formal entry creates scoped

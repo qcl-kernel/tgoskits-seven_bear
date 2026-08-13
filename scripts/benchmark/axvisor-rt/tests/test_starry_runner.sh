@@ -15,6 +15,7 @@ formal_receipt=$benchmark_dir/formal_campaign_receipt.py
 formal_runner=$benchmark_dir/run-formal-campaign.sh
 host_toolchain_preparer=$benchmark_dir/prepare-freestanding-c-toolchain.sh
 host_toolchain_test=$benchmark_dir/tests/test_host_toolchain.sh
+stage_runner_test=$benchmark_dir/tests/test_stage_starry_board.sh
 guest_runner=$benchmark_dir/guest/starry_rt_compat_run.sh
 capture_runner=$benchmark_dir/guest/starry_rt_capture_run.sh
 irq_analyzer=$benchmark_dir/analyze_irq_trace.py
@@ -57,12 +58,20 @@ python3 -m py_compile "$formal_contract"
 python3 -m py_compile "$formal_contract_core"
 python3 -m py_compile "$formal_receipt"
 bash "$host_toolchain_test"
+bash "$stage_runner_test"
 "$formal_runner" --help >/dev/null
 grep -q 'sha256sum -c preregistration.sha256' "$formal_runner" || \
     fail "formal campaign must verify the immutable preregistration checksum"
 grep -Fq 'export STARRY_RT_HOST_TOOLCHAIN_MANIFEST=$result_root/build/host-toolchain.json' \
     "$formal_runner" || \
     fail "formal campaign must persist the measured host toolchain manifest"
+grep -Fq 'formal_sudo_password=${ORANGEPI_SUDO_PASSWORD-}' "$formal_runner" || \
+    fail "formal campaign must capture the staging credential before running helpers"
+grep -Fq 'unset ORANGEPI_SUDO_PASSWORD' "$formal_runner" || \
+    fail "formal campaign must remove the staging credential from its child environment"
+[[ $(grep -Fc 'ORANGEPI_SUDO_PASSWORD="${formal_sudo_password:-orangepi}"' \
+    "$formal_runner") -eq 2 ]] || \
+    fail "formal campaign must pass the credential only to staging and resumed slots"
 grep -Fq -- '--host-toolchain "$result_root/build/host-toolchain.json"' \
     "$formal_runner" || \
     fail "formal campaign must freeze the host toolchain in preregistration"
@@ -288,7 +297,11 @@ grep -q '/proc/device-tree/serial-number' "$stage_runner" || \
     fail "board staging must prefer the hardware serial number"
 grep -q '/etc/machine-id' "$stage_runner" || \
     fail "board staging must retain a deterministic identity fallback"
-grep -Fq 'sudo -n rm -f -- "$result_image" "${result_image}.host.log"' "$stage_runner" || \
+grep -Fq 'sudo -S rm -f --' "$stage_runner" || \
+    fail "board staging must provide cleanup credentials only over sudo stdin"
+grep -Fq 'unset ORANGEPI_SUDO_PASSWORD' "$stage_runner" || \
+    fail "board staging must not expose the sudo password to child processes"
+grep -Fq '"$result_image" "${result_image}.host.log"' "$stage_runner" || \
     fail "board staging must remove only the exact stale RT result files"
 grep -q 'e2fsck_path.*-fn.*"$result_image"' "$harvest_runner" || \
     fail "board harvest must read-only check the snapshot filesystem"

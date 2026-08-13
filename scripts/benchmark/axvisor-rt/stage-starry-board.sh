@@ -7,6 +7,8 @@ workspace=$(git -C "$script_dir" rev-parse --show-toplevel)
 board_type=${ORANGEPI_BOARD_TYPE:-OrangePi-5-Plus}
 ssh_target=${ORANGEPI_SSH_TARGET:-orangepi@192.168.31.33}
 ssh_identity=${ORANGEPI_SSH_IDENTITY:-${HOME}/.ssh/orangepi_automation}
+sudo_password=${ORANGEPI_SUDO_PASSWORD:-orangepi}
+unset ORANGEPI_SUDO_PASSWORD
 guest_dir=${ORANGEPI_RT_GUEST_DIR:-/home/orangepi/axvisor-guest}
 result_image=${ORANGEPI_RT_RESULT_IMAGE:-/home/rt}
 kernel=$workspace/tmp/axvisor-rt/starryos-rt.bin
@@ -63,6 +65,12 @@ case "$result_image" in
     /home/rt|/home/orangepi/*) ;;
     *)
         echo "ORANGEPI_RT_RESULT_IMAGE is outside the approved /home paths: $result_image" >&2
+        exit 1
+        ;;
+esac
+case "$sudo_password" in
+    ''|*$'\r'*|*$'\n'*)
+        echo "ORANGEPI_SUDO_PASSWORD must be one non-empty line" >&2
         exit 1
         ;;
 esac
@@ -167,6 +175,9 @@ for index in "${!artifact_sources[@]}"; do
 done
 rsync -a -e "$rsync_shell" "$manifest" "$ssh_target:$guest_dir/.rt-stage.sha256.new"
 
+printf '%s\n' "$sudo_password" | ssh "${ssh_options[@]}" "$ssh_target" \
+    sudo -S rm -f -- "$result_image" "${result_image}.host.log"
+
 ssh "${ssh_options[@]}" "$ssh_target" sh -s -- \
     "$guest_dir" "$result_image" "${artifact_names[@]}" <<'REMOTE'
 set -eu
@@ -177,7 +188,6 @@ for artifact_name in "$@"; do
     mv -f -- "$guest_dir/$artifact_name.new" "$guest_dir/$artifact_name"
 done
 mv -f -- "$guest_dir/.rt-stage.sha256.new" "$guest_dir/.rt-stage.sha256"
-sudo -n rm -f -- "$result_image" "${result_image}.host.log"
 sync
 (
     cd "$guest_dir"
