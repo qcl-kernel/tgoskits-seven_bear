@@ -43,6 +43,18 @@ fn route_shortcut(mux: &GuestConsoleMux, suffix: u8) -> ConsoleInputEvent {
 
 #[cfg_attr(axtest, axtest::axtest)]
 #[cfg_attr(not(axtest), test)]
+fn guest_console_core_uses_non_sleeping_locks() {
+    use ax_std::os::arceos::sync::NoPreemptMutex;
+
+    fn assert_non_sleeping_lock<T: ?Sized>(_: &NoPreemptMutex<T>) {}
+
+    let mux = GuestConsoleMux::new();
+    assert_non_sleeping_lock(&mux.core.state);
+    assert_non_sleeping_lock(&mux.core.output_lock);
+}
+
+#[cfg_attr(axtest, axtest::axtest)]
+#[cfg_attr(not(axtest), test)]
 fn ctrl_x_h_detaches_the_foreground_guest() {
     let mux = GuestConsoleMux::new();
     mux.core.create_serial_backend(7);

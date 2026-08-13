@@ -1,4 +1,4 @@
-features = []
+features = ["ax-std/sched-rr"]
 log = "Info"
 max_cpu_num = 4
 target = "aarch64-unknown-none-softfloat"

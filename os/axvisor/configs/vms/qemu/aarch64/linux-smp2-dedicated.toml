@@ -18,7 +18,7 @@ kernel_load_addr = 0x8020_0000
 dtb_load_addr = 0x8000_0000
 ramdisk_path = "${workspace}/tmp/axbuild/axvisor/qemu-partition/initramfs-aarch64.cpio.gz"
 ramdisk_load_addr = 0x8400_0000
-cmdline = "console=ttyAMA0,115200 earlycon=pl011,0x09000000 rdinit=/init devtmpfs.mount=1 loglevel=7"
+cmdline = "console=ttyAMA0,115200 earlycon=pl011,0x09000000 rdinit=/init devtmpfs.mount=1 loglevel=7 axvisor.smp_case=dedicated-smp2"
 
 # (`base_paddr`, `size`, `flags`, `map_type`), where map type 0 allocates
 # isolated host memory for the guest partition.

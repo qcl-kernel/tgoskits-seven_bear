@@ -13,21 +13,11 @@ args = [
 ]
 fail_regex = [
   "(?m)^AXVISOR_DEDICATED_PARTITION_FAIL.*$",
+  "(?m)^AXVISOR_GUEST_ASSERTION_CASE_UNKNOWN\\s*$",
   "(?i)\\bpanic(?:ked)?\\b",
   "(?i)kernel panic",
 ]
-success_regex = ["(?m)^AXVISOR_DEDICATED_PARTITION_PASS online=.*$"]
-shell_prefix = "~ #"
-shell_init_cmd = '''
-mount -t sysfs sysfs /sys 2>/dev/null || true
-online="$(cat /sys/devices/system/cpu/online)"
-count="$(getconf _NPROCESSORS_ONLN)"
-if [ "$count" -eq 2 ]; then
-  echo "AXVISOR_DEDICATED_PARTITION_PASS online=$online"
-else
-  echo "AXVISOR_DEDICATED_PARTITION_FAIL online=$online count=$count"
-fi
-'''
+success_regex = ["(?m)^AXVISOR_DEDICATED_PARTITION_PASS\\s*$"]
 timeout = 180
 to_bin = true
 uefi = false
