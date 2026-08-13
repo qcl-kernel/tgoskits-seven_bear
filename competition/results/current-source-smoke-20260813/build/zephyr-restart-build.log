@@ -1,0 +1,250 @@
+-- west build: making build dir /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart pristine
+-- west build: generating a build system
+Loading Zephyr default modules (Zephyr base).
+-- Application: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr
+-- CMake version: 3.22.1
+-- Found Python3: /home/seven_wsl/Workspace/starry/.venv-zephyr-v4.3.0/bin/python3 (found suitable version "3.10.12", minimum required is "3.10") found components: Interpreter 
+-- Cache files will be written to: /home/seven_wsl/.cache/zephyr
+-- Zephyr version: 4.3.0 (/home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr)
+-- Found west (found suitable version "1.5.0", minimum required is "0.14.0")
+-- Board: qemu_cortex_a53, qualifiers: qemu_cortex_a53
+-- Found toolchain: cross-compile (/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/tmp/zephyr-toolchain/bin/aarch64-zephyr-)
+-- Found Dtc: /usr/bin/dtc (found suitable version "1.6.1", minimum required is "1.4.6") 
+-- Found BOARD.dts: /home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr/boards/qemu/cortex_a53/qemu_cortex_a53.dts
+-- Found devicetree overlay: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/boards/qemu_cortex_a53.overlay
+-- Generated zephyr.dts: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart/zephyr/zephyr.dts
+-- Generated pickled edt: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart/zephyr/edt.pickle
+-- Generated devicetree_generated.h: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart/zephyr/include/generated/zephyr/devicetree_generated.h
+Parsing /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/Kconfig
+Loaded configuration '/home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr/boards/qemu/cortex_a53/qemu_cortex_a53_defconfig'
+Merged configuration '/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/prj.conf'
+Merged configuration '/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/board-restart.conf'
+Configuration saved to '/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart/zephyr/.config'
+Kconfig header saved to '/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart/zephyr/include/generated/zephyr/autoconf.h'
+-- Found GnuLd: /usr/aarch64-linux-gnu/bin/ld.bfd (found version "2.38") 
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- The ASM compiler identification is GNU
+-- Found assembler: /home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/tmp/zephyr-toolchain/bin/aarch64-zephyr-gcc
+CMake Warning at /home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr/subsys/random/CMakeLists.txt:12 (message):
+  
+
+      Warning: CONFIG_TIMER_RANDOM_GENERATOR and CONFIG_TEST_CSPRNG_GENERATOR are
+      not truly random generators. This capability is not secure and it is
+      provided for testing purposes only. Use it carefully.
+
+
+-- Found gen_kobject_list: /home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr/scripts/build/gen_kobject_list.py
+CMake Warning at /home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr/CMakeLists.txt:1129 (message):
+  No SOURCES given to Zephyr library: drivers__entropy
+
+  Excluding target from build.
+
+
+CMake Warning at /home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr/CMakeLists.txt:1129 (message):
+  No SOURCES given to Zephyr library: drivers__net
+
+  Excluding target from build.
+
+
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart
+-- west build: building application
+[1/190] Preparing syscall dependency handling
+
+[2/190] Generating include/generated/zephyr/version.h
+-- Zephyr version: 4.3.0 (/home/seven_wsl/Workspace/starry/zephyrproject-v4.3.0/zephyr), build: v4.3.0
+[3/190] Generating misc/generated/syscalls_subdirs.trigger
+[4/190] Generating misc/generated/syscalls.json, misc/generated/struct_tags.json
+[5/190] Generating include/generated/device-api-sections.ld, include/generated/device-api-sections.cmake
+[6/190] Generating include/generated/zephyr/syscall_dispatch.c, include/generated/zephyr/syscall_exports_llext.c, syscall_weakdefs_llext.c, include/generated/zephyr/syscall_list.h
+[7/190] Generating include/generated/zephyr/driver-validation.h
+[8/190] Generating include/generated/zephyr/kobj-types-enum.h, include/generated/zephyr/otype-to-str.h, include/generated/zephyr/otype-to-size.h
+[9/190] Building C object zephyr/CMakeFiles/offsets.dir/arch/arm64/core/offsets/offsets.c.obj
+[10/190] Generating include/generated/zephyr/offsets.h
+[11/190] Building C object CMakeFiles/app.dir/src/endpoint.c.obj
+[12/190] Building C object CMakeFiles/app.dir/src/protocol.c.obj
+[13/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/libc/validate_libc.c.obj
+[14/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/cbprintf_packaged.c.obj
+[15/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/sem.c.obj
+[16/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/fdtable.c.obj
+[17/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/cbprintf.c.obj
+[18/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/heap/heap.c.obj
+[19/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/printk.c.obj
+[20/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/thread_entry.c.obj
+[21/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/cbprintf_complete.c.obj
+[22/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/assert.c.obj
+[23/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/poweroff.c.obj
+[24/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/utils/dec.c.obj
+[25/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/utils/hex.c.obj
+[26/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/os/clock.c.obj
+[27/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/utils/timeutil.c.obj
+[28/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/utils/bitmask.c.obj
+[29/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/utils/ring_buffer.c.obj
+[30/190] Building C object zephyr/CMakeFiles/zephyr.dir/misc/generated/configs.c.obj
+[31/190] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/tracing/tracing_none.c.obj
+[32/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/utils/rb.c.obj
+[33/190] Building C object zephyr/CMakeFiles/zephyr.dir/lib/utils/bitarray.c.obj
+[34/190] Building C object zephyr/CMakeFiles/zephyr.dir/soc/arm/qemu_cortex_a53/mmu_regions.c.obj
+[35/190] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/net/lib/utils/addr_utils.c.obj
+[36/190] Building C object zephyr/arch/common/CMakeFiles/isr_tables.dir/isr_tables.c.obj
+[37/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/early_mem_funcs.S.obj
+[38/190] Building C object zephyr/arch/common/CMakeFiles/arch__common.dir/sw_isr_common.c.obj
+[39/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/irq_init.c.obj
+[40/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/irq_manage.c.obj
+[41/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/cpu_idle.S.obj
+[42/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/reboot.c.obj
+[43/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/thread.c.obj
+[44/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/fpu.S.obj
+[45/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/reset.c.obj
+[46/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/mmu.S.obj
+[47/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/fpu.c.obj
+[48/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/header.S.obj
+[49/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/time/gmtime_r.c.obj
+[50/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/time/asctime.c.obj
+[51/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/stdlib/abort.c.obj
+[52/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/time/localtime_r_utc.c.obj
+[53/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/string/strnlen.c.obj
+[54/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/time/ctime.c.obj
+[55/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/time/time.c.obj
+[56/190] Building C object zephyr/lib/posix/c_lib_ext/CMakeFiles/lib__posix__c_lib_ext.dir/fnmatch.c.obj
+[57/190] Building C object zephyr/lib/posix/c_lib_ext/CMakeFiles/lib__posix__c_lib_ext.dir/getopt/getopt.c.obj
+[58/190] Building C object zephyr/lib/os/zvfs/CMakeFiles/lib__os__zvfs.dir/zvfs_select.c.obj
+[59/190] Building C object zephyr/lib/posix/c_lib_ext/CMakeFiles/lib__posix__c_lib_ext.dir/getopt/getopt_common.c.obj
+[60/190] Building C object zephyr/lib/net_buf/CMakeFiles/lib__net_buf.dir/buf_simple.c.obj
+[61/190] Building C object zephyr/lib/os/zvfs/CMakeFiles/lib__os__zvfs.dir/zvfs_poll.c.obj
+[62/190] Building C object zephyr/lib/posix/c_lib_ext/CMakeFiles/lib__posix__c_lib_ext.dir/getentropy.c.obj
+[63/190] Building C object zephyr/lib/net_buf/CMakeFiles/lib__net_buf.dir/buf.c.obj
+[64/190] Generating ../../../include/generated/libc/minimal/strerror_table.h
+[65/190] Building C object zephyr/subsys/random/CMakeFiles/subsys__random.dir/random_timer.c.obj
+[66/190] Building C object zephyr/subsys/random/CMakeFiles/subsys__random.dir/random_test_csprng.c.obj
+[67/190] Building C object zephyr/subsys/net/CMakeFiles/subsys__net.dir/lib/sockets/sockets.c.obj
+[68/190] Building C object zephyr/subsys/net/CMakeFiles/subsys__net.dir/lib/sockets/getaddrinfo.c.obj
+[69/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/atoi.c.obj
+[70/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/strtol.c.obj
+[71/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/strtoul.c.obj
+[72/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/strtoll.c.obj
+[73/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/strtoull.c.obj
+[74/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/bsearch.c.obj
+[75/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/reset.S.obj
+[76/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/exit.c.obj
+[77/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/switch.S.obj
+[78/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdlib/qsort.c.obj
+[79/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/isr_wrapper.S.obj
+[80/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/string/strncasecmp.c.obj
+[81/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/vector_table.S.obj
+[82/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/string/strstr.c.obj
+[83/190] Building ASM object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/smccc-call.S.obj
+[84/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/string/strspn.c.obj
+[85/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/string/string.c.obj
+[86/190] Building C object zephyr/arch/common/CMakeFiles/arch__common.dir/init.c.obj
+[87/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdout/sprintf.c.obj
+[88/190] Generating linker_zephyr_pre0.cmd
+[89/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdout/fprintf.c.obj
+[90/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/math/sqrtf.c.obj
+[91/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/math/sqrt.c.obj
+[92/190] Building C object zephyr/subsys/net/CMakeFiles/subsys__net.dir/lib/sockets/sockets_misc.c.obj
+[93/190] Building C object zephyr/subsys/net/CMakeFiles/subsys__net.dir/lib/sockets/getnameinfo.c.obj
+[94/190] Building C object zephyr/CMakeFiles/zephyr_pre0.dir/misc/empty_file.c.obj
+[95/190] Building C object zephyr/subsys/net/l2/ethernet/CMakeFiles/subsys__net__l2__ethernet.dir/arp.c.obj
+[96/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/prep_c.c.obj
+[97/190] Building C object zephyr/subsys/net/l2/ethernet/CMakeFiles/subsys__net__l2__ethernet.dir/ethernet.c.obj
+[98/190] Building C object zephyr/subsys/net/CMakeFiles/subsys__net.dir/lib/sockets/sockets_inet.c.obj
+[99/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/net_timeout.c.obj
+[100/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/net_core.c.obj
+[101/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/net_if.c.obj
+[102/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/utils.c.obj
+[103/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/net_mgmt.c.obj
+[104/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/net_tc.c.obj
+[105/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/icmp.c.obj
+[106/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/net_context.c.obj
+[107/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/net_pkt.c.obj
+[108/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/fatal.c.obj
+[109/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/ipv4.c.obj
+[110/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/connection.c.obj
+[111/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/udp.c.obj
+[112/190] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/stdlib/malloc.c.obj
+[113/190] Building C object zephyr/subsys/net/ip/CMakeFiles/subsys__net__ip.dir/icmpv4.c.obj
+[114/190] Building C object zephyr/arch/arch/arm64/core/CMakeFiles/arch__arm64__core.dir/mmu.c.obj
+[115/190] Building C object zephyr/drivers/interrupt_controller/CMakeFiles/drivers__interrupt_controller.dir/intc_gicv3.c.obj
+[116/190] Building C object zephyr/subsys/net/lib/config/CMakeFiles/subsys__net__lib__config.dir/init.c.obj
+[117/190] Building C object zephyr/drivers/ethernet/CMakeFiles/drivers__ethernet.dir/eth_virtio_net.c.obj
+[118/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/string/strerror.c.obj
+[119/190] Building C object zephyr/drivers/serial/CMakeFiles/drivers__serial.dir/uart_pl011.c.obj
+[120/190] Building C object zephyr/drivers/pm_cpu_ops/CMakeFiles/drivers__pm_cpu_ops.dir/pm_cpu_ops_psci.c.obj
+[121/190] Building C object zephyr/drivers/pm_cpu_ops/CMakeFiles/drivers__pm_cpu_ops.dir/pm_cpu_ops_weak_impl.c.obj
+[122/190] Building C object zephyr/drivers/timer/CMakeFiles/drivers__timer.dir/sys_clock_init.c.obj
+[123/190] Building C object zephyr/drivers/timer/CMakeFiles/drivers__timer.dir/arm_arch_timer.c.obj
+[124/190] Building C object zephyr/drivers/virtio/CMakeFiles/drivers__virtio.dir/virtqueue.c.obj
+[125/190] Linking C static library zephyr/subsys/net/l2/ethernet/libsubsys__net__l2__ethernet.a
+[126/190] Linking C static library zephyr/lib/os/zvfs/liblib__os__zvfs.a
+[127/190] Linking C static library zephyr/subsys/net/libsubsys__net.a
+[128/190] Building C object zephyr/drivers/virtio/CMakeFiles/drivers__virtio.dir/virtio_common.c.obj
+[129/190] Linking C static library zephyr/libzephyr.a
+[130/190] Linking C static library zephyr/arch/common/libisr_tables.a
+[131/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/main_weak.c.obj
+[132/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/banner.c.obj
+[133/190] Linking C static library zephyr/lib/net_buf/liblib__net_buf.a
+[134/190] Building C object zephyr/drivers/virtio/CMakeFiles/drivers__virtio.dir/virtio_mmio.c.obj
+[135/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/busy_wait.c.obj
+[136/190] Linking C static library zephyr/lib/posix/c_lib_ext/liblib__posix__c_lib_ext.a
+[137/190] Linking C static library zephyr/subsys/random/libsubsys__random.a
+[138/190] Linking C static library zephyr/subsys/net/lib/config/libsubsys__net__lib__config.a
+[139/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/device.c.obj
+[140/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/stdout/stdout_console.c.obj
+[141/190] Linking C static library zephyr/lib/libc/common/liblib__libc__common.a
+[142/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/fatal.c.obj
+[143/190] Linking C static library zephyr/drivers/serial/libdrivers__serial.a
+[144/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/version.c.obj
+[145/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/errno.c.obj
+[146/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/float.c.obj
+[147/190] Linking C static library zephyr/arch/arch/arm64/core/libarch__arm64__core.a
+[148/190] Linking C static library zephyr/drivers/interrupt_controller/libdrivers__interrupt_controller.a
+[149/190] Linking C static library zephyr/drivers/ethernet/libdrivers__ethernet.a
+[150/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mem_slab.c.obj
+[151/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/msg_q.c.obj
+[152/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mailbox.c.obj
+[153/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mutex.c.obj
+[154/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/sem.c.obj
+[155/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/idle.c.obj
+[156/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/queue.c.obj
+[157/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/system_work_q.c.obj
+[158/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/thread.c.obj
+[159/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/work.c.obj
+[160/190] Linking C static library zephyr/drivers/pm_cpu_ops/libdrivers__pm_cpu_ops.a
+[161/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/stack.c.obj
+[162/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/condvar.c.obj
+[163/190] Linking C static library zephyr/drivers/timer/libdrivers__timer.a
+[164/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/pipe.c.obj
+[165/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/timeout.c.obj
+[166/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/timer.c.obj
+[167/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/timeslicing.c.obj
+[168/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/sched.c.obj
+[169/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mempool.c.obj
+[170/190] Building C object zephyr/lib/libc/minimal/CMakeFiles/lib__libc__minimal.dir/source/time/gmtime.c.obj
+[171/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/poll.c.obj
+[172/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/dynamic_disabled.c.obj
+[173/190] Building C object zephyr/drivers/console/CMakeFiles/drivers__console.dir/uart_console.c.obj
+[174/190] Linking C static library zephyr/arch/common/libarch__common.a
+[175/190] Linking C static library zephyr/subsys/net/ip/libsubsys__net__ip.a
+[176/190] Linking C static library zephyr/drivers/virtio/libdrivers__virtio.a
+[177/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/kheap.c.obj
+[178/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/init.c.obj
+[179/190] Linking C static library zephyr/lib/libc/minimal/liblib__libc__minimal.a
+[180/190] Linking C static library zephyr/drivers/console/libdrivers__console.a
+[181/190] Building C object zephyr/kernel/CMakeFiles/kernel.dir/mmu.c.obj
+[182/190] Linking C static library zephyr/kernel/libkernel.a
+[183/190] Building C object CMakeFiles/app.dir/src/main.c.obj
+[184/190] Linking C static library app/libapp.a
+[185/190] Linking C executable zephyr/zephyr_pre0.elf
+[186/190] Generating linker.cmd
+[187/190] Generating isr_tables.c, isr_tables_vt.ld, isr_tables_swi.ld
+[188/190] Building C object zephyr/CMakeFiles/zephyr_final.dir/misc/empty_file.c.obj
+[189/190] Building C object zephyr/CMakeFiles/zephyr_final.dir/isr_tables.c.obj
+[190/190] Linking C executable zephyr/zephyr.elf
+Memory region         Used Size  Region Size  %age Used
+           FLASH:          0 GB        64 MB      0.00%
+             RAM:        488 KB       128 MB      0.37%
+        IDT_LIST:          0 GB        32 KB      0.00%
+Generating files from /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/ivc/zephyr/build-board-restart/zephyr/zephyr.elf for board: qemu_cortex_a53

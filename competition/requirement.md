@@ -58,3 +58,22 @@ StarryOS 完善	4	添加各种 syscall 完善 Starry，并最终合并入 tgoski
 # 其他说明
 代码许可：tgoskits 采用 Apache 2.0，参赛修改部分须以 Apache 2.0 开源。
 AI 框架：允许 YOLO、ONNX Runtime、ncnn 等开源框架及厂商 NPU SDK。
+
+---
+
+## 本仓库交付索引（非赛题原文）
+
+上文是赛题要求原文；完成度、分数判断和运行证据不在本文件内改写。评审请按以下
+入口核验：
+
+| 目的 | 入口 |
+| --- | --- |
+| 逐条评分细则、可主张范围与缺口 | [`scorecard.md`](scorecard.md) |
+| 架构、device graph、隔离和协议设计 | [`design.md`](design.md) |
+| 可执行构建、板测、复析和校验命令 | [`reproduce.md`](reproduce.md) |
+| 当前 Orange Pi 原始证据、哈希和源码边界 | [`results/current-source-smoke-20260813`](results/current-source-smoke-20260813/) |
+| 五分钟成片和镜头—证据索引 | [`video-storyboard.md`](video-storyboard.md) |
+
+证据口径：当前 IVC 实跑绑定 clean commit `598b357f9…`，当前 RT shared/partitioned
+实跑绑定 `077ba386c…`；二者之间只有 `competition/ivc/` 四个路径发生变化。
+历史正式多轮数据保留各自的 clean source commit，不改标成当前提交结果。

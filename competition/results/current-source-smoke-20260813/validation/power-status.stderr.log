@@ -1,0 +1,2 @@
+/home/seven_wsl/.local/share/tgos-board-power-venv/lib/python3.13/site-packages/miio/miot_device.py:23: FutureWarning: functools.partial will be a method descriptor in future Python versions; wrap it in enum.member() if you want to preserve the old behavior
+  Bool = partial(_str2bool)

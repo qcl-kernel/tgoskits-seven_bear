@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "amendment_id": 1,
+  "status": "active",
+  "created_at_utc": "2026-08-03T08:19:48Z",
+  "preregistration": "campaign-preregistration.json",
+  "reason": {
+    "category": "measurement-window-too-short",
+    "observation": "The first boot-complete formal shared run reached guest SystemDown at 309.198400 seconds, after the preregistered host-noise task had stopped at its 180000 ms bound.",
+    "consequence": "The attempt cannot prove continuous host contention for all three 10000-sample guest phases and is excluded from analysis.",
+    "correction": "Use formal-only configurations with a 600000 ms host-noise bound and a 1200 second board and wrapper timeout. Smoke configurations remain unchanged."
+  },
+  "invalid_attempts": [
+    {
+      "pair": 1,
+      "profile": "shared",
+      "attempt": 1,
+      "accepted": false,
+      "reason": "U-Boot prompt recognition timeout before a measurement run began.",
+      "log": "pair-1/shared/attempt-001-uboot-timeout.log",
+      "log_sha256": "2b625b7e57471c6a169dca001134bda6b4051e9534226bfa043d16b17b986c82"
+    },
+    {
+      "pair": 1,
+      "profile": "shared",
+      "attempt": 2,
+      "accepted": false,
+      "reason": "Host noise stopped at 180000 ms before guest SystemDown at 309.198400 seconds.",
+      "log": "pair-1/shared/attempt-002-host-noise-timeout.log",
+      "log_sha256": "9e0514033cdcd675a56a7922641c66c3beec09a36ee1d41b3c80df53230a8ec9"
+    }
+  ],
+  "source": {
+    "branch": "experiment/m2-formal-20260803",
+    "preregistered_commit": "3dc2779841c8e55a089fc30441d39f62213f6b45",
+    "amended_commit": "fd031787651bbfa40084dd083d03e70c3456731b",
+    "change_scope": "Add formal-only timeout configurations and their deterministic contract test.",
+    "measurement_artifacts_unchanged": true
+  },
+  "configuration": {
+    "shared_build": {
+      "path": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-formal-shared.toml",
+      "sha256": "455ad83c56f4c92e1c11e7f42581aaf0f5589b4c205ed6bd32bff218ed4bfa21"
+    },
+    "partitioned_build": {
+      "path": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-formal-partitioned.toml",
+      "sha256": "7dcb7130af85a861d7d5dee0942cec8a40dc79f4e7459f374c2e85759ada7958"
+    },
+    "shared_board": {
+      "path": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-formal-shared.toml",
+      "sha256": "bc721079b7193e8b30b50b9e343344417ac664154eff330facd9bea5023c31b2"
+    },
+    "partitioned_board": {
+      "path": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-formal-partitioned.toml",
+      "sha256": "bc721079b7193e8b30b50b9e343344417ac664154eff330facd9bea5023c31b2"
+    }
+  },
+  "superseded_fields": {
+    "measurement.host_noise.max_duration_ms": {
+      "from": 180000,
+      "to": 600000
+    },
+    "execution.board_timeout_seconds": {
+      "from": 900,
+      "to": 1200
+    },
+    "execution.wrapper_timeout_seconds": {
+      "from": 900,
+      "to": 1200
+    }
+  },
+  "unchanged_contract": {
+    "pair_order": [
+      { "pair": 1, "order": ["shared", "partitioned"] },
+      { "pair": 2, "order": ["partitioned", "shared"] },
+      { "pair": 3, "order": ["shared", "partitioned"] },
+      { "pair": 4, "order": ["partitioned", "shared"] },
+      { "pair": 5, "order": ["shared", "partitioned"] }
+    ],
+    "workload": "idle",
+    "iterations_per_metric": 10000,
+    "warmup_iterations": 100,
+    "period_us": 1000,
+    "guest_vcpus": 2,
+    "measurement_cpu": 0,
+    "stress_cpu": 1,
+    "fifo_priority": 80,
+    "host_noise_shared_pcpu": 1,
+    "host_noise_partitioned_pcpu": 3,
+    "acceptance_criteria": "unchanged"
+  },
+  "applies_from": {
+    "pair": 1,
+    "profile": "shared",
+    "attempt": 3
+  }
+}

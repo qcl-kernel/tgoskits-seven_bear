@@ -146,8 +146,10 @@ CPU planner 在任何 vCPU 激活前解析所有 VM：专用 mask 必须非零�
 每项在 warm-up 后采样；串口只在测量完成后输出。analyzer 要求完整序号、频率一致、
 零 dropped/incomplete/failed injection，并从 raw 重算 nearest-rank percentile。
 
-当前 100-sample C0 对照的 pipeline 完整，但多个 tail 退化。正式改善只来自历史
-五配对 controlled host interference 活动：该活动的 shared 干扰在 pCPU1、
+当前 C-RT 的同 commit 100-sample shared/partitioned 冒烟证明 pipeline 完整，但
+单对的 periodic/dispatch 尾延迟退化，且没有 controlled host interference，M2 未通过。
+正式改善只来自历史五配对 controlled host interference
+活动：该活动的 shared 干扰在 pCPU1、
 partitioned 干扰在 pCPU3，五对 direct IRQ p99 全部通过，worst-of-runs 改善
 87.771%，并有 shared/partitioned 双侧至少 1,800 秒 soak。两个证据层不得互换。
 
@@ -202,7 +204,7 @@ ACK 携带 acknowledged sequence、next expected 与 receive-window mask；ERROR
 - malformed version/length/checksum/type/session 分别映射到 ERROR，随后仍可继续正常控制。
 
 restart 测试额外验证旧 session CONTROL、stale STATUS 与 stale ACK 均不能污染
-新 session。C0 实体结果正好各拒绝一次，并在新 session 完成 100/100。
+新 session。C-IVC 实体结果正好各拒绝一次，并在新 session 完成 100/100。
 
 ## 8. AI 控制闭环
 
@@ -223,7 +225,7 @@ STATUS / initial observation
 
 | Backend | 用途 | 证据边界 |
 | --- | --- | --- |
-| native Rust | dependency-free/current restart smoke | C0 source `neural.rs` hash绑定 |
+| native Rust | dependency-free/current restart smoke | C-IVC source `neural.rs` hash绑定 |
 | RKNN NPU | RK3588 hardware inference | 历史 clean commit 5×1,800，API 2.3.2 / driver 0.9.8 |
 | ONNX Runtime CPU | 标准 CPU runtime 对照 | 历史 clean commit 5×1,800，ORT 1.25.0 CPUExecutionProvider |
 
@@ -261,7 +263,8 @@ lease 覆盖 staging 和串口操作。仓库不保存 SSH/smart-plug 凭据。
 
 ## 10. 剩余保证边界
 
-- 当前 C0 RT 只有一对 100-sample cpu-stress，不满足正式 M2 五对+双 soak；
+- 当前 C-RT 只有一对 100-sample cpu-stress，机器判定 M2 未通过，也不满足正式
+  五配对+双 soak；
 - 历史 formal raw 全量约 844 MiB，compact summary 已提交，但仍需公开不可变下载；
 - native Zephyr baseline 在 QEMU，不是同一 RK3588 裸机等价平台；
 - switch 有完整 policy tests，但没有恶意第三 guest 的动态负例 capture；

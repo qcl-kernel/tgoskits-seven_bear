@@ -1,0 +1,101 @@
+{
+  "acceptance": {
+    "harvest_each_half_before_next_boot": true,
+    "linux_restore_root": "/dev/mmcblk1p2 ext4 rw",
+    "minimum_host_noise_elapsed_ns": 1800000000000,
+    "required_console_absence": [
+      "Unhandled IRQ",
+      "ESR_EL2",
+      "panicked at",
+      "AXVM_NESTED_VCPU_OPERATION"
+    ],
+    "required_profiles": [
+      "shared",
+      "partitioned"
+    ],
+    "required_zero_counters": [
+      "dropped",
+      "incomplete",
+      "failed_injections",
+      "unowned_virtual_timer_irqs",
+      "counter_frequency_mismatches"
+    ],
+    "snapshot_fsck": "clean",
+    "stop_reason": "guest-complete"
+  },
+  "artifacts": {
+    "base_rootfs_sha256": "c6a64b7bbfffe066cc7b45813234178c6de59da45418480c0eeff09db07fbda8",
+    "guest_runner_sha256": "38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b",
+    "partitioned_board_config_sha256": "bbc96c41037b629d9e6824e226f81a21140ab4c7113dff8259338aca2ce5d7a0",
+    "partitioned_build_config_sha256": "18c1b5e18be5d5f1cc627b5939f278a31ca781830447414582cd76ff0b4c9bbf",
+    "partitioned_vm_config_sha256": "0c96927e3c2984feec9bc09ae5863eb69816c67cbb41a46c6482e5fd942ff415",
+    "prepare_script_sha256": "cca15ed8a284558ef0be2f4d5a45f32e9009fbd43b222ea9b1a368f5aa61a146",
+    "probe_sha256": "8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da",
+    "shared_board_config_sha256": "bbc96c41037b629d9e6824e226f81a21140ab4c7113dff8259338aca2ce5d7a0",
+    "shared_build_config_sha256": "ca00351b4bbc57b33527249fbe08df91eef37fa6880e9c20c67579f7e8c2aa67",
+    "shared_vm_config_sha256": "111222743004d756cd517299ca09b07a8a62b06f05ac5f099632723a8d894eb3",
+    "starry_build_config_sha256": "67d3a056b2ebf5304a2daec4bf45156892b1edee3b1b031e78c8f7d6ccad4183",
+    "starry_guest_dtb_sha256": "0f533e1107894dd9b3f062f726fee012519c3e55ef0a2e81e2507e7e3ef303cd",
+    "starry_kernel_sha256": "92e25ccf3b2a711c9f93baa4c91456c45b13ef9ba16ac31e581cdf2855ba16bb",
+    "starry_rootfs_sha256": "ddd00bd2dd9bb4ed3b0b69012f141c5b9d0393548d095d0cc1a83b717950120a"
+  },
+  "board": {
+    "dram_gib": 16,
+    "hardware_fingerprint": "bf61f4d4a1d994ad",
+    "service_id": "orangepi-5-plus-1",
+    "soc": "RK3588",
+    "type": "OrangePi-5-Plus"
+  },
+  "created_at_utc": "2026-08-03T11:10:41Z",
+  "measurement": {
+    "fifo_priority": 80,
+    "guest_trace_capacity": 1048576,
+    "guest_vcpus": 2,
+    "guest_vm_memory_bytes": 536870912,
+    "host_noise": {
+      "implementation": "busy-loop",
+      "max_duration_ms": 3600000,
+      "partitioned_pcpu": 3,
+      "shared_pcpu": 1
+    },
+    "host_trace_capacity": 1048576,
+    "iterations_per_metric": 10000,
+    "measurement_cpu": 0,
+    "nominal_timed_window_seconds": 1800,
+    "period_us": 90000,
+    "rootfs_bytes": 67108864,
+    "rootfs_free_blocks_before_run": 8010,
+    "stress_cpu": 1,
+    "timed_metric_count": 2,
+    "warmup_iterations": 100,
+    "workload": "idle"
+  },
+  "pre_run_validation": {
+    "axvisor_partitioned_target_build": "passed",
+    "axvisor_shared_target_build": "passed",
+    "cargo_fmt_check": "passed",
+    "contract_tests": "host 4/4 passed; guest 3/3 passed",
+    "git_diff_check": "passed",
+    "python_axvisor_rt": "57/57 passed",
+    "shell_runner": "passed",
+    "starry_kernel_target_build": "passed",
+    "targeted_clippy": "axvm and ax-runtime 32/32 passed; starry-kernel rt-irq-trace-soak and starryos rt-irq-trace-soak passed; axvisor validated by target build"
+  },
+  "run_order": [
+    "shared",
+    "partitioned"
+  ],
+  "schema_version": 1,
+  "source": {
+    "branch": "experiment/m2-formal-20260803",
+    "clean_worktree_required": true,
+    "commit": "2e97430f2171667d4ec16c3a02931653f7ddedf8",
+    "parent_campaign_summary_sha256": "964f8e3884a6f6ed1594d55cfa0383b8329d5ca8dd8b04eafcb4de7ea01647b4",
+    "uboot_shell_patch": {
+      "commit": "edf4169",
+      "requested_release": "0.2.7",
+      "upstream_pr": "https://github.com/drivercraft/ostool/pull/164"
+    }
+  },
+  "status": "preregistered"
+}

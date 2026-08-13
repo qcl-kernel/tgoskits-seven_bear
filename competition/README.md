@@ -23,18 +23,19 @@ default route、vsock、共享内存或 HyperCall 应用数据通道。
 | 项目 | 状态 | 主证据 |
 | --- | --- | --- |
 | device-graph 配置入口 | 完成 | typed `[devices]`、initramfs、配置解析回归 |
-| 当前源码实体 IVC 重启恢复 | 通过 | [`current-source-smoke-20260812/ivc`](results/current-source-smoke-20260812/ivc/) |
-| 当前源码实体 RT shared/partitioned | 两侧运行与采集通过；本对性能门未通过 | [`rt/comparison.json`](results/current-source-smoke-20260812/rt/comparison.json) |
-| 正式 RT 五配对 + 双 soak | 历史 clean-commit 活动通过 | [`historical-formal/rt-host-noise`](results/current-source-smoke-20260812/historical-formal/rt-host-noise/) |
-| manual/neural 五配对闭环 | 历史活动通过；RMSE/IAE 改善，overshoot 退化 | [`historical-formal/ivc-control`](results/current-source-smoke-20260812/historical-formal/ivc-control/) |
-| ACK-loss / ERROR / restart | 历史活动各 3/3；当前 restart 再次通过 | [`historical-formal`](results/current-source-smoke-20260812/historical-formal/) |
-| RKNN NPU / ONNX Runtime CPU | 历史活动各 5×1,800 通过 | [`historical-formal/rknpu`](results/current-source-smoke-20260812/historical-formal/rknpu/)、[`ort`](results/current-source-smoke-20260812/historical-formal/ort/) |
-| 五分钟视频 | 已生成实体串口证据回放版 | [`demo-5min.mp4`](results/current-source-smoke-20260812/demo-5min.mp4) |
-| upstream `dev` rebase | 当前运行源码基于 `fad09ebd3a05…`，0 behind / 37 ahead | [`provenance.json`](results/current-source-smoke-20260812/provenance.json) |
+| 当前源码实体 IVC 重启恢复 | 通过；同一 clean commit 的 runner/analyzer exit 0 | [`current-source-smoke-20260813/ivc`](results/current-source-smoke-20260813/ivc/) |
+| 当前 RT shared/partitioned 实体冒烟 | 两侧管线通过；本单对 M2 性能门未通过 | [`rt/comparison.json`](results/current-source-smoke-20260813/rt/comparison.json) |
+| 正式 RT 五配对 + 双 soak | 历史 clean-commit 活动通过 | [`historical-formal/rt-host-noise`](results/current-source-smoke-20260813/historical-formal/rt-host-noise/) |
+| manual/neural 五配对闭环 | 历史活动通过；RMSE/IAE 改善，overshoot 退化 | [`historical-formal/ivc-control`](results/current-source-smoke-20260813/historical-formal/ivc-control/) |
+| ACK-loss / ERROR / restart | 历史活动各 3/3；当前 restart 再次通过 | [`historical-formal`](results/current-source-smoke-20260813/historical-formal/) |
+| RKNN NPU / ONNX Runtime CPU | 历史活动各 5×1,800 通过 | [`historical-formal/rknpu`](results/current-source-smoke-20260813/historical-formal/rknpu/)、[`ort`](results/current-source-smoke-20260813/historical-formal/ort/) |
+| 五分钟视频 | 实体串口与机器 JSON 的 300 秒证据回放版 | [`demo-5min.mp4`](results/current-source-smoke-20260813/demo-5min.mp4) |
+| upstream `dev` rebase | 运行源码包含 `56f8bfc8207f…`；IVC source 0 behind / 50 ahead | [`provenance.json`](results/current-source-smoke-20260813/provenance.json) |
 
-当前 100 样本 RT 冒烟不能作为“partitioned 一定更快”的证据：periodic、
-dispatch 和 direct IRQ 的 p99 在这一对中退化。正式改善结论严格限定在
-“受控 host interference、预注册五配对、相同输入”的历史活动。详见
+当前 100 样本 RT 冒烟有同提交 shared/partitioned 对照，但 periodic 与 dispatch
+尾延迟退化，且只有一对、没有受控 host interference，机器判定
+`m2_exit_gate_met=false`。正式改善结论严格限定在“受控 host interference、
+预注册五配对、相同输入”的历史活动。详见
 [`test-report.md`](test-report.md) 和 [`scorecard.md`](scorecard.md)。
 
 ## 文档导航
@@ -61,7 +62,7 @@ dispatch 和 direct IRQ 的 p99 在这一对中退化。正式改善结论严格
 | IVC/1 协议与神经控制 | [`ivcproto`](../tools/ivcproto/src/lib.rs) |
 | Starry/Zephyr 镜像与配置 | [`ivc`](ivc/)、[`RT configs`](../scripts/benchmark/axvisor-rt/config/) |
 | 板端生命周期 | [`board-runner.sh`](ivc/orangepi/board-runner.sh)、[`run-orangepi-5-plus.sh`](ivc/run-orangepi-5-plus.sh) |
-| 当前源码原始证据与溯源 | [`current-source-smoke-20260812`](results/current-source-smoke-20260812/) |
+| 当前源码原始证据与溯源 | [`current-source-smoke-20260813`](results/current-source-smoke-20260813/) |
 
 ## 最快的离线检查
 
@@ -71,7 +72,7 @@ python3 -m unittest discover -s scripts/benchmark/axvisor-rt/tests -p 'test_*.py
 bash scripts/benchmark/axvisor-rt/tests/test_runner.sh
 bash scripts/benchmark/axvisor-rt/tests/test_starry_runner.sh
 
-cd competition/results/current-source-smoke-20260812
+cd competition/results/current-source-smoke-20260813
 sha256sum -c checksums.sha256
 ```
 

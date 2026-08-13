@@ -1,0 +1,17 @@
+AXVISOR_RT_BOARD_SERVICE_ID board_type=OrangePi-5-Plus board_id=orangepi-5-plus-1
+
+sent 13,802,912 bytes  received 35 bytes  9,201,964.67 bytes/sec
+total size is 13,799,424  speedup is 1.00
+
+sent 1,668 bytes  received 35 bytes  3,406.00 bytes/sec
+total size is 1,534  speedup is 0.90
+
+sent 67,125,377 bytes  received 35 bytes  44,750,274.67 bytes/sec
+total size is 67,108,864  speedup is 1.00
+[sudo] password for orangepi: starryos.bin: OK
+starry-orangepi-5-plus.dtb: OK
+starry-rt-capture-rootfs.img: OK
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+AXVISOR_RT_BOARD_IDENTITY board_id=bf61f4d4a1d994ad hostname=orangepi5plus cpu_temp_milli_c=39769
+AXVISOR_RT_BOARD_STAGE_PASS
+AXVISOR_RT_BOARD_STAGE_COMPLETE destination=/home/orangepi/axvisor-guest rootfs=starry-rt-capture-rootfs.img noise=none

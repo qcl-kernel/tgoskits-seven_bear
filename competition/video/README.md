@@ -4,7 +4,7 @@
 [`narration.json`](narration.json) is the matching Chinese narration source.
 [`render-demo.ps1`](render-demo.ps1) renders a 300-second 1280×720 H.264/AAC
 evidence replay and writes it to
-`../results/current-source-smoke-20260812/demo-5min.mp4`.
+`../results/current-source-smoke-20260813/demo-5min.mp4`.
 
 The renderer requires FFmpeg, FFprobe, Python, `edge-tts`, network access for
 speech synthesis, and a Chinese font. The delivered MP4 is included in the

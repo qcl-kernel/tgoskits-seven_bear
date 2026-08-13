@@ -1,0 +1,69 @@
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starry-rt-capture-rootfs.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starry-rt-capture-rootfs.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starry-rt-capture-rootfs.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 47
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 48
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 49
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starry-rt-capture-rootfs.img: 49/8192 files (4.1% non-contiguous), 8374/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 47   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 718296
+File ACL: 0
+Links: 1   Blockcount: 1408
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+ atime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+ mtime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+crtime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+Size of extra inode fields: 32
+Inode checksum: 0x840a7c8a
+EXTENTS:
+(0-175):8195-8370
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 48   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 6922
+File ACL: 0
+Links: 1   Blockcount: 16
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+ atime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+ mtime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+crtime: 0x6a7dcb8d:00000000 -- Thu Aug 13 21:50:05 2026
+Size of extra inode fields: 32
+Inode checksum: 0x99a136f7
+EXTENTS:
+(0-1):8371-8372
+debugfs 1.46.5 (30-Dec-2021)
+iterations=100
+warmup=10
+period_us=1000
+measurement_cpu=0
+stress_cpu=1
+fifo_priority=80
+workload=cpu-stress
+8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/competition/results/axvisor-rt-reference/axvisor-rt-probe
+38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/scripts/benchmark/axvisor-rt/guest/starry_rt_capture_run.sh
+26a45d4e333dc6039d17d8774ac185a4c3d3b2301dfb23c5803ae89755768626  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starry-rt-capture-rootfs.img
+AXVISOR_RT_STARRY_ROOTFS_READY path=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starry-rt-capture-rootfs.img mode=capture workload=cpu-stress iterations=100

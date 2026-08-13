@@ -1,0 +1,568 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.71s
+     Running `target/debug/tg-xtask starry build -c competition/ivc/config/starry-aarch64.toml --smp 2`
+[2026-08-13T15:12:16Z INFO  axbuild::context] Workspace root: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05
+Using build config: competition/ivc/config/starry-aarch64.toml
+[2026-08-13T15:12:16Z INFO  axbuild::build::config_file] Found build config at competition/ivc/config/starry-aarch64.toml
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ...
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=competition/ivc/config/starry-aarch64.toml ...
+AX_ARCH=aarch64
+AX_LOG=info
+AX_TARGET=aarch64-unknown-none-softfloat
+SMP=2
+cargo build -p starryos --target aarch64-unknown-none-softfloat -Z unstable-options --target-dir /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target --features ax-driver/virtio-blk,ax-driver/virtio-net,smp -Z build-std=core,alloc --config target.aarch64-unknown-none-softfloat.rustflags=["-Crelocation-model=pic", "-Clink-args=-pie", "-Clink-args=--gc-sections", "-Clink-args=-znorelro", "-Clink-args=-znostart-stop-gc", "-Clink-args=-Tlinker.x", "-Clink-args=-u _head"] --bin starryos --release --message-format json-render-diagnostics
+    Finished `release` profile [optimized] target(s) in 0.89s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
+Converting ELF to BIN format...
+  elf: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+  bin: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=competition/ivc/config/starry-aarch64.toml ... done (1.19s)
+[axbuild] cargo build elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] cargo build artifact_dir=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ... done (1.19s)
+[axbuild] starry artifact elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos ...
+[axbuild] starry kallsyms symbols=12316
+rust-objcopy --update-section .kallsyms=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/.starryos.kallsyms.390914.tmp /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos ... done (226.46ms)
+[axbuild] starry bin refresh /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin ...
+rust-objcopy --strip-all -O binary /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] starry bin refresh /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin ... done (40.92ms)
+bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb
+IVC StarryOS guest DTB ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb
+info: component rust-std for target aarch64-unknown-linux-musl is up to date
+    Finished `release` profile [optimized] target(s) in 0.12s
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-smoke.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-smoke.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-smoke.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 50
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 51
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 52
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-smoke.img: 52/8192 files (3.8% non-contiguous), 8403/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 50   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 811720
+File ACL: 0
+Links: 1   Blockcount: 1592
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ atime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ mtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+crtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+Size of extra inode fields: 32
+Inode checksum: 0xb4afea2a
+EXTENTS:
+(0-198):8198-8396
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 51   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 16939
+File ACL: 0
+Links: 1   Blockcount: 40
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ atime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ mtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+crtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+Size of extra inode fields: 32
+Inode checksum: 0x4e31a8db
+EXTENTS:
+(0-4):8397-8401
+debugfs 1.46.5 (30-Dec-2021)
+ivc_mode=neural
+ivc_backend=native
+ivc_fault_profile=none
+ivc_profile=smoke
+ivc_count=20
+ivc_period_ms=100
+ivc_ack_timeout_ms=1000
+ivc_raw_csv=/var/lib/ivc/raw.csv
+ivc_restart_previous_session=286331153
+ivc_restart_current_session=572662306
+ivc_restart_first_count=20
+ivc_restart_ack_timeout_ms=1000
+f72705876a93829879d59e02cb0648fab46ae84d155d5a899222e12dbd25da45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/target/aarch64-unknown-linux-musl/release/ivcproto
+5e61420c35a34a97afacc13842d8ca8972d2530e960f4fb603edc0145532559d  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-smoke.img
+IVC StarryOS profile=smoke policy=neural backend=native fault_profile=none rootfs ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-smoke.img
+info: component rust-std for target aarch64-unknown-linux-musl is up to date
+    Finished `release` profile [optimized] target(s) in 0.12s
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 50
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 51
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 52
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs.img: 52/8192 files (3.8% non-contiguous), 8403/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 50   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 811720
+File ACL: 0
+Links: 1   Blockcount: 1592
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ atime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ mtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+crtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+Size of extra inode fields: 32
+Inode checksum: 0xb4afea2a
+EXTENTS:
+(0-198):8198-8396
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 51   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 16939
+File ACL: 0
+Links: 1   Blockcount: 40
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ atime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+ mtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+crtime: 0x6a7dded2:00000000 -- Thu Aug 13 23:12:18 2026
+Size of extra inode fields: 32
+Inode checksum: 0x4e31a8db
+EXTENTS:
+(0-4):8397-8401
+debugfs 1.46.5 (30-Dec-2021)
+ivc_mode=neural
+ivc_backend=native
+ivc_fault_profile=none
+ivc_profile=full
+ivc_count=1800
+ivc_period_ms=100
+ivc_ack_timeout_ms=1000
+ivc_raw_csv=/var/lib/ivc/raw.csv
+ivc_restart_previous_session=286331153
+ivc_restart_current_session=572662306
+ivc_restart_first_count=20
+ivc_restart_ack_timeout_ms=1000
+f72705876a93829879d59e02cb0648fab46ae84d155d5a899222e12dbd25da45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/target/aarch64-unknown-linux-musl/release/ivcproto
+2b591c5d90222849534048e15c438ffc5201fc7f0c8d265fb0c3cbbbe6797618  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs.img
+IVC StarryOS profile=full policy=neural backend=native fault_profile=none rootfs ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs.img
+info: component rust-std for target aarch64-unknown-linux-musl is up to date
+    Finished `release` profile [optimized] target(s) in 0.11s
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual-smoke.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual-smoke.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual-smoke.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 50
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 51
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 52
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual-smoke.img: 52/8192 files (3.8% non-contiguous), 8403/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 50   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 811720
+File ACL: 0
+Links: 1   Blockcount: 1592
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+ atime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+ mtime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+crtime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+Size of extra inode fields: 32
+Inode checksum: 0x77b71b5f
+EXTENTS:
+(0-198):8198-8396
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 51   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 16939
+File ACL: 0
+Links: 1   Blockcount: 40
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+ atime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+ mtime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+crtime: 0x6a7dded4:00000000 -- Thu Aug 13 23:12:20 2026
+Size of extra inode fields: 32
+Inode checksum: 0x8d2959ae
+EXTENTS:
+(0-4):8397-8401
+debugfs 1.46.5 (30-Dec-2021)
+ivc_mode=manual
+ivc_backend=native
+ivc_fault_profile=none
+ivc_profile=smoke
+ivc_count=20
+ivc_period_ms=100
+ivc_ack_timeout_ms=1000
+ivc_raw_csv=/var/lib/ivc/raw.csv
+ivc_restart_previous_session=286331153
+ivc_restart_current_session=572662306
+ivc_restart_first_count=20
+ivc_restart_ack_timeout_ms=1000
+f72705876a93829879d59e02cb0648fab46ae84d155d5a899222e12dbd25da45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/target/aarch64-unknown-linux-musl/release/ivcproto
+906e8ab84df7e9012d0af6e62dda9ed02e539fa23d89e750495f6e2ccd624e45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual-smoke.img
+IVC StarryOS profile=smoke policy=manual backend=native fault_profile=none rootfs ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual-smoke.img
+info: component rust-std for target aarch64-unknown-linux-musl is up to date
+    Finished `release` profile [optimized] target(s) in 0.12s
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 50
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 51
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 52
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual.img: 52/8192 files (3.8% non-contiguous), 8403/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 50   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 811720
+File ACL: 0
+Links: 1   Blockcount: 1592
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+ atime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+ mtime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+crtime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+Size of extra inode fields: 32
+Inode checksum: 0x36bf4b8c
+EXTENTS:
+(0-198):8198-8396
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 51   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 16939
+File ACL: 0
+Links: 1   Blockcount: 40
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+ atime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+ mtime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+crtime: 0x6a7dded6:00000000 -- Thu Aug 13 23:12:22 2026
+Size of extra inode fields: 32
+Inode checksum: 0xcc21097d
+EXTENTS:
+(0-4):8397-8401
+debugfs 1.46.5 (30-Dec-2021)
+ivc_mode=manual
+ivc_backend=native
+ivc_fault_profile=none
+ivc_profile=full
+ivc_count=1800
+ivc_period_ms=100
+ivc_ack_timeout_ms=1000
+ivc_raw_csv=/var/lib/ivc/raw.csv
+ivc_restart_previous_session=286331153
+ivc_restart_current_session=572662306
+ivc_restart_first_count=20
+ivc_restart_ack_timeout_ms=1000
+f72705876a93829879d59e02cb0648fab46ae84d155d5a899222e12dbd25da45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/target/aarch64-unknown-linux-musl/release/ivcproto
+b66e4aad8135cb487098e4fe5805a58f4b8cd886e19eefd57c58f0f8e921fadc  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual.img
+IVC StarryOS profile=full policy=manual backend=native fault_profile=none rootfs ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual.img
+info: component rust-std for target aarch64-unknown-linux-musl is up to date
+    Finished `release` profile [optimized] target(s) in 0.10s
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-ack-loss.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-ack-loss.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-ack-loss.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 50
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 51
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 52
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-ack-loss.img: 52/8192 files (3.8% non-contiguous), 8403/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 50   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 811720
+File ACL: 0
+Links: 1   Blockcount: 1592
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+ atime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+ mtime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+crtime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+Size of extra inode fields: 32
+Inode checksum: 0x94cd589d
+EXTENTS:
+(0-198):8198-8396
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 51   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 16939
+File ACL: 0
+Links: 1   Blockcount: 40
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+ atime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+ mtime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+crtime: 0x6a7dded7:00000000 -- Thu Aug 13 23:12:23 2026
+Size of extra inode fields: 32
+Inode checksum: 0x6e531a6c
+EXTENTS:
+(0-4):8397-8401
+debugfs 1.46.5 (30-Dec-2021)
+ivc_mode=neural
+ivc_backend=native
+ivc_fault_profile=none
+ivc_profile=full
+ivc_count=100
+ivc_period_ms=100
+ivc_ack_timeout_ms=1000
+ivc_raw_csv=/var/lib/ivc/raw.csv
+ivc_restart_previous_session=286331153
+ivc_restart_current_session=572662306
+ivc_restart_first_count=20
+ivc_restart_ack_timeout_ms=1000
+f72705876a93829879d59e02cb0648fab46ae84d155d5a899222e12dbd25da45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/target/aarch64-unknown-linux-musl/release/ivcproto
+25b57d31b9206d50216076a51f96e07e9a03c8a99b61df6f560d3707b060edf8  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-ack-loss.img
+IVC StarryOS profile=full policy=neural backend=native fault_profile=none rootfs ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-ack-loss.img
+info: component rust-std for target aarch64-unknown-linux-musl is up to date
+    Finished `release` profile [optimized] target(s) in 0.12s
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-error.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-error.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-error.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 50
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 51
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 52
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-error.img: 52/8192 files (3.8% non-contiguous), 8403/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 50   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 811720
+File ACL: 0
+Links: 1   Blockcount: 1592
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+ atime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+ mtime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+crtime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+Size of extra inode fields: 32
+Inode checksum: 0xf46a8f44
+EXTENTS:
+(0-198):8198-8396
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 51   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 16939
+File ACL: 0
+Links: 1   Blockcount: 40
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+ atime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+ mtime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+crtime: 0x6a7dded8:00000000 -- Thu Aug 13 23:12:24 2026
+Size of extra inode fields: 32
+Inode checksum: 0x0ef4cdb5
+EXTENTS:
+(0-4):8397-8401
+debugfs 1.46.5 (30-Dec-2021)
+ivc_mode=neural
+ivc_backend=native
+ivc_fault_profile=error
+ivc_profile=full
+ivc_count=100
+ivc_period_ms=100
+ivc_ack_timeout_ms=1000
+ivc_raw_csv=/var/lib/ivc/raw.csv
+ivc_restart_previous_session=286331153
+ivc_restart_current_session=572662306
+ivc_restart_first_count=20
+ivc_restart_ack_timeout_ms=1000
+f72705876a93829879d59e02cb0648fab46ae84d155d5a899222e12dbd25da45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/target/aarch64-unknown-linux-musl/release/ivcproto
+f42512094fc79204f3a6475a65b69015a5dd5efa73202aa4c694273d40690335  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-error.img
+IVC StarryOS profile=full policy=neural backend=native fault_profile=error rootfs ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-error.img
+info: component rust-std for target aarch64-unknown-linux-musl is up to date
+    Finished `release` profile [optimized] target(s) in 0.12s
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img: 43/8192 files (4.7% non-contiguous), 8192/8192 blocks
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img to 16384 (4k) blocks.
+The filesystem on /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img is now 16384 (4k) blocks long.
+
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 50
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 51
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+Allocated inode: 52
+debugfs 1.46.5 (30-Dec-2021)
+e2fsck 1.46.5 (30-Dec-2021)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img: 52/8192 files (3.8% non-contiguous), 8403/16384 blocks
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 50   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 811720
+File ACL: 0
+Links: 1   Blockcount: 1592
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+ atime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+ mtime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+crtime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+Size of extra inode fields: 32
+Inode checksum: 0x56189c55
+EXTENTS:
+(0-198):8198-8396
+debugfs 1.46.5 (30-Dec-2021)
+Inode: 51   Type: regular    Mode:  0755   Flags: 0x80000
+Generation: 0    Version: 0x00000000:00000000
+User:     0   Group:     0   Project:     0   Size: 16939
+File ACL: 0
+Links: 1   Blockcount: 40
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+ atime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+ mtime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+crtime: 0x6a7dded9:00000000 -- Thu Aug 13 23:12:25 2026
+Size of extra inode fields: 32
+Inode checksum: 0xac86dea4
+EXTENTS:
+(0-4):8397-8401
+debugfs 1.46.5 (30-Dec-2021)
+ivc_mode=neural
+ivc_backend=native
+ivc_fault_profile=restart
+ivc_profile=full
+ivc_count=100
+ivc_period_ms=100
+ivc_ack_timeout_ms=1000
+ivc_raw_csv=/var/lib/ivc/raw.csv
+ivc_restart_previous_session=286331153
+ivc_restart_current_session=572662306
+ivc_restart_first_count=20
+ivc_restart_ack_timeout_ms=1000
+f72705876a93829879d59e02cb0648fab46ae84d155d5a899222e12dbd25da45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/target/aarch64-unknown-linux-musl/release/ivcproto
+1c15956bce9f2bf8adb18e6977e33acb97eb22af0b613cad22914dd79165596d  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img
+IVC StarryOS profile=full policy=neural backend=native fault_profile=restart rootfs ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img
+7763df597850f5edb05d4929b980801764d6dacabc39022c7871ff7cacfdf46c  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starryos.bin
+bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb
+5e61420c35a34a97afacc13842d8ca8972d2530e960f4fb603edc0145532559d  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-smoke.img
+2b591c5d90222849534048e15c438ffc5201fc7f0c8d265fb0c3cbbbe6797618  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs.img
+906e8ab84df7e9012d0af6e62dda9ed02e539fa23d89e750495f6e2ccd624e45  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual-smoke.img
+b66e4aad8135cb487098e4fe5805a58f4b8cd886e19eefd57c58f0f8e921fadc  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-manual.img
+25b57d31b9206d50216076a51f96e07e9a03c8a99b61df6f560d3707b060edf8  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-ack-loss.img
+f42512094fc79204f3a6475a65b69015a5dd5efa73202aa4c694273d40690335  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-error.img
+1c15956bce9f2bf8adb18e6977e33acb97eb22af0b613cad22914dd79165596d  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img
+IVC StarryOS guest artifacts ready at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/competition/ivc/starry

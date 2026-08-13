@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "scope": "post-upstream-rebase Orange Pi RT shared/partitioned and IVC fault-restart smoke",
+  "upstream": {
+    "dev_commit": "56f8bfc8207f38d4b395dae0cf533ecdb079fca8",
+    "ivc_source_ahead": 50,
+    "ivc_source_behind": 0
+  },
+  "board": {
+    "type": "OrangePi-5-Plus",
+    "soc": "RK3588",
+    "hardware_id": "bf61f4d4a1d994ad",
+    "hostname": "orangepi5plus",
+    "linux_root_after_runs": "/dev/mmcblk1p2 ext4 rw,noatime,errors=remount-ro,commit=600",
+    "post_run_cpu_temp_milli_c": 37000,
+    "smart_plug": {
+      "power_on": true,
+      "electric_power_watts": 1,
+      "temperature_celsius": 46,
+      "fault_code": 0
+    }
+  },
+  "rt_pair": {
+    "source_commit": "077ba386c20c29b84749f509b29e8a3f6f76e1e2",
+    "source_tree": "f4411a44c7fac2b5b57037005cadf8d3229a0d4f",
+    "git_archive_sha256": "e14c5dc1f8d78625e234db4799c57162d8cbace84cb67ff9021e671010619fb9",
+    "upstream_diff_sha256": "ee1864368ac91137f3f81ffa7505e72e83de27341cfc48d89c7822cf74131d2b",
+    "pipeline_result": "pass",
+    "m2_result": "fail",
+    "m2_exit_gate_met": false,
+    "m2_reason": "one pair cannot satisfy the required five-pair shared/partitioned matrix",
+    "workload": "cpu-stress",
+    "iterations_per_metric": 100,
+    "controlled_interference": false,
+    "inputs": {
+      "starry_kernel_sha256": "d163d4c55f740a5040cafd3d3919dd90f9f80f020e23ab1e7c70ccb7b52deb94",
+      "starry_dtb_sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "capture_rootfs_sha256": "26a45d4e333dc6039d17d8774ac185a4c3d3b2301dfb23c5803ae89755768626",
+      "probe_sha256": "8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da",
+      "guest_runner_sha256": "38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b"
+    },
+    "shared": {
+      "vcpu_masks": ["0x2", "0x4"],
+      "vcpu_migrations": [0, 0],
+      "guest_trace_records": 880,
+      "host_trace_records": 1094,
+      "guest_trace_dropped": 0,
+      "host_trace_dropped": 0,
+      "snapshot_sha256": "53ea446ecd7dbf41932687b9318ded2cd5382f422f4236575d19ddd6e36fb647",
+      "snapshot_filesystem_state": "clean",
+      "summary_sha256": "2828e8e9fb4d0832b5f721eb4ed289a2b5cc71ad99d22235c482bac212f8a2e4",
+      "raw_sha256": "2a820ed02413f90a96bd38e265e487fa81adb8e9faefe7894b73fd046fa0929e"
+    },
+    "partitioned": {
+      "vcpu_masks": ["0x2", "0x4"],
+      "vcpu_migrations": [0, 0],
+      "guest_trace_records": 888,
+      "host_trace_records": 1097,
+      "guest_trace_dropped": 0,
+      "host_trace_dropped": 0,
+      "snapshot_sha256": "7bdafb5a4f0665326b3b250885a29804e9efb3f4814eb61f15e631039a6d964e",
+      "snapshot_filesystem_state": "clean",
+      "summary_sha256": "c8bcf67ee227219eb6cd59df6b7fd7978680e499c1eeaa9dbccb84114e43b4b7",
+      "raw_sha256": "cae4478195b453d891c1baca150e85c905d2e071b5141c5fe96e3d4b1b0a973e"
+    },
+    "comparison": {
+      "sha256": "448b3a33a05dbb8e1749d05ee169674f15e90d08535a3715e0c822b578c90f78",
+      "p99_improvement_percent": {
+        "periodic_jitter": -55.718,
+        "dispatch_latency": -122.727,
+        "emulated_irq_response": 1.739,
+        "virtual_timer_injection_to_guest_irq": 8.373
+      }
+    },
+    "linux_restored": true,
+    "host_filesystem_synced": true
+  },
+  "ivc_fault_restart": {
+    "source_commit": "598b357f92c848e669c12cca830a4d08d0a50e36",
+    "source_tree": "33cd7bbf39569ed661c6303ac3b61f5f34d40306",
+    "git_archive_sha256": "e241d4d6abc76375abfc8f47880a027edce0ae0058295149018fa3bcd38169e7",
+    "upstream_diff_sha256": "dd023568ae1f259d07df65a2956d04e873595ddc9e1c29236dc3e80fd44bfdf7",
+    "started_at_utc": "2026-08-13T15:13:33Z",
+    "finished_at_utc": "2026-08-13T15:17:36Z",
+    "wrapper_exit_status": 0,
+    "result": "pass",
+    "metadata_validated": true,
+    "inputs": {
+      "starry_kernel_sha256": "7763df597850f5edb05d4929b980801764d6dacabc39022c7871ff7cacfdf46c",
+      "starry_dtb_sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "starry_rootfs_sha256": "1c15956bce9f2bf8adb18e6977e33acb97eb22af0b613cad22914dd79165596d",
+      "zephyr_guest_sha256": "7153dfca0787eab0d516b39b1f459a4e02fcf09ca1c831673c5df33864b8261b",
+      "native_model_source_sha256": "6057046eabd5cb23b38760c1b8ef4369453e7addbabcd71f61b65284732ff5b4"
+    },
+    "outputs": {
+      "metadata_sha256": "76a2eb380c394fafaaaf99913676e16880ae23e045e6572b4eae62ea8337ddab",
+      "summary_sha256": "6ba1311b056641e8774dc301d7d38b9e15201c351c16141ced193916bebdc8e5",
+      "console_gzip_sha256": "0b9e2988f817f8c0e6819d3ee1bab387c0af8a8bbdba3609d53fa67f2cdcf229",
+      "post_reset_raw_gzip_sha256": "311557c246d7949d2c67edae99f0c4872dae978f3a0df9951572a9c266550994",
+      "pre_reset_raw_gzip_sha256": "b0bb349aa0b9c733530ae9aa81c9307d7d53fee23c5d1b8a41e3895cd96a706d",
+      "snapshot_sha256": "ef646af7445c712c8b2d2236eac32664b8b80cd6b44ed83d6322cac60e1c120f",
+      "snapshot_filesystem_state": "clean"
+    },
+    "result_contract": {
+      "actual_vm_reset": true,
+      "host_cpu": 3,
+      "reset_count": 1,
+      "requested_delay_ms": 20000,
+      "observed_delay_ms": 20000,
+      "pre_reset_samples": 20,
+      "post_reset_samples": 100,
+      "controller_acknowledged": 100,
+      "controller_errors": 0,
+      "controller_timeouts": 0,
+      "controller_retransmissions": 0,
+      "rtos_accepted": 120,
+      "rtos_applied": 120,
+      "safe_fallbacks": 1,
+      "retired_control_rejected": 1,
+      "stale_status_ignored": 1,
+      "stale_ack_ignored": 1,
+      "host_filesystem_synced": true,
+      "board_linux_restored": true
+    }
+  },
+  "source_boundary": {
+    "rt_to_ivc_changed_paths": "source-delta.txt",
+    "changed_path_count": 4,
+    "rt_runtime_or_config_changed_after_rt_run": false,
+    "statement": "All paths changed after the RT physical pair are under competition/ivc; the final IVC physical run was rebuilt and analyzed at its recorded clean source commit."
+  },
+  "media": {
+    "path": "demo-5min.mp4",
+    "sha256": "2aa40c0e29020c4d45cd972f96a55fbcadbe8af9404ca1cf99dc5414d0e182a3",
+    "size_bytes": 6125335,
+    "duration_seconds": 300.0,
+    "video_stream": "H.264 1280x720 30 fps",
+    "audio_stream": "AAC 48000 Hz mono",
+    "evidence_replay": true
+  },
+  "manifests": {
+    "runtime_inputs": "runtime-inputs.sha256",
+    "git_object_index": "source-files.git-ls-tree.txt",
+    "bundle": "checksums.sha256"
+  }
+}

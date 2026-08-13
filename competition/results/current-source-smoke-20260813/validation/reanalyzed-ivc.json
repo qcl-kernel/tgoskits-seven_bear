@@ -1,0 +1,142 @@
+{
+  "board": {
+    "board_id": "bf61f4d4a1d994ad",
+    "cpu_temp_milli_c": 41615,
+    "hostname": "orangepi5plus"
+  },
+  "controller": {
+    "acknowledged": 100,
+    "deadline_misses": 1,
+    "errors": 0,
+    "full_loop_max_us": 344033,
+    "full_loop_p50_us": 2340,
+    "full_loop_p95_us": 2551,
+    "full_loop_p99_us": 24692,
+    "iae_milli_c_s": 185638.1,
+    "max_overshoot_milli_c": 0,
+    "policy": "neural",
+    "pre_send_max_us": 12542,
+    "pre_send_p50_us": 19,
+    "pre_send_p95_us": 166,
+    "pre_send_p99_us": 178,
+    "recoveries": 0,
+    "retransmissions": 0,
+    "rmse_milli_c": 20435.735065565907,
+    "sent": 100,
+    "success_percent": 100.0,
+    "throughput_msg_s": 9.721093958889984,
+    "timeouts": 0,
+    "transport_max_us": 331491,
+    "transport_p50_us": 2293,
+    "transport_p95_us": 2532,
+    "transport_p99_us": 24672
+  },
+  "guest": "starryos",
+  "lifecycle": {
+    "block_snapshot": {
+      "backing_index": 0,
+      "filesystem_check": "clean",
+      "image_bytes": 67108864,
+      "image_path": "/home/orangepi/ivc-r",
+      "image_sha256": "ef646af7445c712c8b2d2236eac32664b8b80cd6b44ed83d6322cac60e1c120f",
+      "vm_id": 1
+    },
+    "board_linux_restored": true,
+    "host_filesystem_synced": true,
+    "rtos_powered_off": true,
+    "starry_done": true,
+    "volatile_block_snapshotted": true
+  },
+  "network": {
+    "iface": "eth0",
+    "ip": "10.0.0.1/24",
+    "mac": "unknown",
+    "peer": "10.0.0.2",
+    "segment": 1,
+    "udp_port": 5500
+  },
+  "platform": "orangepi-5-plus",
+  "pre_reset_raw_samples": {
+    "artifact_sha256": "b0bb349aa0b9c733530ae9aa81c9307d7d53fee23c5d1b8a41e3895cd96a706d",
+    "deadline_misses": 1,
+    "dropped_samples": 0,
+    "full_loop_max_us": 122106,
+    "full_loop_p99_us": 2319,
+    "guest_manifest_sha256": "0f06dea327a71b02bac36d5ff53051b0793ccab6e37b2ba5400711377e20a6d9",
+    "path": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/competition/results/current-source-smoke-20260813/ivc/raw-before-reset.csv.gz",
+    "sample_count": 20,
+    "sha256": "0f06dea327a71b02bac36d5ff53051b0793ccab6e37b2ba5400711377e20a6d9",
+    "uart_sha256": "0f06dea327a7",
+    "uart_sha256_complete": false
+  },
+  "profile": "restart",
+  "raw_samples": {
+    "artifact_sha256": "311557c246d7949d2c67edae99f0c4872dae978f3a0df9951572a9c266550994",
+    "deadline_misses": 1,
+    "dropped_samples": 0,
+    "guest_manifest_sha256": "97583b0f12582c498b1ddaddff6031c984510409be752bad4c20a2ff83e25858",
+    "path": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/competition/results/current-source-smoke-20260813/ivc/raw.csv.gz",
+    "sample_count": 100,
+    "sha256": "97583b0f12582c498b1ddaddff6031c984510409be752bad4c20a2ff83e25858",
+    "uart_sha256": "97583b0f12582c498b1ddaddff6031c984510409be752bad4c20a2ff83e25858",
+    "uart_sha256_complete": true
+  },
+  "restart_recovery": {
+    "actual_vm_reset": true,
+    "host_cpu": 3,
+    "new_session": 572662306,
+    "observed_delay_ms": 20000,
+    "old_session": 286331153,
+    "post_reset_samples": 100,
+    "pre_reset_samples": 20,
+    "ready_wait_ms": 0,
+    "recovered": true,
+    "requested_delay_ms": 20000,
+    "reset_count": 1,
+    "retired_control_rejected": 1,
+    "safe_fallback_observed": true,
+    "stale_ack_ignored": 1,
+    "stale_status_ignored": 1,
+    "vm_id": 1
+  },
+  "rtos": {
+    "accepted": 120,
+    "acks_dropped": 0,
+    "acks_sent": 122,
+    "applied": 120,
+    "duplicate_probe": {
+      "ack_received": true,
+      "sequence": 1,
+      "status_received": true
+    },
+    "duplicate_sequences": [
+      1
+    ],
+    "duplicates": 1,
+    "errors_sent": 1,
+    "profile": "restart",
+    "protocol_errors": 1,
+    "recoveries": 1,
+    "restart_counters_source": "summary",
+    "safe_fallbacks": 1,
+    "session_rejections": 1,
+    "session_resets": 1,
+    "stale_acks_sent": 1,
+    "stale_status_sent": 1,
+    "status_sent": 122
+  },
+  "schema_version": 2,
+  "source_log": {
+    "content_sha256": "a882953011ca296dd5f873b247055e0a3b12fafcfb5966583bb6a8dd65af57d7",
+    "path": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/competition/results/current-source-smoke-20260813/ivc/console.log.gz",
+    "sha256": "0b9e2988f817f8c0e6819d3ee1bab387c0af8a8bbdba3609d53fa67f2cdcf229"
+  },
+  "starry": {
+    "backend": "native",
+    "count": 100,
+    "fault_profile": "restart",
+    "mode": "neural",
+    "period_ms": 100,
+    "vcpus": 2
+  }
+}

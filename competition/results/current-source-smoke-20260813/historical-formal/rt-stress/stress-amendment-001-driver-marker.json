@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "amendment_id": "stress-amendment-001-driver-marker",
+  "campaign_id": "starry-rt-stress-formal-20260803",
+  "created_at_utc": "2026-08-03T13:42:00Z",
+  "status": "applied",
+  "preregistration": {
+    "path": "stress-preregistration.json",
+    "sha256": "9fb8e46eb402aad5c06231d3d96189ba61b51ef134395c9bb2d561537a519347",
+    "modified": false
+  },
+  "trigger": {
+    "half": "pair-1/shared",
+    "attempt": "20260803T133357Z-32575",
+    "measurement_completed": true,
+    "linux_restored": true,
+    "driver_error": "STRESS_HALF_FAILED: snapshot sync marker is missing"
+  },
+  "root_cause": "The evidence driver used a single-quoted grep pattern containing a double-escaped optional CR. GNU grep therefore searched for a literal backslash sequence and rejected exact AXVISOR_SNAPSHOT_SYNC_OK lines that were already present in console.log. The same driver also expected an IVC-STARRY-DONE marker that is not part of this capture runner; the frozen guest completion contract is AXVISOR_RT_STARRY_CAPTURE_COMPLETE schema=1 workload=cpu-stress and the harvested raw metadata.",
+  "change": {
+    "scope": "evidence execution driver only; no committed source, configuration, kernel, rootfs, DTB, probe, board-run output, or analysis input changed",
+    "old_driver_sha256": "c7a5d43412febb6cbbf45ea2b32926b1170fe0c692c05dbb9f7bab36be6cbec1",
+    "new_driver_sha256": "32ba2837e4634bb7ab2b4b21abcb6898592253cd4f21f6d6b1185b0aa8455a15",
+    "fixes": [
+      "use an ANSI-C quoted optional carriage return for exact serial markers",
+      "validate the StarryOS capture-complete marker emitted by the frozen guest runner"
+    ]
+  },
+  "data_handling": {
+    "rerun_pair_1_shared": false,
+    "reason": "The board measurement, snapshot sync, host filesystem sync, and Linux restore had already succeeded. The snapshot and host trace were harvested before any later stage or board run could replace /home/rt.",
+    "failed_driver_log_retained": "pair-1/shared/attempts/20260803T133357Z-32575",
+    "successful_logs_promoted_without_modification": true,
+    "measurement_disposition": "accepted as the preregistered pair-1/shared half"
+  },
+  "validated_evidence": {
+    "raw": {
+      "path": "pair-1/shared/raw.log",
+      "bytes": 4071387,
+      "sha256": "9ee7ed6332ca3bf0140af01e5efd118fc1395f4169d564f04c0392ef56cd146b",
+      "samples": 30000
+    },
+    "summary": {
+      "path": "pair-1/shared/summary.json",
+      "bytes": 8110750,
+      "sha256": "20a111c6cc8fdb76c336052449e3fde92ba27f2b6e73b71b4d9b8232129139c1"
+    },
+    "guest_irq_trace": {
+      "path": "pair-1/shared/guest-irq.log.gz",
+      "bytes": 439544,
+      "sha256": "6eedb68a1f7af7a0ed408e4dc6a5ffe4e5f1f5ef3fea9331e5f163f2db5f63fc",
+      "records": 47606
+    },
+    "host_trace": {
+      "path": "pair-1/shared/host.log",
+      "bytes": 9269265,
+      "sha256": "fdba2af8811f0fae1b133597b886c857fa4498838b6eee802a39253948378c37",
+      "records": 50261
+    },
+    "console": {
+      "path": "pair-1/shared/console.log",
+      "bytes": 64659,
+      "sha256": "3ee4f754405bdda420eb7d779dc2cb2821d0e5bd974033a413b20017939f3611"
+    },
+    "snapshot": {
+      "remote_path": "/home/rt",
+      "bytes": 67108864,
+      "sha256": "4281f0ca16843dd3a03891beae165fde2a403389d06101c9fd47778b33af5d08",
+      "filesystem_state": "clean"
+    },
+    "direct_irq_pair_count": 47606,
+    "all_loss_counters_zero": true,
+    "vcpu_masks": ["0x2", "0x4"],
+    "vcpu_migrations": 0,
+    "linux_root_after_run": "/dev/mmcblk1p2 ext4 rw"
+  },
+  "next_required_half": "pair-1/partitioned"
+}

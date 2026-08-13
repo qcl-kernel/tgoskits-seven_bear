@@ -1,0 +1,539 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling tock-registers v0.10.1
+   Compiling log v0.4.33
+   Compiling aarch64_sysreg v0.3.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/aarch64_sysreg)
+   Compiling numeric-enum-macro v0.2.0
+   Compiling aarch64-cpu v11.2.0
+   Compiling arm_vcpu v0.5.19 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/arm_vcpu)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.47s
+     Running unittests src/lib.rs (target/debug/deps/arm_vcpu-e49cedc7002bf60d)
+
+running 13 tests
+test timer::tests::load_and_put_publish_timer_register_transactions_with_final_isb ... ok
+test timer::tests::masked_or_disabled_timers_never_assert_or_wake ... ok
+test timer::tests::put_captures_guest_kernel_timer_control_for_the_next_load ... ok
+test timer::tests::put_disables_virtual_timer_before_clearing_counter_offset ... ok
+test timer::tests::reset_clears_both_timer_outputs ... ok
+test timer::tests::snapshot_selects_the_nearest_deliverable_deadline_across_both_timers ... ok
+test timer::tests::timer_status_is_derived_and_wrap_safe ... ok
+test timer::tests::tval_write_sign_extends_the_architectural_value ... ok
+test timer::tests::vm_frequency_requires_identical_nonzero_target_cpu_counters ... ok
+test world_switch_tests::exception_vector_switch_occurs_only_inside_guest_assembly_windows ... ok
+test world_switch_tests::exception_vector_table_preserves_the_architectural_slot_layout ... ok
+test world_switch_tests::timer_world_switch_keeps_guest_and_host_counter_domains_transactional ... ok
+test world_switch_tests::tls_switch_occurs_only_inside_the_final_assembly_windows ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Compiling unicode-ident v1.0.24
+   Compiling thiserror v2.0.20
+   Compiling bitflags v2.13.1
+   Compiling paste v1.0.15
+   Compiling byteorder v1.5.0
+   Compiling bit_field v0.10.3
+   Compiling heapless v0.9.3
+   Compiling unicode-segmentation v1.13.3
+   Compiling as-any v0.3.2
+   Compiling tock-registers v0.10.1
+   Compiling x86 v0.52.0
+   Compiling unicode-xid v0.2.6
+   Compiling scopeguard v1.2.0
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling raw-cpuid v10.7.0
+   Compiling ax-lazyinit v0.4.10 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ax-lazyinit)
+   Compiling once_cell v1.21.4
+   Compiling irq-framework v0.3.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/irq-framework)
+   Compiling num-traits v0.2.19
+   Compiling ax-percpu v0.4.17 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/percpu/percpu)
+   Compiling const_fn v0.4.12
+   Compiling strsim v0.11.1
+   Compiling lock_api v0.4.14
+   Compiling radium v0.7.0
+   Compiling pci_types v0.10.1
+   Compiling hash32 v0.3.1
+   Compiling semver v1.0.28
+   Compiling prettyplease v0.3.0
+   Compiling libc v0.2.189
+   Compiling bit v0.1.1
+   Compiling num-align v0.1.0
+   Compiling volatile v0.4.6
+   Compiling spinning_top v0.3.0
+   Compiling rust_decimal v1.42.1
+   Compiling convert_case v0.10.0
+   Compiling tap v1.0.1
+   Compiling acpi v6.1.1
+   Compiling lenient_semver_version_builder v0.4.2
+   Compiling anyhow v1.0.104
+   Compiling wyz v0.5.1
+   Compiling uguid v2.2.1
+   Compiling lenient_semver_parser v0.4.2
+   Compiling funty v2.0.0
+   Compiling const-default v1.0.0
+   Compiling const-str v1.1.0
+   Compiling ax-alloc v0.8.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ax-alloc)
+   Compiling bytemuck v1.25.2
+   Compiling arrayvec v0.7.8
+   Compiling uefi-raw v0.14.0
+   Compiling syn v3.0.3
+   Compiling syn v2.0.119
+   Compiling lenient_semver v0.4.2
+   Compiling ax-errno v0.6.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axerrno)
+   Compiling rgb v0.8.53
+   Compiling convert_case v0.8.0
+   Compiling spinning_top v0.2.5
+   Compiling ucs2 v0.3.3
+   Compiling mbarrier v0.1.3
+   Compiling ax-driver v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/ax-driver)
+   Compiling somehal v0.8.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/somehal)
+   Compiling bitvec v1.1.1
+   Compiling axpanic v0.1.1 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axpanic)
+   Compiling ansi_rgb v0.2.0
+   Compiling axbacktrace v0.4.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axbacktrace)
+   Compiling axplat-dyn v0.7.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/axplat-dyn)
+   Compiling ax-hal v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axhal)
+   Compiling typeid v1.0.3
+   Compiling serde_core v1.0.229
+   Compiling glob v0.3.4
+   Compiling fdt-parser v0.4.19
+   Compiling x86_64 v0.15.5
+   Compiling ax-task v0.6.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axtask)
+   Compiling ax-linked-list-r4l v0.5.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/linked_list_r4l)
+   Compiling futures-task v0.3.34
+   Compiling rlsf v0.2.3
+   Compiling futures-core v0.3.34
+   Compiling linux-raw-sys v0.12.1
+   Compiling memchr v2.8.3
+   Compiling slab v0.4.12
+   Compiling byte-unit v5.2.5
+   Compiling clang-sys v1.9.1
+   Compiling regex-syntax v0.8.11
+   Compiling minimal-lexical v0.2.1
+   Compiling ax-sched v0.5.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axsched)
+   Compiling libloading v0.8.9
+   Compiling bindgen v0.72.1
+   Compiling ax-timer-list v0.3.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/timer_list)
+   Compiling either v1.17.0
+   Compiling ax-runtime v0.10.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axruntime)
+   Compiling rustc-hash v2.1.3
+   Compiling serde v1.0.229
+   Compiling shlex v1.3.0
+   Compiling chrono v0.4.45
+   Compiling winnow v1.0.4
+   Compiling nom v7.1.3
+   Compiling itertools v0.13.0
+   Compiling zerocopy v0.8.56
+   Compiling x86_vlapic v0.5.1 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/x86_vlapic)
+   Compiling flatten_objects v0.2.4
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling raw-cpuid v11.6.0
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling x2apic v0.5.0
+   Compiling regex-automata v0.4.18
+   Compiling aml v0.16.4
+   Compiling cexpr v0.6.0
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling toml v1.1.4+spec-1.1.0
+   Compiling x86_vcpu v0.5.21 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/x86_vcpu)
+   Compiling darling_core v0.23.0
+   Compiling thiserror-impl v2.0.20
+   Compiling async-trait v0.1.92
+   Compiling ax-crate-interface v0.5.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/crate_interface)
+   Compiling rdrive-macros v0.4.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/rdrive-macros)
+   Compiling ax-percpu-macros v0.4.12 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/percpu/percpu_macros)
+   Compiling ax-plat-macros v0.3.10 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/ax-plat-macros)
+   Compiling ptr_meta_derive v0.3.2
+   Compiling futures-macro v0.3.34
+   Compiling ax-ctor-bare-macros v0.4.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ctor_bare/ctor_bare_macros)
+   Compiling serde_derive v1.0.229
+   Compiling serde_repr v0.1.21
+   Compiling someboot v0.3.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/someboot)
+   Compiling ptr_meta v0.3.2
+   Compiling regex v1.13.1
+   Compiling ax-ctor-bare v0.4.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ctor_bare/ctor_bare)
+   Compiling derive_more-impl v2.1.1
+   Compiling ax-sync v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axsync)
+   Compiling enum_dispatch v0.3.13
+   Compiling strum_macros v0.27.2
+   Compiling uefi-macros v0.19.0
+   Compiling trait-ffi v0.2.11
+   Compiling extern-trait-impl v0.5.0
+   Compiling futures-util v0.3.34
+   Compiling buddy-slab-allocator v0.4.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/buddy-slab-allocator)
+   Compiling axpoll v0.5.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axpoll)
+   Compiling zerocopy-derive v0.8.56
+   Compiling rdif-def v0.3.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-def)
+   Compiling fdt-raw v0.3.0
+   Compiling rdif-base v0.8.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-base)
+   Compiling cpu-local v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/cpu-local)
+   Compiling rdif-serial v0.9.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-serial)
+   Compiling page-table-generic v0.7.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/page-table-generic)
+   Compiling rdif-pcie v0.2.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-pcie)
+   Compiling rdif-msi v0.2.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-msi)
+   Compiling rdif-reset v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-reset)
+   Compiling rdif-clk v0.5.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-clk)
+   Compiling rdif-power v0.8.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-power)
+   Compiling rdif-intc v0.15.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-intc)
+   Compiling ranges-ext v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ranges-ext)
+   Compiling uefi v0.37.0
+   Compiling axvm-types v0.7.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm-types)
+   Compiling axhvc v0.4.13 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axhvc)
+   Compiling kernutil v0.2.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/kernutil)
+   Compiling axvm-net v0.1.0 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm-net)
+   Compiling ax-cpu v0.8.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axcpu)
+   Compiling fdt-edit v0.2.3
+   Compiling some-serial v0.7.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/serial/some-serial)
+   Compiling extern-trait v0.5.0
+   Compiling darling_macro v0.23.0
+   Compiling rdif-pinctrl v0.1.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-pinctrl)
+   Compiling strum v0.27.2
+   Compiling darling v0.23.0
+   Compiling somehal-macros v0.1.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/somehal-macros)
+   Compiling ax-memory-set v0.6.14 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/memory_set)
+   Compiling ax-io v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axio)
+   Compiling axaddrspace v0.5.19 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axaddrspace)
+   Compiling axdevice_base v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axdevice_base)
+   Compiling axvmconfig v0.8.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvmconfig)
+   Compiling axdevice v0.5.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axdevice)
+   Compiling derive_more v2.1.1
+   Compiling mmio-api v0.2.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/mmio-api)
+   Compiling dma-api v0.9.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/dma-api)
+   Compiling pcie v0.6.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/pci/pcie)
+   Compiling rdrive v0.23.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/rdrive)
+   Compiling ax-posix-api v0.5.32 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_posix_api)
+   Compiling ax-plat v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/ax-plat)
+   Compiling acpi_tables v0.2.1
+   Compiling axklib v0.7.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axklib)
+   Compiling ax-ipi v0.5.30 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axipi)
+   Compiling ax-mm v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axmm)
+   Compiling ax-log v0.5.20 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axlog)
+   Compiling ax-api v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_api)
+   Compiling ax-std v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/ulib/axstd)
+   Compiling axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+warning: function `request_timer_deadline` is never used
+  --> virtualization/axvm/src/arch/mod.rs:97:15
+   |
+97 | pub(crate) fn request_timer_deadline(deadline_ns: u64) {
+   |               ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `request_timer_deadline` is never used
+   --> virtualization/axvm/src/architecture/capabilities.rs:122:8
+    |
+121 | pub(crate) trait HostTimePlatform {
+    |                  ---------------- associated function in this trait
+122 |     fn request_timer_deadline(deadline_ns: u64) {
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: type alias `ArceOsIrqError` is never used
+   --> virtualization/axvm/src/host/arceos.rs:151:17
+    |
+151 | pub(crate) type ArceOsIrqError = modules::ax_hal::irq::IrqError;
+    |                 ^^^^^^^^^^^^^^
+
+warning: function `run_on_cpu_sync` is never used
+   --> virtualization/axvm/src/host/arceos.rs:200:15
+    |
+200 | pub(crate) fn run_on_cpu_sync(
+    |               ^^^^^^^^^^^^^^^
+
+warning: function `run_on_cpu_sync` is never used
+  --> virtualization/axvm/src/host/task.rs:60:15
+   |
+60 | pub(crate) fn run_on_cpu_sync(
+   |               ^^^^^^^^^^^^^^^
+
+warning: method `request_timer_deadline` is never used
+  --> virtualization/axvm/src/host/traits.rs:48:8
+   |
+35 | pub trait HostTime {
+   |           -------- method in this trait
+...
+48 |     fn request_timer_deadline(&self, deadline_ns: u64);
+   |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `axvm` (lib test) generated 6 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.43s
+     Running unittests src/lib.rs (target/debug/deps/axvm-6fc82d8127c94ab0)
+
+running 273 tests
+test aarch64_shared_mmio_tests::tests::forwards_unprotected_bits_in_the_same_rockchip_write ... ok
+test aarch64_shared_mmio_tests::tests::strips_rk3568_uart2_gate_disable_write ... ok
+test aarch64_shared_mmio_tests::tests::shared_device_forwards_reads_and_filtered_writes ... ok
+test aarch64_shared_mmio_tests::tests::shared_device_forwards_zero_writes_outside_protected_registers ... ok
+test aarch64_timer_percpu_tests::tests::configuration_failure_does_not_publish_an_irq_claim ... ok
+test aarch64_shared_mmio_tests::tests::suppresses_partial_or_denied_protected_writes ... ok
+test aarch64_timer_percpu_tests::tests::configures_every_target_before_claiming_and_enabling_the_ppi ... ok
+test arch::x86_64::boot::acpi::fw_cfg::tests::fw_cfg_blobs_describe_the_complete_x86_acpi_loader_plan ... ok
+test arch::x86_64::boot::acpi::tables::tests::direct_image_has_valid_pointer_closure_and_checksums ... ok
+test arch::x86_64::boot::boot_params::tests::builds_boot_params_with_patched_header_and_initrd ... ok
+test arch::x86_64::boot::boot_params::tests::builds_e820_with_multiple_ram_ranges ... ok
+test arch::x86_64::boot::boot_params::tests::builds_e820_with_ram_and_reserved_low_ranges ... ok
+test arch::x86_64::boot::boot_params::tests::publishes_acpi_rsdp_address_to_linux ... ok
+test arch::x86_64::boot::boot_params::tests::rejects_command_line_that_does_not_fit_zero_page ... ok
+test arch::x86_64::boot::boot_params::tests::records_reserved_passthrough_ranges_in_e820 ... ok
+test arch::x86_64::boot::boot_params::tests::rejects_command_line_with_nul ... ok
+test arch::x86_64::boot::boot_params::tests::rejects_missing_command_line ... ok
+test arch::x86_64::boot::boot_params::tests::rejects_truncated_setup_header_copy ... ok
+test arch::x86_64::boot::linux::tests::layout_accepts_non_overlapping_kernel_and_initrd ... ok
+test arch::x86_64::boot::linux::tests::layout_rejects_initrd_above_header_limit ... ok
+test arch::x86_64::boot::linux::tests::layout_rejects_initrd_overlapping_kernel ... ok
+test arch::x86_64::boot::linux::tests::layout_rejects_kernel_overlapping_boot_stub ... ok
+test arch::x86_64::boot::linux::tests::parses_valid_bzimage_header ... ok
+test arch::x86_64::boot::linux::tests::rejects_non_bootable_image_without_boot_flag ... ok
+test arch::x86_64::boot::linux::tests::rejects_non_linux_image_without_header_magic ... ok
+test arch::x86_64::boot::linux::tests::reports_truncated_header_offset ... ok
+test arch::x86_64::boot::linux::tests::treats_zero_setup_sects_as_four ... ok
+test arch::x86_64::boot::linux_boot::tests::builds_linux_boot_stub_with_patched_entry_registers ... ok
+test arch::x86_64::boot::linux_boot::tests::rejects_stub_load_gpa_mismatch ... ok
+test arch::x86_64::boot::mptable::tests::builds_valid_mp_table_checksums ... ok
+test arch::x86_64::boot::mptable::tests::com1_is_identity_routed_to_ioapic_gsi4 ... ok
+test arch::x86_64::boot::mptable::tests::io_apic_entry_uses_the_selected_machine_address ... ok
+test arch::x86_64::boot::mptable::tests::pci_intx_entries_are_low_active_level_triggered ... ok
+test arch::x86_64::boot::mptable::tests::q35_dev3_inta_uses_swizzled_gsi19 ... ok
+test arch::x86_64::boot::tests::built_in_bios_accepts_explicit_default_gpa ... ok
+test arch::x86_64::boot::tests::built_in_bios_rejects_non_default_gpa ... ok
+test arch::x86_64::boot::tests::built_in_bios_uses_default_gpa_when_unspecified ... ok
+test arch::x86_64::boot::tests::legacy_bios_config_uses_multiboot_patch ... ok
+test arch::x86_64::boot::tests::linux_direct_boot_requires_direct_protocol_without_bios ... ok
+test arch::x86_64::boot::tests::uefi_config_skips_multiboot_patch ... ok
+test arch::x86_64::irq::tests::clearing_forwarded_gsi_state_reports_masked_host_line ... ok
+test arch::x86_64::irq::tests::explicit_route_reserves_its_host_irq_from_fallback_registration ... ok
+test arch::x86_64::irq::tests::forwarded_gsi_bits_are_stable ... ok
+test arch::x86_64::irq::tests::forwarded_intx_rearms_host_line_when_guest_eoi_has_no_deferred_level ... ok
+test arch::x86_64::irq::tests::forwarded_level_intx_stays_masked_when_guest_eoi_has_deferred_pending ... ok
+test arch::x86_64::irq::tests::forwarding_activator_does_not_start_without_an_owned_host_irq_route ... ok
+test arch::x86_64::irq::tests::forwarding_activator_drops_pre_activation_pending_state ... ok
+test arch::x86_64::irq::tests::forwarding_activator_waits_for_guest_route_and_runs_once ... ok
+test arch::x86_64::irq::tests::forwarding_route_rejects_host_irq_already_mapped_to_another_gsi ... ok
+test arch::x86_64::irq::tests::forwarding_teardown_refuses_to_mask_a_host_irq_after_disable ... ok
+test arch::x86_64::irq::tests::forwarding_teardown_unmasks_lines_and_discards_pending_work_for_its_vm ... ok
+test arch::x86_64::irq::tests::forwarding_trigger_mode_comes_from_registered_route_not_gsi_number ... ok
+test arch::x86_64::irq::tests::hook_gsi_iterator_matches_registration_policy ... ok
+test arch::x86_64::irq::tests::host_irq_lease_table_uses_an_irq_safe_lock ... ok
+test arch::x86_64::irq::tests::host_irq_leases_reject_cross_vm_ownership_and_release_by_vm ... ok
+test arch::x86_64::irq::tests::host_irq_storage_preserves_domain_and_hwirq ... ok
+test arch::x86_64::irq::tests::machine_owned_uart_gsi_never_registers_a_host_irq_hook ... ok
+test arch::x86_64::irq::tests::passthrough_gsis_still_register_host_irq_hooks ... ok
+test arch::x86_64::irq::tests::pit_gsi_uses_synthetic_injection_not_host_irq_hook ... ok
+test arch::x86_64::irq::tests::runtime_selected_host_console_irq_is_not_guest_assignable ... ok
+test arch::x86_64::port::tests::passthrough_port_bundle_registers_through_device_runtime ... ok
+test arch::x86_64::port::tests::passthrough_port_range_is_inclusive ... ok
+test arch::x86_64::port::tests::passthrough_port_range_rejects_empty_and_overflowing_ranges ... ok
+test arch::x86_64::port::tests::passthrough_port_rejects_qword_without_touching_hardware ... ok
+test arch::x86_64::tests::axvm_x86_vcpu_uses_x86_exit_type ... ok
+test arch::x86_64::tests::converts_x86_value_types_to_axvm_value_types ... ok
+test arch::x86_64::tests::converts_x86_vcpu_errors_to_backend_errors ... ok
+test arch::x86_64::tests::interrupt_domain_shared_state_uses_irq_safe_locks ... ok
+test arch::x86_64::tests::maps_edge_and_level_triggers_to_x86_backend_modes ... ok
+test arch::x86_64::tests::x86_halt_waits_until_an_interrupt_or_lifecycle_event ... ok
+test arch::x86_64::vm::tests::svm_reserves_the_local_apic_trap_region ... ok
+test architecture::aarch64_stage2::tests::guest_ipa_width_never_exceeds_host_physical_address_width ... ok
+test architecture::aarch64_stage2::tests::unsupported_stage2_level_count_has_no_address_width ... ok
+test architecture::capabilities::tests::recorded_minimum_includes_every_cpu_in_vcpu_affinity_masks ... ok
+test architecture::capabilities::tests::recorded_minimum_rejects_an_empty_target_set ... ok
+test architecture::capabilities::tests::recorded_minimum_rejects_an_uninitialized_target_cpu ... ok
+test architecture::exit::tests::hvc_cpu_off_exits_current_vcpu_without_stopping_vm ... ok
+test architecture::exit::tests::hvc_cpu_suspend_standby_sets_success_before_waiting ... ok
+test architecture::exit::tests::hvc_cpu_suspend_standby_waits_for_event_without_exiting ... ok
+test architecture::exit::tests::hvc_system_reset_requests_vm_reset_without_returning ... ok
+test architecture::exit::tests::hvc_unknown_aarch64_psci_id_returns_not_supported ... ok
+test architecture::exit::tests::hvc_unknown_non_aarch64_psci_id_does_not_clobber_return_value ... ok
+test architecture::ops::tests::dispatcher_drain_injects_fifo_once_and_consumes_failed_entries ... ok
+test architecture::ops::tests::inject_vcpu_interrupt_preserves_level_trigger_at_backend_boundary ... ok
+test boot::acpi::arena::tests::rejects_an_object_that_crosses_the_arena_limit ... ok
+test boot::acpi::loader::tests::serializes_allocate_pointer_and_checksum_command_layouts ... ok
+test boot::fdt::test_core::create::tests::aarch64_virtio_blk_uses_three_cell_gic_interrupt_binding ... ok
+test boot::fdt::test_core::create::tests::aarch64_virtio_net_uses_three_cell_gic_interrupt_binding ... ok
+test boot::fdt::test_core::create::tests::cpu_node_id_parses_hex_unit_address ... ok
+test boot::fdt::test_core::create::tests::cpu_node_selection_uses_node_id_when_reg_differs ... ok
+test boot::fdt::test_core::create::tests::generated_fdt_filters_cpu_nodes_by_unit_address ... ok
+test boot::fdt::test_core::create::tests::generated_fdt_keeps_psci_firmware_node ... ok
+test boot::fdt::test_core::create::tests::generated_fdt_keeps_the_host_interrupt_controller_for_a_virtual_machine ... ok
+test boot::fdt::test_core::create::tests::initrd_range_requires_both_address_and_size ... ok
+test boot::fdt::test_core::create::tests::riscv_virtio_blk_uses_one_cell_plic_interrupt_binding ... ok
+test boot::fdt::test_core::create::tests::riscv_virtio_net_uses_one_cell_plic_interrupt_binding ... ok
+test boot::fdt::test_core::create::tests::runtime_patch_can_leave_missing_chosen_for_host_copy ... ok
+test boot::fdt::test_core::create::tests::sanitize_bootargs_enables_auto_repair_for_block_roots ... ok
+test boot::fdt::test_core::create::tests::sanitize_bootargs_preserves_existing_fsck_policy ... ok
+test boot::fdt::test_core::device_model::tests::resolved_graph_populates_conventional_fdt_node ... ok
+test boot::fdt::test_core::device_model::tests::runtime_template_rejects_predeclared_graph_device ... ok
+test boot::fdt::test_core::interrupt::tests::replaces_host_gic_windows_with_virtual_machine_windows ... ok
+test boot::fdt::test_core::interrupt::tests::resolves_and_reuses_host_gicv2_windows ... ok
+test boot::fdt::test_core::interrupt::tests::resolves_and_reuses_host_plic_window_and_phandle ... ok
+test boot::fdt::test_core::interrupt::tests::resolves_host_gic_maintenance_ppi ... ok
+test boot::fdt::test_core::interrupt::tests::resolves_host_gic_windows_and_phandle ... ok
+test boot::fdt::test_core::parser::tests::align_reserved_region_expands_to_cover_unaligned_bounds ... ok
+test boot::fdt::test_core::parser::tests::align_reserved_region_keeps_aligned_range ... ok
+test boot::fdt::test_core::parser::tests::align_reserved_region_rejects_zero_sized_range ... ok
+test boot::fdt::test_core::parser::tests::excluded_device_ranges_become_reserved_vm_ranges ... ok
+test boot::fdt::test_core::parser::tests::explicitly_selected_physical_uart_is_rejected_as_host_owned ... ok
+test boot::fdt::test_core::parser::tests::passthrough_guest_reserves_platform_timers_owned_by_the_machine ... ok
+test boot::fdt::test_core::parser::tests::passthrough_guest_reserves_the_machine_interrupt_controller ... ok
+test boot::fdt::test_core::parser::tests::phys_cpu_set_rejects_cpu_missing_from_runtime_topology ... ok
+test boot::fdt::test_core::parser::tests::phys_cpu_set_rejects_logical_index_outside_affinity_mask ... ok
+test boot::fdt::test_core::parser::tests::phys_cpu_set_rejects_logical_index_outside_usable_host_cpus ... ok
+test boot::fdt::test_core::parser::tests::phys_cpu_set_uses_runtime_logical_index_instead_of_fdt_order ... ok
+test boot::fdt::test_core::parser::tests::physical_uart_interrupt_is_not_added_to_passthrough_routes ... ok
+test boot::fdt::test_core::parser::tests::physical_uart_is_reserved_without_user_exclusion ... ok
+test boot::fdt::test_core::parser::tests::subtract_memory_region_overlap_drops_fully_covered_range ... ok
+test boot::fdt::test_core::parser::tests::subtract_memory_region_overlap_keeps_non_overlapping_range ... ok
+test boot::fdt::test_core::parser::tests::subtract_memory_region_overlap_splits_range_around_overlap ... ok
+test boot::fdt::test_core::parser::tests::virtualized_guest_maps_only_the_explicit_physical_device ... ok
+test boot::fdt::test_core::serial::tests::installs_ns16550a_with_plic_source ... ok
+test boot::fdt::test_core::serial::tests::installs_pl011_with_gic_spi_and_stdout_path ... ok
+test boot::fdt::test_core::serial::tests::installs_pl011_with_host_irq_phandle_and_stdout_identity ... ok
+test boot::fdt::test_core::serial::tests::rejects_truncated_host_serial_clock_specifier ... ok
+test boot::fdt::test_core::serial::tests::replaces_host_serial_nodes_and_console_aliases ... ok
+test boot::fdt::test_core::serial::tests::resolves_dw_apb_uart_as_virtual_16550 ... ok
+test boot::fdt::test_core::serial::tests::resolves_earlycon_uart_when_stdout_path_is_missing ... ok
+test boot::fdt::test_core::tests::passthrough_guest_follows_host_machine_resources ... ok
+test boot::fdt::test_core::tests::virtualized_guest_keeps_portable_machine_resources ... ok
+test boot::fdt::test_core::timer::tests::installed_timer_drops_host_errata_and_keeps_interrupt_order ... ok
+test boot::fdt::test_core::timer::tests::installed_timer_removes_firmware_platform_timer_nodes ... ok
+test boot::fdt::test_core::timer::tests::parses_four_timer_interrupts_and_optional_frequency ... ok
+test boot::fdt::test_core::timer::tests::parses_the_optional_fifth_timer_interrupt ... ok
+test boot::fdt::test_core::timer::tests::rejects_a_truncated_timer_interrupt_list ... ok
+test boot::fdt::test_core::timer::tests::rejects_an_invalid_optional_hyp_virtual_timer_interrupt ... ok
+test boot::fdt::test_core::timer::tests::rejects_missing_or_non_gic_interrupt_parent ... ok
+test boot::fdt::test_core::timer::tests::rejects_non_level_timer_ppi_flags ... ok
+test boot::fdt::test_core::timer::tests::rejects_trailing_interrupt_cells_hidden_by_typed_iteration ... ok
+test boot::fdt::test_core::timer::tests::rejects_zero_or_malformed_firmware_frequency ... ok
+test boot::fdt::test_core::tree_tests::clone_filtered_drops_guest_cpu_power_management_props ... ok
+test boot::fdt::test_core::tree_tests::clone_filtered_preserves_guest_cpu_power_management_props_on_rk3588 ... ok
+test boot::fdt::test_core::tree_tests::clone_filtered_preserves_root_sibling_order ... ok
+test boot::fdt::test_core::tree_tests::explicit_cmdline_replaces_host_bootargs ... ok
+test boot::fdt::test_core::tree_tests::finish_drops_host_header_state_from_guest_dtb ... ok
+test boot::fdt::test_core::tree_tests::host_fdt_pointer_rejects_null ... ok
+test boot::fdt::test_core::tree_tests::tree_copies_subtree_and_exposes_mutable_inner_tree ... ok
+test boot::fdt::test_core::tree_tests::tree_patches_chosen_bootargs_and_initrd ... ok
+test boot::fdt::test_core::tree_tests::tree_rebuilds_memory_nodes_from_guest_regions ... ok
+test boot::fdt::test_core::tree_tests::tree_removes_cpu_idle_states_when_psci_suspend_is_unavailable ... ok
+test boot::fdt::test_core::tree_tests::tree_removes_stale_initrd_when_no_ramdisk_is_present ... ok
+test config::tests::controller_replacements_require_machine_capabilities ... ok
+test config::tests::set_memory_regions_replaces_stale_snapshot_after_config_enrichment ... ok
+test configured::append::tests::console_override_and_extra_serial_share_deterministic_planning ... ok
+test configured::virtio_blk::tests::configured_block_device_loads_once_and_uses_planned_resources ... ok
+test configured::virtio_blk::tests::configured_block_device_requires_an_image_provider ... ok
+test configured::virtio_net::tests::configured_network_device_rejects_unknown_header_mode ... ok
+test configured::virtio_net::tests::configured_network_device_uses_planned_mmio_and_irq_resources ... ok
+test error::tests::address_space_errors_map_to_axvm_domains ... ok
+test error::tests::configuration_errors_map_to_invalid_config ... ok
+test error::tests::domain_errors_preserve_operation_context ... ok
+test error::tests::hypercall_errors_map_to_matching_axvm_domains ... ok
+test error::tests::lower_layer_failures_map_to_matching_domains ... ok
+test error::tests::resource_and_capacity_errors_are_matchable ... ok
+test irq::deferred::tests::irq_publication_coalesces_vcpu_bits_without_carrying_irq_state ... ok
+test irq::deferred::tests::irq_publication_rejects_vcpus_outside_the_preallocated_bitmap ... ok
+test irq::sender::tests::sender_accepts_running_and_paused_registered_vcpu ... ok
+test irq::sender::tests::sender_rejects_ready_stopped_and_destroyed_states ... ok
+test irq::sender::tests::sender_reports_not_found_after_vm_release ... ok
+test irq::sender::tests::sender_reports_not_found_for_unregistered_vcpu_without_callbacks ... ok
+test irq::sender::tests::sender_uses_replacement_runtime_after_restart ... ok
+test layout::tests::duplicate_explicit_passthrough_ranges_are_merged_when_linear_mapping_matches ... ok
+test layout::tests::invalid_and_conflicting_ranges_are_rejected ... ok
+test layout::tests::passthrough_address_is_identity_and_unaligned_ranges_are_expanded ... ok
+test layout::tests::passthrough_device_uses_base_hpa_and_keeps_non_contiguous_mappings_split ... ok
+test layout::tests::passthrough_identity_device_does_not_refill_emulated_mmio_hole ... ok
+test layout::tests::passthrough_policy_punches_memory_and_emulated_mmio_holes ... ok
+test layout::tests::passthrough_policy_punches_reserved_regions ... ok
+test layout::tests::reserved_host_device_range_can_contain_an_emulated_device ... ok
+test layout::tests::virtualized_policy_only_maps_explicit_passthrough ... ok
+test lifecycle::machine::tests::interrupt_runtime_accepts_only_running_and_paused_states ... ok
+test lifecycle::machine::tests::lifecycle_allows_start_pause_resume_stop_destroy_from_ready ... ok
+test lifecycle::machine::tests::lifecycle_rejects_destroy_while_runtime_is_live ... ok
+test lifecycle::machine::tests::lifecycle_rejects_invalid_transitions_without_changing_state ... ok
+test lifecycle::machine::tests::lifecycle_rejects_reset_while_runtime_is_live ... ok
+test lifecycle::machine::tests::lifecycle_requires_runtime_cleanup_before_restarting_stopped_vm ... ok
+test lifecycle::machine::tests::lifecycle_reset_drops_runtime_and_returns_to_ready ... ok
+test machine::gic::tests::gicv2_normalization_retains_only_guest_visible_frames ... ok
+test machine::tests::machine_serial_resources_match_guest_platform_contract ... ok
+test machine::tests::only_device_discovery_machines_emit_a_default_root_selector ... ok
+test runtime::hvc::tests::generic_hvc_rejects_psci_function_ids ... ok
+test runtime::hvc::tests::hvc_advertises_system_reset_as_required_psci_0_2_call ... ok
+test runtime::hvc::tests::hvc_affinity_info_aggregates_nonzero_level_domain ... ok
+test runtime::hvc::tests::hvc_affinity_info_matches_requested_mpidr_level ... ok
+test runtime::hvc::tests::hvc_affinity_info_reports_cpu_on_pending_before_first_run ... ok
+test runtime::hvc::tests::hvc_cpu_off_last_vcpu_denial_uses_psci_denied ... ok
+test runtime::hvc::tests::hvc_cpu_on_busy_states_keep_psci_status ... ok
+test runtime::hvc::tests::hvc_cpu_on_matches_guest_mpidr_not_host_placement ... ok
+test runtime::hvc::tests::hvc_cpu_on_start_failure_is_not_reported_as_success ... ok
+test boot::fdt::test_core::create::tests::orangepi_5_plus_guest_fdt_keeps_cpu_power_dependencies_resolvable ... ok
+test runtime::hvc::tests::hvc_decodes_cpu_suspend_extended_state_type ... ok
+test runtime::hvc::tests::hvc_decodes_psci_calls_and_returns_standard_errors ... ok
+test runtime::hvc::tests::hvc_decodes_psci_version_and_dispatches_0_2 ... ok
+test runtime::hvc::tests::hvc_decodes_unsupported_psci_migration_calls ... ok
+test runtime::hvc::tests::hvc_psci_features_advertises_smccc_version_query ... ok
+test runtime::hvc::tests::hvc_psci_features_cover_implemented_0_2_surface ... ok
+test runtime::hvc::tests::hvc_psci_features_cpu_on_matches_execute_contract ... ok
+test runtime::hvc::tests::hvc_rejects_unknown_psci_function_ids ... ok
+test runtime::queue::tests::double_drain_returns_empty ... ok
+test runtime::queue::tests::drain_empties_queue ... ok
+test runtime::queue::tests::isolates_vcpus ... ok
+test runtime::queue::tests::push_preserves_fifo_order ... ok
+test runtime::queue::tests::trigger_mode_round_trips ... ok
+test runtime::tests::missing_vm_is_reported_with_its_id ... ok
+test runtime::tests::reset_counts_replacement_runtime_for_every_restartable_state ... ok
+test runtime::tests::single_vcpu_notification_publishes_a_device_poll_request ... ok
+test runtime::tests::smp_notification_does_not_publish_a_shared_device_poll_request ... ok
+test runtime::vcpus::tests::request_published_at_wait_boundary_prevents_sleep_and_is_consumed_once ... ok
+test runtime::vcpus::tests::request_published_before_wfi_snapshot_prevents_sleep_and_is_consumed_once ... ok
+test runtime::vcpus::tests::vcpu_waits_for_runtime_registration_before_entering_guest ... ok
+test sync::tests::lock_recovers_the_value_after_host_unwinding ... ok
+test sync::tests::once_lock_retries_after_failed_initialization ... ok
+test timer::tests::cancel_rearms_to_remaining_owner_deadline ... ok
+test timer::tests::cancel_removes_event_from_original_cpu_wheel ... ok
+test timer::tests::expiring_event_forgets_owner_token ... ok
+test timer::tests::host_timer_callback_path_dispatches_registered_event_once ... ok
+test timer::tests::migration_reprogramming_deletes_stale_original_cpu_deadline ... ok
+test timer::tests::owner_aware_handle_rejects_a_stale_cpu_identity ... ok
+test timer::tests::published_deadline_tracks_registration_cancellation_and_expiry ... ok
+test timer::tests::remote_cancel_reprograms_owner_cpu_timer ... ok
+test timer::tests::remote_handle_cancel_reprograms_the_recorded_owner_cpu ... ok
+test timer::tests::timer_irq_claims_only_an_elapsed_publication ... ok
+test vcpu::tests::configures_starting_secondary_without_host_cpu_binding ... ok
+test vcpu::tests::host_backend_errors_keep_domain_context ... ok
+test vcpu::tests::interrupt_backend_errors_keep_domain_context ... ok
+test vcpu::tests::rejects_secondary_configuration_without_starting_reservation ... ok
+test vcpu::tests::vcpu_backend_errors_keep_domain_context ... ok
+test vcpu::tests::vcpu_cpu_off_rejects_non_ready_states ... ok
+test vcpu::tests::vcpu_cpu_off_returns_ready_to_free_for_reon ... ok
+test vcpu::tests::vcpu_cpu_on_reservation_moves_free_to_starting ... ok
+test vcpu::tests::vcpu_cpu_on_rollback_restores_starting_to_free ... ok
+test vcpu::tests::vcpu_cpu_on_start_failure_restores_starting_to_free ... ok
+test vcpu::tests::vcpu_cpu_on_start_success_moves_starting_to_ready ... ok
+test vm::boot::tests::boot_policy_keeps_uefi_kernel_load_address ... ok
+test vm::boot::tests::boot_policy_moves_multiboot_kernel_after_reserved_bios_space ... ok
+test vm::boot::tests::keep_configured_boot_policy_does_not_relocate_identical_memory ... ok
+test vm::memory::tests::memory_region_plan_preserves_mapping_intent_from_vm_config ... ok
+test vm::memory::tests::prepare_memory_layout_maps_configured_reserved_region_once ... ok
+test vm::prepare::address_space::tests::guest_address_space_is_capped_by_stage2_gpa_width ... ok
+test vm::prepare::device_plan::passthrough::tests::host_replacement_range_is_not_reserved_as_passthrough ... ok
+test vm::prepare::device_plan::passthrough::tests::overlapping_linear_host_ranges_share_one_reservation ... ok
+test vm::reset_memory::tests::reset_cache_quiesce_requires_singleton_vcpu_affinities ... ok
+test vm::reset_memory::tests::restore_rejects_a_changed_guest_memory_layout ... ok
+test vm::reset_memory::tests::restore_replaces_guest_mutations_with_the_captured_memory ... ok
+test vm::runtime_handle_tests::remove_vcpu_task_clears_pending_interrupts_and_dispatcher_registration ... ok
+test vm::runtime_handle_tests::runtime_cpu_off_reservation_rejects_second_parallel_last_vcpu ... ok
+test vm::runtime_handle_tests::runtime_cpu_on_acceptance_reserves_exit_before_first_run ... ok
+test vm::runtime_handle_tests::runtime_deferred_reset_request_is_single_consumer ... ok
+test vm::tests::block_snapshot_requires_a_stopped_vm ... ok
+test vm::tests::interrupt_pulse_propagates_sink_error ... ok
+test vm::tests::interrupt_pulse_runs_after_snapshot_lock_is_released ... ok
+test vm::tests::interrupt_snapshot_failure_does_not_call_sink ... ok
+test vm::tests::runtime_dispatch_orders_enqueue_before_notify_and_ipi ... ok
+test vm::tests::runtime_dispatch_releases_queue_lock_before_callbacks ... ok
+test vm::tests::runtime_dispatch_stops_when_enqueue_fails ... ok
+test vm::tests::runtime_notification_advances_wake_generation_without_waiters ... ok
+test vm::tests::runtime_pending_interrupts_are_per_vcpu_and_drained_once ... ok
+test vm::tests::runtime_records_the_first_lifecycle_error_once ... ok
+test vm::tests::write_guest_bytes_to_chunks_accepts_empty_writes ... ok
+test vm::tests::write_guest_bytes_to_chunks_rejects_insufficient_capacity ... ok
+test vm::tests::write_guest_bytes_to_chunks_writes_only_remaining_bytes ... ok
+
+test result: ok. 273 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+

@@ -1,0 +1,54 @@
+AXVISOR_RT_HOST_TOOLCHAIN_READY manifest=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/host-toolchain.json compiler=/usr/bin/aarch64-linux-gnu-gcc-11 version=11.4.0 target=aarch64-linux-gnu sysroot=/usr/aarch64-linux-gnu
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running `target/debug/tg-xtask starry build -c /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml --smp 2`
+[2026-08-13T13:49:49Z INFO  axbuild::context] Workspace root: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05
+Using build config: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml
+[2026-08-13T13:49:49Z INFO  axbuild::build::config_file] Found build config at /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ...
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml ...
+AX_ARCH=aarch64
+AX_LOG=info
+AX_TARGET=aarch64-unknown-none-softfloat
+SMP=2
+cargo build -p starryos --target aarch64-unknown-none-softfloat -Z unstable-options --target-dir /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target --features ax-driver/virtio-blk,ax-driver/virtio-net,rt-irq-trace,smp -Z build-std=core,alloc --config target.aarch64-unknown-none-softfloat.rustflags=["-Crelocation-model=pic", "-Clink-args=-pie", "-Clink-args=--gc-sections", "-Clink-args=-znorelro", "-Clink-args=-znostart-stop-gc", "-Clink-args=-Tlinker.x", "-Clink-args=-u _head"] --bin starryos --release --message-format json-render-diagnostics
+   Compiling ax-driver v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/ax-driver)
+   Compiling ax-fs-ng v0.8.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/fs/ax-fs-ng)
+   Compiling axplat-dyn v0.7.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/axplat-dyn)
+   Compiling ax-hal v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axhal)
+   Compiling ax-ipi v0.5.30 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axipi)
+   Compiling ax-mm v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axmm)
+   Compiling ax-task v0.6.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axtask)
+   Compiling ax-log v0.5.20 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axlog)
+   Compiling ax-net v0.12.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/net/ax-net)
+   Compiling ax-display v0.6.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axdisplay)
+   Compiling ax-runtime v0.10.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axruntime)
+   Compiling ax-posix-api v0.5.32 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_posix_api)
+   Compiling starry-process v0.4.16 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/StarryOS/process)
+   Compiling ax-api v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_api)
+   Compiling axnsproxy v0.3.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/StarryOS/axnsproxy)
+   Compiling starry-signal v0.8.13 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/StarryOS/signal)
+   Compiling starry-kernel v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/StarryOS/kernel)
+   Compiling ax-std v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/ulib/axstd)
+   Compiling starryos v0.5.28 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/StarryOS/starryos)
+    Finished `release` profile [optimized] target(s) in 15.03s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
+Converting ELF to BIN format...
+  elf: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+  bin: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml ... done (15.30s)
+[axbuild] cargo build elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] cargo build artifact_dir=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ... done (15.30s)
+[axbuild] starry artifact elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos ...
+[axbuild] starry kallsyms symbols=12350
+rust-objcopy --update-section .kallsyms=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/.starryos.kallsyms.371487.tmp /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos ... done (216.22ms)
+[axbuild] starry bin refresh /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin ...
+rust-objcopy --strip-all -O binary /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] starry bin refresh /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-none-softfloat/release/starryos.bin ... done (36.65ms)
+0e6b7bef0047bdb10ff332379a52e9a32722d42aaf90ec59a1a4f08966ad7e2d  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml
+d163d4c55f740a5040cafd3d3919dd90f9f80f020e23ab1e7c70ccb7b52deb94  /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starryos-rt.bin
+AXVISOR_RT_STARRY_KERNEL_READY path=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axvisor-rt/starryos-rt.bin config=starry-aarch64-rt.toml smp=2

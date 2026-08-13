@@ -1,0 +1,461 @@
+{
+  "assessment": {
+    "all_captures_lossless": true,
+    "fixed_vcpu_placement_met": true,
+    "formal_stress_coverage_met": true,
+    "isolation_claim_allowed": false,
+    "reason": "five lossless guest CPU1 stress pairs passed the frozen stability contract; this same-VM workload is not an isolation treatment"
+  },
+  "campaign": {
+    "capture_count": 10,
+    "inputs": [
+      {
+        "pair": 1,
+        "profiles": {
+          "partitioned": {
+            "direct_irq_pair_count": 48557,
+            "guest_records": 48557,
+            "host_records": 51220,
+            "profile": "partitioned",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-1/partitioned/raw.log",
+              "sha256": "011fc0213ee82ff3f51ef00a892e11a883765954714dc0953e493b1bcd7bff3b"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-1/partitioned/guest-irq.log.gz",
+                "sha256": "d3532ae75cfe7e65b3398f601b09e388bf3f67a26ebe95fc4564d08dc4ae0114"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-1/partitioned/host.log",
+                "sha256": "29b7ec462c759d15199462a234a3b65e296a74ae1102dbae0d19dff3eea1623e"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          },
+          "shared": {
+            "direct_irq_pair_count": 47606,
+            "guest_records": 47606,
+            "host_records": 50261,
+            "profile": "shared",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-1/shared/raw.log",
+              "sha256": "9ee7ed6332ca3bf0140af01e5efd118fc1395f4169d564f04c0392ef56cd146b"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-1/shared/guest-irq.log.gz",
+                "sha256": "6eedb68a1f7af7a0ed408e4dc6a5ffe4e5f1f5ef3fea9331e5f163f2db5f63fc"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-1/shared/host.log",
+                "sha256": "fdba2af8811f0fae1b133597b886c857fa4498838b6eee802a39253948378c37"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          }
+        },
+        "run_order": "AB"
+      },
+      {
+        "pair": 2,
+        "profiles": {
+          "partitioned": {
+            "direct_irq_pair_count": 48565,
+            "guest_records": 48565,
+            "host_records": 51229,
+            "profile": "partitioned",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-2/partitioned/raw.log",
+              "sha256": "be83189befef97805b3fa2869378bac935cdb9145796879512f8b8565905a839"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-2/partitioned/guest-irq.log.gz",
+                "sha256": "fa7922fcfbd6fcfbe44cfc9c73781220c69a687907db637bb8c2aba76552fc96"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-2/partitioned/host.log",
+                "sha256": "ad0bbc3b8433fd41f180473266908ca942f0c470eb2323ff27402e28f508394d"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          },
+          "shared": {
+            "direct_irq_pair_count": 48619,
+            "guest_records": 48619,
+            "host_records": 51285,
+            "profile": "shared",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-2/shared/raw.log",
+              "sha256": "11932be266f44e0c61764e9caeb3d170dff557b14aa26134c2154b1be8e9ab8c"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-2/shared/guest-irq.log.gz",
+                "sha256": "9aceb46899455b431b17835b2c4e18e4cf07cc513f828bd6e09e0fd1d0d36a7d"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-2/shared/host.log",
+                "sha256": "1185cdeba3d9aebd2f301ffae54a8d17c7bf95cc1bdcb02c28bdea1df7ede107"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          }
+        },
+        "run_order": "BA"
+      },
+      {
+        "pair": 3,
+        "profiles": {
+          "partitioned": {
+            "direct_irq_pair_count": 48549,
+            "guest_records": 48549,
+            "host_records": 51214,
+            "profile": "partitioned",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-3/partitioned/raw.log",
+              "sha256": "c9e69b211fb67096e26165ad67ede9292b63887e0d00a00e1b05d22eafe6674c"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-3/partitioned/guest-irq.log.gz",
+                "sha256": "a5388c2cc7860cc79367182823e41af90f72a41319996277c327e8ace9e25b4c"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-3/partitioned/host.log",
+                "sha256": "fae51807ebc331b098d9a1a4ea6ff0c7077827d70e12215eb7bf2e8495b30c2c"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          },
+          "shared": {
+            "direct_irq_pair_count": 47612,
+            "guest_records": 47612,
+            "host_records": 50263,
+            "profile": "shared",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-3/shared/raw.log",
+              "sha256": "de03e34bf29c9e3f518455d8edd34588025fe2197cf5bc0e3ea381ee7ff739f0"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-3/shared/guest-irq.log.gz",
+                "sha256": "8f2cf6a7139d6ec02f3d0ad0a4de546433f9dfa8556e0939a0c23768800c8293"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-3/shared/host.log",
+                "sha256": "baf3b5574372db6f7cb4e5a0e9a638866bdf888c19e55d52fef3ee5dd919d494"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          }
+        },
+        "run_order": "AB"
+      },
+      {
+        "pair": 4,
+        "profiles": {
+          "partitioned": {
+            "direct_irq_pair_count": 47511,
+            "guest_records": 47511,
+            "host_records": 50166,
+            "profile": "partitioned",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-4/partitioned/raw.log",
+              "sha256": "c3bab83266d8af17ac5dc79aeeedc5fcfb1363b52312db1bb2204e7f1d565270"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-4/partitioned/guest-irq.log.gz",
+                "sha256": "9cf2706ef48049b5095de5767c77e05cfb18d06f6c3c77a4002d3b16047c6138"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-4/partitioned/host.log",
+                "sha256": "39ef084c27df8ba72ee05c0789b39d7f00590b95bb5a708e26b4b1f52ac9de14"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          },
+          "shared": {
+            "direct_irq_pair_count": 48629,
+            "guest_records": 48629,
+            "host_records": 51292,
+            "profile": "shared",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-4/shared/raw.log",
+              "sha256": "024bd4e885a18e2082c5d20b1fd36ea93adc3349008d4144c8afcd5d6d0c32d0"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-4/shared/guest-irq.log.gz",
+                "sha256": "dc6621f30911835b37eba2aa566f4ad2303023e7c8ef03902066c0abfd394026"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-4/shared/host.log",
+                "sha256": "a4625f298992ff27d669fd9c735f441f3cc211aa039e1122dcedecff5e745ba5"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          }
+        },
+        "run_order": "BA"
+      },
+      {
+        "pair": 5,
+        "profiles": {
+          "partitioned": {
+            "direct_irq_pair_count": 48587,
+            "guest_records": 48587,
+            "host_records": 51138,
+            "profile": "partitioned",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-5/partitioned/raw.log",
+              "sha256": "f930378fd443fc9c4385b4cae4943b025b9829e5d48968b56dabf779806c5d3f"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-5/partitioned/guest-irq.log.gz",
+                "sha256": "aef7c9f6b4008f546654f05e69ea287641b9cea35d96cd4889fa3960eaa23c3f"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-5/partitioned/host.log",
+                "sha256": "1dfdf1a3a5f8fd2dd9e598ceb719cb47111c98ef46c35ac8bbce29d858f18f27"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          },
+          "shared": {
+            "direct_irq_pair_count": 47578,
+            "guest_records": 47578,
+            "host_records": 50230,
+            "profile": "shared",
+            "raw": {
+              "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-5/shared/raw.log",
+              "sha256": "ae180e1f1e388c12329fb91c3e099cca8fa14b322962b8b31e8225cdc42adfa3"
+            },
+            "snapshot_filesystem_state": "clean",
+            "trace_inputs": {
+              "guest": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-5/shared/guest-irq.log.gz",
+                "sha256": "a72466de2570e4448fd7294e40bd0f566b6af9383774b57999fab77c0a6a3485"
+              },
+              "host": {
+                "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-ivc/competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/pair-5/shared/host.log",
+                "sha256": "dd71099db66d90d3de5a8fd0fc6a6cfa54f39bfcfb58a029d46839b1dd87edb3"
+              }
+            },
+            "vcpu_masks": [
+              "0x2",
+              "0x4"
+            ],
+            "vcpu_migrations": 0
+          }
+        },
+        "run_order": "AB"
+      }
+    ],
+    "iterations_per_metric": 10000,
+    "pair_count": 5,
+    "registered_order": [
+      "AB",
+      "BA",
+      "AB",
+      "BA",
+      "AB"
+    ],
+    "workload": "cpu-stress"
+  },
+  "metrics": {
+    "dispatch_latency": {
+      "max": {
+        "improved_pair_count": 1,
+        "maximum_improvement_percent": 1.269,
+        "median_improvement_percent": -2.631,
+        "minimum_improvement_percent": -11.859,
+        "pair_improvement_percent": [
+          -11.859,
+          -2.631,
+          1.269,
+          -0.633,
+          -3.278
+        ],
+        "partitioned_worst_of_runs_ns": 101792.0,
+        "shared_worst_of_runs_ns": 92167.0,
+        "target_pair_count": 0,
+        "worst_of_runs_improvement_percent": -10.443,
+        "worst_of_runs_meets_ten_percent_target": false
+      },
+      "p99": {
+        "maximum_improvement_percent": -1.219,
+        "median_improvement_percent": -6.171,
+        "minimum_improvement_percent": -17.261,
+        "non_regression_pair_count": 2,
+        "pair_improvement_percent": [
+          -2.717,
+          -12.866,
+          -1.219,
+          -6.171,
+          -17.261
+        ],
+        "partitioned_worst_of_runs_ns": 57458.0,
+        "shared_worst_of_runs_ns": 53667.0,
+        "worst_of_runs_improvement_percent": -7.064
+      }
+    },
+    "emulated_irq_response": {
+      "max": {
+        "improved_pair_count": 2,
+        "maximum_improvement_percent": 3.036,
+        "median_improvement_percent": -1.577,
+        "minimum_improvement_percent": -19.826,
+        "pair_improvement_percent": [
+          0.933,
+          3.036,
+          -19.826,
+          -1.577,
+          -15.079
+        ],
+        "partitioned_worst_of_runs_ns": 85875.0,
+        "shared_worst_of_runs_ns": 85125.0,
+        "target_pair_count": 0,
+        "worst_of_runs_improvement_percent": -0.881,
+        "worst_of_runs_meets_ten_percent_target": false
+      },
+      "p99": {
+        "maximum_improvement_percent": 0.731,
+        "median_improvement_percent": -0.082,
+        "minimum_improvement_percent": -29.412,
+        "non_regression_pair_count": 3,
+        "pair_improvement_percent": [
+          -29.412,
+          0.731,
+          -0.082,
+          0.081,
+          -28.268
+        ],
+        "partitioned_worst_of_runs_ns": 66000.0,
+        "shared_worst_of_runs_ns": 51584.0,
+        "worst_of_runs_improvement_percent": -27.947
+      }
+    },
+    "periodic_jitter": {
+      "max": {
+        "improved_pair_count": 1,
+        "maximum_improvement_percent": 4.448,
+        "median_improvement_percent": -0.085,
+        "minimum_improvement_percent": -6.233,
+        "pair_improvement_percent": [
+          0.0,
+          -4.358,
+          -6.233,
+          -0.085,
+          4.448
+        ],
+        "partitioned_worst_of_runs_ns": 50416.0,
+        "shared_worst_of_runs_ns": 49667.0,
+        "target_pair_count": 0,
+        "worst_of_runs_improvement_percent": -1.508,
+        "worst_of_runs_meets_ten_percent_target": false
+      },
+      "p99": {
+        "maximum_improvement_percent": 0.373,
+        "median_improvement_percent": 0.248,
+        "minimum_improvement_percent": -0.123,
+        "non_regression_pair_count": 5,
+        "pair_improvement_percent": [
+          0.248,
+          0.003,
+          0.251,
+          -0.123,
+          0.373
+        ],
+        "partitioned_worst_of_runs_ns": 33500.0,
+        "shared_worst_of_runs_ns": 33500.0,
+        "worst_of_runs_improvement_percent": 0.0
+      }
+    },
+    "virtual_timer_injection_to_guest_irq": {
+      "max": {
+        "improved_pair_count": 3,
+        "maximum_improvement_percent": 0.302,
+        "median_improvement_percent": 0.029,
+        "minimum_improvement_percent": -0.227,
+        "pair_improvement_percent": [
+          0.029,
+          -0.227,
+          0.302,
+          -0.023,
+          0.087
+        ],
+        "partitioned_worst_of_runs_ns": 5026875.0,
+        "shared_worst_of_runs_ns": 5028333.0,
+        "target_pair_count": 0,
+        "worst_of_runs_improvement_percent": 0.029,
+        "worst_of_runs_meets_ten_percent_target": false
+      },
+      "p99": {
+        "maximum_improvement_percent": 0.966,
+        "median_improvement_percent": 0.244,
+        "minimum_improvement_percent": -0.493,
+        "non_regression_pair_count": 5,
+        "pair_improvement_percent": [
+          0.244,
+          0.966,
+          0.73,
+          -0.493,
+          -0.244
+        ],
+        "partitioned_worst_of_runs_ns": 119875.0,
+        "shared_worst_of_runs_ns": 120750.0,
+        "worst_of_runs_improvement_percent": 0.725
+      }
+    }
+  },
+  "schema_version": 1
+}

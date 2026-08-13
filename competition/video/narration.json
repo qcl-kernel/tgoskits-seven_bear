@@ -1,11 +1,11 @@
 [
   {
     "duration_seconds": 20,
-    "text": "这是基于 AxVisor 的混合关键控制演示。测试平台是瑞芯微 RK3588 的 Orange Pi 5 Plus。一个双核 StarryOS 客户机运行神经控制器，一个 Zephyr 客户机执行实时控制。画面是二零二六年八月十二日实体板结果的后验证据回放，不是伪装的现场直播。"
+    "text": "这是基于 AxVisor 的混合关键控制演示。测试平台是瑞芯微 RK3588 的 Orange Pi 5 Plus。一个双核 StarryOS 客户机运行神经控制器，一个 Zephyr 客户机执行实时控制。画面是二零二六年八月十三日实体板结果的后验证据回放，不是伪装的现场直播。"
   },
   {
     "duration_seconds": 25,
-    "text": "两次实体运行都绑定到源码提交零六九 c 九一一 c。它已经变基到指定的 upstream dev 基线，落后提交数为零。证据包同时保存 Git tree、源码 archive、相对上游 diff 和全部运行输入的 SHA 二五六，因此文档提交之后仍能定位当时真正执行的代码和二进制。"
+    "text": "最终 IVC 运行绑定到源码提交五九八 b 三五七 f 九，RT 双侧运行绑定到零七七 b a 三八六 c。两者都包含指定 upstream dev，落后提交数为零；两次之间只改四个 IVC 路径。证据包保存 Git tree、路径差异和全部运行输入的 SHA 二五六，因此文档提交之后仍能定位真正执行的代码和二进制。"
   },
   {
     "duration_seconds": 30,
@@ -21,15 +21,15 @@
   },
   {
     "duration_seconds": 25,
-    "text": "重启后是一百条神经控制命令：发送一百，确认一百，错误、超时、重传和控制器恢复都是零。Zephyr 在重启前后合计接受并应用一百二十条。完整闭环 p 五十为二点三零七毫秒，p 九十九为三十四点九零七毫秒，最大六十七点三八八毫秒。快照文件系统检查 clean，主机文件系统同步，最后自动恢复板上 Linux。"
+    "text": "重启后是一百条神经控制命令：发送一百，确认一百，错误、超时、重传和控制器恢复都是零。Zephyr 在重启前后合计接受并应用一百二十条。完整闭环 p 五十为二点三四零毫秒，p 九十九为二十四点六九二毫秒，最大三百四十四点零三三毫秒。快照文件系统检查 clean，主机文件系统同步，最后自动恢复板上 Linux。"
   },
   {
     "duration_seconds": 35,
-    "text": "实时性冒烟从同一源码重建 StarryOS 内核。shared 和 partitioned 各进行一次完整冷启动，每次采集周期抖动、调度唤醒和 timerfd 代理三项各一百个样本，并保留 AxVisor 注入到客户机中断入口的直接跨层 trace。两次 vCPU migration 都是零，guest 和 host trace 没有丢记录，块快照 clean，Linux 均恢复。这证明当前设备图和采集流水线可运行。"
+    "text": "实时性冒烟从同一个 clean commit 重建 StarryOS 内核，shared 和 partitioned 各执行完整冷启动。每侧周期抖动、调度唤醒和 timerfd 代理三项各采集一百个样本，并保留直接跨层中断 trace。两侧虚拟 CPU migration 都是零，guest 和 host 记录均无丢失，块快照 clean，Linux 都恢复。这证明移植后的两侧设备图和采集流水线可运行。"
   },
   {
     "duration_seconds": 30,
-    "text": "但这一次当前源码对照不能证明性能改善。partitioned 的周期抖动 p 九十九退化百分之五十三点七一，dispatch p 九十九退化百分之一百五十四点九二五，直接中断 p 九十九退化百分之五点七一四。只有 timerfd 代理略微改善。比较器因此明确输出 M 二门失败。原因不仅是负向尾部，也因为只有一个未受控配对。"
+    "text": "但当前单对不能证明性能改善。partitioned 的周期抖动 p 九十九退化百分之五十五点七一八，dispatch p 九十九退化百分之一百二十二点七二七；timerfd 代理和直接中断 p 九十九虽略有改善，比较器仍明确输出 M 二门失败。原因既有负向尾部，也因为只有一个未受控配对。正式评分继续引用各自 clean commit 的预注册历史活动。"
   },
   {
     "duration_seconds": 30,

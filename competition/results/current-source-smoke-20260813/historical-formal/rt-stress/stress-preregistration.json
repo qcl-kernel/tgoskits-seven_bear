@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "campaign_id": "starry-rt-stress-formal-20260803",
+  "status": "frozen-before-first-board-capture",
+  "created_at_utc": "2026-08-03T13:28:26Z",
+  "purpose": "Complete the formal physical-board guest CPU1 stress coverage required by M2 without treating same-VM load as an isolation experiment.",
+  "platform": {
+    "board_type": "OrangePi-5-Plus",
+    "soc": "RK3588",
+    "dram_bytes": 17179869184,
+    "automation_host": "WSL2 Ubuntu",
+    "serial_device": "/dev/ttyUSB0"
+  },
+  "source": {
+    "repository": "tgoskits-rt-ivc",
+    "commit": "96ff161270f5d16c7a08e491f19436b925e8b3e1",
+    "tree": "39545a2ebd363f7d000a319565546293e6536a7c",
+    "worktree_clean": true,
+    "rust_toolchain": "nightly-2026-07-15"
+  },
+  "execution_driver": {
+    "path": "competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803/run-half.sh",
+    "sha256": "c7a5d43412febb6cbbf45ea2b32926b1170fe0c692c05dbb9f7bab36be6cbec1",
+    "enforces_sequence": true,
+    "stages_fresh_rootfs_before_each_half": true,
+    "preserves_failed_attempts": true
+  },
+  "capture_contract": {
+    "workload": "cpu-stress",
+    "pair_count": 5,
+    "capture_count": 10,
+    "iterations_per_metric": 10000,
+    "expected_raw_sample_count": 30000,
+    "warmup_iterations": 100,
+    "period_us": 1000,
+    "measurement_cpu": 0,
+    "stress_cpu": 1,
+    "fifo_priority": 80,
+    "vcpu_count": 2,
+    "host_interference": "disabled",
+    "soak": false,
+    "run_order": [
+      { "pair": 1, "order": "AB", "profiles": ["shared", "partitioned"] },
+      { "pair": 2, "order": "BA", "profiles": ["partitioned", "shared"] },
+      { "pair": 3, "order": "AB", "profiles": ["shared", "partitioned"] },
+      { "pair": 4, "order": "BA", "profiles": ["partitioned", "shared"] },
+      { "pair": 5, "order": "AB", "profiles": ["shared", "partitioned"] }
+    ]
+  },
+  "profile_contracts": {
+    "shared": {
+      "dedicated_cpus": false,
+      "vcpu_pcpu_masks": ["0x2", "0x4"],
+      "vm_config": "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml",
+      "axvisor_build_config": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-shared.toml",
+      "board_config": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-shared.toml"
+    },
+    "partitioned": {
+      "dedicated_cpus": true,
+      "vcpu_pcpu_masks": ["0x2", "0x4"],
+      "vm_config": "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml",
+      "axvisor_build_config": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-partitioned.toml",
+      "board_config": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-partitioned.toml"
+    }
+  },
+  "artifacts": {
+    "starryos_kernel": {
+      "path": "tmp/axvisor-rt/starryos-rt.bin",
+      "bytes": 13643824,
+      "sha256": "b6b08858b62af170e8f92deea23082b57c7fc43be9e255d3c55959edc9cd33e4"
+    },
+    "rootfs": {
+      "path": "tmp/axvisor-rt/starry-rt-capture-rootfs.img",
+      "bytes": 67108864,
+      "sha256": "ad637078e8261d6c2bb35fb7c7b9745992321aed2211a2b65839323a8abacbfd",
+      "filesystem_state": "clean"
+    },
+    "guest_dtb": {
+      "path": "tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb",
+      "bytes": 1766,
+      "sha256": "0f533e1107894dd9b3f062f726fee012519c3e55ef0a2e81e2507e7e3ef303cd"
+    },
+    "probe": {
+      "path": "competition/results/axvisor-rt-reference/axvisor-rt-probe",
+      "bytes": 718296,
+      "sha256": "8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da"
+    }
+  },
+  "frozen_file_hashes": {
+    "scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml": "0e6b7bef0047bdb10ff332379a52e9a32722d42aaf90ec59a1a4f08966ad7e2d",
+    "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml": "c356e1a1f6c5faaed2d54560686f1e0bba3c02f2b08f7a324d098ca8b80d09a0",
+    "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml": "0698da8872fda13691fbf1e9cf869ff5adcd5ab00d630172b70a584ebb305d9a",
+    "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-shared.toml": "13dd3327778c4f05f8222a807d58da580ef69e625b9ce2f2bbe41f11ac20ce05",
+    "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-partitioned.toml": "93630fbed286265adfffc2d742975e6f78c7ece72a881e4a9deef90a8d1a3f13",
+    "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-shared.toml": "24f477d2690ebc8effa377ac8245f45ca86eaf66c7ad00ea9043382eaf0beabe",
+    "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-partitioned.toml": "24f477d2690ebc8effa377ac8245f45ca86eaf66c7ad00ea9043382eaf0beabe",
+    "scripts/benchmark/axvisor-rt/guest/starry_rt_capture_run.sh": "38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b",
+    "scripts/benchmark/axvisor-rt/build-starry-kernel.sh": "f838506b35cd0a99ae7c795da307e76cacf065d2c8096cfd58622596b56addde",
+    "scripts/benchmark/axvisor-rt/build-starry-rootfs.sh": "62db060bad89fb54ba6f0b5456f1d1cd874827d19f9a1eb7ff01576eeab324fb",
+    "scripts/benchmark/axvisor-rt/stage-starry-board.sh": "0d5f149e57f2d196eb1ee6ec04f403ca0abdd9c4b26dbdd3eb35269297219e8b",
+    "scripts/benchmark/axvisor-rt/harvest-starry-board.sh": "a2523e2fbe0815103c2272b643c82a02c3a8cc69efd12eef4e2950f3985c655c",
+    "scripts/benchmark/axvisor-rt/analyze_starry_board.py": "2eab8a254d0d7085e32b5c3c9006ee1a9dd73e834c5f1da80841b4b8758c3d0f",
+    "scripts/benchmark/axvisor-rt/analyze_irq_trace.py": "75e64db2106050998deddfee95bed966adf0bb1d3a6e84114101a0ba9eb5a11c",
+    "scripts/benchmark/axvisor-rt/compare_starry_board.py": "0515fe525f0782d3aea72095593e4a7aff7e13f0ff0a8817a843eda35a78bbf4",
+    "scripts/benchmark/axvisor-rt/aggregate_starry_stress.py": "f9908637094130c881dd627395ececb9bf2338410d15c3b0f31b846f46842047",
+    "competition/ivc/orangepi/board-runner.sh": "4b777384925c262796e28108aa9b9916d0adc55e1b2953922df519e50d898966"
+  },
+  "validity_gates": {
+    "each_half": [
+      "exact capture metadata and 10,000 samples per guest metric",
+      "complete CPU-stress start, coverage, stop, and cleanup lifecycle",
+      "clean authoritative snapshot fsck state",
+      "positive host and guest IRQ record counts with all loss counters equal to zero",
+      "vCPU0 and vCPU1 remain on pCPU masks 0x2 and 0x4 with zero migrations",
+      "no controlled host interference record",
+      "console contains no panic, ESR_EL2, nested-vCPU, unhandled synchronous exception, or capture-failure marker",
+      "Linux is restored and its root filesystem reaches a read-write ext4 mount"
+    ],
+    "campaign": [
+      "all five preregistered AB/BA pairs are valid",
+      "all ten raw and twenty trace SHA-256 identities are unique",
+      "aggregate_starry_stress.py reports formal_stress_coverage_met=true",
+      "aggregate_starry_stress.py reports isolation_claim_allowed=false"
+    ]
+  },
+  "statistics_policy": {
+    "comparison_thresholds_are_frozen": {
+      "p99_non_regression_limit_percent": 5.0,
+      "max_improvement_target_percent": 10.0
+    },
+    "stress_coverage_gate_uses_latency_direction": false,
+    "reason": "The busy loop runs inside the measured VM, so latency changes are descriptive stability data and cannot establish the dedicated-CPU isolation treatment."
+  },
+  "evidence_policy": {
+    "root": "competition/results/orangepi-5-plus/starry-rt-stress-formal-20260803",
+    "stage_fresh_rootfs_before_every_half": true,
+    "harvest_immediately_after_every_half": true,
+    "retain_failed_attempts": true,
+    "never_relabel_debug_data_as_formal": true,
+    "never_modify_this_file_after_first_board_capture": true,
+    "post_freeze_corrections": "append a numbered amendment JSON without replacing this file"
+  }
+}
