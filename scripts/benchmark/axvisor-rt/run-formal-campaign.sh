@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+formal_sudo_password=${ORANGEPI_SUDO_PASSWORD-}
+unset ORANGEPI_SUDO_PASSWORD
+
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 workspace=$(git -C "$script_dir" rev-parse --show-toplevel)
 contract=$script_dir/formal_campaign.py
@@ -332,6 +335,7 @@ case "$action" in
         board_config="scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-$config_kind-$profile.toml"
         board_type=$(jq -er '.board.type' "$preregistration")
 
+        ORANGEPI_SUDO_PASSWORD="${formal_sudo_password:-orangepi}" \
         ORANGEPI_BOARD_TYPE="$board_type" \
         ORANGEPI_RT_RESULT_IMAGE=/home/rt \
             bash "$stage_runner" \
@@ -402,7 +406,8 @@ case "$action" in
             if [[ $(jq -r '.next == null' <<<"$status_json") == true ]]; then
                 break
             fi
-            bash "$0" run-next --result-dir "$result_root"
+            ORANGEPI_SUDO_PASSWORD="${formal_sudo_password:-orangepi}" \
+                bash "$0" run-next --result-dir "$result_root"
         done
         bash "$0" aggregate --result-dir "$result_root"
         ;;

@@ -52,7 +52,7 @@ git diff --binary upstream/dev...HEAD | sha256sum
 | Zephyr | upstream v4.3.0，commit `3568e1b6d5cdd51a6b964a2a1d6d29200fea2056` |
 | Board | Orange Pi 5 Plus / RK3588 / 16 GiB |
 | 串口 | CH340，1,500,000 baud，由 board service 独占 |
-| Board Linux | SSH、`rsync`、无密码 `sudo sync/reboot`；rootfs 为 ext4 rw |
+| Board Linux | SSH、`rsync`、仅 `sync/reboot` 使用无密码 sudo 白名单；rootfs 为 ext4 rw |
 | 其他 | `dtc`, `fdtget`, `e2fsprogs`, `rsync`, `libclang`, AArch64 toolchain |
 
 Ubuntu/WSL 常用依赖：
@@ -80,6 +80,10 @@ bash scripts/benchmark/axvisor-rt/prepare-freestanding-c-toolchain.sh
 ```sh
 export ORANGEPI_SSH_TARGET=orangepi@192.168.31.33
 export ORANGEPI_SSH_IDENTITY="$HOME/.ssh/orangepi_automation"
+# 仅供 staging 精确删除旧的 /home/rt{,.host.log}；不要写入仓库或命令行。
+read -rsp 'OrangePi sudo password: ' ORANGEPI_SUDO_PASSWORD
+export ORANGEPI_SUDO_PASSWORD
+printf '\n'
 export ORANGEPI_SERIAL=/dev/serial/by-path/<your-ch340-path>
 export ORANGEPI_AXVISOR_HOST_ROOT=PARTUUID=<board-linux-root-partuuid>
 
@@ -87,6 +91,12 @@ export ORANGEPI_AXVISOR_HOST_ROOT=PARTUUID=<board-linux-root-partuuid>
 export TGOS_BOARD_POWER_CONFIG="$HOME/.config/tgos/board-power.toml"
 export ORANGEPI_POWER_PYTHON="$HOME/.local/share/tgos-board-power-venv/bin/python"
 ```
+
+正式入口会先捕获并从继承环境删除 `ORANGEPI_SUDO_PASSWORD`，只把它定向传给
+staging 子进程；staging 再通过清理 SSH 命令的标准输入交给 `sudo -S`。该值不会写入
+argv、日志、manifest 或正式预注册。
+板卡 sudoers 仍应仅为 runner 所需的绝对路径 `sync`/`reboot` 配置免密白名单；不要
+为了绕过 staging 清理而开放全局免密 sudo。
 
 在板上运行以下命令发现 root selector，不要复制本机示例 PARTUUID：
 
@@ -342,6 +352,10 @@ bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh prepare \
 `aarch64-linux-gnu-gcc/ar`；该路径不链接 musl libc。真实工具、wrapper、target、
 版本、header sysroot、大小和 SHA-256 写入 `build/host-toolchain.json` 并纳入预注册；
 后续每个 slot 开始前都会重新核验。
+
+第一次 `run-next` 前确认当前 shell 已设置 `ORANGEPI_SUDO_PASSWORD`（若板卡仍使用
+镜像默认密码，也可由 staging 的受限默认值提供）。该值不属于冻结测量输入，不写入
+`result_root`；它只授权删除精确的旧结果文件，不能改变 kernel、rootfs、配置或阈值。
 
 每次只跑下一个冻结 slot，适合在首次 pair 通过后检查再继续，也适合中断恢复：
 
