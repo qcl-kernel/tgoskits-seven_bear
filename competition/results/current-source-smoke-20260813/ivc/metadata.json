@@ -1,0 +1,98 @@
+{
+  "board": {
+    "cpu_temp_milli_c": 41615,
+    "hostname": "orangepi5plus",
+    "id": "bf61f4d4a1d994ad",
+    "type": "OrangePi-5-Plus"
+  },
+  "inputs": {
+    "board_config": {
+      "path": "competition/ivc/config/board-orangepi-5-plus-restart.toml",
+      "sha256": "570665c10b337cb27d825aadb071c6798733d3ed0b1317b16cd1ad59475d2d58",
+      "size_bytes": 621
+    },
+    "build_config": {
+      "path": "competition/ivc/config/axvisor-orangepi-5-plus-restart.toml",
+      "sha256": "fbb732ea5d88ffef87bb12ac47c25fcc245da48a48bcc0ae7095271ee7d6a4b8",
+      "size_bytes": 401
+    },
+    "rootfs": {
+      "path": "tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img",
+      "sha256": "1c15956bce9f2bf8adb18e6977e33acb97eb22af0b613cad22914dd79165596d",
+      "size_bytes": 67108864
+    },
+    "starry_dtb": {
+      "path": "tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb",
+      "sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "size_bytes": 1534
+    },
+    "starry_kernel": {
+      "path": "tmp/competition/ivc/starry/starryos.bin",
+      "sha256": "7763df597850f5edb05d4929b980801764d6dacabc39022c7871ff7cacfdf46c",
+      "size_bytes": 13795328
+    },
+    "zephyr_guest": {
+      "path": "competition/ivc/zephyr/build-board-restart/zephyr/zephyr.bin",
+      "sha256": "7153dfca0787eab0d516b39b1f459a4e02fcf09ca1c831673c5df33864b8261b",
+      "size_bytes": 121568
+    }
+  },
+  "model": {
+    "artifact": {
+      "path": "tools/ivcproto/src/neural.rs",
+      "sha256": "6057046eabd5cb23b38760c1b8ef4369453e7addbabcd71f61b65284732ff5b4",
+      "size_bytes": 14218
+    },
+    "backend": "native",
+    "id": "thermal-4x6x1-v1",
+    "runtime_version": "native"
+  },
+  "outputs": {
+    "console_log": {
+      "path": "/home/seven_wsl/Workspace/starry/results/rt-current-20260813-598b357f9-board/fault-restart/run-001/console.log.gz",
+      "sha256": "0b9e2988f817f8c0e6819d3ee1bab387c0af8a8bbdba3609d53fa67f2cdcf229",
+      "size_bytes": 25663
+    },
+    "ort_csv": null,
+    "raw_csv": {
+      "path": "/home/seven_wsl/Workspace/starry/results/rt-current-20260813-598b357f9-board/fault-restart/run-001/raw.csv.gz",
+      "sha256": "311557c246d7949d2c67edae99f0c4872dae978f3a0df9951572a9c266550994",
+      "size_bytes": 3166
+    },
+    "rknn_csv": null,
+    "summary": {
+      "path": "/home/seven_wsl/Workspace/starry/results/rt-current-20260813-598b357f9-board/fault-restart/run-001/summary.json",
+      "sha256": "6ba1311b056641e8774dc301d7d38b9e15201c351c16141ced193916bebdc8e5",
+      "size_bytes": 4355
+    }
+  },
+  "result": {
+    "controller_policy": "neural",
+    "deadline_misses": 1,
+    "dropped_samples": 0,
+    "ort_sample_count": null,
+    "rknn_sample_count": null,
+    "sample_count": 100,
+    "successful_marker": true,
+    "validated": true
+  },
+  "run": {
+    "board_type": "OrangePi-5-Plus",
+    "execution_order": 1,
+    "exit_status": 0,
+    "finished_at": "2026-08-13T15:17:36Z",
+    "profile": "fault-restart",
+    "repeat_count": 1,
+    "run_id": "run-001",
+    "run_number": 1,
+    "started_at": "2026-08-13T15:13:33Z"
+  },
+  "schema_version": 1,
+  "source": {
+    "branch": null,
+    "commit": "598b357f92c848e669c12cca830a4d08d0a50e36",
+    "dirty": false,
+    "tracked_change_count": 0,
+    "untracked_file_count": 0
+  }
+}

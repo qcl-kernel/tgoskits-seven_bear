@@ -1,0 +1,46 @@
+﻿source_validation_utc=2026-08-13T15:46:45Z
+head=598b357f92c848e669c12cca830a4d08d0a50e36
+tree=33cd7bbf39569ed661c6303ac3b61f5f34d40306
+upstream_dev=56f8bfc8207f38d4b395dae0cf533ecdb079fca8
+upstream_ancestor=PASS
+ahead=50
+behind=0
+clean_worktree=PASS
+rt_commit=077ba386c20c29b84749f509b29e8a3f6f76e1e2
+rt_tree=f4411a44c7fac2b5b57037005cadf8d3229a0d4f
+ivc_commit=598b357f92c848e669c12cca830a4d08d0a50e36
+delta_begin
+M	competition/ivc/analyze_board.py
+M	competition/ivc/tests/test_analyze_board.py
+M	competition/ivc/tests/test_orangepi_zephyr_guest_contract.py
+M	competition/ivc/zephyr/src/main.c
+delta_end
+rt_runtime_config_unchanged=PASS
+competition/ivc/config/axvisor-orangepi-5-plus-restart.toml: OK
+competition/ivc/config/board-orangepi-5-plus-restart.toml: OK
+competition/ivc/config/orangepi-5-plus-starry-smp2-restart.toml: OK
+competition/ivc/config/orangepi-5-plus-zephyr-restart.toml: OK
+competition/ivc/run-orangepi-5-plus.sh: OK
+competition/ivc/stage-starry-control.sh: OK
+competition/ivc/orangepi/board-runner.sh: OK
+competition/ivc/orangepi/harvest-result.sh: OK
+competition/ivc/analyze_board.py: OK
+competition/ivc/write_board_metadata.py: OK
+competition/ivc/starry/build.sh: OK
+competition/ivc/zephyr/src/main.c: OK
+tools/ivcproto/src/neural.rs: OK
+scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-shared.toml: OK
+scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-shared.toml: OK
+scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml: OK
+scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-partitioned.toml: OK
+scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-partitioned.toml: OK
+scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml: OK
+scripts/benchmark/axvisor-rt/build-starry-kernel.sh: OK
+scripts/benchmark/axvisor-rt/build-starry-rootfs.sh: OK
+scripts/benchmark/axvisor-rt/stage-starry-board.sh: OK
+scripts/benchmark/axvisor-rt/harvest-starry-board.sh: OK
+scripts/benchmark/axvisor-rt/analyze_starry_board.py: OK
+scripts/benchmark/axvisor-rt/analyze_irq_trace.py: OK
+scripts/benchmark/axvisor-rt/compare_starry_board.py: OK
+scripts/benchmark/axvisor-rt/guest/starry_rt_capture_run.sh: OK
+competition/results/axvisor-rt-reference/axvisor-rt-probe: OK

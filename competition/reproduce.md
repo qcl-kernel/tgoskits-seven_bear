@@ -2,40 +2,60 @@
 
 本文从源码固定、离线验证、镜像构建、实体板 staging、AxVisor 启动、结果
 harvest 到证据校验给出可执行步骤。默认从仓库根目录执行。当前已归档的实体冒烟
-绑定到源码 commit `069c911c1de02cecdc0c1fe891f5d5a288065ef0`。
+分为两个明确层次：RT shared/partitioned 运行绑定
+`077ba386c20c29b84749f509b29e8a3f6f76e1e2`，最终 IVC 重启闭环绑定
+`598b357f92c848e669c12cca830a4d08d0a50e36`。两者之间仅修改
+`competition/ivc/`，精确边界在证据包的 `source-delta.txt`。
 
 ## 1. 固定源码与工作区
 
-推荐在 WSL2 的 Linux ext4 文件系统中使用独立 clone，避免 `/mnt/c` checkout
-同时被 Windows Git (`core.autocrlf`) 和 WSL Git 解释为不同的换行状态：
+推荐在 WSL2 的 Linux ext4 文件系统中保留一个交付 checkout，再为两次实体运行建立
+detached worktree。这样既能从交付 checkout 核验精简证据包，也不会把运行源码 commit
+和后续文档/证据提交混在一起。避免在 `/mnt/c` 上让 Windows Git
+(`core.autocrlf`) 与 WSL Git 同时解释换行：
 
 ```sh
-git clone git@github.com:yueneiqi/tgoskits-rt-ivc.git
-cd tgoskits-rt-ivc
-git checkout 069c911c1de02cecdc0c1fe891f5d5a288065ef0
+git clone --branch feat/rt-axvisor-partition-virtio-net \
+  git@github.com:yueneiqi/tgoskits-rt-ivc.git tgoskits-rt-ivc-delivery
+cd tgoskits-rt-ivc-delivery
 git config core.autocrlf false
 
 test -z "$(git status --porcelain=v1)"
-test "$(git rev-parse HEAD^{tree})" = \
-  c13efe6409b3a720828c224147bc1e2ca5682ffe
+git cat-file -e 598b357f92c848e669c12cca830a4d08d0a50e36^{commit}
+git cat-file -e 077ba386c20c29b84749f509b29e8a3f6f76e1e2^{commit}
+
+git worktree add --detach ../tgoskits-ivc-source-598b357f9 \
+  598b357f92c848e669c12cca830a4d08d0a50e36
+git worktree add --detach ../tgoskits-rt-source-077ba386c \
+  077ba386c20c29b84749f509b29e8a3f6f76e1e2
+
+test "$(git -C ../tgoskits-ivc-source-598b357f9 rev-parse HEAD^{tree})" = \
+  33cd7bbf39569ed661c6303ac3b61f5f34d40306
+test "$(git -C ../tgoskits-rt-source-077ba386c rev-parse HEAD^{tree})" = \
+  f4411a44c7fac2b5b57037005cadf8d3229a0d4f
 ```
 
+也可从 `git@github.com:qcl-kernel/tgoskits-seven_bear.git` 的 `dev` 分支取得同一
+交付提交。第 4–5 节在 `tgoskits-ivc-source-598b357f9` 执行，第 6 节在
+`tgoskits-rt-source-077ba386c` 执行；第 9 节回到 `tgoskits-rt-ivc-delivery`。
+
 当前实体证据的完整 source attestation 在
-[`results/current-source-smoke-20260812/provenance.json`](results/current-source-smoke-20260812/provenance.json)：
+[`results/current-source-smoke-20260813/provenance.json`](results/current-source-smoke-20260813/provenance.json)：
 
 ```text
-upstream/dev              fad09ebd3a05f5e7a13ee6bb3cb7e4076cfdb0a1
-tested commit             069c911c1de02cecdc0c1fe891f5d5a288065ef0
-tested tree               c13efe6409b3a720828c224147bc1e2ca5682ffe
-git archive SHA-256       6b65153c727a31edebf3829ef02e34a65090450d98042f1d8d6fbe0256581102
-upstream diff SHA-256     1bf1f0e696c95ccd0de6eb73a8f7812138035eebccc35a7c89ee93bf12bcdfb8
+upstream/dev              56f8bfc8207f38d4b395dae0cf533ecdb079fca8
+IVC tested commit         598b357f92c848e669c12cca830a4d08d0a50e36
+IVC tested tree           33cd7bbf39569ed661c6303ac3b61f5f34d40306
+RT tested commit          077ba386c20c29b84749f509b29e8a3f6f76e1e2
+RT tested tree            f4411a44c7fac2b5b57037005cadf8d3229a0d4f
 ```
 
 验证 source archive：
 
 ```sh
-git archive --format=tar HEAD | sha256sum
-git diff --binary upstream/dev...HEAD | sha256sum
+git merge-base --is-ancestor 56f8bfc8207f38d4b395dae0cf533ecdb079fca8 HEAD
+git diff --name-only 077ba386c20c29b84749f509b29e8a3f6f76e1e2..\
+598b357f92c848e669c12cca830a4d08d0a50e36
 ```
 
 每次新测量必须记录 `HEAD`、tree、clean/dirty、完整命令、输入/输出哈希、UTC
@@ -147,6 +167,14 @@ FDT；基础 DTB 不得重复声明 `virtio_mmio@...`。
 
 ## 4. 构建 IVC 客户机
 
+本节及第 5 节先进入 IVC 实跑源码 worktree：
+
+```sh
+cd ../tgoskits-ivc-source-598b357f9
+test "$(git rev-parse HEAD)" = 598b357f92c848e669c12cca830a4d08d0a50e36
+test -z "$(git status --porcelain=v1)"
+```
+
 ### 4.1 StarryOS
 
 以下单命令构建双 vCPU StarryOS kernel、无 graph-owned virtio 节点的 DTB，
@@ -167,9 +195,9 @@ tmp/competition/ivc/starry/starry-ivc-rootfs-restart.img
 当前证据对应 SHA-256：
 
 ```text
-starryos.bin                         97fce5daaa9103768736b9a54a690e5f4612a221ac67672c56cebaadaf4c4b05
+starryos.bin                         7763df597850f5edb05d4929b980801764d6dacabc39022c7871ff7cacfdf46c
 starry-orangepi-5-plus.dtb           bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981
-starry-ivc-rootfs-restart.img        1c51f3fc84ee543ded52ab6626ba8fb6f60edefff1367b362a872597d403e1d8
+starry-ivc-rootfs-restart.img        1c15956bce9f2bf8adb18e6977e33acb97eb22af0b613cad22914dd79165596d
 ```
 
 构建脚本使用 `rustup run nightly-2026-07-15 rust-objcopy`，不会依赖 PATH 中
@@ -189,7 +217,7 @@ sha256sum \
   <repo>/competition/ivc/zephyr/build-board-restart/zephyr/zephyr.bin
 ```
 
-当前证据使用 `393026c1702d33115b42bdf72528efe49eeb4f0d9e93f3755d6be57354b5791f`。
+当前证据使用 `7153dfca0787eab0d516b39b1f459a4e02fcf09ca1c831673c5df33864b8261b`。
 完整 Zephyr SDK/非 SDK 构建说明见 [`ivc/zephyr/README.md`](ivc/zephyr/README.md)。
 
 ## 5. 当前源码 IVC 实体冒烟
@@ -205,7 +233,8 @@ result_root=tmp/reproduction/ivc-restart-$(date -u +%Y%m%dT%H%M%SZ)
 bash competition/ivc/run-orangepi-5-plus.sh fault-restart \
   --result-dir "$result_root" \
   --timeout 900 \
-  --restore-linux
+  --restore-linux \
+  --require-clean
 ```
 
 runner 只在以下链路全部成立时返回 0：
@@ -233,10 +262,12 @@ ORANGEPI_IVC_RUNS_COMPLETE
 重新分析已归档 current-source 结果：
 
 ```sh
+delivery_bundle=../tgoskits-rt-ivc-delivery/competition/results/current-source-smoke-20260813
+
 python3 competition/ivc/analyze_board.py \
-  competition/results/current-source-smoke-20260812/ivc/console.log.gz \
-  --raw-csv competition/results/current-source-smoke-20260812/ivc/raw.csv.gz \
-  --pre-reset-raw-csv competition/results/current-source-smoke-20260812/ivc/raw-before-reset.csv.gz \
+  "$delivery_bundle/ivc/console.log.gz" \
+  --raw-csv "$delivery_bundle/ivc/raw.csv.gz" \
+  --pre-reset-raw-csv "$delivery_bundle/ivc/raw-before-reset.csv.gz" \
   --expected-count 100 \
   --expected-pre-reset-count 20 \
   --profile restart \
@@ -246,7 +277,15 @@ python3 competition/ivc/analyze_board.py \
 不要直接用裸 `cargo xtask axvisor board` 替代仓库 runner：裸命令不负责
 staging、snapshot harvest、供电恢复和最终 Linux rootfs gate。
 
-## 6. 当前源码 RT shared/partitioned 冒烟
+## 6. 当前 RT shared/partitioned 实体冒烟
+
+切换到 RT 双侧实跑源码 worktree：
+
+```sh
+cd ../tgoskits-rt-source-077ba386c
+test "$(git rev-parse HEAD)" = 077ba386c20c29b84749f509b29e8a3f6f76e1e2
+test -z "$(git status --porcelain=v1)"
+```
 
 重建内核与 64 MiB capture rootfs：
 
@@ -265,14 +304,15 @@ bash scripts/benchmark/axvisor-rt/stage-starry-board.sh
 当前输入哈希：
 
 ```text
-Starry RT kernel       46badacbfbaeda4c396c16925f6cf8d0193cac2bf638534c101369f8d4b21b56
+Starry RT kernel       d163d4c55f740a5040cafd3d3919dd90f9f80f020e23ab1e7c70ccb7b52deb94
 guest DTB              bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981
-capture rootfs         8f43624c491fc784331426feb297287bec647bd145f367045b0b55e44b9969f3
+capture rootfs         26a45d4e333dc6039d17d8774ac185a4c3d3b2301dfb23c5803ae89755768626
 static RT probe        8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da
 guest capture runner   38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b
 ```
 
-对每个 profile 执行完整冷启动和恢复。下面的 `result_dir` 必须不存在：
+本次归档从同一 clean commit 和同一构建输入执行 `shared`、`partitioned` 两侧。
+下面的 `result_root` 必须不存在：
 
 ```sh
 result_root=tmp/reproduction/rt-pair-$(date -u +%Y%m%dT%H%M%SZ)
@@ -280,6 +320,9 @@ result_root=tmp/reproduction/rt-pair-$(date -u +%Y%m%dT%H%M%SZ)
 for profile in shared partitioned; do
   result_dir="$result_root/$profile"
   mkdir -p "$result_dir"
+
+  bash scripts/benchmark/axvisor-rt/stage-starry-board.sh \
+    2>&1 | tee "$result_dir/stage.log"
 
   env \
     ORANGEPI_AXVISOR_BUILD_CONFIG="scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-$profile.toml" \
@@ -334,7 +377,7 @@ RT 正式入口先在 clean worktree 中构建并冻结全部输入。`base_root
 commit=$(git rev-parse HEAD)
 source_ref=$(git symbolic-ref --quiet --short HEAD || printf 'detached-head')
 base_rootfs=.tgos-images/rootfs-aarch64-busybox.img/rootfs-aarch64-busybox.img
-result_root=/home/$USER/Workspace/starry/results/rt-formal-20260812-$commit
+result_root=/home/$USER/Workspace/starry/results/rt-formal-$(date -u +%Y%m%d)-$commit
 
 bash scripts/benchmark/axvisor-rt/run-formal-campaign.sh prepare \
   --result-dir "$result_root" \
@@ -390,6 +433,9 @@ harvest 都是同一 `bf61f4d4a1d994ad/orangepi5plus` 实体板。任一步失�
 IVC manual/neural 的冻结顺序由 `run-control-campaign.sh formal` 生成：
 
 ```sh
+cd ../tgoskits-ivc-source-598b357f9
+test "$(git rev-parse HEAD)" = 598b357f92c848e669c12cca830a4d08d0a50e36
+
 bash competition/ivc/run-control-campaign.sh formal \
   --result-dir <new-result-root> \
   --expected-commit "$(git rev-parse HEAD)" \
@@ -414,20 +460,24 @@ operators 和数值容差由 [`ivc/model/README.md`](ivc/model/README.md) 与
 
 ## 9. 证据包与视频
 
-验证当前 compact bundle：
+从仓库根目录验证当前 compact bundle：
 
 ```sh
-cd competition/results/current-source-smoke-20260812
-sha256sum -c checksums.sha256
-python3 -m json.tool provenance.json >/dev/null
-python3 -m json.tool ivc/summary.json >/dev/null
-python3 -m json.tool rt/comparison.json >/dev/null
+cd ../tgoskits-rt-ivc-delivery
+bundle=competition/results/current-source-smoke-20260813
+
+(cd "$bundle" && sha256sum -c checksums.sha256)
+(cd "$bundle/ivc" && sha256sum -c runner-checksums.sha256)
+python3 "$bundle/validation/verify-evidence.py" .
+sh "$bundle/validation/verify-source-index.sh" . \
+  598b357f92c848e669c12cca830a4d08d0a50e36 \
+  "$bundle/source-files.git-ls-tree.txt"
 ```
 
 五分钟成片：
 
 ```text
-competition/results/current-source-smoke-20260812/demo-5min.mp4
+competition/results/current-source-smoke-20260813/demo-5min.mp4
 ```
 
 它是实际串口日志和机器 summary 的后制证据回放，不伪装成同步拍摄的板卡视频。

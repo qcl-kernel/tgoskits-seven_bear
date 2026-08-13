@@ -1,0 +1,278 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.51s
+     Running `target/debug/tg-xtask clippy --package axvm`
+clippy started at: 2026-08-13 20:59:23 +0800
+running clippy for 1 package(s) with 8 check(s) from /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05
+[1/8] axvm (base)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm -- -D warnings
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+    Checking log v0.4.33
+    Checking bitflags v2.13.1
+    Checking bit_field v0.10.3
+    Checking byteorder v1.5.0
+    Checking stable_deref_trait v1.2.1
+    Checking as-any v0.3.2
+    Checking ax-memory-addr v0.6.11 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/memory_addr)
+    Checking bitflags v1.3.2
+    Checking cfg-if v1.0.4
+    Checking scopeguard v1.2.0
+    Checking tock-registers v0.10.1
+    Checking ax-lazyinit v0.4.10 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ax-lazyinit)
+    Checking irq-framework v0.3.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/irq-framework)
+    Checking pci_types v0.10.1
+   Compiling ax-percpu v0.4.17 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/percpu/percpu)
+    Checking raw-cpuid v10.7.0
+    Checking lock_api v0.4.14
+   Compiling ax-errno v0.6.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axerrno)
+   Compiling ax-crate-interface v0.5.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/crate_interface)
+   Compiling ax-percpu-macros v0.4.12 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/percpu/percpu_macros)
+   Compiling rdrive-macros v0.4.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/rdrive-macros)
+    Checking thiserror v2.0.20
+    Checking hash32 v0.3.1
+    Checking derive_more v2.1.1
+    Checking strum v0.27.2
+    Checking num-traits v0.2.19
+    Checking tap v1.0.1
+    Checking num-align v0.1.0
+    Checking volatile v0.4.6
+    Checking bit v0.1.1
+    Checking radium v0.7.0
+    Checking libc v0.2.189
+    Checking rdif-def v0.3.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-def)
+    Checking cpu-local v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/cpu-local)
+   Compiling ax-plat-macros v0.3.10 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/ax-plat-macros)
+    Checking heapless v0.9.3
+    Checking wyz v0.5.1
+    Checking x86_64 v0.15.5
+    Checking mmio-api v0.2.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/mmio-api)
+    Checking const-default v1.0.0
+    Checking arrayvec v0.7.8
+    Checking rdif-base v0.8.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-base)
+    Checking spinning_top v0.3.0
+    Checking const-str v1.1.0
+    Checking uguid v2.2.1
+    Checking acpi v6.1.1
+    Checking funty v2.0.0
+   Compiling ax-alloc v0.8.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ax-alloc)
+    Checking bytemuck v1.25.2
+    Checking rdif-pcie v0.2.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-pcie)
+    Checking rdif-msi v0.2.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-msi)
+    Checking rdif-reset v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-reset)
+    Checking rdif-clk v0.5.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-clk)
+    Checking rdif-power v0.8.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-power)
+    Checking rdif-intc v0.15.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-intc)
+    Checking uefi-raw v0.14.0
+    Checking rgb v0.8.53
+    Checking spinning_top v0.2.5
+    Checking pcie v0.6.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/pci/pcie)
+    Checking ptr_meta v0.3.2
+   Compiling someboot v0.3.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/someboot)
+    Checking rdif-serial v0.9.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-serial)
+    Checking anyhow v1.0.104
+    Checking ucs2 v0.3.3
+    Checking rust_decimal v1.42.1
+    Checking bitvec v1.1.1
+    Checking mbarrier v0.1.3
+    Checking utf8-width v0.1.9
+    Checking numeric-enum-macro v0.2.0
+    Checking bitmaps v3.2.1
+   Compiling somehal-macros v0.1.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/somehal-macros)
+   Compiling ax-driver v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/ax-driver)
+   Compiling somehal v0.8.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/somehal)
+    Checking ansi_rgb v0.2.0
+    Checking axpanic v0.1.1 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axpanic)
+    Checking fdt-raw v0.3.0
+    Checking x86 v0.52.0
+    Checking page-table-generic v0.7.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/page-table-generic)
+    Checking ranges-ext v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ranges-ext)
+    Checking axbacktrace v0.4.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axbacktrace)
+   Compiling axplat-dyn v0.7.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/axplat-dyn)
+   Compiling ax-hal v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axhal)
+    Checking kernutil v0.2.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/kernutil)
+    Checking byte-unit v5.2.5
+    Checking fdt-parser v0.4.19
+    Checking typeid v1.0.3
+    Checking fdt-edit v0.2.3
+    Checking rlsf v0.2.3
+    Checking serde_core v1.0.229
+    Checking ax-sync v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axsync)
+   Compiling ax-task v0.6.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axtask)
+    Checking pin-project-lite v0.2.17
+    Checking ax-linked-list-r4l v0.5.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/linked_list_r4l)
+    Checking buddy-slab-allocator v0.4.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/buddy-slab-allocator)
+    Checking dma-api v0.9.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/dma-api)
+    Checking ax-cpumask v0.3.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/cpumask)
+    Checking futures-task v0.3.34
+    Checking futures-core v0.3.34
+    Checking linux-raw-sys v0.12.1
+    Checking slab v0.4.12
+    Checking rdif-pinctrl v0.1.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-pinctrl)
+    Checking ax-sched v0.5.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axsched)
+   Compiling libloading v0.8.9
+    Checking extern-trait v0.5.0
+    Checking ax-memory-set v0.6.14 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/memory_set)
+    Checking ax-timer-list v0.3.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/timer_list)
+   Compiling ax-ctor-bare-macros v0.4.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ctor_bare/ctor_bare_macros)
+    Checking futures-util v0.3.34
+   Compiling ax-runtime v0.10.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axruntime)
+    Checking axvm-types v0.7.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm-types)
+   Compiling clang-sys v1.9.1
+    Checking chrono v0.4.45
+    Checking memchr v2.8.3
+    Checking winnow v1.0.4
+    Checking x2apic v0.5.0
+    Checking flatten_objects v0.2.4
+    Checking axpoll v0.5.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axpoll)
+    Checking x86_vlapic v0.5.1 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/x86_vlapic)
+    Checking toml_writer v1.1.2+spec-1.1.0
+    Checking zerocopy v0.8.56
+    Checking raw-cpuid v11.6.0
+    Checking axhvc v0.4.13 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axhvc)
+    Checking axaddrspace v0.5.19 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axaddrspace)
+    Checking axvm-net v0.1.0 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm-net)
+    Checking rdrive v0.23.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/rdrive)
+    Checking some-serial v0.7.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/serial/some-serial)
+    Checking ax-cpu v0.8.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axcpu)
+    Checking toml_parser v1.1.3+spec-1.1.0
+    Checking ax-io v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axio)
+    Checking ax-ctor-bare v0.4.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ctor_bare/ctor_bare)
+    Checking aml v0.16.4
+    Checking ax-plat v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/ax-plat)
+    Checking serde v1.0.229
+    Checking serde_spanned v1.1.1
+    Checking toml_datetime v1.1.1+spec-1.1.0
+    Checking toml v1.1.4+spec-1.1.0
+    Checking x86_vcpu v0.5.21 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/x86_vcpu)
+    Checking uefi v0.37.0
+    Checking axdevice_base v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axdevice_base)
+    Checking axklib v0.7.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axklib)
+   Compiling bindgen v0.72.1
+    Checking axdevice v0.5.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axdevice)
+    Checking axvmconfig v0.8.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvmconfig)
+    Checking acpi_tables v0.2.1
+    Checking ax-ipi v0.5.30 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axipi)
+    Checking ax-mm v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axmm)
+    Checking ax-log v0.5.20 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axlog)
+    Checking ax-api v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_api)
+   Compiling ax-posix-api v0.5.32 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_posix_api)
+    Checking ax-std v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/ulib/axstd)
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 22.78s
+ok: axvm (base)
+[2/8] axvm (feature: fs)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm --no-default-features --features fs -- -D warnings
+    Blocking waiting for file lock on build directory
+   Compiling ax-driver v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/ax-driver)
+   Compiling syn v1.0.109
+   Compiling strsim v0.10.0
+    Checking rdif-block v0.11.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-block)
+   Compiling memoffset v0.9.1
+   Compiling scope-local v0.4.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/scope-local)
+    Checking smallvec v1.15.2
+    Checking lru v0.16.4
+   Compiling ax-runtime v0.10.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axruntime)
+   Compiling ax-posix-api v0.5.32 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_posix_api)
+    Checking nvme-driver v0.7.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/blk/nvme-driver)
+    Checking intrusive-collections v0.9.7
+    Checking axplat-dyn v0.7.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/axplat-dyn)
+    Checking ax-hal v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axhal)
+    Checking ax-ipi v0.5.30 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axipi)
+    Checking ax-mm v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axmm)
+    Checking ax-task v0.6.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axtask)
+    Checking ax-log v0.5.20 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axlog)
+   Compiling darling_core v0.13.4
+   Compiling darling_macro v0.13.4
+   Compiling darling v0.13.4
+   Compiling inherit-methods-macro v0.1.0
+    Checking axfs-ng-vfs v0.5.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/fs/axfs-ng-vfs)
+    Checking ax-fs-ng v0.8.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/fs/ax-fs-ng)
+    Checking ax-api v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_api)
+    Checking ax-std v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/ulib/axstd)
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 23.85s
+ok: axvm (feature: fs)
+[3/8] axvm (feature: host-fs)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm --no-default-features --features host-fs -- -D warnings
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.63s
+ok: axvm (feature: host-fs)
+[4/8] axvm (feature: host-test)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm --no-default-features --features host-test -- -D warnings
+   Compiling ax-percpu v0.4.17 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/percpu/percpu)
+    Checking ax-sync v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axsync)
+    Checking cpu-local v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/cpu-local)
+   Compiling ax-hal v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axhal)
+   Compiling ax-task v0.6.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axtask)
+   Compiling ax-runtime v0.10.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axruntime)
+    Checking rdrive v0.23.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/rdrive)
+    Checking buddy-slab-allocator v0.4.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/buddy-slab-allocator)
+    Checking dma-api v0.9.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/dma-api)
+    Checking axpoll v0.5.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axpoll)
+    Checking axdevice v0.5.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axdevice)
+    Checking ax-cpu v0.8.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axcpu)
+    Checking ax-plat v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/ax-plat)
+    Checking somehal v0.8.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/somehal)
+    Checking ax-alloc v0.8.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ax-alloc)
+    Checking axklib v0.7.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axklib)
+    Checking ax-driver v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/ax-driver)
+    Checking axplat-dyn v0.7.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/axplat-dyn)
+    Checking ax-ipi v0.5.30 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axipi)
+    Checking ax-mm v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axmm)
+    Checking ax-log v0.5.20 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axlog)
+    Checking ax-posix-api v0.5.32 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_posix_api)
+    Checking ax-api v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_api)
+    Checking ax-std v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/ulib/axstd)
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.43s
+ok: axvm (feature: host-test)
+[5/8] axvm (feature: rt-trace)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm --no-default-features --features rt-trace -- -D warnings
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.78s
+ok: axvm (feature: rt-trace)
+[6/8] axvm (feature: rt-trace-soak)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm --no-default-features --features rt-trace-soak -- -D warnings
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.19s
+ok: axvm (feature: rt-trace-soak)
+[7/8] axvm (feature: sstc)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm --no-default-features --features sstc -- -D warnings
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.61s
+ok: axvm (feature: sstc)
+[8/8] axvm (feature: tls)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p axvm --no-default-features --features tls -- -D warnings
+   Compiling someboot v0.3.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/someboot)
+    Checking cpu-local v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/cpu-local)
+   Compiling somehal v0.8.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/somehal)
+   Compiling axplat-dyn v0.7.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/axplat-dyn)
+   Compiling ax-hal v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axhal)
+   Compiling ax-task v0.6.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axtask)
+   Compiling ax-runtime v0.10.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axruntime)
+    Checking ax-percpu v0.4.17 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/percpu/percpu)
+    Checking ax-plat v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/ax-plat)
+    Checking ax-cpu v0.8.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axcpu)
+    Checking ax-alloc v0.8.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ax-alloc)
+    Checking axklib v0.7.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axklib)
+    Checking ax-driver v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/ax-driver)
+    Checking ax-ipi v0.5.30 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axipi)
+    Checking ax-mm v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axmm)
+    Checking ax-log v0.5.20 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axlog)
+    Checking ax-posix-api v0.5.32 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_posix_api)
+    Checking ax-api v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_api)
+    Checking ax-std v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/ulib/axstd)
+    Checking axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.43s
+ok: axvm (feature: tls)
+clippy summary: 1 package(s), 8 check(s), 1 package(s) passed, 0 package(s) failed
+passed checks: 8, failed checks: 0
+clippy finished at: 2026-08-13 21:00:24 +0800
+clippy elapsed: 1m 1s
+all clippy checks passed

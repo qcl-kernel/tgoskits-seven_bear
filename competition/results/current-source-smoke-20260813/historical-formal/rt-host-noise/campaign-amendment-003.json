@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "amendment_id": 3,
+  "status": "active",
+  "created_at_utc": "2026-08-03T10:39:32.2686409Z",
+  "preregistration": "campaign-preregistration.json",
+  "previous_amendment": "campaign-amendment-002.json",
+  "reason": {
+    "category": "post-measurement-campaign-aggregation",
+    "observation": "All five preregistered pair comparisons were complete, but the repository only provided a one-pair comparison tool and therefore could not mechanically evaluate the frozen 4-of-5 and worst-of-runs gates.",
+    "correction": "Add a deterministic five-pair aggregator that validates the formal idle/10000/600000 ms contract, unique raw hashes, placement and scope, then applies the already frozen 5 percent p99, 10 percent max, and 4-of-5 direct-IRQ criteria.",
+    "measurement_policy": "The aggregator was added after all five pair comparisons existed. It does not change, filter, rerun, or relabel any measurement and does not change an acceptance threshold."
+  },
+  "source": {
+    "branch": "experiment/m2-formal-20260803",
+    "measurement_commit": "0588743ecb807d7363a3dec90c17a159179933b0",
+    "post_analysis_commit": "ea9f8a4bc3e8efc802f9533ef9a6e69c91da16f1",
+    "changed_files": [
+      "scripts/benchmark/axvisor-rt/aggregate_starry_board.py",
+      "scripts/benchmark/axvisor-rt/tests/test_aggregate_starry_board.py",
+      "scripts/benchmark/axvisor-rt/README.md"
+    ],
+    "measurement_artifacts_unchanged": true,
+    "formal_configurations_unchanged": true,
+    "acceptance_criteria_unchanged": true
+  },
+  "inputs": [
+    {
+      "pair": 1,
+      "path": "pair-1/comparison.json",
+      "sha256": "7e3449a8d2066073cd3047bf87b9378923662e9134dd3b9cb2c3688f5e88c646"
+    },
+    {
+      "pair": 2,
+      "path": "pair-2/comparison.json",
+      "sha256": "3a1a60a6b49757085c754bcd43be08b8947b0a8d654191b5c7ad2e6a72673011"
+    },
+    {
+      "pair": 3,
+      "path": "pair-3/comparison.json",
+      "sha256": "6ac5e2840b8920b1049d3cb75b7b3650c17312e2595f322e0ed7464bb3f3b580"
+    },
+    {
+      "pair": 4,
+      "path": "pair-4/comparison.json",
+      "sha256": "036117a5f75e4b88150dbfb22e2439a60eded3a6853afcbc391555697db71690"
+    },
+    {
+      "pair": 5,
+      "path": "pair-5/comparison.json",
+      "sha256": "c00ad4568c697c9de37abfe132d3c3beb7d91c55a18f445a42ed722d7dd679a9"
+    }
+  ],
+  "result": {
+    "path": "campaign-summary.json",
+    "sha256": "964f8e3884a6f6ed1594d55cfa0383b8329d5ca8dd8b04eafcb4de7ea01647b4",
+    "five_pair_matrix_gate_met": true,
+    "direct_irq_max_target_pairs": 5,
+    "direct_irq_worst_of_runs_improvement_percent": 87.771,
+    "periodic_jitter_worst_of_runs_improvement_percent": 99.882,
+    "dispatch_latency_worst_of_runs_improvement_percent": 99.773,
+    "m2_exit_gate_met": false,
+    "remaining_gate": "shared and partitioned 30-minute soak evidence"
+  },
+  "validation": {
+    "aggregate_regression_before_lf_fix": "failed as required on Windows CRLF output",
+    "aggregate_regression_after_fix": "passed",
+    "axvisor_rt_python_tests": "54/54 passed on Windows and WSL",
+    "cargo_fmt_check": "passed",
+    "git_diff_check": "passed",
+    "windows_wsl_summary_bytes_identical": true
+  },
+  "evidence_handling": {
+    "pair_1_partitioned": "The board measurement completed and its snapshot passed read-only fsck. A post-measurement Linux recovery is documented by pair-1/partitioned/run-recovery.json.",
+    "pair_2_partitioned": "The board wrapper restored Linux successfully; the Windows Tee-Object host wrapper reported a false failure after translating native stderr. Subsequent runs used byte-preserving redirection and returned the real WSL exit code.",
+    "console_normalization": [
+      {
+        "path": "pair-1/partitioned/console.log",
+        "normalized_utf8_sha256": "bd8c3cffd3953a31c2e4e516cf896480fde003bfcabd029ee4be697f2677dbcc",
+        "preserved_original": "pair-1/partitioned/console.log.powershell-utf16",
+        "preserved_original_sha256": "04fd823dd79897c8d1e7caee55d399e95fb7cb6c1cd2732b75dfbfa858f10dee"
+      },
+      {
+        "path": "pair-2/partitioned/console.log",
+        "normalized_utf8_sha256": "7081d3be9f2a76d840d177e16b607aebff44b1d249eddf13123d5c3c9bbfb65d",
+        "preserved_original": "pair-2/partitioned/console.log.powershell-utf16",
+        "preserved_original_sha256": "234768c8ccd217059d5b01364d8565bf9b071f9da2b91d553b8a5a394496a20e"
+      }
+    ],
+    "additional_invalid_attempt": {
+      "pair": 5,
+      "profile": "shared",
+      "attempt": 1,
+      "accepted": false,
+      "reason": "U-Boot setenv autoload command timed out before AxVisor or StarryOS measurement began.",
+      "path": "pair-5/shared/attempt-001-uboot-timeout.log",
+      "sha256": "749b6d26519d6cdf3dc04c0eb0d4e3d44250dc3b6c56c6875c3ed42f32800a5c"
+    }
+  },
+  "unchanged_contract": {
+    "pair_order": [
+      { "pair": 1, "order": ["shared", "partitioned"] },
+      { "pair": 2, "order": ["partitioned", "shared"] },
+      { "pair": 3, "order": ["shared", "partitioned"] },
+      { "pair": 4, "order": ["partitioned", "shared"] },
+      { "pair": 5, "order": ["shared", "partitioned"] }
+    ],
+    "measurement_and_acceptance": "unchanged"
+  },
+  "applies_after": {
+    "pair": 5,
+    "profile": "partitioned"
+  }
+}

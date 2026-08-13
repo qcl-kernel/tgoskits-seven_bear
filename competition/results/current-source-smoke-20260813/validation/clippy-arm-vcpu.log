@@ -1,0 +1,28 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.58s
+     Running `target/debug/tg-xtask clippy --package arm_vcpu`
+clippy started at: 2026-08-13 20:59:23 +0800
+running clippy for 1 package(s) with 1 check(s) from /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05
+[1/1] arm_vcpu (base, target: aarch64-unknown-none-softfloat)
+          cd /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05 && cargo clippy --no-deps -p arm_vcpu --target aarch64-unknown-none-softfloat -- -D warnings
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+    Checking tock-registers v0.10.1
+    Checking numeric-enum-macro v0.2.0
+    Checking aarch64_sysreg v0.3.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/aarch64_sysreg)
+    Checking log v0.4.33
+    Checking aarch64-cpu v11.2.0
+    Checking arm_vcpu v0.5.19 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/arm_vcpu)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 15.93s
+ok: arm_vcpu (base, target: aarch64-unknown-none-softfloat)
+clippy summary: 1 package(s), 1 check(s), 1 package(s) passed, 0 package(s) failed
+passed checks: 1, failed checks: 0
+clippy finished at: 2026-08-13 20:59:39 +0800
+clippy elapsed: 16s
+all clippy checks passed

@@ -1,0 +1,40 @@
+{
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+        {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "r_frame_rate": "30/1"
+        },
+        {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 1,
+            "r_frame_rate": "0/0"
+        }
+    ],
+    "format": {
+        "duration": "300.000000",
+        "size": "6125335"
+    }
+}
+
+Audio QA (`volumedetect`):
+mean_volume: -24.7 dB
+max_volume: -2.6 dB
+
+Silence QA (`silencedetect=noise=-50dB:d=2`):
+195.425208-200.221854 (4.796646 s)
+228.070729-230.175708 (2.104979 s)
+
+Visual QA (manually inspected at original 1280x720 resolution):
+frames/00-start.png
+frames/01-middle.png
+frames/02-end.png
+frames/03-rt-m2-fail.png

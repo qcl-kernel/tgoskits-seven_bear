@@ -1,0 +1,7314 @@
+{
+  "capture": {
+    "fifo_priority": 80,
+    "iterations_per_metric": 100,
+    "measurement_cpu": 0,
+    "os": "starryos",
+    "period_us": 1000,
+    "platform": "OrangePi-5-Plus",
+    "profile": "shared",
+    "profile_authority": "declared by the harvest invocation; corroborate with the archived AxVisor and VM config hashes",
+    "sample_count": 300,
+    "stress_cpu": 1,
+    "vcpu_count": 2,
+    "warmup_iterations": 10,
+    "workload": "cpu-stress"
+  },
+  "direct_irq_trace": {
+    "counter_validation": {
+      "domain": "guest-virtual-counter",
+      "frequency_hz": 24000000,
+      "translation": "guest_counter_ticks = CNTPCT_EL0 - CNTVOFF_EL2 (mod 2^64)"
+    },
+    "host_accounting": {
+      "pcpus": [
+        {
+          "idle_ticks": 0,
+          "pcpu": 0,
+          "running_ticks": 123359019,
+          "wall_ticks": 123359019
+        },
+        {
+          "idle_ticks": 15862931,
+          "pcpu": 1,
+          "running_ticks": 107496088,
+          "wall_ticks": 123359019
+        },
+        {
+          "idle_ticks": 72436231,
+          "pcpu": 2,
+          "running_ticks": 50922788,
+          "wall_ticks": 123359019
+        },
+        {
+          "idle_ticks": 123343318,
+          "pcpu": 3,
+          "running_ticks": 15701,
+          "wall_ticks": 123359019
+        }
+      ],
+      "vcpus": [
+        {
+          "max_run_ticks": 1679769,
+          "max_wait_ticks": 199234,
+          "migrations": 0,
+          "pcpu_mask": 2,
+          "run_count": 2596,
+          "run_ticks": 106233050,
+          "vcpu": 0,
+          "vm": 1,
+          "wait_count": 386,
+          "wait_ticks": 15977297
+        },
+        {
+          "max_run_ticks": 291095,
+          "max_wait_ticks": 235648,
+          "migrations": 0,
+          "pcpu_mask": 4,
+          "run_count": 2256,
+          "run_ticks": 49907172,
+          "vcpu": 1,
+          "vm": 1,
+          "wait_count": 1089,
+          "wait_ticks": 44906239
+        }
+      ]
+    },
+    "host_noise": null,
+    "inputs": {
+      "guest": {
+        "path": "/home/seven_wsl/Workspace/starry/results/rt-current-20260813-077ba386-board/rt/shared/guest-irq.log.gz",
+        "sha256": "04dc6de5cd59bb3a8f940ada5d9da5be3cc5e92e272d49e6585cf422606acae5"
+      },
+      "host": {
+        "path": "/home/seven_wsl/Workspace/starry/results/rt-current-20260813-077ba386-board/rt/shared/host.log",
+        "sha256": "ef6a8fabe0b1b5797002ccfe4a5a4fc3de87263d4d7e8e82bf8a3e5fb045a8fd"
+      }
+    },
+    "lossless": {
+      "guest": {
+        "counter_frequency_mismatches": 0,
+        "dropped": 0,
+        "failed_injections": 0,
+        "incomplete": 0,
+        "records": 880,
+        "unowned_virtual_timer_irqs": 0
+      },
+      "host": {
+        "counter_frequency_mismatches": 0,
+        "dropped": 0,
+        "failed_injections": 0,
+        "incomplete": 0,
+        "records": 1094,
+        "unowned_virtual_timer_irqs": 0
+      }
+    },
+    "pairing": {
+      "leading_host_events_may_be_discarded_for_initial_alignment": true,
+      "pair_count": 880,
+      "pairs": [
+        {
+          "guest_sequence": 0,
+          "host_sequence": 0,
+          "latency_ticks": 9929612,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 1,
+          "host_sequence": 1,
+          "latency_ticks": 265055,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 2,
+          "host_sequence": 2,
+          "latency_ticks": 93212,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 3,
+          "host_sequence": 3,
+          "latency_ticks": 207263,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 4,
+          "host_sequence": 4,
+          "latency_ticks": 242487,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 5,
+          "host_sequence": 5,
+          "latency_ticks": 102753,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 6,
+          "host_sequence": 6,
+          "latency_ticks": 126511,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 7,
+          "host_sequence": 7,
+          "latency_ticks": 241416,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 8,
+          "host_sequence": 8,
+          "latency_ticks": 13545,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 9,
+          "host_sequence": 9,
+          "latency_ticks": 113246,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 10,
+          "host_sequence": 10,
+          "latency_ticks": 136948,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 11,
+          "host_sequence": 11,
+          "latency_ticks": 178444,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 12,
+          "host_sequence": 12,
+          "latency_ticks": 250432,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 13,
+          "host_sequence": 13,
+          "latency_ticks": 293237,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 14,
+          "host_sequence": 14,
+          "latency_ticks": 259329,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 15,
+          "host_sequence": 15,
+          "latency_ticks": 339136,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 16,
+          "host_sequence": 16,
+          "latency_ticks": 109312,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 17,
+          "host_sequence": 17,
+          "latency_ticks": 282751,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 18,
+          "host_sequence": 18,
+          "latency_ticks": 90958,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 19,
+          "host_sequence": 19,
+          "latency_ticks": 58177,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 20,
+          "host_sequence": 20,
+          "latency_ticks": 37156,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 21,
+          "host_sequence": 21,
+          "latency_ticks": 102732,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 22,
+          "host_sequence": 22,
+          "latency_ticks": 35462,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 23,
+          "host_sequence": 23,
+          "latency_ticks": 211442,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 24,
+          "host_sequence": 24,
+          "latency_ticks": 1106,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 25,
+          "host_sequence": 25,
+          "latency_ticks": 194397,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 26,
+          "host_sequence": 26,
+          "latency_ticks": 174615,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 27,
+          "host_sequence": 27,
+          "latency_ticks": 147140,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 28,
+          "host_sequence": 28,
+          "latency_ticks": 120792,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 29,
+          "host_sequence": 29,
+          "latency_ticks": 87605,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 30,
+          "host_sequence": 30,
+          "latency_ticks": 44849,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 31,
+          "host_sequence": 31,
+          "latency_ticks": 174629,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 32,
+          "host_sequence": 32,
+          "latency_ticks": 124397,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 33,
+          "host_sequence": 33,
+          "latency_ticks": 85652,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 34,
+          "host_sequence": 34,
+          "latency_ticks": 35329,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 35,
+          "host_sequence": 35,
+          "latency_ticks": 875,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 36,
+          "host_sequence": 37,
+          "latency_ticks": 63812,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 37,
+          "host_sequence": 38,
+          "latency_ticks": 882,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 41,
+          "host_sequence": 39,
+          "latency_ticks": 394079,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 44,
+          "host_sequence": 42,
+          "latency_ticks": 292348,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 45,
+          "host_sequence": 45,
+          "latency_ticks": 4557,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 47,
+          "host_sequence": 47,
+          "latency_ticks": 24528,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 50,
+          "host_sequence": 49,
+          "latency_ticks": 46816,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 52,
+          "host_sequence": 51,
+          "latency_ticks": 54425,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 53,
+          "host_sequence": 53,
+          "latency_ticks": 60732,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 56,
+          "host_sequence": 55,
+          "latency_ticks": 89726,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 59,
+          "host_sequence": 58,
+          "latency_ticks": 108801,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 60,
+          "host_sequence": 60,
+          "latency_ticks": 18816,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 62,
+          "host_sequence": 62,
+          "latency_ticks": 1246,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 66,
+          "host_sequence": 64,
+          "latency_ticks": 404719,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 68,
+          "host_sequence": 67,
+          "latency_ticks": 231042,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 69,
+          "host_sequence": 69,
+          "latency_ticks": 1379,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 72,
+          "host_sequence": 71,
+          "latency_ticks": 266952,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 75,
+          "host_sequence": 74,
+          "latency_ticks": 86492,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 78,
+          "host_sequence": 76,
+          "latency_ticks": 326130,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 80,
+          "host_sequence": 79,
+          "latency_ticks": 190407,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 82,
+          "host_sequence": 81,
+          "latency_ticks": 204799,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 84,
+          "host_sequence": 83,
+          "latency_ticks": 229873,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 87,
+          "host_sequence": 85,
+          "latency_ticks": 309701,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 89,
+          "host_sequence": 88,
+          "latency_ticks": 135226,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 91,
+          "host_sequence": 90,
+          "latency_ticks": 162638,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 92,
+          "host_sequence": 92,
+          "latency_ticks": 1505,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 94,
+          "host_sequence": 94,
+          "latency_ticks": 1477,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 96,
+          "host_sequence": 96,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 100,
+          "host_sequence": 99,
+          "latency_ticks": 240674,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 102,
+          "host_sequence": 102,
+          "latency_ticks": 20839,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 104,
+          "host_sequence": 104,
+          "latency_ticks": 6615,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 106,
+          "host_sequence": 106,
+          "latency_ticks": 13286,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 108,
+          "host_sequence": 108,
+          "latency_ticks": 1197,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 110,
+          "host_sequence": 110,
+          "latency_ticks": 5558,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 112,
+          "host_sequence": 112,
+          "latency_ticks": 5628,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 114,
+          "host_sequence": 114,
+          "latency_ticks": 1449,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 116,
+          "host_sequence": 116,
+          "latency_ticks": 938,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 119,
+          "host_sequence": 119,
+          "latency_ticks": 4263,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 121,
+          "host_sequence": 121,
+          "latency_ticks": 5537,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 123,
+          "host_sequence": 123,
+          "latency_ticks": 2947,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 125,
+          "host_sequence": 125,
+          "latency_ticks": 26712,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 127,
+          "host_sequence": 127,
+          "latency_ticks": 1533,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 129,
+          "host_sequence": 129,
+          "latency_ticks": 38486,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 131,
+          "host_sequence": 131,
+          "latency_ticks": 1246,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 133,
+          "host_sequence": 133,
+          "latency_ticks": 5572,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 136,
+          "host_sequence": 135,
+          "latency_ticks": 68740,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 139,
+          "host_sequence": 137,
+          "latency_ticks": 70980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 140,
+          "host_sequence": 140,
+          "latency_ticks": 1512,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 142,
+          "host_sequence": 142,
+          "latency_ticks": 14399,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 144,
+          "host_sequence": 144,
+          "latency_ticks": 5593,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 146,
+          "host_sequence": 146,
+          "latency_ticks": 56658,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 148,
+          "host_sequence": 148,
+          "latency_ticks": 59787,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 151,
+          "host_sequence": 150,
+          "latency_ticks": 69027,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 153,
+          "host_sequence": 152,
+          "latency_ticks": 67991,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 154,
+          "host_sequence": 154,
+          "latency_ticks": 37422,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 156,
+          "host_sequence": 156,
+          "latency_ticks": 12516,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 158,
+          "host_sequence": 158,
+          "latency_ticks": 5516,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 162,
+          "host_sequence": 161,
+          "latency_ticks": 127043,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 163,
+          "host_sequence": 163,
+          "latency_ticks": 5670,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 166,
+          "host_sequence": 165,
+          "latency_ticks": 98007,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 167,
+          "host_sequence": 167,
+          "latency_ticks": 1386,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 169,
+          "host_sequence": 169,
+          "latency_ticks": 1022,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 170,
+          "host_sequence": 170,
+          "latency_ticks": 1344,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 172,
+          "host_sequence": 172,
+          "latency_ticks": 5614,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 174,
+          "host_sequence": 174,
+          "latency_ticks": 5390,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 176,
+          "host_sequence": 176,
+          "latency_ticks": 5432,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 178,
+          "host_sequence": 178,
+          "latency_ticks": 39095,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 181,
+          "host_sequence": 180,
+          "latency_ticks": 30933,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 183,
+          "host_sequence": 183,
+          "latency_ticks": 3612,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 186,
+          "host_sequence": 185,
+          "latency_ticks": 122339,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 187,
+          "host_sequence": 187,
+          "latency_ticks": 5460,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 189,
+          "host_sequence": 189,
+          "latency_ticks": 5481,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 191,
+          "host_sequence": 191,
+          "latency_ticks": 5453,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 192,
+          "host_sequence": 192,
+          "latency_ticks": 924,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 194,
+          "host_sequence": 194,
+          "latency_ticks": 1540,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 197,
+          "host_sequence": 196,
+          "latency_ticks": 53270,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 199,
+          "host_sequence": 198,
+          "latency_ticks": 51163,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 200,
+          "host_sequence": 200,
+          "latency_ticks": 1477,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 202,
+          "host_sequence": 202,
+          "latency_ticks": 5565,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 205,
+          "host_sequence": 205,
+          "latency_ticks": 5383,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 206,
+          "host_sequence": 206,
+          "latency_ticks": 1449,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 208,
+          "host_sequence": 208,
+          "latency_ticks": 1603,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 210,
+          "host_sequence": 210,
+          "latency_ticks": 1085,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 212,
+          "host_sequence": 212,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 214,
+          "host_sequence": 214,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 215,
+          "host_sequence": 215,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 217,
+          "host_sequence": 217,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 219,
+          "host_sequence": 219,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 221,
+          "host_sequence": 221,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 224,
+          "host_sequence": 223,
+          "latency_ticks": 117628,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 225,
+          "host_sequence": 225,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 228,
+          "host_sequence": 228,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 229,
+          "host_sequence": 229,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 231,
+          "host_sequence": 231,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 232,
+          "host_sequence": 232,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 234,
+          "host_sequence": 234,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 237,
+          "host_sequence": 236,
+          "latency_ticks": 116641,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 238,
+          "host_sequence": 238,
+          "latency_ticks": 61481,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 239,
+          "host_sequence": 239,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 241,
+          "host_sequence": 241,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 243,
+          "host_sequence": 243,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 245,
+          "host_sequence": 245,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 248,
+          "host_sequence": 247,
+          "latency_ticks": 116025,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 250,
+          "host_sequence": 249,
+          "latency_ticks": 120421,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 252,
+          "host_sequence": 251,
+          "latency_ticks": 123599,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 253,
+          "host_sequence": 253,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 254,
+          "host_sequence": 254,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 256,
+          "host_sequence": 256,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 260,
+          "host_sequence": 259,
+          "latency_ticks": 92596,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 261,
+          "host_sequence": 261,
+          "latency_ticks": 10612,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 262,
+          "host_sequence": 262,
+          "latency_ticks": 13615,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 264,
+          "host_sequence": 264,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 266,
+          "host_sequence": 266,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 268,
+          "host_sequence": 268,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 271,
+          "host_sequence": 270,
+          "latency_ticks": 116137,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 272,
+          "host_sequence": 272,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 274,
+          "host_sequence": 274,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 276,
+          "host_sequence": 276,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 277,
+          "host_sequence": 277,
+          "latency_ticks": 903,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 279,
+          "host_sequence": 279,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 282,
+          "host_sequence": 281,
+          "latency_ticks": 115871,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 284,
+          "host_sequence": 283,
+          "latency_ticks": 118118,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 286,
+          "host_sequence": 285,
+          "latency_ticks": 122976,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 287,
+          "host_sequence": 287,
+          "latency_ticks": 1967,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 289,
+          "host_sequence": 289,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 293,
+          "host_sequence": 292,
+          "latency_ticks": 117236,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 295,
+          "host_sequence": 294,
+          "latency_ticks": 118321,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 297,
+          "host_sequence": 296,
+          "latency_ticks": 123767,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 299,
+          "host_sequence": 298,
+          "latency_ticks": 127379,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 300,
+          "host_sequence": 300,
+          "latency_ticks": 6062,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 304,
+          "host_sequence": 303,
+          "latency_ticks": 122339,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 305,
+          "host_sequence": 305,
+          "latency_ticks": 2142,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 307,
+          "host_sequence": 307,
+          "latency_ticks": 4725,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 309,
+          "host_sequence": 309,
+          "latency_ticks": 1323,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 310,
+          "host_sequence": 310,
+          "latency_ticks": 1015,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 313,
+          "host_sequence": 312,
+          "latency_ticks": 70882,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 314,
+          "host_sequence": 314,
+          "latency_ticks": 36393,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 316,
+          "host_sequence": 316,
+          "latency_ticks": 1015,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 317,
+          "host_sequence": 317,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 318,
+          "host_sequence": 318,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 319,
+          "host_sequence": 319,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 320,
+          "host_sequence": 320,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 321,
+          "host_sequence": 321,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 322,
+          "host_sequence": 322,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 323,
+          "host_sequence": 323,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 324,
+          "host_sequence": 324,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 325,
+          "host_sequence": 325,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 327,
+          "host_sequence": 327,
+          "latency_ticks": 945,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 328,
+          "host_sequence": 328,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 329,
+          "host_sequence": 329,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 330,
+          "host_sequence": 330,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 331,
+          "host_sequence": 331,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 332,
+          "host_sequence": 332,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 333,
+          "host_sequence": 333,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 334,
+          "host_sequence": 334,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 335,
+          "host_sequence": 335,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 336,
+          "host_sequence": 336,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 337,
+          "host_sequence": 337,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 339,
+          "host_sequence": 339,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 340,
+          "host_sequence": 340,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 341,
+          "host_sequence": 341,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 342,
+          "host_sequence": 342,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 343,
+          "host_sequence": 343,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 344,
+          "host_sequence": 344,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 345,
+          "host_sequence": 345,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 346,
+          "host_sequence": 346,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 347,
+          "host_sequence": 347,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 348,
+          "host_sequence": 348,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 349,
+          "host_sequence": 349,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 351,
+          "host_sequence": 351,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 352,
+          "host_sequence": 352,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 353,
+          "host_sequence": 353,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 354,
+          "host_sequence": 354,
+          "latency_ticks": 1309,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 355,
+          "host_sequence": 355,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 356,
+          "host_sequence": 356,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 357,
+          "host_sequence": 357,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 358,
+          "host_sequence": 358,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 359,
+          "host_sequence": 359,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 360,
+          "host_sequence": 360,
+          "latency_ticks": 952,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 361,
+          "host_sequence": 361,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 363,
+          "host_sequence": 363,
+          "latency_ticks": 938,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 364,
+          "host_sequence": 364,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 365,
+          "host_sequence": 365,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 366,
+          "host_sequence": 366,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 367,
+          "host_sequence": 367,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 368,
+          "host_sequence": 368,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 369,
+          "host_sequence": 369,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 370,
+          "host_sequence": 370,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 371,
+          "host_sequence": 371,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 372,
+          "host_sequence": 372,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 373,
+          "host_sequence": 373,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 375,
+          "host_sequence": 375,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 376,
+          "host_sequence": 376,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 377,
+          "host_sequence": 377,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 378,
+          "host_sequence": 378,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 379,
+          "host_sequence": 379,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 380,
+          "host_sequence": 380,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 381,
+          "host_sequence": 381,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 382,
+          "host_sequence": 382,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 383,
+          "host_sequence": 383,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 384,
+          "host_sequence": 384,
+          "latency_ticks": 903,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 385,
+          "host_sequence": 385,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 387,
+          "host_sequence": 387,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 388,
+          "host_sequence": 388,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 389,
+          "host_sequence": 389,
+          "latency_ticks": 924,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 390,
+          "host_sequence": 390,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 391,
+          "host_sequence": 391,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 392,
+          "host_sequence": 392,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 393,
+          "host_sequence": 393,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 394,
+          "host_sequence": 394,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 395,
+          "host_sequence": 395,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 396,
+          "host_sequence": 396,
+          "latency_ticks": 910,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 397,
+          "host_sequence": 397,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 399,
+          "host_sequence": 399,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 400,
+          "host_sequence": 400,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 401,
+          "host_sequence": 401,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 402,
+          "host_sequence": 402,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 403,
+          "host_sequence": 403,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 404,
+          "host_sequence": 404,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 405,
+          "host_sequence": 405,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 406,
+          "host_sequence": 406,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 407,
+          "host_sequence": 407,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 408,
+          "host_sequence": 408,
+          "latency_ticks": 903,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 409,
+          "host_sequence": 409,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 411,
+          "host_sequence": 411,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 412,
+          "host_sequence": 412,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 413,
+          "host_sequence": 413,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 414,
+          "host_sequence": 414,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 415,
+          "host_sequence": 415,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 416,
+          "host_sequence": 416,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 417,
+          "host_sequence": 417,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 418,
+          "host_sequence": 418,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 419,
+          "host_sequence": 419,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 420,
+          "host_sequence": 420,
+          "latency_ticks": 917,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 421,
+          "host_sequence": 421,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 424,
+          "host_sequence": 424,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 425,
+          "host_sequence": 425,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 426,
+          "host_sequence": 426,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 427,
+          "host_sequence": 427,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 428,
+          "host_sequence": 428,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 429,
+          "host_sequence": 429,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 430,
+          "host_sequence": 430,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 431,
+          "host_sequence": 431,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 432,
+          "host_sequence": 432,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 433,
+          "host_sequence": 433,
+          "latency_ticks": 952,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 434,
+          "host_sequence": 434,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 436,
+          "host_sequence": 436,
+          "latency_ticks": 1029,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 437,
+          "host_sequence": 437,
+          "latency_ticks": 924,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 438,
+          "host_sequence": 438,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 439,
+          "host_sequence": 439,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 440,
+          "host_sequence": 440,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 441,
+          "host_sequence": 441,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 442,
+          "host_sequence": 442,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 443,
+          "host_sequence": 443,
+          "latency_ticks": 952,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 444,
+          "host_sequence": 444,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 445,
+          "host_sequence": 445,
+          "latency_ticks": 917,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 446,
+          "host_sequence": 446,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 447,
+          "host_sequence": 447,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 449,
+          "host_sequence": 449,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 450,
+          "host_sequence": 450,
+          "latency_ticks": 1183,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 452,
+          "host_sequence": 452,
+          "latency_ticks": 16723,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 454,
+          "host_sequence": 454,
+          "latency_ticks": 1421,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 457,
+          "host_sequence": 456,
+          "latency_ticks": 48629,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 459,
+          "host_sequence": 458,
+          "latency_ticks": 43421,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 461,
+          "host_sequence": 460,
+          "latency_ticks": 107681,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 463,
+          "host_sequence": 462,
+          "latency_ticks": 75334,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 464,
+          "host_sequence": 464,
+          "latency_ticks": 1330,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 467,
+          "host_sequence": 466,
+          "latency_ticks": 56602,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 468,
+          "host_sequence": 468,
+          "latency_ticks": 1197,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 471,
+          "host_sequence": 470,
+          "latency_ticks": 107541,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 473,
+          "host_sequence": 472,
+          "latency_ticks": 111356,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 476,
+          "host_sequence": 474,
+          "latency_ticks": 117222,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 477,
+          "host_sequence": 477,
+          "latency_ticks": 1323,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 480,
+          "host_sequence": 479,
+          "latency_ticks": 43883,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 481,
+          "host_sequence": 481,
+          "latency_ticks": 38010,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 483,
+          "host_sequence": 483,
+          "latency_ticks": 1337,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 485,
+          "host_sequence": 485,
+          "latency_ticks": 36456,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 487,
+          "host_sequence": 487,
+          "latency_ticks": 1071,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 490,
+          "host_sequence": 489,
+          "latency_ticks": 110691,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 491,
+          "host_sequence": 491,
+          "latency_ticks": 6391,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 493,
+          "host_sequence": 492,
+          "latency_ticks": 119084,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 495,
+          "host_sequence": 494,
+          "latency_ticks": 102417,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 497,
+          "host_sequence": 496,
+          "latency_ticks": 66101,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 499,
+          "host_sequence": 498,
+          "latency_ticks": 65548,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 501,
+          "host_sequence": 500,
+          "latency_ticks": 62650,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 503,
+          "host_sequence": 502,
+          "latency_ticks": 127127,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 504,
+          "host_sequence": 504,
+          "latency_ticks": 21021,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 508,
+          "host_sequence": 506,
+          "latency_ticks": 125951,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 509,
+          "host_sequence": 509,
+          "latency_ticks": 4844,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 511,
+          "host_sequence": 511,
+          "latency_ticks": 1302,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 514,
+          "host_sequence": 513,
+          "latency_ticks": 55447,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 515,
+          "host_sequence": 515,
+          "latency_ticks": 43841,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 517,
+          "host_sequence": 517,
+          "latency_ticks": 72450,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 520,
+          "host_sequence": 519,
+          "latency_ticks": 124180,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 521,
+          "host_sequence": 521,
+          "latency_ticks": 2114,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 524,
+          "host_sequence": 523,
+          "latency_ticks": 117656,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 525,
+          "host_sequence": 525,
+          "latency_ticks": 1043,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 527,
+          "host_sequence": 527,
+          "latency_ticks": 2534,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 530,
+          "host_sequence": 529,
+          "latency_ticks": 101969,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 531,
+          "host_sequence": 531,
+          "latency_ticks": 30268,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 533,
+          "host_sequence": 532,
+          "latency_ticks": 111916,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 534,
+          "host_sequence": 534,
+          "latency_ticks": 1211,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 536,
+          "host_sequence": 536,
+          "latency_ticks": 1225,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 538,
+          "host_sequence": 538,
+          "latency_ticks": 1155,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 539,
+          "host_sequence": 539,
+          "latency_ticks": 1071,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 542,
+          "host_sequence": 542,
+          "latency_ticks": 1050,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 543,
+          "host_sequence": 543,
+          "latency_ticks": 1162,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 546,
+          "host_sequence": 545,
+          "latency_ticks": 89341,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 548,
+          "host_sequence": 547,
+          "latency_ticks": 90377,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 549,
+          "host_sequence": 549,
+          "latency_ticks": 1155,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 551,
+          "host_sequence": 551,
+          "latency_ticks": 1295,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 553,
+          "host_sequence": 553,
+          "latency_ticks": 18781,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 555,
+          "host_sequence": 555,
+          "latency_ticks": 9912,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 558,
+          "host_sequence": 557,
+          "latency_ticks": 67711,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 559,
+          "host_sequence": 559,
+          "latency_ticks": 33124,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 561,
+          "host_sequence": 561,
+          "latency_ticks": 1351,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 562,
+          "host_sequence": 562,
+          "latency_ticks": 1323,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 564,
+          "host_sequence": 564,
+          "latency_ticks": 17801,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 567,
+          "host_sequence": 566,
+          "latency_ticks": 112931,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 569,
+          "host_sequence": 568,
+          "latency_ticks": 79156,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 571,
+          "host_sequence": 570,
+          "latency_ticks": 107149,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 574,
+          "host_sequence": 572,
+          "latency_ticks": 82565,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 575,
+          "host_sequence": 575,
+          "latency_ticks": 1561,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 577,
+          "host_sequence": 577,
+          "latency_ticks": 4228,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 580,
+          "host_sequence": 579,
+          "latency_ticks": 121548,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 581,
+          "host_sequence": 581,
+          "latency_ticks": 1267,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 583,
+          "host_sequence": 583,
+          "latency_ticks": 7056,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 585,
+          "host_sequence": 585,
+          "latency_ticks": 1281,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 587,
+          "host_sequence": 587,
+          "latency_ticks": 1309,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 589,
+          "host_sequence": 588,
+          "latency_ticks": 84553,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 590,
+          "host_sequence": 590,
+          "latency_ticks": 7966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 592,
+          "host_sequence": 591,
+          "latency_ticks": 89929,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 594,
+          "host_sequence": 593,
+          "latency_ticks": 71064,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 595,
+          "host_sequence": 595,
+          "latency_ticks": 30317,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 597,
+          "host_sequence": 597,
+          "latency_ticks": 25823,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 599,
+          "host_sequence": 599,
+          "latency_ticks": 18725,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 602,
+          "host_sequence": 601,
+          "latency_ticks": 75978,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 604,
+          "host_sequence": 603,
+          "latency_ticks": 120925,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 607,
+          "host_sequence": 605,
+          "latency_ticks": 79611,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 609,
+          "host_sequence": 608,
+          "latency_ticks": 77707,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 610,
+          "host_sequence": 610,
+          "latency_ticks": 1309,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 613,
+          "host_sequence": 612,
+          "latency_ticks": 92470,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 614,
+          "host_sequence": 614,
+          "latency_ticks": 85400,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 615,
+          "host_sequence": 615,
+          "latency_ticks": 24885,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 617,
+          "host_sequence": 617,
+          "latency_ticks": 34594,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 618,
+          "host_sequence": 618,
+          "latency_ticks": 20013,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 621,
+          "host_sequence": 620,
+          "latency_ticks": 51016,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 623,
+          "host_sequence": 622,
+          "latency_ticks": 47166,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 625,
+          "host_sequence": 624,
+          "latency_ticks": 44240,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 626,
+          "host_sequence": 626,
+          "latency_ticks": 4746,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 628,
+          "host_sequence": 628,
+          "latency_ticks": 1274,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 631,
+          "host_sequence": 630,
+          "latency_ticks": 121310,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 632,
+          "host_sequence": 632,
+          "latency_ticks": 95739,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 634,
+          "host_sequence": 634,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 635,
+          "host_sequence": 635,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 636,
+          "host_sequence": 636,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 637,
+          "host_sequence": 637,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 638,
+          "host_sequence": 638,
+          "latency_ticks": 924,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 639,
+          "host_sequence": 639,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 641,
+          "host_sequence": 641,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 642,
+          "host_sequence": 642,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 643,
+          "host_sequence": 643,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 644,
+          "host_sequence": 644,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 645,
+          "host_sequence": 645,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 646,
+          "host_sequence": 646,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 647,
+          "host_sequence": 647,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 648,
+          "host_sequence": 648,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 649,
+          "host_sequence": 649,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 650,
+          "host_sequence": 650,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 652,
+          "host_sequence": 652,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 653,
+          "host_sequence": 653,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 654,
+          "host_sequence": 654,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 655,
+          "host_sequence": 655,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 656,
+          "host_sequence": 656,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 657,
+          "host_sequence": 657,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 658,
+          "host_sequence": 658,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 659,
+          "host_sequence": 659,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 660,
+          "host_sequence": 660,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 661,
+          "host_sequence": 661,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 664,
+          "host_sequence": 664,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 665,
+          "host_sequence": 665,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 666,
+          "host_sequence": 666,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 667,
+          "host_sequence": 667,
+          "latency_ticks": 931,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 668,
+          "host_sequence": 668,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 669,
+          "host_sequence": 669,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 670,
+          "host_sequence": 670,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 671,
+          "host_sequence": 671,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 672,
+          "host_sequence": 672,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 673,
+          "host_sequence": 673,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 674,
+          "host_sequence": 674,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 676,
+          "host_sequence": 676,
+          "latency_ticks": 1008,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 677,
+          "host_sequence": 677,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 678,
+          "host_sequence": 678,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 679,
+          "host_sequence": 679,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 680,
+          "host_sequence": 680,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 681,
+          "host_sequence": 681,
+          "latency_ticks": 931,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 682,
+          "host_sequence": 682,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 683,
+          "host_sequence": 683,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 684,
+          "host_sequence": 684,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 685,
+          "host_sequence": 685,
+          "latency_ticks": 938,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 687,
+          "host_sequence": 687,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 688,
+          "host_sequence": 688,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 689,
+          "host_sequence": 689,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 690,
+          "host_sequence": 690,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 691,
+          "host_sequence": 691,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 692,
+          "host_sequence": 692,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 693,
+          "host_sequence": 693,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 694,
+          "host_sequence": 694,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 695,
+          "host_sequence": 695,
+          "latency_ticks": 1008,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 696,
+          "host_sequence": 696,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 698,
+          "host_sequence": 698,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 699,
+          "host_sequence": 699,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 700,
+          "host_sequence": 700,
+          "latency_ticks": 903,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 701,
+          "host_sequence": 701,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 702,
+          "host_sequence": 702,
+          "latency_ticks": 938,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 703,
+          "host_sequence": 703,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 704,
+          "host_sequence": 704,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 705,
+          "host_sequence": 705,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 706,
+          "host_sequence": 706,
+          "latency_ticks": 931,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 707,
+          "host_sequence": 707,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 709,
+          "host_sequence": 709,
+          "latency_ticks": 1022,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 710,
+          "host_sequence": 710,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 711,
+          "host_sequence": 711,
+          "latency_ticks": 959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 712,
+          "host_sequence": 712,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 713,
+          "host_sequence": 713,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 714,
+          "host_sequence": 714,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 715,
+          "host_sequence": 715,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 716,
+          "host_sequence": 716,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 717,
+          "host_sequence": 717,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 718,
+          "host_sequence": 718,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 720,
+          "host_sequence": 720,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 721,
+          "host_sequence": 721,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 722,
+          "host_sequence": 722,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 723,
+          "host_sequence": 723,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 724,
+          "host_sequence": 724,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 725,
+          "host_sequence": 725,
+          "latency_ticks": 966,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 726,
+          "host_sequence": 726,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 727,
+          "host_sequence": 727,
+          "latency_ticks": 994,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 728,
+          "host_sequence": 728,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 729,
+          "host_sequence": 729,
+          "latency_ticks": 1001,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 731,
+          "host_sequence": 731,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 732,
+          "host_sequence": 732,
+          "latency_ticks": 987,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 733,
+          "host_sequence": 733,
+          "latency_ticks": 980,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 734,
+          "host_sequence": 734,
+          "latency_ticks": 973,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 735,
+          "host_sequence": 735,
+          "latency_ticks": 1197,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 738,
+          "host_sequence": 737,
+          "latency_ticks": 86996,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 740,
+          "host_sequence": 739,
+          "latency_ticks": 73150,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 741,
+          "host_sequence": 741,
+          "latency_ticks": 952,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 742,
+          "host_sequence": 742,
+          "latency_ticks": 12614,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 744,
+          "host_sequence": 744,
+          "latency_ticks": 74942,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 745,
+          "host_sequence": 745,
+          "latency_ticks": 15841,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 748,
+          "host_sequence": 747,
+          "latency_ticks": 77378,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 750,
+          "host_sequence": 749,
+          "latency_ticks": 75726,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 751,
+          "host_sequence": 751,
+          "latency_ticks": 1316,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 753,
+          "host_sequence": 753,
+          "latency_ticks": 27370,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 756,
+          "host_sequence": 756,
+          "latency_ticks": 22617,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 759,
+          "host_sequence": 758,
+          "latency_ticks": 65639,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 761,
+          "host_sequence": 760,
+          "latency_ticks": 77959,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 762,
+          "host_sequence": 762,
+          "latency_ticks": 77882,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 764,
+          "host_sequence": 763,
+          "latency_ticks": 87857,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 765,
+          "host_sequence": 765,
+          "latency_ticks": 73892,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 767,
+          "host_sequence": 766,
+          "latency_ticks": 52136,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 768,
+          "host_sequence": 768,
+          "latency_ticks": 25466,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 770,
+          "host_sequence": 770,
+          "latency_ticks": 19362,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 772,
+          "host_sequence": 772,
+          "latency_ticks": 10745,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 774,
+          "host_sequence": 774,
+          "latency_ticks": 19474,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 776,
+          "host_sequence": 776,
+          "latency_ticks": 10577,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 778,
+          "host_sequence": 778,
+          "latency_ticks": 1288,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 781,
+          "host_sequence": 780,
+          "latency_ticks": 85421,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 782,
+          "host_sequence": 782,
+          "latency_ticks": 4144,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 784,
+          "host_sequence": 784,
+          "latency_ticks": 1113,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 786,
+          "host_sequence": 786,
+          "latency_ticks": 4263,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 789,
+          "host_sequence": 789,
+          "latency_ticks": 29659,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 790,
+          "host_sequence": 790,
+          "latency_ticks": 2128,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 792,
+          "host_sequence": 792,
+          "latency_ticks": 1295,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 795,
+          "host_sequence": 794,
+          "latency_ticks": 46564,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 796,
+          "host_sequence": 796,
+          "latency_ticks": 85645,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 798,
+          "host_sequence": 797,
+          "latency_ticks": 55342,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 800,
+          "host_sequence": 799,
+          "latency_ticks": 52493,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 801,
+          "host_sequence": 801,
+          "latency_ticks": 1071,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 804,
+          "host_sequence": 803,
+          "latency_ticks": 64428,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 806,
+          "host_sequence": 805,
+          "latency_ticks": 62993,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 807,
+          "host_sequence": 807,
+          "latency_ticks": 24563,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 810,
+          "host_sequence": 809,
+          "latency_ticks": 42665,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 811,
+          "host_sequence": 811,
+          "latency_ticks": 38682,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 813,
+          "host_sequence": 813,
+          "latency_ticks": 42371,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 815,
+          "host_sequence": 815,
+          "latency_ticks": 27237,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 818,
+          "host_sequence": 817,
+          "latency_ticks": 78988,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 821,
+          "host_sequence": 819,
+          "latency_ticks": 76405,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 823,
+          "host_sequence": 822,
+          "latency_ticks": 72996,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 825,
+          "host_sequence": 824,
+          "latency_ticks": 84273,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 827,
+          "host_sequence": 826,
+          "latency_ticks": 85365,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 829,
+          "host_sequence": 828,
+          "latency_ticks": 85043,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 830,
+          "host_sequence": 830,
+          "latency_ticks": 42483,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 831,
+          "host_sequence": 831,
+          "latency_ticks": 1309,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 834,
+          "host_sequence": 833,
+          "latency_ticks": 122731,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 835,
+          "host_sequence": 835,
+          "latency_ticks": 1162,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 838,
+          "host_sequence": 837,
+          "latency_ticks": 117320,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 839,
+          "host_sequence": 839,
+          "latency_ticks": 42406,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 840,
+          "host_sequence": 840,
+          "latency_ticks": 847,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 843,
+          "host_sequence": 842,
+          "latency_ticks": 119378,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 844,
+          "host_sequence": 844,
+          "latency_ticks": 44422,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 847,
+          "host_sequence": 846,
+          "latency_ticks": 82964,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 849,
+          "host_sequence": 848,
+          "latency_ticks": 85470,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 851,
+          "host_sequence": 850,
+          "latency_ticks": 85918,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 854,
+          "host_sequence": 852,
+          "latency_ticks": 86744,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 855,
+          "host_sequence": 855,
+          "latency_ticks": 1463,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 858,
+          "host_sequence": 858,
+          "latency_ticks": 34643,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 860,
+          "host_sequence": 860,
+          "latency_ticks": 29715,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 863,
+          "host_sequence": 862,
+          "latency_ticks": 68516,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 865,
+          "host_sequence": 864,
+          "latency_ticks": 117131,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 866,
+          "host_sequence": 866,
+          "latency_ticks": 77021,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 868,
+          "host_sequence": 868,
+          "latency_ticks": 5740,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 870,
+          "host_sequence": 870,
+          "latency_ticks": 1015,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 871,
+          "host_sequence": 871,
+          "latency_ticks": 1505,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 873,
+          "host_sequence": 873,
+          "latency_ticks": 1470,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 875,
+          "host_sequence": 875,
+          "latency_ticks": 89243,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 878,
+          "host_sequence": 877,
+          "latency_ticks": 58835,
+          "vcpu": 0
+        },
+        {
+          "guest_sequence": 38,
+          "host_sequence": 36,
+          "latency_ticks": 398993,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 39,
+          "host_sequence": 40,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 40,
+          "host_sequence": 41,
+          "latency_ticks": 805,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 42,
+          "host_sequence": 43,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 43,
+          "host_sequence": 44,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 46,
+          "host_sequence": 46,
+          "latency_ticks": 1001,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 48,
+          "host_sequence": 48,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 49,
+          "host_sequence": 50,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 51,
+          "host_sequence": 52,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 54,
+          "host_sequence": 54,
+          "latency_ticks": 952,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 55,
+          "host_sequence": 56,
+          "latency_ticks": 896,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 57,
+          "host_sequence": 57,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 58,
+          "host_sequence": 59,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 61,
+          "host_sequence": 61,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 63,
+          "host_sequence": 63,
+          "latency_ticks": 868,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 64,
+          "host_sequence": 65,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 65,
+          "host_sequence": 66,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 67,
+          "host_sequence": 68,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 70,
+          "host_sequence": 70,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 71,
+          "host_sequence": 72,
+          "latency_ticks": 707,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 73,
+          "host_sequence": 73,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 74,
+          "host_sequence": 75,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 76,
+          "host_sequence": 77,
+          "latency_ticks": 714,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 77,
+          "host_sequence": 78,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 79,
+          "host_sequence": 80,
+          "latency_ticks": 770,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 81,
+          "host_sequence": 82,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 83,
+          "host_sequence": 84,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 85,
+          "host_sequence": 86,
+          "latency_ticks": 798,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 86,
+          "host_sequence": 87,
+          "latency_ticks": 798,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 88,
+          "host_sequence": 89,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 90,
+          "host_sequence": 91,
+          "latency_ticks": 945,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 93,
+          "host_sequence": 93,
+          "latency_ticks": 868,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 95,
+          "host_sequence": 95,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 97,
+          "host_sequence": 97,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 98,
+          "host_sequence": 98,
+          "latency_ticks": 917,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 99,
+          "host_sequence": 100,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 101,
+          "host_sequence": 101,
+          "latency_ticks": 861,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 103,
+          "host_sequence": 103,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 105,
+          "host_sequence": 105,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 107,
+          "host_sequence": 107,
+          "latency_ticks": 1001,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 109,
+          "host_sequence": 109,
+          "latency_ticks": 917,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 111,
+          "host_sequence": 111,
+          "latency_ticks": 847,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 113,
+          "host_sequence": 113,
+          "latency_ticks": 847,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 115,
+          "host_sequence": 115,
+          "latency_ticks": 896,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 117,
+          "host_sequence": 117,
+          "latency_ticks": 847,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 118,
+          "host_sequence": 118,
+          "latency_ticks": 917,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 120,
+          "host_sequence": 120,
+          "latency_ticks": 861,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 122,
+          "host_sequence": 122,
+          "latency_ticks": 868,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 124,
+          "host_sequence": 124,
+          "latency_ticks": 861,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 126,
+          "host_sequence": 126,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 128,
+          "host_sequence": 128,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 130,
+          "host_sequence": 130,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 132,
+          "host_sequence": 132,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 134,
+          "host_sequence": 134,
+          "latency_ticks": 861,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 135,
+          "host_sequence": 136,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 137,
+          "host_sequence": 138,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 138,
+          "host_sequence": 139,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 141,
+          "host_sequence": 141,
+          "latency_ticks": 868,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 143,
+          "host_sequence": 143,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 145,
+          "host_sequence": 145,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 147,
+          "host_sequence": 147,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 149,
+          "host_sequence": 149,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 150,
+          "host_sequence": 151,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 152,
+          "host_sequence": 153,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 155,
+          "host_sequence": 155,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 157,
+          "host_sequence": 157,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 159,
+          "host_sequence": 159,
+          "latency_ticks": 896,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 160,
+          "host_sequence": 160,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 161,
+          "host_sequence": 162,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 164,
+          "host_sequence": 164,
+          "latency_ticks": 931,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 165,
+          "host_sequence": 166,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 168,
+          "host_sequence": 168,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 171,
+          "host_sequence": 171,
+          "latency_ticks": 952,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 173,
+          "host_sequence": 173,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 175,
+          "host_sequence": 175,
+          "latency_ticks": 917,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 177,
+          "host_sequence": 177,
+          "latency_ticks": 854,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 179,
+          "host_sequence": 179,
+          "latency_ticks": 952,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 180,
+          "host_sequence": 181,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 182,
+          "host_sequence": 182,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 184,
+          "host_sequence": 184,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 185,
+          "host_sequence": 186,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 188,
+          "host_sequence": 188,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 190,
+          "host_sequence": 190,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 193,
+          "host_sequence": 193,
+          "latency_ticks": 791,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 195,
+          "host_sequence": 195,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 196,
+          "host_sequence": 197,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 198,
+          "host_sequence": 199,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 201,
+          "host_sequence": 201,
+          "latency_ticks": 854,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 203,
+          "host_sequence": 203,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 204,
+          "host_sequence": 204,
+          "latency_ticks": 973,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 207,
+          "host_sequence": 207,
+          "latency_ticks": 896,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 209,
+          "host_sequence": 209,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 211,
+          "host_sequence": 211,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 213,
+          "host_sequence": 213,
+          "latency_ticks": 1211,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 216,
+          "host_sequence": 216,
+          "latency_ticks": 1085,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 218,
+          "host_sequence": 218,
+          "latency_ticks": 1092,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 220,
+          "host_sequence": 220,
+          "latency_ticks": 1134,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 222,
+          "host_sequence": 222,
+          "latency_ticks": 1036,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 223,
+          "host_sequence": 224,
+          "latency_ticks": 966,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 226,
+          "host_sequence": 226,
+          "latency_ticks": 1064,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 227,
+          "host_sequence": 227,
+          "latency_ticks": 1036,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 230,
+          "host_sequence": 230,
+          "latency_ticks": 1113,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 233,
+          "host_sequence": 233,
+          "latency_ticks": 1057,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 235,
+          "host_sequence": 235,
+          "latency_ticks": 1106,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 236,
+          "host_sequence": 237,
+          "latency_ticks": 784,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 240,
+          "host_sequence": 240,
+          "latency_ticks": 1134,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 242,
+          "host_sequence": 242,
+          "latency_ticks": 1078,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 244,
+          "host_sequence": 244,
+          "latency_ticks": 1099,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 246,
+          "host_sequence": 246,
+          "latency_ticks": 1134,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 247,
+          "host_sequence": 248,
+          "latency_ticks": 770,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 249,
+          "host_sequence": 250,
+          "latency_ticks": 798,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 251,
+          "host_sequence": 252,
+          "latency_ticks": 812,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 255,
+          "host_sequence": 255,
+          "latency_ticks": 1078,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 257,
+          "host_sequence": 257,
+          "latency_ticks": 1106,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 258,
+          "host_sequence": 258,
+          "latency_ticks": 1449,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 259,
+          "host_sequence": 260,
+          "latency_ticks": 784,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 263,
+          "host_sequence": 263,
+          "latency_ticks": 1120,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 265,
+          "host_sequence": 265,
+          "latency_ticks": 1127,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 267,
+          "host_sequence": 267,
+          "latency_ticks": 1050,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 269,
+          "host_sequence": 269,
+          "latency_ticks": 1092,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 270,
+          "host_sequence": 271,
+          "latency_ticks": 819,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 273,
+          "host_sequence": 273,
+          "latency_ticks": 1148,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 275,
+          "host_sequence": 275,
+          "latency_ticks": 1092,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 278,
+          "host_sequence": 278,
+          "latency_ticks": 1106,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 280,
+          "host_sequence": 280,
+          "latency_ticks": 1050,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 281,
+          "host_sequence": 282,
+          "latency_ticks": 805,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 283,
+          "host_sequence": 284,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 285,
+          "host_sequence": 286,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 288,
+          "host_sequence": 288,
+          "latency_ticks": 1064,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 290,
+          "host_sequence": 290,
+          "latency_ticks": 1085,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 291,
+          "host_sequence": 291,
+          "latency_ticks": 1057,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 292,
+          "host_sequence": 293,
+          "latency_ticks": 966,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 294,
+          "host_sequence": 295,
+          "latency_ticks": 707,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 296,
+          "host_sequence": 297,
+          "latency_ticks": 931,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 298,
+          "host_sequence": 299,
+          "latency_ticks": 721,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 301,
+          "host_sequence": 301,
+          "latency_ticks": 980,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 302,
+          "host_sequence": 302,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 303,
+          "host_sequence": 304,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 306,
+          "host_sequence": 306,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 308,
+          "host_sequence": 308,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 311,
+          "host_sequence": 311,
+          "latency_ticks": 854,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 312,
+          "host_sequence": 313,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 315,
+          "host_sequence": 315,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 326,
+          "host_sequence": 326,
+          "latency_ticks": 1092,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 338,
+          "host_sequence": 338,
+          "latency_ticks": 1092,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 350,
+          "host_sequence": 350,
+          "latency_ticks": 1064,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 362,
+          "host_sequence": 362,
+          "latency_ticks": 1050,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 374,
+          "host_sequence": 374,
+          "latency_ticks": 1078,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 386,
+          "host_sequence": 386,
+          "latency_ticks": 1057,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 398,
+          "host_sequence": 398,
+          "latency_ticks": 1099,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 410,
+          "host_sequence": 410,
+          "latency_ticks": 1050,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 422,
+          "host_sequence": 422,
+          "latency_ticks": 1099,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 423,
+          "host_sequence": 423,
+          "latency_ticks": 1036,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 435,
+          "host_sequence": 435,
+          "latency_ticks": 1029,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 448,
+          "host_sequence": 448,
+          "latency_ticks": 1120,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 451,
+          "host_sequence": 451,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 453,
+          "host_sequence": 453,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 455,
+          "host_sequence": 455,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 456,
+          "host_sequence": 457,
+          "latency_ticks": 770,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 458,
+          "host_sequence": 459,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 460,
+          "host_sequence": 461,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 462,
+          "host_sequence": 463,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 465,
+          "host_sequence": 465,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 466,
+          "host_sequence": 467,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 469,
+          "host_sequence": 469,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 470,
+          "host_sequence": 471,
+          "latency_ticks": 686,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 472,
+          "host_sequence": 473,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 474,
+          "host_sequence": 475,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 475,
+          "host_sequence": 476,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 478,
+          "host_sequence": 478,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 479,
+          "host_sequence": 480,
+          "latency_ticks": 1022,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 482,
+          "host_sequence": 482,
+          "latency_ticks": 1015,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 484,
+          "host_sequence": 484,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 486,
+          "host_sequence": 486,
+          "latency_ticks": 945,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 488,
+          "host_sequence": 488,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 489,
+          "host_sequence": 490,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 492,
+          "host_sequence": 493,
+          "latency_ticks": 707,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 494,
+          "host_sequence": 495,
+          "latency_ticks": 721,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 496,
+          "host_sequence": 497,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 498,
+          "host_sequence": 499,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 500,
+          "host_sequence": 501,
+          "latency_ticks": 819,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 502,
+          "host_sequence": 503,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 505,
+          "host_sequence": 505,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 506,
+          "host_sequence": 507,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 507,
+          "host_sequence": 508,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 510,
+          "host_sequence": 510,
+          "latency_ticks": 917,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 512,
+          "host_sequence": 512,
+          "latency_ticks": 854,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 513,
+          "host_sequence": 514,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 516,
+          "host_sequence": 516,
+          "latency_ticks": 896,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 518,
+          "host_sequence": 518,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 519,
+          "host_sequence": 520,
+          "latency_ticks": 770,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 522,
+          "host_sequence": 522,
+          "latency_ticks": 959,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 523,
+          "host_sequence": 524,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 526,
+          "host_sequence": 526,
+          "latency_ticks": 1295,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 528,
+          "host_sequence": 528,
+          "latency_ticks": 1113,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 529,
+          "host_sequence": 530,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 532,
+          "host_sequence": 533,
+          "latency_ticks": 721,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 535,
+          "host_sequence": 535,
+          "latency_ticks": 833,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 537,
+          "host_sequence": 537,
+          "latency_ticks": 868,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 540,
+          "host_sequence": 540,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 541,
+          "host_sequence": 541,
+          "latency_ticks": 833,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 544,
+          "host_sequence": 544,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 545,
+          "host_sequence": 546,
+          "latency_ticks": 721,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 547,
+          "host_sequence": 548,
+          "latency_ticks": 770,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 550,
+          "host_sequence": 550,
+          "latency_ticks": 896,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 552,
+          "host_sequence": 552,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 554,
+          "host_sequence": 554,
+          "latency_ticks": 1113,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 556,
+          "host_sequence": 556,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 557,
+          "host_sequence": 558,
+          "latency_ticks": 798,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 560,
+          "host_sequence": 560,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 563,
+          "host_sequence": 563,
+          "latency_ticks": 861,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 565,
+          "host_sequence": 565,
+          "latency_ticks": 945,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 566,
+          "host_sequence": 567,
+          "latency_ticks": 707,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 568,
+          "host_sequence": 569,
+          "latency_ticks": 721,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 570,
+          "host_sequence": 571,
+          "latency_ticks": 770,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 572,
+          "host_sequence": 573,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 573,
+          "host_sequence": 574,
+          "latency_ticks": 798,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 576,
+          "host_sequence": 576,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 578,
+          "host_sequence": 578,
+          "latency_ticks": 1085,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 579,
+          "host_sequence": 580,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 582,
+          "host_sequence": 582,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 584,
+          "host_sequence": 584,
+          "latency_ticks": 931,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 586,
+          "host_sequence": 586,
+          "latency_ticks": 861,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 588,
+          "host_sequence": 589,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 591,
+          "host_sequence": 592,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 593,
+          "host_sequence": 594,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 596,
+          "host_sequence": 596,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 598,
+          "host_sequence": 598,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 600,
+          "host_sequence": 600,
+          "latency_ticks": 973,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 601,
+          "host_sequence": 602,
+          "latency_ticks": 931,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 603,
+          "host_sequence": 604,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 605,
+          "host_sequence": 606,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 606,
+          "host_sequence": 607,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 608,
+          "host_sequence": 609,
+          "latency_ticks": 721,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 611,
+          "host_sequence": 611,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 612,
+          "host_sequence": 613,
+          "latency_ticks": 777,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 616,
+          "host_sequence": 616,
+          "latency_ticks": 882,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 619,
+          "host_sequence": 619,
+          "latency_ticks": 847,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 620,
+          "host_sequence": 621,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 622,
+          "host_sequence": 623,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 624,
+          "host_sequence": 625,
+          "latency_ticks": 959,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 627,
+          "host_sequence": 627,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 629,
+          "host_sequence": 629,
+          "latency_ticks": 854,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 630,
+          "host_sequence": 631,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 633,
+          "host_sequence": 633,
+          "latency_ticks": 959,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 640,
+          "host_sequence": 640,
+          "latency_ticks": 1064,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 651,
+          "host_sequence": 651,
+          "latency_ticks": 1057,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 662,
+          "host_sequence": 662,
+          "latency_ticks": 1022,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 663,
+          "host_sequence": 663,
+          "latency_ticks": 1029,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 675,
+          "host_sequence": 675,
+          "latency_ticks": 1029,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 686,
+          "host_sequence": 686,
+          "latency_ticks": 1064,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 697,
+          "host_sequence": 697,
+          "latency_ticks": 1022,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 708,
+          "host_sequence": 708,
+          "latency_ticks": 1106,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 719,
+          "host_sequence": 719,
+          "latency_ticks": 1085,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 730,
+          "host_sequence": 730,
+          "latency_ticks": 1064,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 736,
+          "host_sequence": 736,
+          "latency_ticks": 854,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 737,
+          "host_sequence": 738,
+          "latency_ticks": 693,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 739,
+          "host_sequence": 740,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 743,
+          "host_sequence": 743,
+          "latency_ticks": 1085,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 746,
+          "host_sequence": 746,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 747,
+          "host_sequence": 748,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 749,
+          "host_sequence": 750,
+          "latency_ticks": 784,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 752,
+          "host_sequence": 752,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 754,
+          "host_sequence": 754,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 755,
+          "host_sequence": 755,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 757,
+          "host_sequence": 757,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 758,
+          "host_sequence": 759,
+          "latency_ticks": 714,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 760,
+          "host_sequence": 761,
+          "latency_ticks": 784,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 763,
+          "host_sequence": 764,
+          "latency_ticks": 945,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 766,
+          "host_sequence": 767,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 769,
+          "host_sequence": 769,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 771,
+          "host_sequence": 771,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 773,
+          "host_sequence": 773,
+          "latency_ticks": 952,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 775,
+          "host_sequence": 775,
+          "latency_ticks": 917,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 777,
+          "host_sequence": 777,
+          "latency_ticks": 931,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 779,
+          "host_sequence": 779,
+          "latency_ticks": 854,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 780,
+          "host_sequence": 781,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 783,
+          "host_sequence": 783,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 785,
+          "host_sequence": 785,
+          "latency_ticks": 1099,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 787,
+          "host_sequence": 787,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 788,
+          "host_sequence": 788,
+          "latency_ticks": 917,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 791,
+          "host_sequence": 791,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 793,
+          "host_sequence": 793,
+          "latency_ticks": 896,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 794,
+          "host_sequence": 795,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 797,
+          "host_sequence": 798,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 799,
+          "host_sequence": 800,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 802,
+          "host_sequence": 802,
+          "latency_ticks": 924,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 803,
+          "host_sequence": 804,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 805,
+          "host_sequence": 806,
+          "latency_ticks": 700,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 808,
+          "host_sequence": 808,
+          "latency_ticks": 959,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 809,
+          "host_sequence": 810,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 812,
+          "host_sequence": 812,
+          "latency_ticks": 707,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 814,
+          "host_sequence": 814,
+          "latency_ticks": 973,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 816,
+          "host_sequence": 816,
+          "latency_ticks": 945,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 817,
+          "host_sequence": 818,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 819,
+          "host_sequence": 820,
+          "latency_ticks": 952,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 820,
+          "host_sequence": 821,
+          "latency_ticks": 714,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 822,
+          "host_sequence": 823,
+          "latency_ticks": 784,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 824,
+          "host_sequence": 825,
+          "latency_ticks": 728,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 826,
+          "host_sequence": 827,
+          "latency_ticks": 952,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 828,
+          "host_sequence": 829,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 832,
+          "host_sequence": 832,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 833,
+          "host_sequence": 834,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 836,
+          "host_sequence": 836,
+          "latency_ticks": 1001,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 837,
+          "host_sequence": 838,
+          "latency_ticks": 756,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 841,
+          "host_sequence": 841,
+          "latency_ticks": 875,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 842,
+          "host_sequence": 843,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 845,
+          "host_sequence": 845,
+          "latency_ticks": 945,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 846,
+          "host_sequence": 847,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 848,
+          "host_sequence": 849,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 850,
+          "host_sequence": 851,
+          "latency_ticks": 742,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 852,
+          "host_sequence": 853,
+          "latency_ticks": 763,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 853,
+          "host_sequence": 854,
+          "latency_ticks": 721,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 856,
+          "host_sequence": 856,
+          "latency_ticks": 833,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 857,
+          "host_sequence": 857,
+          "latency_ticks": 861,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 859,
+          "host_sequence": 859,
+          "latency_ticks": 833,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 861,
+          "host_sequence": 861,
+          "latency_ticks": 931,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 862,
+          "host_sequence": 863,
+          "latency_ticks": 938,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 864,
+          "host_sequence": 865,
+          "latency_ticks": 749,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 867,
+          "host_sequence": 867,
+          "latency_ticks": 910,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 869,
+          "host_sequence": 869,
+          "latency_ticks": 889,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 872,
+          "host_sequence": 872,
+          "latency_ticks": 903,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 874,
+          "host_sequence": 874,
+          "latency_ticks": 840,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 876,
+          "host_sequence": 876,
+          "latency_ticks": 959,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 877,
+          "host_sequence": 878,
+          "latency_ticks": 735,
+          "vcpu": 1
+        },
+        {
+          "guest_sequence": 879,
+          "host_sequence": 879,
+          "latency_ticks": 854,
+          "vcpu": 1
+        }
+      ],
+      "trailing_host_events_after_guest_trace_stop_are_allowed": true
+    },
+    "schema_version": 1,
+    "virtual_timer_injection_to_guest_irq_ns": {
+      "count": 880,
+      "max_ns": 413733833,
+      "mean_ns": 1462375.581,
+      "min_ns": 28583,
+      "p50_ns": 40833,
+      "p90_ns": 3660708,
+      "p999_ns": 413733833,
+      "p99_ns": 12181166,
+      "population_stddev_ns": 14089272.143,
+      "samples_ns": [
+        28583,
+        28875,
+        29166,
+        29458,
+        29458,
+        29458,
+        29458,
+        29458,
+        29750,
+        29750,
+        29750,
+        30041,
+        30041,
+        30041,
+        30041,
+        30041,
+        30041,
+        30041,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        32083,
+        32083,
+        32083,
+        32083,
+        32083,
+        32083,
+        32375,
+        32666,
+        32666,
+        32666,
+        32666,
+        32666,
+        32958,
+        33250,
+        33250,
+        33250,
+        33250,
+        33250,
+        33541,
+        33541,
+        33833,
+        34125,
+        34125,
+        34708,
+        34708,
+        34708,
+        34708,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35291,
+        35291,
+        35291,
+        35291,
+        35291,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35875,
+        35875,
+        35875,
+        35875,
+        35875,
+        35875,
+        35875,
+        36166,
+        36166,
+        36166,
+        36166,
+        36166,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37333,
+        37333,
+        37333,
+        37333,
+        37333,
+        37333,
+        37333,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39375,
+        39375,
+        39375,
+        39375,
+        39375,
+        39375,
+        39375,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        42000,
+        42000,
+        42291,
+        42291,
+        42291,
+        42291,
+        42583,
+        42583,
+        42583,
+        42583,
+        42583,
+        42875,
+        42875,
+        42875,
+        42875,
+        43166,
+        43166,
+        43166,
+        43458,
+        43750,
+        43750,
+        43750,
+        43750,
+        43750,
+        44041,
+        44041,
+        44041,
+        44041,
+        44333,
+        44333,
+        44333,
+        44333,
+        44333,
+        44333,
+        44625,
+        44625,
+        44625,
+        44916,
+        44916,
+        44916,
+        45208,
+        45208,
+        45208,
+        45208,
+        45208,
+        45208,
+        45500,
+        45500,
+        45500,
+        45500,
+        45500,
+        45791,
+        45791,
+        45791,
+        45791,
+        46083,
+        46083,
+        46083,
+        46083,
+        46083,
+        46375,
+        46375,
+        46375,
+        46375,
+        46666,
+        46666,
+        46958,
+        47250,
+        47250,
+        47250,
+        47833,
+        48125,
+        48125,
+        48416,
+        48416,
+        49291,
+        49875,
+        49875,
+        49875,
+        50458,
+        50458,
+        51041,
+        51916,
+        51916,
+        52791,
+        53083,
+        53375,
+        53666,
+        53958,
+        53958,
+        53958,
+        54250,
+        54541,
+        54541,
+        54541,
+        54541,
+        54833,
+        55125,
+        55125,
+        55125,
+        55416,
+        55708,
+        56000,
+        56291,
+        57458,
+        57750,
+        59208,
+        60375,
+        60375,
+        60375,
+        60958,
+        61250,
+        61541,
+        61541,
+        62708,
+        62708,
+        63000,
+        63875,
+        64166,
+        65041,
+        66791,
+        81958,
+        88083,
+        88666,
+        89250,
+        105583,
+        122791,
+        150500,
+        172666,
+        176166,
+        177625,
+        177625,
+        189875,
+        196875,
+        197750,
+        201833,
+        224291,
+        224583,
+        226333,
+        227208,
+        227500,
+        228375,
+        229833,
+        230708,
+        231583,
+        231875,
+        232166,
+        233041,
+        233916,
+        234500,
+        236250,
+        239166,
+        252583,
+        266291,
+        275625,
+        294000,
+        331916,
+        413000,
+        440708,
+        442166,
+        447708,
+        521500,
+        525583,
+        553583,
+        564375,
+        567291,
+        599958,
+        660041,
+        696791,
+        741708,
+        780208,
+        782541,
+        784000,
+        806750,
+        811416,
+        833875,
+        868291,
+        875875,
+        942375,
+        1022000,
+        1023458,
+        1036875,
+        1061083,
+        1075958,
+        1113000,
+        1134875,
+        1140416,
+        1235791,
+        1238125,
+        1261166,
+        1263208,
+        1288875,
+        1380166,
+        1441416,
+        1443458,
+        1472041,
+        1477583,
+        1516375,
+        1519000,
+        1548166,
+        1559250,
+        1583750,
+        1603583,
+        1611750,
+        1628958,
+        1765458,
+        1766916,
+        1770125,
+        1777708,
+        1809208,
+        1826708,
+        1828458,
+        1843333,
+        1850916,
+        1868708,
+        1940166,
+        1950666,
+        1965250,
+        2026208,
+        2125666,
+        2131791,
+        2172333,
+        2187208,
+        2219583,
+        2267708,
+        2305916,
+        2310291,
+        2358416,
+        2360750,
+        2424041,
+        2451458,
+        2491125,
+        2530500,
+        2561708,
+        2610416,
+        2624708,
+        2658833,
+        2684500,
+        2731166,
+        2734958,
+        2754208,
+        2821291,
+        2832958,
+        2854833,
+        2864166,
+        2876125,
+        2953416,
+        2957500,
+        2961000,
+        3018750,
+        3041500,
+        3047916,
+        3078833,
+        3122583,
+        3138916,
+        3155250,
+        3165750,
+        3183541,
+        3209208,
+        3224083,
+        3237791,
+        3245083,
+        3248291,
+        3291166,
+        3298166,
+        3317125,
+        3440208,
+        3456833,
+        3511375,
+        3523041,
+        3543458,
+        3556875,
+        3558333,
+        3559208,
+        3561250,
+        3568541,
+        3568833,
+        3579916,
+        3603833,
+        3614333,
+        3624833,
+        3650208,
+        3660708,
+        3718458,
+        3722541,
+        3738583,
+        3747041,
+        3765708,
+        3789916,
+        3852916,
+        3858166,
+        3883833,
+        3989125,
+        4083625,
+        4248708,
+        4267375,
+        4280500,
+        4281375,
+        4464541,
+        4480875,
+        4486708,
+        4533375,
+        4554666,
+        4612125,
+        4639833,
+        4663166,
+        4705458,
+        4718583,
+        4827958,
+        4834375,
+        4839041,
+        4860041,
+        4880458,
+        4884250,
+        4884833,
+        4888333,
+        4901166,
+        4902333,
+        4921583,
+        4930041,
+        4961833,
+        4974083,
+        5017541,
+        5033000,
+        5038541,
+        5054583,
+        5064500,
+        5097458,
+        5097458,
+        5113791,
+        5124000,
+        5149958,
+        5156958,
+        5174166,
+        5183208,
+        5247958,
+        5271291,
+        5293458,
+        5296958,
+        5307458,
+        5634416,
+        5706166,
+        6130833,
+        6776583,
+        7275625,
+        7276208,
+        7435166,
+        7933625,
+        8099875,
+        8533291,
+        8635958,
+        8810083,
+        9578041,
+        9626750,
+        10028083,
+        10059000,
+        10103625,
+        10434666,
+        10805375,
+        11043958,
+        11123000,
+        11781291,
+        12181166,
+        12218208,
+        12904208,
+        13588750,
+        14130666,
+        16419958,
+        16624708,
+        16863291,
+        413733833
+      ],
+      "unit": "ns"
+    }
+  },
+  "host_noise": {
+    "status": "not-configured"
+  },
+  "host_pcpu_accounting": {
+    "pcpus": [
+      {
+        "idle_ticks": 0,
+        "pcpu": 0,
+        "running_ticks": 123359019,
+        "wall_ticks": 123359019
+      },
+      {
+        "idle_ticks": 15862931,
+        "pcpu": 1,
+        "running_ticks": 107496088,
+        "wall_ticks": 123359019
+      },
+      {
+        "idle_ticks": 72436231,
+        "pcpu": 2,
+        "running_ticks": 50922788,
+        "wall_ticks": 123359019
+      },
+      {
+        "idle_ticks": 123343318,
+        "pcpu": 3,
+        "running_ticks": 15701,
+        "wall_ticks": 123359019
+      }
+    ],
+    "source": "AxVisor architectural idle and vCPU runtime trace",
+    "status": "collected",
+    "vcpus": [
+      {
+        "max_run_ticks": 1679769,
+        "max_wait_ticks": 199234,
+        "migrations": 0,
+        "pcpu_mask": 2,
+        "run_count": 2596,
+        "run_ticks": 106233050,
+        "vcpu": 0,
+        "vm": 1,
+        "wait_count": 386,
+        "wait_ticks": 15977297
+      },
+      {
+        "max_run_ticks": 291095,
+        "max_wait_ticks": 235648,
+        "migrations": 0,
+        "pcpu_mask": 4,
+        "run_count": 2256,
+        "run_ticks": 49907172,
+        "vcpu": 1,
+        "vm": 1,
+        "wait_count": 1089,
+        "wait_ticks": 44906239
+      }
+    ]
+  },
+  "input": {
+    "line_count": 315,
+    "path": "/home/seven_wsl/Workspace/starry/results/rt-current-20260813-077ba386-board/rt/shared/raw.log",
+    "sha256": "2a820ed02413f90a96bd38e265e487fa81adb8e9faefe7894b73fd046fa0929e",
+    "snapshot_filesystem_state": "clean"
+  },
+  "metric_semantics": {
+    "dispatch_latency": {
+      "authority": "direct-guest-observation",
+      "meaning": "pthread/eventfd wake-to-observation latency inside StarryOS"
+    },
+    "emulated_irq_response": {
+      "authority": "proxy",
+      "meaning": "timerfd expiration-to-read latency; this is not direct AxVisor interrupt-injection-to-guest-IRQ-entry latency"
+    },
+    "periodic_jitter": {
+      "authority": "direct-guest-observation",
+      "meaning": "absolute CLOCK_MONOTONIC wake-up jitter inside StarryOS"
+    },
+    "virtual_timer_injection_to_guest_irq": {
+      "authority": "direct-cross-layer-observation",
+      "meaning": "AxVisor hardware virtual-timer injection to StarryOS timer IRQ handler entry in the shared guest CNTVCT_EL0 counter domain"
+    }
+  },
+  "metrics": {
+    "dispatch_latency": {
+      "count": 100,
+      "max_ns": 199792,
+      "mean_ns": 53952.46,
+      "min_ns": 51625,
+      "p50_ns": 52500,
+      "p90_ns": 52792,
+      "p999_ns": 199792,
+      "p99_ns": 57750,
+      "population_stddev_ns": 14670.376,
+      "unit": "ns"
+    },
+    "emulated_irq_response": {
+      "count": 100,
+      "max_ns": 8720166,
+      "mean_ns": 653248.0,
+      "min_ns": 217750,
+      "p50_ns": 226375,
+      "p90_ns": 262083,
+      "p999_ns": 8720166,
+      "p99_ns": 7780541,
+      "population_stddev_ns": 1537932.584,
+      "unit": "ns"
+    },
+    "periodic_jitter": {
+      "count": 100,
+      "max_ns": 214709,
+      "mean_ns": 199817.86,
+      "min_ns": 193084,
+      "p50_ns": 199750,
+      "p90_ns": 202417,
+      "p999_ns": 214709,
+      "p99_ns": 206917,
+      "population_stddev_ns": 2984.358,
+      "unit": "ns"
+    },
+    "virtual_timer_injection_to_guest_irq": {
+      "count": 880,
+      "max_ns": 413733833,
+      "mean_ns": 1462375.581,
+      "min_ns": 28583,
+      "p50_ns": 40833,
+      "p90_ns": 3660708,
+      "p999_ns": 413733833,
+      "p99_ns": 12181166,
+      "population_stddev_ns": 14089272.143,
+      "samples_ns": [
+        28583,
+        28875,
+        29166,
+        29458,
+        29458,
+        29458,
+        29458,
+        29458,
+        29750,
+        29750,
+        29750,
+        30041,
+        30041,
+        30041,
+        30041,
+        30041,
+        30041,
+        30041,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30333,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30625,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        30916,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31208,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31500,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        31791,
+        32083,
+        32083,
+        32083,
+        32083,
+        32083,
+        32083,
+        32375,
+        32666,
+        32666,
+        32666,
+        32666,
+        32666,
+        32958,
+        33250,
+        33250,
+        33250,
+        33250,
+        33250,
+        33541,
+        33541,
+        33833,
+        34125,
+        34125,
+        34708,
+        34708,
+        34708,
+        34708,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35000,
+        35291,
+        35291,
+        35291,
+        35291,
+        35291,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35583,
+        35875,
+        35875,
+        35875,
+        35875,
+        35875,
+        35875,
+        35875,
+        36166,
+        36166,
+        36166,
+        36166,
+        36166,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36458,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        36750,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37041,
+        37333,
+        37333,
+        37333,
+        37333,
+        37333,
+        37333,
+        37333,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37625,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        37916,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38208,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38500,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        38791,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39083,
+        39375,
+        39375,
+        39375,
+        39375,
+        39375,
+        39375,
+        39375,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39666,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        39958,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40250,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40541,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        40833,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41125,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41416,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        41708,
+        42000,
+        42000,
+        42291,
+        42291,
+        42291,
+        42291,
+        42583,
+        42583,
+        42583,
+        42583,
+        42583,
+        42875,
+        42875,
+        42875,
+        42875,
+        43166,
+        43166,
+        43166,
+        43458,
+        43750,
+        43750,
+        43750,
+        43750,
+        43750,
+        44041,
+        44041,
+        44041,
+        44041,
+        44333,
+        44333,
+        44333,
+        44333,
+        44333,
+        44333,
+        44625,
+        44625,
+        44625,
+        44916,
+        44916,
+        44916,
+        45208,
+        45208,
+        45208,
+        45208,
+        45208,
+        45208,
+        45500,
+        45500,
+        45500,
+        45500,
+        45500,
+        45791,
+        45791,
+        45791,
+        45791,
+        46083,
+        46083,
+        46083,
+        46083,
+        46083,
+        46375,
+        46375,
+        46375,
+        46375,
+        46666,
+        46666,
+        46958,
+        47250,
+        47250,
+        47250,
+        47833,
+        48125,
+        48125,
+        48416,
+        48416,
+        49291,
+        49875,
+        49875,
+        49875,
+        50458,
+        50458,
+        51041,
+        51916,
+        51916,
+        52791,
+        53083,
+        53375,
+        53666,
+        53958,
+        53958,
+        53958,
+        54250,
+        54541,
+        54541,
+        54541,
+        54541,
+        54833,
+        55125,
+        55125,
+        55125,
+        55416,
+        55708,
+        56000,
+        56291,
+        57458,
+        57750,
+        59208,
+        60375,
+        60375,
+        60375,
+        60958,
+        61250,
+        61541,
+        61541,
+        62708,
+        62708,
+        63000,
+        63875,
+        64166,
+        65041,
+        66791,
+        81958,
+        88083,
+        88666,
+        89250,
+        105583,
+        122791,
+        150500,
+        172666,
+        176166,
+        177625,
+        177625,
+        189875,
+        196875,
+        197750,
+        201833,
+        224291,
+        224583,
+        226333,
+        227208,
+        227500,
+        228375,
+        229833,
+        230708,
+        231583,
+        231875,
+        232166,
+        233041,
+        233916,
+        234500,
+        236250,
+        239166,
+        252583,
+        266291,
+        275625,
+        294000,
+        331916,
+        413000,
+        440708,
+        442166,
+        447708,
+        521500,
+        525583,
+        553583,
+        564375,
+        567291,
+        599958,
+        660041,
+        696791,
+        741708,
+        780208,
+        782541,
+        784000,
+        806750,
+        811416,
+        833875,
+        868291,
+        875875,
+        942375,
+        1022000,
+        1023458,
+        1036875,
+        1061083,
+        1075958,
+        1113000,
+        1134875,
+        1140416,
+        1235791,
+        1238125,
+        1261166,
+        1263208,
+        1288875,
+        1380166,
+        1441416,
+        1443458,
+        1472041,
+        1477583,
+        1516375,
+        1519000,
+        1548166,
+        1559250,
+        1583750,
+        1603583,
+        1611750,
+        1628958,
+        1765458,
+        1766916,
+        1770125,
+        1777708,
+        1809208,
+        1826708,
+        1828458,
+        1843333,
+        1850916,
+        1868708,
+        1940166,
+        1950666,
+        1965250,
+        2026208,
+        2125666,
+        2131791,
+        2172333,
+        2187208,
+        2219583,
+        2267708,
+        2305916,
+        2310291,
+        2358416,
+        2360750,
+        2424041,
+        2451458,
+        2491125,
+        2530500,
+        2561708,
+        2610416,
+        2624708,
+        2658833,
+        2684500,
+        2731166,
+        2734958,
+        2754208,
+        2821291,
+        2832958,
+        2854833,
+        2864166,
+        2876125,
+        2953416,
+        2957500,
+        2961000,
+        3018750,
+        3041500,
+        3047916,
+        3078833,
+        3122583,
+        3138916,
+        3155250,
+        3165750,
+        3183541,
+        3209208,
+        3224083,
+        3237791,
+        3245083,
+        3248291,
+        3291166,
+        3298166,
+        3317125,
+        3440208,
+        3456833,
+        3511375,
+        3523041,
+        3543458,
+        3556875,
+        3558333,
+        3559208,
+        3561250,
+        3568541,
+        3568833,
+        3579916,
+        3603833,
+        3614333,
+        3624833,
+        3650208,
+        3660708,
+        3718458,
+        3722541,
+        3738583,
+        3747041,
+        3765708,
+        3789916,
+        3852916,
+        3858166,
+        3883833,
+        3989125,
+        4083625,
+        4248708,
+        4267375,
+        4280500,
+        4281375,
+        4464541,
+        4480875,
+        4486708,
+        4533375,
+        4554666,
+        4612125,
+        4639833,
+        4663166,
+        4705458,
+        4718583,
+        4827958,
+        4834375,
+        4839041,
+        4860041,
+        4880458,
+        4884250,
+        4884833,
+        4888333,
+        4901166,
+        4902333,
+        4921583,
+        4930041,
+        4961833,
+        4974083,
+        5017541,
+        5033000,
+        5038541,
+        5054583,
+        5064500,
+        5097458,
+        5097458,
+        5113791,
+        5124000,
+        5149958,
+        5156958,
+        5174166,
+        5183208,
+        5247958,
+        5271291,
+        5293458,
+        5296958,
+        5307458,
+        5634416,
+        5706166,
+        6130833,
+        6776583,
+        7275625,
+        7276208,
+        7435166,
+        7933625,
+        8099875,
+        8533291,
+        8635958,
+        8810083,
+        9578041,
+        9626750,
+        10028083,
+        10059000,
+        10103625,
+        10434666,
+        10805375,
+        11043958,
+        11123000,
+        11781291,
+        12181166,
+        12218208,
+        12904208,
+        13588750,
+        14130666,
+        16419958,
+        16624708,
+        16863291,
+        413733833
+      ],
+      "unit": "ns"
+    }
+  },
+  "profile_contract": {
+    "dedicated_cpus": false,
+    "phys_cpu_sets": [
+      "0x2",
+      "0x4"
+    ],
+    "soak": false,
+    "vm_config": "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml"
+  },
+  "schema_version": 1
+}

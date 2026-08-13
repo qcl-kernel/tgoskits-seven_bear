@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "amendment_id": "stress-amendment-003-findmnt-spacing",
+  "campaign_id": "starry-rt-stress-formal-20260803",
+  "created_at_utc": "2026-08-03T13:58:39Z",
+  "status": "applied",
+  "preregistration_sha256": "9fb8e46eb402aad5c06231d3d96189ba61b51ef134395c9bb2d561537a519347",
+  "preregistration_modified": false,
+  "trigger": {
+    "half": "pair-2/partitioned",
+    "attempt": "20260803T135139Z-61436",
+    "measurement_completed": true,
+    "linux_restored": true,
+    "driver_error": "STRESS_HALF_FAILED: Linux ext4 read-write restore evidence is missing"
+  },
+  "root_cause": "findmnt column alignment emitted '/dev/mmcblk1p2 ext4   rw,...'. The evidence driver required one literal space between ext4 and rw even though the correct device, filesystem, and read-write state were present.",
+  "change": {
+    "scope": "evidence execution driver only",
+    "old_driver_sha256": "e47b90e9c343768cbf9742584cce76e79c8d2a35e22af8591fc371b705539d84",
+    "new_driver_sha256": "8ac9142f8089406a5ab35d5c992d90659faffedc073e0487d776197c631286bd",
+    "fixes": [
+      "accept one or more whitespace characters between findmnt columns",
+      "add a summary-only validation mode and execute it successfully against this harvested summary before the next board run"
+    ]
+  },
+  "data_handling": {
+    "rerun": false,
+    "harvested_before_next_board_run": true,
+    "failed_driver_log_retained": "pair-2/partitioned/attempts/20260803T135139Z-61436",
+    "measurement_disposition": "accepted as the preregistered pair-2/partitioned half"
+  },
+  "validated_evidence": {
+    "raw": {
+      "path": "pair-2/partitioned/raw.log",
+      "bytes": 4071399,
+      "sha256": "be83189befef97805b3fa2869378bac935cdb9145796879512f8b8565905a839",
+      "samples": 30000
+    },
+    "summary": {
+      "path": "pair-2/partitioned/summary.json",
+      "bytes": 8274000,
+      "sha256": "53cfcc9d0ef200260cad41bc6e2f8207a3a21e43d26e92de2d0679aa461e2f2b"
+    },
+    "guest_irq_trace": {
+      "sha256": "fa7922fcfbd6fcfbe44cfc9c73781220c69a687907db637bb8c2aba76552fc96",
+      "records": 48565
+    },
+    "host_trace": {
+      "sha256": "ad0bbc3b8433fd41f180473266908ca942f0c470eb2323ff27402e28f508394d",
+      "records": 51229
+    },
+    "console_sha256": "57243d9f6b1236774967a522cbe1fa9b5dbbd2486a9df4f9b197bd82e07bc6c4",
+    "snapshot_sha256": "4ce40659437e017b833f5b1875b6d468241759a32dbb4d79c006e5d3b2d225d4",
+    "snapshot_filesystem_state": "clean",
+    "direct_irq_pair_count": 48565,
+    "all_loss_counters_zero": true,
+    "vcpu_masks": ["0x2", "0x4"],
+    "vcpu_migrations": 0,
+    "linux_root_after_run": "/dev/mmcblk1p2 ext4 rw"
+  },
+  "next_required_half": "pair-2/shared"
+}

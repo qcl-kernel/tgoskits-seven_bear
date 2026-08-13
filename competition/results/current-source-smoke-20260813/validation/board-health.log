@@ -1,0 +1,5 @@
+﻿2026-08-13T15:22:25Z
+orangepi5plus
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+cpu_temp_milli_c=37000
+ 23:22:25 up 5 min,  2 users,  load average: 0.01, 0.13, 0.08

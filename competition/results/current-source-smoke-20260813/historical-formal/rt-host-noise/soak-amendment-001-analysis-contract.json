@@ -1,0 +1,79 @@
+{
+  "amendment_id": "soak-analysis-contract-001",
+  "created_at": "2026-08-03T20:47:46+08:00",
+  "issue": {
+    "cause": "The board analyzer selected the standard profile VM config from the shared/partitioned profile alone and had no explicit soak contract input.",
+    "detected_by": "aggregate_starry_board.py",
+    "error": "shared soak does not use its soak VM config",
+    "measurement_impact": "none; raw guest samples and independent host/guest IRQ traces were already persisted and validated",
+    "rerun_required": false
+  },
+  "preregistration": {
+    "path": "soak-preregistration.json",
+    "sha256": "943c6b06baa3445405670be389a36ead8270089ba4918f8651e0c583cf804826"
+  },
+  "regression": {
+    "fix": "Add an explicit soak input to the analyzer and ORANGEPI_RT_SOAK=1 to the harvester; record the dedicated soak VM config in profile_contract.",
+    "green": [
+      "StarryBoardAnalyzerTests.test_soak_capture_records_the_dedicated_vm_config passed",
+      "Python analyzer suite 58/58 passed",
+      "test_starry_runner.sh passed",
+      "cargo fmt --all -- --check passed",
+      "git diff --check passed"
+    ],
+    "red": "StarryBoardAnalyzerTests.test_soak_capture_records_the_dedicated_vm_config failed with TypeError because analyze_starry_file did not accept soak"
+  },
+  "results": {
+    "campaign_summary": {
+      "m2_exit_gate_met": true,
+      "path": "campaign-summary.json",
+      "sha256": "82dd94958dfdbd18cd0c9607f489aa392e563334091d85936d589f5d68488d8a",
+      "soak_evidence_collected": true
+    },
+    "comparison": {
+      "path": "soak/comparison.json",
+      "sha256": "3f47e246f5f2a2044d93e7164fb7470cf1e7a0133508f40f13c4b8d872d6a80e"
+    },
+    "partitioned": {
+      "console_exception_audit": "clean",
+      "console_sha256": "1b2ae72f015e9dd92e0c84468bb8ccf3ce742285f841ba55ad979d82b24023de",
+      "elapsed_ns": 1962161014916,
+      "guest_irq_records": 456620,
+      "guest_irq_sha256": "9f9638d81d46a08df5cea3b7c6aa2f008fdb1ee4a788635737d36cfca33391aa",
+      "host_noise_pcpu": 3,
+      "host_trace_records": 460214,
+      "host_trace_sha256": "3d5f65ff1967162516ef53820b268849594e40d3d60e5ae1d27330322539d303",
+      "loss_counters_zero": true,
+      "original_summary_sha256": "57067c9b1447e7217ba0e456a57536adad238fa032bebf6f015353e41d6b54a3",
+      "raw_sha256": "a58fe20849a86bb088805c01a7867cbadbf3f9554c4196ed378c817bf56f034e",
+      "regenerated_summary_sha256": "093419521713fdd0470db757ae6e4ffb0af6ddb8ac35443d2b1dfa3fc2fe7c16",
+      "snapshot_filesystem_state": "clean",
+      "snapshot_image_sha256": "77d5da6359734b57f155a5d5580959d8123f66d672b26aeaa4c2d3cd375565ec",
+      "stop_reason": "guest-complete"
+    },
+    "shared": {
+      "console_exception_audit": "clean",
+      "console_sha256": "bf98795b479c0342aec8d425f780352b92aaccda81fd89f9538a4fe0da64ff9a",
+      "elapsed_ns": 2101161087958,
+      "guest_irq_records": 387684,
+      "guest_irq_sha256": "13f70e39d7c2a5296ea04019b5c76809364b3930e9ece85629672588b0ee36a8",
+      "host_noise_pcpu": 1,
+      "host_trace_records": 392752,
+      "host_trace_sha256": "9e120458e6b1c22253cd2be69ae79d30de5b740dec43b1236dd3fcf856bda6ce",
+      "loss_counters_zero": true,
+      "original_summary_sha256": "8f2953f12d3ed913a459955c3e2430dae14896e8cdda744f48e777507567edc4",
+      "raw_sha256": "271ccbe450480d956b8b8776b8a5e2bd008618d898ccee60010421f194ee50f3",
+      "regenerated_summary_sha256": "79fafc5f3c8413df79c3ae519f0a51ecb3bf189cf0b15ac8530c509c22d96f15",
+      "snapshot_filesystem_state": "clean",
+      "snapshot_image_sha256": "6aa664d916cf3afdfc0467f61b511fd3b583dbc026add2dc67d1060f538e600b",
+      "stop_reason": "guest-complete"
+    }
+  },
+  "schema_version": 1,
+  "source": {
+    "analysis_fix_commit": "b3ee834574df336a1bec0faf442f49856b0fb0ff",
+    "measurement_commit": "2e97430f2171667d4ec16c3a02931653f7ddedf8",
+    "parent_campaign_summary_sha256": "964f8e3884a6f6ed1594d55cfa0383b8329d5ca8dd8b04eafcb4de7ea01647b4"
+  },
+  "status": "accepted-post-run-analysis-amendment"
+}

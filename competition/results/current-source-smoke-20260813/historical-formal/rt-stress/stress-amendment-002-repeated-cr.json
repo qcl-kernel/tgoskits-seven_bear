@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "amendment_id": "stress-amendment-002-repeated-cr",
+  "campaign_id": "starry-rt-stress-formal-20260803",
+  "created_at_utc": "2026-08-03T13:50:41Z",
+  "status": "applied",
+  "supersedes_driver_line_ending_fix_in": "stress-amendment-001-driver-marker.json",
+  "preregistration": {
+    "path": "stress-preregistration.json",
+    "sha256": "9fb8e46eb402aad5c06231d3d96189ba61b51ef134395c9bb2d561537a519347",
+    "modified": false
+  },
+  "trigger": {
+    "half": "pair-1/partitioned",
+    "attempt": "20260803T134312Z-47511",
+    "measurement_completed": true,
+    "linux_restored": true,
+    "driver_error": "STRESS_HALF_FAILED: StarryOS completion marker is missing"
+  },
+  "root_cause": "The captured guest completion line ends in two carriage-return bytes before newline (0d 0d 0a). Amendment 001 allowed zero or one CR, so the outer evidence driver still rejected the valid console line. This is serial rendering only; the snapshot raw metadata and analyzer inputs are unaffected.",
+  "change": {
+    "scope": "evidence execution driver only; frozen committed source and all measurement artifacts remain unchanged",
+    "old_driver_sha256": "32ba2837e4634bb7ab2b4b21abcb6898592253cd4f21f6d6b1185b0aa8455a15",
+    "new_driver_sha256": "e47b90e9c343768cbf9742584cce76e79c8d2a35e22af8591fc371b705539d84",
+    "fixes": [
+      "accept zero or more CR bytes on exact board and Linux markers",
+      "match the guest capture-complete payload as a fixed substring while retaining analyzer validation as the authoritative lifecycle gate"
+    ]
+  },
+  "data_handling": {
+    "rerun_pair_1_partitioned": false,
+    "reason": "The measurement, snapshot sync, host filesystem sync, and Linux restore succeeded. The current /home/rt snapshot and host trace were harvested before any subsequent stage or board run.",
+    "failed_driver_log_retained": "pair-1/partitioned/attempts/20260803T134312Z-47511",
+    "successful_logs_promoted_without_modification": true,
+    "measurement_disposition": "accepted as the preregistered pair-1/partitioned half"
+  },
+  "validated_evidence": {
+    "raw": {
+      "path": "pair-1/partitioned/raw.log",
+      "bytes": 4071398,
+      "sha256": "011fc0213ee82ff3f51ef00a892e11a883765954714dc0953e493b1bcd7bff3b",
+      "samples": 30000
+    },
+    "summary": {
+      "path": "pair-1/partitioned/summary.json",
+      "bytes": 8273058,
+      "sha256": "218b8804e714e791671a634847a5cf313c455296dd6f8d761fa5bd9db80afff2"
+    },
+    "guest_irq_trace": {
+      "path": "pair-1/partitioned/guest-irq.log.gz",
+      "bytes": 446393,
+      "sha256": "d3532ae75cfe7e65b3398f601b09e388bf3f67a26ebe95fc4564d08dc4ae0114",
+      "records": 48557
+    },
+    "host_trace": {
+      "path": "pair-1/partitioned/host.log",
+      "bytes": 9445544,
+      "sha256": "29b7ec462c759d15199462a234a3b65e296a74ae1102dbae0d19dff3eea1623e",
+      "records": 51220
+    },
+    "console": {
+      "path": "pair-1/partitioned/console.log",
+      "bytes": 59063,
+      "sha256": "f2de6c5c20848cb89831e551f67cbd26656ecacb7276372d087524f7631f719a"
+    },
+    "snapshot": {
+      "remote_path": "/home/rt",
+      "bytes": 67108864,
+      "sha256": "0ae12d7459b0193df4fc8bcd5bd5162feda0d219955b74ecf7da6abbfede7a3b",
+      "filesystem_state": "clean"
+    },
+    "direct_irq_pair_count": 48557,
+    "all_loss_counters_zero": true,
+    "vcpu_masks": ["0x2", "0x4"],
+    "vcpu_migrations": 0,
+    "linux_root_after_run": "/dev/mmcblk1p2 ext4 rw"
+  },
+  "next_required_half": "pair-2/partitioned"
+}

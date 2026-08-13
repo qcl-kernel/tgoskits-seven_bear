@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "amendment_id": 2,
+  "status": "active",
+  "created_at_utc": "2026-08-03T09:01:33Z",
+  "preregistration": "campaign-preregistration.json",
+  "previous_amendment": "campaign-amendment-001.json",
+  "reason": {
+    "category": "host-trace-persistence-timeout",
+    "observation": "Pair 1 shared attempt 3 completed all three 10000-sample phases and stopped host noise with guest-complete, but did not publish AXVISOR_SNAPSHOT_SYNC_OK before the 1200 second wrapper timeout.",
+    "diagnosis": "The 64 MiB snapshot was fully written and passed read-only e2fsck. The remaining /home/rt.host.log.new was 633982 bytes with allocated blocks but zero-filled contents after recovery, proving that direct formatted writes to the ArceOS ext4 file reached the final flush without durable trace data.",
+    "correction": "Serialize the host trace in memory, then reuse the bounded 1 MiB chunk persistence path with explicit per-chunk synchronization and atomic rename.",
+    "measurement_policy": "Attempt 3 is excluded because the sole terminal success marker and durable host trace were absent."
+  },
+  "invalid_attempt": {
+    "pair": 1,
+    "profile": "shared",
+    "attempt": 3,
+    "accepted": false,
+    "guest_system_down_seconds": 340.290944,
+    "host_noise": {
+      "stop_reason": "guest-complete",
+      "requested_pcpu": 1,
+      "observed_pcpu_mask": "0x2",
+      "elapsed_ns": 263513559166
+    },
+    "evidence": {
+      "console": {
+        "path": "pair-1/shared/attempt-003-snapshot-timeout.log",
+        "sha256": "d2d082e806f54a0dee5c9e797aa1062ebe4440411ccb0de71ad8ff343efb66f1"
+      },
+      "snapshot": {
+        "path": "pair-1/shared/attempt-003-snapshot.img",
+        "bytes": 67108864,
+        "sha256": "e89b6aac589cc513e2676c399dc855befcf2a39975ae103d0dc569be4abea9b7",
+        "read_only_fsck": "passed"
+      },
+      "snapshot_fsck_log": {
+        "path": "pair-1/shared/attempt-003-snapshot-fsck.log",
+        "sha256": "3e29282dbb4b41f176b9078f752b8ca7c10aff574b90dc99676b56aa5a5e0239"
+      },
+      "incomplete_host_trace": {
+        "path": "pair-1/shared/attempt-003-host-trace.new",
+        "bytes": 633982,
+        "allocated_512_byte_blocks": 1240,
+        "persisted_marker_count": 0,
+        "sha256": "aa880df76bac5638550b21954aef41be4d1eb8d2533ca27b8d175046799019da"
+      },
+      "linux_recovery": {
+        "path": "pair-1/shared/attempt-003-fsckfix-recovery.log",
+        "sha256": "7b9aba53e442ec44010c54b18689a4952e29b4596f3eaa2b955f1d5ae5774bce",
+        "command": "one-shot extraboardargs=fsckfix with TF mmc 1:1 boot.scr",
+        "result": "journal recovered; /dev/mmcblk1p2 clean; Linux reached automatic login and ext4 rw"
+      }
+    }
+  },
+  "source": {
+    "branch": "experiment/m2-formal-20260803",
+    "previous_commit": "fd031787651bbfa40084dd083d03e70c3456731b",
+    "amended_commit": "0588743ecb807d7363a3dec90c17a159179933b0",
+    "changed_files": [
+      "os/axvisor/src/shell/command/host.rs",
+      "competition/ivc/tests/test_qemu_config.py"
+    ],
+    "measurement_artifacts_unchanged": true,
+    "formal_configurations_unchanged": true
+  },
+  "validation": {
+    "regression_before_fix": "failed as required",
+    "regression_after_fix": "passed",
+    "python_competition_ivc": "58/58 passed",
+    "shell_runner": "passed",
+    "cargo_fmt": "passed",
+    "axvisor_formal_shared_build": "passed",
+    "axvisor_target_clippy": "passed with pre-existing dependency warnings"
+  },
+  "unchanged_contract": {
+    "host_noise_max_duration_ms": 600000,
+    "board_timeout_seconds": 1200,
+    "wrapper_timeout_seconds": 1200,
+    "pair_order": [
+      { "pair": 1, "order": ["shared", "partitioned"] },
+      { "pair": 2, "order": ["partitioned", "shared"] },
+      { "pair": 3, "order": ["shared", "partitioned"] },
+      { "pair": 4, "order": ["partitioned", "shared"] },
+      { "pair": 5, "order": ["shared", "partitioned"] }
+    ],
+    "measurement_and_acceptance": "unchanged"
+  },
+  "applies_from": {
+    "pair": 1,
+    "profile": "shared",
+    "attempt": 4
+  }
+}

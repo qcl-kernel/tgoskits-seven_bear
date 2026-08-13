@@ -1,0 +1,9 @@
+...........................................................................
+----------------------------------------------------------------------
+Ran 75 tests in 0.434s
+
+OK
+test_runner: PASS
+test_host_toolchain: PASS
+test_stage_starry_board: PASS
+test_starry_runner: PASS

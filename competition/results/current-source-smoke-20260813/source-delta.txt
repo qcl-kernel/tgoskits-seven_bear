@@ -1,0 +1,11 @@
+Source boundary: C-RT -> C-IVC
+from 077ba386c20c29b84749f509b29e8a3f6f76e1e2
+to   598b357f92c848e669c12cca830a4d08d0a50e36
+
+M competition/ivc/analyze_board.py
+M competition/ivc/tests/test_analyze_board.py
+M competition/ivc/tests/test_orangepi_zephyr_guest_contract.py
+M competition/ivc/zephyr/src/main.c
+
+No scripts/benchmark/axvisor-rt, virtualization, os, components, drivers,
+memory, or platform runtime/config path changed after the RT physical run.

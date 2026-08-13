@@ -1,0 +1,1116 @@
+source_commit=fae82be1b01c5206f0bbac5998c814fb71255d02
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.70s
+     Running `target/debug/tg-xtask ktest qemu -p axvisor --test axtest --arch aarch64`
+[2026-08-13T13:18:38Z INFO  axbuild::context] Workspace root: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05
+Using build config: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/axvisor/configs/board/qemu-aarch64.toml
+[axbuild] cargo build package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json config=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/axvisor/configs/board/qemu-aarch64.toml ...
+sh -c /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axbuild/std/prebuild/prebuild-aarch64-unknown-linux-musl-e6b2051d372175e1.sh
+AR_aarch64_unknown_linux_musl=aarch64-linux-musl-ar
+AX_ARCH=aarch64
+AX_LOG=info
+AX_TARGET=aarch64-unknown-none-softfloat
+BINDGEN_EXTRA_CLANG_ARGS_aarch64_unknown_linux_musl=--target=aarch64-linux-musl --sysroot=/ -mgeneral-regs-only
+CARGO_ENCODED_RUSTFLAGS=--cfgaxtest--check-cfgcfg(axtest)
+CARGO_UNSTABLE_JSON_TARGET_SPEC=true
+CC_aarch64_unknown_linux_musl=aarch64-linux-musl-cc
+CFLAGS_aarch64_unknown_linux_musl=-mgeneral-regs-only -fno-stack-protector
+CXXFLAGS_aarch64_unknown_linux_musl=-mgeneral-regs-only -fno-stack-protector
+cargo build --config /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/tmp/axbuild/std/config-aarch64-unknown-linux-musl-dynamic.toml -p axvisor --test axtest --target scripts/targets/std/pie/aarch64-unknown-linux-musl.json -Z unstable-options --target-dir /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target --features ax-std/fs,ax-std/nvme,fs,axtest,log/release_max_level_info -Z json-target-spec --release --message-format json-render-diagnostics
+   Compiling compiler_builtins v0.1.160 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins)
+   Compiling core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core)
+   Compiling libc v0.2.185
+   Compiling std v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std)
+   Compiling ax-driver v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/ax-driver)
+   Compiling ax-hal v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axhal)
+   Compiling ax-task v0.6.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axtask)
+   Compiling axtest-macros v0.5.14 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axtest/axtest_macros)
+   Compiling ax-posix-api v0.5.32 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_posix_api)
+   Compiling axvisor v0.5.24 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/axvisor)
+   Compiling thiserror v2.0.20
+   Compiling heapless v0.9.3
+   Compiling ax-errno v0.6.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axerrno)
+   Compiling num-traits v0.2.19
+   Compiling ax-percpu v0.4.17 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/percpu/percpu)
+   Compiling radium v0.7.0
+   Compiling libc v0.2.189
+   Compiling anyhow v1.0.104
+   Compiling rust_decimal v1.42.1
+   Compiling ax-alloc v0.8.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ax-alloc)
+   Compiling someboot v0.3.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/someboot)
+   Compiling serde_core v1.0.229
+   Compiling somehal v0.8.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/somehal)
+   Compiling axplat-dyn v0.7.15 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/axplat-dyn)
+   Compiling typeid v1.0.3
+   Compiling serde v1.0.229
+   Compiling memoffset v0.9.1
+   Compiling scope-local v0.4.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/scope-local)
+   Compiling ax-runtime v0.10.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axruntime)
+   Compiling zerocopy v0.8.56
+   Compiling rustc-std-workspace-core v1.99.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/rustc-std-workspace-core)
+   Compiling alloc v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/alloc)
+   Compiling panic_abort v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/panic_abort)
+   Compiling rustc-demangle v0.1.28
+   Compiling cfg-if v1.0.4
+   Compiling rustc-literal-escaper v0.0.8
+   Compiling unwind v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/unwind)
+   Compiling rustc-std-workspace-alloc v1.99.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/rustc-std-workspace-alloc)
+   Compiling panic_unwind v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/panic_unwind)
+   Compiling hashbrown v0.17.1
+   Compiling std_detect v0.1.5 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std_detect)
+   Compiling proc_macro v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/proc_macro)
+   Compiling log v0.4.33
+   Compiling bitflags v2.13.1
+   Compiling byteorder v1.5.0
+   Compiling ax-sync v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axsync)
+   Compiling tock-registers v0.10.1
+   Compiling as-any v0.3.2
+   Compiling stable_deref_trait v1.2.1
+   Compiling ax-memory-addr v0.6.11 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/memory_addr)
+   Compiling rdif-def v0.3.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-def)
+   Compiling ax-lazyinit v0.4.10 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ax-lazyinit)
+   Compiling bit_field v0.10.3
+   Compiling derive_more v2.1.1
+   Compiling rdif-base v0.8.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-base)
+   Compiling hash32 v0.3.1
+   Compiling scopeguard v1.2.0
+   Compiling strum v0.27.2
+   Compiling irq-framework v0.3.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/irq-framework)
+   Compiling pci_types v0.10.1
+   Compiling tock-registers v0.9.0
+   Compiling cpu-local v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/cpu-local)
+   Compiling lock_api v0.4.14
+   Compiling mmio-api v0.2.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/mmio-api)
+   Compiling aarch64-cpu v10.0.0
+   Compiling bitmaps v3.2.1
+   Compiling spinning_top v0.3.0
+   Compiling rdif-msi v0.2.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-msi)
+   Compiling rdif-pcie v0.2.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-pcie)
+   Compiling acpi v6.1.1
+   Compiling rdif-intc v0.15.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-intc)
+   Compiling rdif-power v0.8.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-power)
+   Compiling rdif-clk v0.5.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-clk)
+   Compiling rdif-reset v0.1.2 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-reset)
+   Compiling aarch64-cpu v11.2.0
+   Compiling mbarrier v0.1.3
+   Compiling pcie v0.6.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/pci/pcie)
+   Compiling tap v1.0.1
+   Compiling num-align v0.1.0
+   Compiling ax-cpumask v0.3.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/cpumask)
+   Compiling wyz v0.5.1
+   Compiling uguid v2.2.1
+   Compiling arrayvec v0.7.8
+   Compiling fdt-raw v0.3.0
+   Compiling const-default v1.0.0
+   Compiling bytemuck v1.25.2
+   Compiling const-str v1.1.0
+   Compiling funty v2.0.0
+   Compiling chrono v0.4.45
+   Compiling ranges-ext v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/ranges-ext)
+   Compiling rgb v0.8.53
+   Compiling page-table-generic v0.7.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/page-table-generic)
+   Compiling uefi-raw v0.14.0
+   Compiling spinning_top v0.2.5
+   Compiling fdt-edit v0.2.3
+   Compiling ucs2 v0.3.3
+   Compiling bitvec v1.1.1
+   Compiling rdif-serial v0.9.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-serial)
+   Compiling buddy-slab-allocator v0.4.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/buddy-slab-allocator)
+warning: unused import: `page::slab_page_constants_and_header_helpers_hold_for_test`
+   --> memory/buddy-slab-allocator/src/slab/mod.rs:306:16
+    |
+306 | pub(crate) use page::slab_page_constants_and_header_helpers_hold_for_test;
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `slab_page_constants_and_header_helpers_hold_for_test` is never used
+   --> memory/buddy-slab-allocator/src/slab/page.rs:332:15
+    |
+332 | pub(crate) fn slab_page_constants_and_header_helpers_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `buddy-slab-allocator` (lib) generated 2 warnings (run `cargo fix --lib -p buddy-slab-allocator` to apply 1 suggestion)
+   Compiling rdif-pinctrl v0.1.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-pinctrl)
+   Compiling rlsf v0.2.3
+   Compiling rdrive v0.23.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/rdrive)
+   Compiling utf8-width v0.1.9
+   Compiling aarch64-cpu-ext v0.1.4
+   Compiling numeric-enum-macro v0.2.0
+   Compiling axpanic v0.1.1 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axpanic)
+   Compiling ptr_meta v0.3.2
+   Compiling axbacktrace v0.4.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axbacktrace)
+   Compiling dma-api v0.9.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/dma-api)
+warning: function `dma_op_direction_matching_hold_for_test` is never used
+   --> memory/dma-api/src/op/mod.rs:200:15
+    |
+200 | pub(crate) fn dma_op_direction_matching_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `dma_op_constraints_and_error_types_hold_for_test` is never used
+   --> memory/dma-api/src/op/mod.rs:217:15
+    |
+217 | pub(crate) fn dma_op_constraints_and_error_types_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `dma_op_sync_direction_branches_hold_for_test` is never used
+   --> memory/dma-api/src/op/mod.rs:228:15
+    |
+228 | pub(crate) fn dma_op_sync_direction_branches_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `array_helper_len_and_layout_rules_hold_for_test` is never used
+   --> memory/dma-api/src/array.rs:379:15
+    |
+379 | pub(crate) fn array_helper_len_and_layout_rules_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `array_contiguous_methods_hold_for_test` is never used
+   --> memory/dma-api/src/array.rs:420:15
+    |
+420 | pub(crate) fn array_contiguous_methods_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `array_read_at_write_at_helpers_hold_for_test` is never used
+   --> memory/dma-api/src/array.rs:435:15
+    |
+435 | pub(crate) fn array_read_at_write_at_helpers_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `array_dma_array_cpu_read_trait_hold_for_test` is never used
+   --> memory/dma-api/src/array.rs:450:15
+    |
+450 | pub(crate) fn array_dma_array_cpu_read_trait_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `array_layout_edge_cases_comprehensive_hold_for_test` is never used
+   --> memory/dma-api/src/array.rs:460:15
+    |
+460 | pub(crate) fn array_layout_edge_cases_comprehensive_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `array_copy_from_slice_and_write_at_edge_hold_for_test` is never used
+   --> memory/dma-api/src/array.rs:487:15
+    |
+487 | pub(crate) fn array_copy_from_slice_and_write_at_edge_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `array_layout_overflow_and_size_align_hold_for_test` is never used
+   --> memory/dma-api/src/array.rs:536:15
+    |
+536 | pub(crate) fn array_layout_overflow_and_size_align_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `streaming_struct_and_phantom_hold_for_test` is never used
+   --> memory/dma-api/src/streaming.rs:179:15
+    |
+179 | pub(crate) fn streaming_struct_and_phantom_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `streaming_direction_and_error_types_hold_for_test` is never used
+   --> memory/dma-api/src/streaming.rs:190:15
+    |
+190 | pub(crate) fn streaming_direction_and_error_types_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `streaming_struct_size_and_alignment_hold_for_test` is never used
+   --> memory/dma-api/src/streaming.rs:205:15
+    |
+205 | pub(crate) fn streaming_struct_size_and_alignment_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `streaming_all_error_variants_hold_for_test` is never used
+   --> memory/dma-api/src/streaming.rs:215:15
+    |
+215 | pub(crate) fn streaming_all_error_variants_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `streaming_dma_pod_types_hold_for_test` is never used
+   --> memory/dma-api/src/streaming.rs:230:15
+    |
+230 | pub(crate) fn streaming_dma_pod_types_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `streaming_nonzero_and_phantom_hold_for_test` is never used
+   --> memory/dma-api/src/streaming.rs:250:15
+    |
+250 | pub(crate) fn streaming_nonzero_and_phantom_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `streaming_dma_direction_all_variants_hold_for_test` is never used
+   --> memory/dma-api/src/streaming.rs:264:15
+    |
+264 | pub(crate) fn streaming_dma_direction_all_variants_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling rdif-block v0.11.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/interface/rdif-block)
+   Compiling byte-unit v5.2.5
+warning: `dma-api` (lib) generated 17 warnings (17 duplicates)
+   Compiling some-serial v0.7.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/serial/some-serial)
+warning: `dma-api` (lib) generated 17 warnings
+   Compiling ax-plat v0.12.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/platforms/ax-plat)
+   Compiling ansi_rgb v0.2.0
+   Compiling kernutil v0.2.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/kernutil)
+   Compiling smccc v0.2.3
+   Compiling aml v0.16.4
+warning: `buddy-slab-allocator` (lib) generated 2 warnings (2 duplicates)
+   Compiling ax-cpu v0.8.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axcpu)
+   Compiling uefi v0.37.0
+   Compiling arm-gic-driver v0.17.11 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/intc/arm-gic-driver)
+   Compiling axklib v0.7.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axklib)
+   Compiling nvme-driver v0.7.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/blk/nvme-driver)
+   Compiling ax-arm-pl031 v0.4.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/drivers/rtc/arm_pl031)
+   Compiling ax-memory-set v0.6.14 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/memory/memory_set)
+   Compiling axtest v0.5.14 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axtest/axtest)
+   Compiling fdt-parser v0.4.19
+   Compiling axvm-types v0.7.3 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm-types)
+   Compiling foldhash v0.2.0
+   Compiling equivalent v1.0.2
+   Compiling slab v0.4.12
+   Compiling allocator-api2 v0.2.21
+   Compiling futures-core v0.3.34
+   Compiling linux-raw-sys v0.12.1
+   Compiling ax-linked-list-r4l v0.5.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/linked_list_r4l)
+   Compiling hashbrown v0.16.1
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-task v0.3.34
+   Compiling axpoll v0.5.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axpoll)
+   Compiling ax-sched v0.5.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axsched)
+   Compiling futures-util v0.3.34
+   Compiling extern-trait v0.5.0
+   Compiling smallvec v1.15.2
+   Compiling memchr v2.8.3
+   Compiling ax-timer-list v0.3.5 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/timer_list)
+   Compiling lru v0.16.4
+   Compiling axfs-ng-vfs v0.5.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/fs/axfs-ng-vfs)
+   Compiling ax-io v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/axio)
+   Compiling intrusive-collections v0.9.7
+   Compiling starry-fatfs v0.4.1-preview.2
+warning: function `read_default_read_exact_with_interrupt_hold_for_test` is never used
+   --> components/axio/src/read/mod.rs:484:15
+    |
+484 | pub(crate) fn read_default_read_exact_with_interrupt_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `read_take_struct_and_methods_hold_for_test` is never used
+   --> components/axio/src/read/mod.rs:512:15
+    |
+512 | pub(crate) fn read_take_struct_and_methods_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `read_default_read_exact_eof_hold_for_test` is never used
+   --> components/axio/src/read/mod.rs:543:15
+    |
+543 | pub(crate) fn read_default_read_exact_eof_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `read_by_ref_and_chain_hold_for_test` is never used
+   --> components/axio/src/read/mod.rs:563:15
+    |
+563 | pub(crate) fn read_by_ref_and_chain_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `read_take_exhaustion_and_limit_hold_for_test` is never used
+   --> components/axio/src/read/mod.rs:638:15
+    |
+638 | pub(crate) fn read_take_exhaustion_and_limit_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `read_bufread_has_data_left_and_skip_until_hold_for_test` is never used
+   --> components/axio/src/read/mod.rs:679:15
+    |
+679 | pub(crate) fn read_bufread_has_data_left_and_skip_until_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `cursor_constructors_and_position_hold_for_test` is never used
+   --> components/axio/src/utils/cursor.rs:406:15
+    |
+406 | pub(crate) fn cursor_constructors_and_position_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `cursor_split_and_clone_hold_for_test` is never used
+   --> components/axio/src/utils/cursor.rs:427:15
+    |
+427 | pub(crate) fn cursor_split_and_clone_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `cursor_seek_from_variants_hold_for_test` is never used
+   --> components/axio/src/utils/cursor.rs:458:15
+    |
+458 | pub(crate) fn cursor_seek_from_variants_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `cursor_split_mut_and_write_hold_for_test` is never used
+   --> components/axio/src/utils/cursor.rs:492:15
+    |
+492 | pub(crate) fn cursor_split_mut_and_write_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `cursor_buf_read_impl_hold_for_test` is never used
+   --> components/axio/src/utils/cursor.rs:524:15
+    |
+524 | pub(crate) fn cursor_buf_read_impl_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `cursor_write_box_array_and_fixed_size_hold_for_test` is never used
+   --> components/axio/src/utils/cursor.rs:548:15
+    |
+548 | pub(crate) fn cursor_write_box_array_and_fixed_size_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling rsext4 v0.7.8 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/fs/rsext4)
+   Compiling axdevice_base v0.6.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axdevice_base)
+warning: unused import: `self::disk::block_group_desc_disk_format_rules_hold_for_test`
+ --> fs/rsext4/src/blockgroup_description/mod.rs:6:16
+  |
+6 | pub(crate) use self::disk::block_group_desc_disk_format_rules_hold_for_test;
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `ax-io` (lib) generated 12 warnings
+   Compiling ax-ipi v0.5.30 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axipi)
+warning: `ax-io` (lib) generated 12 warnings (12 duplicates)
+   Compiling ax-mm v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axmm)
+   Compiling ax-ctor-bare v0.4.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/components/ctor_bare/ctor_bare)
+   Compiling axaddrspace v0.5.19 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axaddrspace)
+   Compiling winnow v1.0.4
+warning: function `block_group_desc_disk_format_rules_hold_for_test` is never used
+  --> fs/rsext4/src/blockgroup_description/disk.rs:98:15
+   |
+98 | pub(crate) fn block_group_desc_disk_format_rules_hold_for_test() -> bool {
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `bmalloc_type_conversions_and_validation_rules_hold_for_test` is never used
+   --> fs/rsext4/src/bmalloc/mod.rs:299:15
+    |
+299 | pub(crate) fn bmalloc_type_conversions_and_validation_rules_hold_for_test() -> bool {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling flatten_objects v0.2.4
+   Compiling aarch64_sysreg v0.3.9 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/aarch64_sysreg)
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling axvirtio-common v0.1.0 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvirtio-common)
+   Compiling ax-fs-ng v0.8.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/fs/ax-fs-ng)
+   Compiling ax-log v0.5.20 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/modules/axlog)
+   Compiling toml v1.1.4+spec-1.1.0
+   Compiling axvmconfig v0.8.4 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvmconfig)
+   Compiling arm_vgic v0.5.6 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/arm_vgic)
+   Compiling arm_vcpu v0.5.19 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/arm_vcpu)
+   Compiling axdevice v0.5.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axdevice)
+   Compiling axvm-net v0.1.0 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm-net)
+   Compiling axhvc v0.4.13 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axhvc)
+   Compiling axvirtio-blk v0.1.0 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvirtio-blk)
+   Compiling axvirtio-net v0.1.0 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvirtio-net)
+   Compiling ax-api v0.7.7 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/api/arceos_api)
+   Compiling shlex v2.0.1
+warning: `rsext4` (lib) generated 3 warnings (run `cargo fix --lib -p rsext4` to apply 1 suggestion)
+warning: `rsext4` (lib) generated 3 warnings (3 duplicates)
+   Compiling acpi_tables v0.2.1
+   Compiling ax-std v0.5.31 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/arceos/ulib/axstd)
+   Compiling axvm v0.5.26 (/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/virtualization/axvm)
+warning: associated function `after_external_interrupt` is never used
+   --> virtualization/axvm/src/architecture/ops.rs:115:8
+    |
+ 12 | pub(crate) trait ArchOps {
+    |                  ------- associated function in this trait
+...
+115 |     fn after_external_interrupt(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `host_console_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:101:15
+    |
+101 | pub(crate) fn host_console_irq() -> Option<modules::ax_hal::irq::IrqId> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `dispatch_host_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:105:15
+    |
+105 | pub(crate) fn dispatch_host_irq(vector: usize) {
+    |               ^^^^^^^^^^^^^^^^^
+
+warning: function `with_vm` is never used
+   --> virtualization/axvm/src/manager.rs:165:15
+    |
+165 | pub(crate) fn with_vm<F, R>(vm_id: VMId, f: F) -> Option<R>
+    |               ^^^^^^^
+
+warning: function `active_vcpu_mask` is never used
+   --> virtualization/axvm/src/manager.rs:195:15
+    |
+195 | pub(crate) fn active_vcpu_mask(vm_id: VMId) -> Option<usize> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `inject_interrupt` is never used
+   --> virtualization/axvm/src/manager.rs:207:15
+    |
+207 | pub(crate) fn inject_interrupt(vm_id: VMId, vcpu_id: usize, vector: usize) -> AxVmResult {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: variant `Generic` is never constructed
+  --> virtualization/axvm/src/runtime/hvc.rs:26:5
+   |
+25 | pub(crate) enum HyperCallAbi {
+   |                 ------------ variant in this enum
+26 |     Generic,
+   |     ^^^^^^^
+   |
+   = note: `HyperCallAbi` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `handle` is never used
+   --> virtualization/axvm/src/timer.rs:163:8
+    |
+118 | impl TimerWheels {
+    | ---------------- method in this implementation
+...
+163 |     fn handle(&self, token: usize) -> Option<VmTimerHandle> {
+    |        ^^^^^^
+
+warning: function `cancel_timer` is never used
+   --> virtualization/axvm/src/timer.rs:241:15
+    |
+241 | pub(crate) fn cancel_timer(token: usize) {
+    |               ^^^^^^^^^^^^
+
+warning: associated items `try_handle_port_write`, `handle_nested_page_fault`, and `debug_nested_page_fault` are never used
+    --> virtualization/axvm/src/vm/mod.rs:1539:19
+     |
+ 863 | impl AxVM {
+     | --------- associated items in this implementation
+...
+1539 |     pub(crate) fn try_handle_port_write(
+     |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+1552 |     pub(crate) fn handle_nested_page_fault(
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+1567 |     fn debug_nested_page_fault(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `SimpleVmPlan` is never constructed
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:60:19
+   |
+60 | pub(crate) struct SimpleVmPlan(VmDevicePlan);
+   |                   ^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:63:25
+   |
+62 | impl SimpleVmPlan {
+   | ----------------- associated function in this implementation
+63 |     pub(crate) const fn new(devices: VmDevicePlan) -> Self {
+   |                         ^^^
+
+warning: `axvm` (lib) generated 12 warnings
+warning: `axvm` (lib) generated 12 warnings (12 duplicates)
+warning: struct `AxvmManager` is never constructed
+  --> os/axvisor/tests/axtest.rs:15:16
+   |
+15 |     pub struct AxvmManager;
+   |                ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated functions `notify_vm`, `vm_by_id`, and `vm_list` are never used
+  --> os/axvisor/tests/axtest.rs:18:16
+   |
+17 |     impl AxvmManager {
+   |     ---------------- associated functions in this implementation
+18 |         pub fn notify_vm(_vm_id: axvm::VMId) -> anyhow::Result<()> {
+   |                ^^^^^^^^^
+...
+22 |         pub fn vm_by_id(_vm_id: axvm::VMId) -> Option<axvm::AxVMRef> {
+   |                ^^^^^^^^
+...
+26 |         pub fn vm_list() -> Vec<axvm::AxVMRef> {
+   |                ^^^^^^^
+
+warning: static `GUEST_CONSOLE_MUX` is never used
+  --> os/axvisor/tests/../src/guest_console/mux/mod.rs:25:8
+   |
+25 | static GUEST_CONSOLE_MUX: LazyLock<GuestConsoleMux> = LazyLock::new(GuestConsoleMux::new);
+   |        ^^^^^^^^^^^^^^^^^
+
+warning: field `wake_vm` is never read
+  --> os/axvisor/tests/../src/guest_console/mux/mod.rs:47:5
+   |
+45 | struct RoutedInput {
+   |        ----------- field in this struct
+46 |     event: ConsoleInputEvent,
+47 |     wake_vm: Option<VMId>,
+   |     ^^^^^^^
+   |
+   = note: `RoutedInput` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: struct `GuestSerialBackendFactory` is never constructed
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:101:8
+    |
+101 | struct GuestSerialBackendFactory {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `mark_running` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:144:8
+    |
+106 | impl GuestConsoleMux {
+    | -------------------- method in this implementation
+...
+144 |     fn mark_running(&self, vm_id: VMId) {
+    |        ^^^^^^^^^^^^
+
+warning: function `serial_backend_factory` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:480:8
+    |
+480 | pub fn serial_backend_factory(vm_id: VMId) -> Arc<dyn SerialBackendFactory> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `route_host_byte` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:488:8
+    |
+488 | pub fn route_host_byte(byte: u8) -> ConsoleInputEvent {
+    |        ^^^^^^^^^^^^^^^
+
+warning: function `attach_default` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:499:8
+    |
+499 | pub fn attach_default(running: impl IntoIterator<Item = VMId>) -> Option<VMId> {
+    |        ^^^^^^^^^^^^^^
+
+warning: function `attach` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:504:8
+    |
+504 | pub fn attach(vm_id: VMId) -> Result<()> {
+    |        ^^^^^^
+
+warning: function `activate` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:519:8
+    |
+519 | pub fn activate(vm_id: VMId) {
+    |        ^^^^^^^^
+
+warning: function `mark_running` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:524:8
+    |
+524 | pub fn mark_running(vm_id: VMId) {
+    |        ^^^^^^^^^^^^
+
+warning: function `restore_after_restart` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:532:8
+    |
+532 | pub fn restore_after_restart(vm_id: VMId, restore_attachment: bool) {
+    |        ^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `mark_stopped` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:537:8
+    |
+537 | pub fn mark_stopped(vm_id: VMId) -> bool {
+    |        ^^^^^^^^^^^^
+
+warning: function `remove` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:542:8
+    |
+542 | pub fn remove(vm_id: VMId) -> bool {
+    |        ^^^^^^
+
+warning: function `reconcile_vm_states` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:547:8
+    |
+547 | pub fn reconcile_vm_states() -> Option<VMId> {
+    |        ^^^^^^^^^^^^^^^^^^^
+
+warning: function `attached_vm` is never used
+   --> os/axvisor/tests/../src/guest_console/mux/mod.rs:556:8
+    |
+556 | pub fn attached_vm() -> Option<VMId> {
+    |        ^^^^^^^^^^^
+
+warning: function `touch_file` is never used
+   --> os/axvisor/tests/../src/shell/command/fs.rs:104:15
+    |
+104 | pub(crate) fn touch_file(path: &str) -> io::Result<()> {
+    |               ^^^^^^^^^^
+
+warning: `axvisor` (test "axtest") generated 18 warnings
+    Finished `release` profile [optimized] target(s) in 36.03s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 2`
+[axbuild] cargo build package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json config=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/axvisor/configs/board/qemu-aarch64.toml ... done (36.45s)
+[axbuild] cargo build elf=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-linux-musl/release/deps/axtest-bd240c74cf36e4c1
+[axbuild] cargo build artifact_dir=/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-linux-musl/release/deps
+file already exists and passed checksum verification
+image archive verified at /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/axbuild/rootfs/rootfs-aarch64-alpine.img.tar.xz
+image already extracted and up to date at /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/axbuild/rootfs/rootfs-aarch64-alpine.img
+[2026-08-13T13:19:18Z INFO  ostool::run::qemu] Using QEMU config file: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/os/axvisor/configs/qemu/qemu-aarch64.toml
+[axbuild] qemu run package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json ...
+Converting ELF to BIN format...
+  elf: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-linux-musl/release/deps/axtest-bd240c74cf36e4c1
+  bin: /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-linux-musl/release/deps/axtest-bd240c74cf36e4c1.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-linux-musl/release/deps/axtest-bd240c74cf36e4c1 /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-linux-musl/release/deps/axtest-bd240c74cf36e4c1.bin
+qemu-system-aarch64 -nographic -cpu cortex-a72 -machine virt,virtualization=on,gic-version=3 -smp 4 -device nvme,drive=disk0,serial=tgoskits,max_ioqpairs=64,msix_qsize=65 -drive id=disk0,if=none,format=raw,file=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/axbuild/rootfs/rootfs-aarch64-alpine.img/rootfs-aarch64-alpine.img -append root=/dev/nvme0n1 rw init=/bin/sh -m 8g -device virtio-net-pci,netdev=net0 -netdev user,id=net0 -kernel /home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260813-e0d344e05/target/aarch64-unknown-linux-musl/release/deps/axtest-bd240c74cf36e4c1.bin
+root=/dev/nvme0n1 rw init=/bin/sh
+VM Load @PA:0x40200000
+VM Load Offset: 0xffff0000c0200000
+Memory Map:
+  Free   0x00000040000000 - 0x00000040200000 (2 MiB)
+  KImg   0x00000040200000 - 0x00000040600000 (4 MiB)
+  Free   0x00000040600000 - 0x00000240000000 (7.99 GiB)
+Initialize RAM allocator: 0x40600000..0x240000000
+Reserving CPU-local areas
+CPU-local area stride: 0x44000 bytes
+Total CPU-local allocation: 0x110000 bytes (4 CPUs)
+Flushed RAM used range to memory map: 0x40600000..0x40700000, current: 0x40700000
+Flushed RAM used range to memory map: 0x40700000..0x40810000, current: 0x40810000
+CPU-local areas allocated at 0x40700000 - 0x40810000
+EL: 2
+Mapping early memory regions...
+Ram                 : [0x0000000040000000, 0x0000000240000000) -> [0x0000000040000000, 0x0000000240000000) (8 GiB)
+KImage              : [0x0000ffff80000000, 0x0000ffff80400000) -> [0x0000000040200000, 0x0000000040600000) (4 MiB)
+PerCpu              : [0x0000ff0040700000, 0x0000ff0040810000) -> [0x0000000040700000, 0x0000000040810000) (1.06 MiB)
+Debug serial        : [0x0000000009000000, 0x0000000009001000) -> [0x0000000009000000, 0x0000000009001000) (4 KiB)
+Boot page table at physical address: PA:0x40810000
+Setting up table registers...
+MMU Entry point at physical address: 0x402f9918
+Trap vector at 0xffff800ff000
+Memory Map:
+  MMIO   0x00000009000000 - 0x00000009001000 (4 KiB)
+  Free   0x00000040000000 - 0x00000040200000 (2 MiB)
+  KImg   0x00000040200000 - 0x00000040600000 (4 MiB)
+  Rsv    0x00000040600000 - 0x00000040700000 (1 MiB)
+  PerCPU 0x00000040700000 - 0x00000040810000 (1.06 MiB)
+  Rsv    0x00000040810000 - 0x0000004081a000 (40 KiB)
+  Free   0x0000004081a000 - 0x00000240000000 (7.99 GiB)
+Jumping to main entry point at 0xffff800e7dd8 with SP 0x0000ff0040744000
+
+       d8888                            .d88888b.   .d8888b.
+      d88888                           d88P" "Y88b d88P  Y88b
+     d88P888                           888     888 Y88b.
+    d88P 888 888d888  .d8888b  .d88b.  888     888  "Y888b.
+   d88P  888 888P"   d88P"    d8P  Y8b 888     888     "Y88b.
+  d88P   888 888     888      88888888 888     888       "888
+ d8888888888 888     Y88b.    Y8b.     Y88b. .d88P Y88b  d88P
+d88P     888 888      "Y8888P  "Y8888   "Y88888P"   "Y8888P"
+
+arch = aarch64
+platform = linux,dummy-virt
+target = aarch64-unknown-none-softfloat
+build_mode = 
+log_level = info
+backtrace = false
+smp = 4
+
+[37m[  0.052798 ax_runtime:222] [32mLogging is enabled.[m
+[m[37m[  0.053134 ax_runtime:223] [32mPrimary CPU 0 started, arg = 0x40600000.[m
+[m[37m[  0.053232 ax_runtime:225] [32mFound physcial memory regions:[m
+[m[37m[  0.054539 ax_runtime:227] [32m  [PA:0x9000000, PA:0x9001000) mmio (READ | WRITE | DEVICE | RESERVED)[m
+[m[37m[  0.054711 ax_runtime:227] [32m  [PA:0x40000000, PA:0x40200000) free memory (READ | WRITE | FREE)[m
+[m[37m[  0.054984 ax_runtime:227] [32m  [PA:0x40200000, PA:0x40600000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[  0.055079 ax_runtime:227] [32m  [PA:0x40600000, PA:0x40700000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[  0.055146 ax_runtime:227] [32m  [PA:0x40700000, PA:0x40810000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[  0.055205 ax_runtime:227] [32m  [PA:0x40810000, PA:0x4081a000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[  0.055340 ax_runtime:227] [32m  [PA:0x4081a000, PA:0x240000000) free memory (READ | WRITE | FREE)[m
+[m[37m[  0.055539 ax_runtime:375] [32mInitialize global memory allocator...[m
+[m[37m[  0.055689 ax_runtime:376] [32m  use buddy-slab-allocator allocator.[m
+[m[37m[  0.055865 ax_alloc::buddy_slab:158] [32mInitialize global memory allocator, start_vaddr: 0x4081a000, size: 0x1ff7e6000[m
+[m[37m[  0.068211 ax_alloc::buddy_slab:424] [32mglobal allocator initialized[m
+[m[37m[  0.068434 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x40000000, size: 0x200000[m
+[m[37m[  0.068559 buddy_slab_allocator::global:151] [32mGlobalAllocator: skip region 0x40000000+0x200000, no allocator-visible memory after 2097152 alignment[m
+[m[37m[  0.068804 ax_runtime:262] [32mkernel aspace: [VA:0x0, VA:0xffffffffffffffff)[m
+[m[37m[  0.068912 ax_mm:103] [32mInitialize virtual memory management...[m
+[m[37m[  0.682100 ax_runtime:274] [32mInitialize platform devices...[m
+[m[37m[  0.687999 someboot::arch::power:23] [32mPower management method : SMC[m
+[m[37m[  0.688177 somehal::driver:5] [32mInitializing rdrive with FDT at 0x40600000[m
+[m[37m[  0.700214 somehal::arch::gic::v3:274] [32mGICv3 CPU 0 EOI mode: two_step=true[m
+[m[37m[  0.706763 ax_task::api:140] [32mInitialize scheduling...[m
+[m[37m[  0.708607 ax_task::api:148] [32m  use FIFO scheduler.[m
+[m[37m[  0.708901 ax_runtime:300] [32mInitialize interrupt handlers...[m
+[m[37m[  0.710697 ax_runtime::devices:2] [32mProbe platform devices...[m
+[m[37m[  0.735316 ax_driver::block::nvme:42] [32mNVMe PCI endpoint 0000:00:01.0: BAR0=0x8000000000..0x8000004000, int_pin=1, int_line=0[m
+[m[37m[  0.754244 nvme_driver::nvme:161] [32mNVME @0x8000000000 deferred init, version: 1.4.0[m
+[m[37m[  0.754790 ax_driver::block::nvme:74] [32mNVMe block device registered at 0000:00:01.0 with 65 MSI-X vectors[m
+[m[37m[  0.761360 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device nvme IRQ source 0 (IrqId { domain: IrqDomainId(9), hwirq: HwIrq(0) }) fixed to CPU 0 for queue mask 0x0[m
+[m[37m[  0.804927 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 0 bound to CPU 0 with hardware depth 63[m
+[m[37m[  0.805477 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device nvme IRQ source 1 (IrqId { domain: IrqDomainId(9), hwirq: HwIrq(1) }) fixed to CPU 0 for queue mask 0x1[m
+[m[37m[  0.813079 ax_fs_ng::root:341] [32m    raw device fs=Some(Ext4)[m
+[m[37m[  0.813272 ax_fs_ng::root:372] [32m  block device 0 (nvme) has no usable partition table; treating the whole disk as a candidate[m
+[m[37m[  0.813726 ax_fs_ng::root:481] [32m  matched root by raw device path on disk0 raw device[m
+[m[37m[  0.814157 ax_fs_ng:86] [32mInitialize filesystem subsystem...[m
+[m[37m[  0.814228 ax_fs_ng:87] [32m  selected root device: disk0 raw device[m
+[m[37m[  0.833083 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[  0.834834 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[  0.834915 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[  0.834987 rsext4::ext4::mount:468] [32m  - total blocks: 524288[m
+[m[37m[  0.835051 rsext4::ext4::mount:469] [32m  - free blocks: 113715[m
+[m[37m[  0.835116 rsext4::ext4::mount:470] [32m  - total inodes: 131072[m
+[m[37m[  0.835181 rsext4::ext4::mount:471] [32m  - free inodes: 125207[m
+[m[37m[  0.835258 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[  0.849775 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[  0.850303 ax_fs_ng:99] [32m  filesystem type: "ext4"[m
+[m[37m[  0.852740 somehal::arch::gic::v3:274] [32mGICv3 CPU 1 EOI mode: two_step=true[m
+[m[37m[  0.852977 ax_runtime::mp:79] [32mSecondary CPU 1 started.[m
+[m[37m[  0.853382 somehal::arch::gic::v3:274] [32mGICv3 CPU 2 EOI mode: two_step=true[m
+[m[37m[  0.853549 ax_runtime::mp:79] [32mSecondary CPU 2 started.[m
+[m[37m[  0.854373 somehal::arch::gic::v3:274] [32mGICv3 CPU 3 EOI mode: two_step=true[m
+[m[37m[  0.854617 ax_runtime::mp:110] [32mSecondary CPU 2 init OK.[m
+[m[37m[  0.854597 ax_runtime::mp:110] [32mSecondary CPU 1 init OK.[m
+[m[37m[  0.854886 ax_runtime:348] [32mPrimary CPU 0 init OK.[m
+[m[37m[  0.854735 ax_runtime::mp:79] [32mSecondary CPU 3 started.[m
+[m[37m[  0.855531 ax_runtime::mp:110] [32mSecondary CPU 3 init OK.[m
+[m[37m[  0.904355 0:4 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 1 bound to CPU 1 with hardware depth 63[m
+[m[37m[  0.904519 0:4 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 2 bound to CPU 2 with hardware depth 63[m
+[m[37m[  0.904810 0:4 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 3 bound to CPU 3 with hardware depth 63[m
+[m[37m[  0.905226 0:4 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device nvme IRQ source 2 (IrqId { domain: IrqDomainId(9), hwirq: HwIrq(2) }) fixed to CPU 1 for queue mask 0x2[m
+[m[37m[  0.905590 0:4 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device nvme IRQ source 3 (IrqId { domain: IrqDomainId(9), hwirq: HwIrq(3) }) fixed to CPU 2 for queue mask 0x4[m
+[m[37m[  0.905951 0:4 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device nvme IRQ source 4 (IrqId { domain: IrqDomainId(9), hwirq: HwIrq(4) }) fixed to CPU 3 for queue mask 0x8[m
+[m[37m[  0.908874 0:2 ax_fs_ng::block::runtime::lifecycle::device:385] [32mblock device nvme online with 4 hctxs across 4 CPUs[m
+[mAXTEST_BEGIN total=80
+KTAP version 1
+1..80
+# Running 80 axtests
+# START axtest::tests::axvisor_axtest_smoke
+# module: axtest::tests
+ok 1 axtest::tests::axvisor_axtest_smoke
+AXTEST_CASE status=pass module=axtest::tests name=axvisor_axtest_smoke
+# START axtest::tests::rm_force_only_ignores_not_found
+# module: axtest::tests
+ok 2 axtest::tests::rm_force_only_ignores_not_found
+AXTEST_CASE status=pass module=axtest::tests name=rm_force_only_ignores_not_found
+# START axtest::tests::cp_requires_exactly_two_operands
+# module: axtest::tests
+ok 3 axtest::tests::cp_requires_exactly_two_operands
+AXTEST_CASE status=pass module=axtest::tests name=cp_requires_exactly_two_operands
+# START axtest::tests::mv_renames_file_on_same_filesystem
+# module: axtest::tests
+[37m[  0.916460 0:2 ax_posix_api::imp::fs:424] [32msys_lstat => Err(ENOENT)[m
+[m[37m[  0.990439 0:2 ax_posix_api::imp::fs:335] [32msys_stat => Err(ENOENT)[m
+[mok 4 axtest::tests::mv_renames_file_on_same_filesystem
+AXTEST_CASE status=pass module=axtest::tests name=mv_renames_file_on_same_filesystem
+# START axtest::tests::rm_does_not_follow_a_directory_symlink
+# module: axtest::tests
+ok 5 axtest::tests::rm_does_not_follow_a_directory_symlink
+AXTEST_CASE status=pass module=axtest::tests name=rm_does_not_follow_a_directory_symlink
+# START axtest::tests::ls_propagates_directory_iteration_errors
+# module: axtest::tests
+ok 6 axtest::tests::ls_propagates_directory_iteration_errors
+AXTEST_CASE status=pass module=axtest::tests name=ls_propagates_directory_iteration_errors
+# START axtest::tests::mv_only_falls_back_to_copy_across_devices
+# module: axtest::tests
+ok 7 axtest::tests::mv_only_falls_back_to_copy_across_devices
+AXTEST_CASE status=pass module=axtest::tests name=mv_only_falls_back_to_copy_across_devices
+# START axtest::tests::touch_preserves_content_and_updates_times
+# module: axtest::tests
+[37m[  1.052220 0:2 ax_posix_api::imp::fs:372] [32msys_futimens => Err(EINVAL)[m
+[mok 8 axtest::tests::touch_preserves_content_and_updates_times
+AXTEST_CASE status=pass module=axtest::tests name=touch_preserves_content_and_updates_times
+# START axtest::tests::cp_file_to_existing_directory_uses_source_basename
+# module: axtest::tests
+[37m[  1.070897 0:2 ax_posix_api::imp::fs:424] [32msys_lstat => Err(ENOENT)[m
+[m[37m[  1.114667 0:2 ax_posix_api::imp::fs:335] [32msys_stat => Err(ENOENT)[m
+[mok 9 axtest::tests::cp_file_to_existing_directory_uses_source_basename
+AXTEST_CASE status=pass module=axtest::tests name=cp_file_to_existing_directory_uses_source_basename
+# START axtest::tests::cp_recursive_rejects_copying_directory_into_itself
+# module: axtest::tests
+[37m[  1.180828 0:2 ax_posix_api::imp::fs:424] [32msys_lstat => Err(ENOENT)[m
+[mok 10 axtest::tests::cp_recursive_rejects_copying_directory_into_itself
+AXTEST_CASE status=pass module=axtest::tests name=cp_recursive_rejects_copying_directory_into_itself
+# START axtest::tests::cp_recursive_rejects_copying_directory_into_descendant
+# module: axtest::tests
+[37m[  1.312939 0:2 ax_posix_api::imp::fs:424] [32msys_lstat => Err(ENOENT)[m
+[mok 11 axtest::tests::cp_recursive_rejects_copying_directory_into_descendant
+AXTEST_CASE status=pass module=axtest::tests name=cp_recursive_rejects_copying_directory_into_descendant
+# START axtest::tests::cp_rejects_copying_file_onto_itself_without_truncating_it
+# module: axtest::tests
+ok 12 axtest::tests::cp_rejects_copying_file_onto_itself_without_truncating_it
+AXTEST_CASE status=pass module=axtest::tests name=cp_rejects_copying_file_onto_itself_without_truncating_it
+# START axtest::tests::cp_recursive_rejects_nonexistent_descendant_before_creation
+# module: axtest::tests
+[37m[  1.459544 0:2 ax_posix_api::imp::fs:424] [32msys_lstat => Err(ENOENT)[m
+[m[37m[  1.489670 0:2 ax_posix_api::imp::fs:335] [32msys_stat => Err(ENOENT)[m
+[mok 13 axtest::tests::cp_recursive_rejects_nonexistent_descendant_before_creation
+AXTEST_CASE status=pass module=axtest::tests name=cp_recursive_rejects_nonexistent_descendant_before_creation
+# START axtest::tests::cp_recursive_directory_to_existing_directory_uses_source_basename
+# module: axtest::tests
+[37m[  1.517146 0:2 ax_posix_api::imp::fs:424] [32msys_lstat => Err(ENOENT)[m
+[m[37m[  1.592751 0:2 ax_posix_api::imp::fs:335] [32msys_stat => Err(ENOENT)[m
+[mok 14 axtest::tests::cp_recursive_directory_to_existing_directory_uses_source_basename
+AXTEST_CASE status=pass module=axtest::tests name=cp_recursive_directory_to_existing_directory_uses_source_basename
+# START axtest::guest_console_mux::tests::detaching_buffers_all_guest_output
+# module: axtest::guest_console_mux::tests
+ok 15 axtest::guest_console_mux::tests::detaching_buffers_all_guest_output
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=detaching_buffers_all_guest_output
+# START axtest::guest_console_mux::tests::ctrl_x_h_detaches_the_foreground_guest
+# module: axtest::guest_console_mux::tests
+ok 16 axtest::guest_console_mux::tests::ctrl_x_h_detaches_the_foreground_guest
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=ctrl_x_h_detaches_the_foreground_guest
+# START axtest::guest_console_mux::tests::guest_console_core_uses_non_sleeping_locks
+# module: axtest::guest_console_mux::tests
+ok 17 axtest::guest_console_mux::tests::guest_console_core_uses_non_sleeping_locks
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=guest_console_core_uses_non_sleeping_locks
+# START axtest::guest_console_mux::tests::stopping_foreground_guest_returns_to_shell
+# module: axtest::guest_console_mux::tests
+ok 18 axtest::guest_console_mux::tests::stopping_foreground_guest_returns_to_shell
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=stopping_foreground_guest_returns_to_shell
+# START axtest::guest_console_mux::tests::multiple_running_guests_receive_line_prefixes
+# module: axtest::guest_console_mux::tests
+ok 19 axtest::guest_console_mux::tests::multiple_running_guests_receive_line_prefixes
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=multiple_running_guests_receive_line_prefixes
+# START axtest::guest_console_mux::tests::console_shortcuts_detach_and_cycle_running_guests
+# module: axtest::guest_console_mux::tests
+ok 20 axtest::guest_console_mux::tests::console_shortcuts_detach_and_cycle_running_guests
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=console_shortcuts_detach_and_cycle_running_guests
+# START axtest::guest_console_mux::tests::stale_backends_leave_output_arbitration_unchanged
+# module: axtest::guest_console_mux::tests
+ok 21 axtest::guest_console_mux::tests::stale_backends_leave_output_arbitration_unchanged
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=stale_backends_leave_output_arbitration_unchanged
+# START axtest::guest_console_mux::tests::doubled_ctrl_x_reaches_the_current_console_as_one_byte
+# module: axtest::guest_console_mux::tests
+ok 22 axtest::guest_console_mux::tests::doubled_ctrl_x_reaches_the_current_console_as_one_byte
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=doubled_ctrl_x_reaches_the_current_console_as_one_byte
+# START axtest::guest_console_mux::tests::non_shortcut_ctrl_x_sequences_reach_the_current_console
+# module: axtest::guest_console_mux::tests
+ok 23 axtest::guest_console_mux::tests::non_shortcut_ctrl_x_sequences_reach_the_current_console
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=non_shortcut_ctrl_x_sequences_reach_the_current_console
+# START axtest::guest_console_mux::tests::first_foreground_input_enters_interactive_exclusive_mode
+# module: axtest::guest_console_mux::tests
+ok 24 axtest::guest_console_mux::tests::first_foreground_input_enters_interactive_exclusive_mode
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=first_foreground_input_enters_interactive_exclusive_mode
+# START axtest::guest_console_mux::tests::switching_guests_terminates_unfinished_foreground_output
+# module: axtest::guest_console_mux::tests
+ok 25 axtest::guest_console_mux::tests::switching_guests_terminates_unfinished_foreground_output
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=switching_guests_terminates_unfinished_foreground_output
+# START axtest::guest_console_mux::tests::guest_switch_preempts_an_unterminated_background_fragment
+# module: axtest::guest_console_mux::tests
+ok 26 axtest::guest_console_mux::tests::guest_switch_preempts_an_unterminated_background_fragment
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=guest_switch_preempts_an_unterminated_background_fragment
+# START axtest::guest_console_mux::tests::replacement_backend_invalidates_the_previous_vm_generation
+# module: axtest::guest_console_mux::tests
+ok 27 axtest::guest_console_mux::tests::replacement_backend_invalidates_the_previous_vm_generation
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=replacement_backend_invalidates_the_previous_vm_generation
+# START axtest::guest_console_mux::tests::foreground_command_result_preempts_after_its_echo_completed
+# module: axtest::guest_console_mux::tests
+ok 28 axtest::guest_console_mux::tests::foreground_command_result_preempts_after_its_echo_completed
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=foreground_command_result_preempts_after_its_echo_completed
+# START axtest::guest_console_mux::tests::switching_guests_replays_background_log_before_direct_output
+# module: axtest::guest_console_mux::tests
+ok 29 axtest::guest_console_mux::tests::switching_guests_replays_background_log_before_direct_output
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=switching_guests_replays_background_log_before_direct_output
+# START axtest::guest_console_mux::tests::foreground_input_preempts_an_unterminated_background_fragment
+# module: axtest::guest_console_mux::tests
+ok 30 axtest::guest_console_mux::tests::foreground_input_preempts_an_unterminated_background_fragment
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=foreground_input_preempts_an_unterminated_background_fragment
+# START axtest::guest_console_mux::tests::lowest_running_vm_is_default_and_input_only_reaches_foreground
+# module: axtest::guest_console_mux::tests
+ok 31 axtest::guest_console_mux::tests::lowest_running_vm_is_default_and_input_only_reaches_foreground
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=lowest_running_vm_is_default_and_input_only_reaches_foreground
+# START axtest::guest_console_mux::tests::default_attachment_preempts_an_unterminated_background_fragment
+# module: axtest::guest_console_mux::tests
+ok 32 axtest::guest_console_mux::tests::default_attachment_preempts_an_unterminated_background_fragment
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=default_attachment_preempts_an_unterminated_background_fragment
+# START axtest::guest_console_mux::tests::stopped_or_removed_guest_invalidates_its_serial_backend_generation
+# module: axtest::guest_console_mux::tests
+ok 33 axtest::guest_console_mux::tests::stopped_or_removed_guest_invalidates_its_serial_backend_generation
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=stopped_or_removed_guest_invalidates_its_serial_backend_generation
+# START axtest::guest_console_mux::tests::restarting_foreground_guest_restores_attachment_and_replays_early_output
+# module: axtest::guest_console_mux::tests
+ok 34 axtest::guest_console_mux::tests::restarting_foreground_guest_restores_attachment_and_replays_early_output
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=restarting_foreground_guest_restores_attachment_and_replays_early_output
+# START axtest::guest_console_mux::tests::restart_completion_preserves_a_different_foreground_selected_while_stopped
+# module: axtest::guest_console_mux::tests
+ok 35 axtest::guest_console_mux::tests::restart_completion_preserves_a_different_foreground_selected_while_stopped
+AXTEST_CASE status=pass module=axtest::guest_console_mux::tests name=restart_completion_preserves_a_different_foreground_selected_while_stopped
+# START axtest::guest_console_mux::output::tests::pending_output_is_bounded_per_guest
+# module: axtest::guest_console_mux::output::tests
+ok 36 axtest::guest_console_mux::output::tests::pending_output_is_bounded_per_guest
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=pending_output_is_bounded_per_guest
+# START axtest::guest_console_mux::output::tests::complete_line_preempts_a_background_fragment_once
+# module: axtest::guest_console_mux::output::tests
+ok 37 axtest::guest_console_mux::output::tests::complete_line_preempts_a_background_fragment_once
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=complete_line_preempts_a_background_fragment_once
+# START axtest::guest_console_mux::output::tests::fragmented_output_from_one_guest_keeps_one_prefix
+# module: axtest::guest_console_mux::output::tests
+ok 38 axtest::guest_console_mux::output::tests::fragmented_output_from_one_guest_keeps_one_prefix
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=fragmented_output_from_one_guest_keeps_one_prefix
+# START axtest::guest_console_mux::output::tests::buffering_for_the_shell_closes_guest_line_ownership
+# module: axtest::guest_console_mux::output::tests
+ok 39 axtest::guest_console_mux::output::tests::buffering_for_the_shell_closes_guest_line_ownership
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=buffering_for_the_shell_closes_guest_line_ownership
+# START axtest::guest_console_mux::output::tests::complete_line_preempts_an_abandoned_partial_fragment
+# module: axtest::guest_console_mux::output::tests
+ok 40 axtest::guest_console_mux::output::tests::complete_line_preempts_an_abandoned_partial_fragment
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=complete_line_preempts_an_abandoned_partial_fragment
+# START axtest::guest_console_mux::output::tests::full_boot_ring_retains_the_newline_that_completes_a_line
+# module: axtest::guest_console_mux::output::tests
+ok 41 axtest::guest_console_mux::output::tests::full_boot_ring_retains_the_newline_that_completes_a_line
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=full_boot_ring_retains_the_newline_that_completes_a_line
+# START axtest::guest_console_mux::output::tests::oversized_backend_write_does_not_drive_output_allocation
+# module: axtest::guest_console_mux::output::tests
+ok 42 axtest::guest_console_mux::output::tests::oversized_backend_write_does_not_drive_output_allocation
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=oversized_backend_write_does_not_drive_output_allocation
+# START axtest::guest_console_mux::output::tests::competing_guest_does_not_split_an_incomplete_logical_line
+# module: axtest::guest_console_mux::output::tests
+ok 43 axtest::guest_console_mux::output::tests::competing_guest_does_not_split_an_incomplete_logical_line
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=competing_guest_does_not_split_an_incomplete_logical_line
+# START axtest::guest_console_mux::output::tests::resetting_an_open_line_owner_preserves_a_physical_separator
+# module: axtest::guest_console_mux::output::tests
+ok 44 axtest::guest_console_mux::output::tests::resetting_an_open_line_owner_preserves_a_physical_separator
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=resetting_an_open_line_owner_preserves_a_physical_separator
+# START axtest::guest_console_mux::output::tests::total_pending_output_is_bounded_and_cleanup_releases_capacity
+# module: axtest::guest_console_mux::output::tests
+ok 45 axtest::guest_console_mux::output::tests::total_pending_output_is_bounded_and_cleanup_releases_capacity
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=total_pending_output_is_bounded_and_cleanup_releases_capacity
+# START axtest::guest_console_mux::output::tests::complete_line_is_emitted_while_other_fragment_remains_buffered
+# module: axtest::guest_console_mux::output::tests
+ok 46 axtest::guest_console_mux::output::tests::complete_line_is_emitted_while_other_fragment_remains_buffered
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=complete_line_is_emitted_while_other_fragment_remains_buffered
+# START axtest::guest_console_mux::output::tests::interactive_foreground_fragments_stay_on_the_same_physical_line
+# module: axtest::guest_console_mux::output::tests
+ok 47 axtest::guest_console_mux::output::tests::interactive_foreground_fragments_stay_on_the_same_physical_line
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=interactive_foreground_fragments_stay_on_the_same_physical_line
+# START axtest::guest_console_mux::output::tests::reconciliation_clears_invalid_preemption_and_preserves_separator
+# module: axtest::guest_console_mux::output::tests
+ok 48 axtest::guest_console_mux::output::tests::reconciliation_clears_invalid_preemption_and_preserves_separator
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=reconciliation_clears_invalid_preemption_and_preserves_separator
+# START axtest::guest_console_mux::output::tests::interactive_background_ring_overwrites_oldest_bytes_before_replay
+# module: axtest::guest_console_mux::output::tests
+ok 49 axtest::guest_console_mux::output::tests::interactive_background_ring_overwrites_oldest_bytes_before_replay
+AXTEST_CASE status=pass module=axtest::guest_console_mux::output::tests name=interactive_background_ring_overwrites_oldest_bytes_before_replay
+# START ax_task::sync::axtest::spin_rwlock_constants_hold
+# module: ax_task::sync::axtest
+ok 50 ax_task::sync::axtest::spin_rwlock_constants_hold
+AXTEST_CASE status=pass module=ax_task::sync::axtest name=spin_rwlock_constants_hold
+# START ax_task::sync::axtest::spin_rwlock_guard_types_hold
+# module: ax_task::sync::axtest
+ok 51 ax_task::sync::axtest::spin_rwlock_guard_types_hold
+AXTEST_CASE status=pass module=ax_task::sync::axtest name=spin_rwlock_guard_types_hold
+# START ax_task::sync::axtest::spin_rwlock_state_logic_hold
+# module: ax_task::sync::axtest
+ok 52 ax_task::sync::axtest::spin_rwlock_state_logic_hold
+AXTEST_CASE status=pass module=ax_task::sync::axtest name=spin_rwlock_state_logic_hold
+# START ax_task::sync::axtest::spin_rwlock_state_transitions_hold
+# module: ax_task::sync::axtest
+ok 53 ax_task::sync::axtest::spin_rwlock_state_transitions_hold
+AXTEST_CASE status=pass module=ax_task::sync::axtest name=spin_rwlock_state_transitions_hold
+# START ax_task::sync::axtest::spin_rwlock_constants_and_phantom_hold
+# module: ax_task::sync::axtest
+ok 54 ax_task::sync::axtest::spin_rwlock_constants_and_phantom_hold
+AXTEST_CASE status=pass module=ax_task::sync::axtest name=spin_rwlock_constants_and_phantom_hold
+# START ax_task::sync::axtest::spin_rwlock_lockdep_and_feature_config_hold
+# module: ax_task::sync::axtest
+ok 55 ax_task::sync::axtest::spin_rwlock_lockdep_and_feature_config_hold
+AXTEST_CASE status=pass module=ax_task::sync::axtest name=spin_rwlock_lockdep_and_feature_config_hold
+# START ax_task::sync::axtest::spin_rwlock_reader_writer_state_combinations_hold
+# module: ax_task::sync::axtest
+ok 56 ax_task::sync::axtest::spin_rwlock_reader_writer_state_combinations_hold
+AXTEST_CASE status=pass module=ax_task::sync::axtest name=spin_rwlock_reader_writer_state_combinations_hold
+# START ax_task::axtest::axtask_api_constants_hold
+# module: ax_task::axtest
+ok 57 ax_task::axtest::axtask_api_constants_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_constants_hold
+# START ax_task::axtest::axtask_task_constants_hold
+# module: ax_task::axtest
+ok 58 ax_task::axtest::axtask_task_constants_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_task_constants_hold
+# START ax_task::axtest::axtask_api_type_aliases_hold
+# module: ax_task::axtest
+ok 59 ax_task::axtest::axtask_api_type_aliases_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_type_aliases_hold
+# START ax_task::axtest::axtask_task_id_and_state_hold
+# module: ax_task::axtest
+ok 60 ax_task::axtest::axtask_task_id_and_state_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_task_id_and_state_hold
+# START ax_task::axtest::axtask_api_scheduler_name_hold
+# module: ax_task::axtest
+ok 61 ax_task::axtest::axtask_api_scheduler_name_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_scheduler_name_hold
+# START ax_task::axtest::axtask_task_id_operations_hold
+# module: ax_task::axtest
+ok 62 ax_task::axtest::axtask_task_id_operations_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_task_id_operations_hold
+# START ax_task::axtest::axtask_run_queue_constants_hold
+# module: ax_task::axtest
+ok 63 ax_task::axtest::axtask_run_queue_constants_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_run_queue_constants_hold
+# START ax_task::axtest::axtask_api_current_and_exit_hold
+# module: ax_task::axtest
+ok 64 ax_task::axtest::axtask_api_current_and_exit_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_current_and_exit_hold
+# START ax_task::axtest::axtask_api_function_existence_hold
+# module: ax_task::axtest
+ok 65 ax_task::axtest::axtask_api_function_existence_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_function_existence_hold
+# START ax_task::axtest::axtask_api_priority_constants_hold
+# module: ax_task::axtest
+ok 66 ax_task::axtest::axtask_api_priority_constants_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_priority_constants_hold
+# START ax_task::axtest::axtask_irq_notify_drain_logic_hold
+# module: ax_task::axtest
+ok 67 ax_task::axtest::axtask_irq_notify_drain_logic_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_irq_notify_drain_logic_hold
+# START ax_task::axtest::axtask_task_state_all_variants_hold
+# module: ax_task::axtest
+ok 68 ax_task::axtest::axtask_task_state_all_variants_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_task_state_all_variants_hold
+# START ax_task::axtest::axtask_api_atomic_context_structs_hold
+# module: ax_task::axtest
+ok 69 ax_task::axtest::axtask_api_atomic_context_structs_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_atomic_context_structs_hold
+# START ax_task::axtest::axtask_wait_queue_new_and_default_hold
+# module: ax_task::axtest
+ok 70 ax_task::axtest::axtask_wait_queue_new_and_default_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_wait_queue_new_and_default_hold
+# START ax_task::axtest::axtask_run_queue_task_state_variants_hold
+# module: ax_task::axtest
+ok 71 ax_task::axtest::axtask_run_queue_task_state_variants_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_run_queue_task_state_variants_hold
+# START ax_task::axtest::axtask_run_queue_percpu_statics_exist_hold
+# module: ax_task::axtest
+ok 72 ax_task::axtest::axtask_run_queue_percpu_statics_exist_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_run_queue_percpu_statics_exist_hold
+# START ax_task::axtest::axtask_run_queue_init_secondary_exists_hold
+# module: ax_task::axtest
+ok 73 ax_task::axtest::axtask_run_queue_init_secondary_exists_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_run_queue_init_secondary_exists_hold
+# START ax_task::axtest::axtask_run_queue_select_functions_exist_hold
+# module: ax_task::axtest
+ok 74 ax_task::axtest::axtask_run_queue_select_functions_exist_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_run_queue_select_functions_exist_hold
+# START ax_task::axtest::axtask_api_task_registry_functions_exist_hold
+# module: ax_task::axtest
+ok 75 ax_task::axtest::axtask_api_task_registry_functions_exist_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_api_task_registry_functions_exist_hold
+# START ax_task::axtest::axtask_irq_notify_constructor_and_pending_hold
+# module: ax_task::axtest
+ok 76 ax_task::axtest::axtask_irq_notify_constructor_and_pending_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_irq_notify_constructor_and_pending_hold
+# START ax_task::axtest::axtask_run_queue_axrunqueue_struct_fields_hold
+# module: ax_task::axtest
+ok 77 ax_task::axtest::axtask_run_queue_axrunqueue_struct_fields_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_run_queue_axrunqueue_struct_fields_hold
+# START ax_task::axtest::axtask_run_queue_current_run_queue_ref_exists_hold
+# module: ax_task::axtest
+ok 78 ax_task::axtest::axtask_run_queue_current_run_queue_ref_exists_hold
+AXTEST_CASE status=pass module=ax_task::axtest name=axtask_run_queue_current_run_queue_ref_exists_hold
+# START ax_hal::axtest::axhal_irq_entry_preserves_disabled_caller_state
+# module: ax_hal::axtest
+ok 79 ax_hal::axtest::axhal_irq_entry_preserves_disabled_caller_state
+AXTEST_CASE status=pass module=ax_hal::axtest name=axhal_irq_entry_preserves_disabled_caller_state
+# START ax_hal::axtest::axhal_irq_entry_keeps_irqs_disabled_until_preemption_is_reenabled
+# module: ax_hal::axtest
+ok 80 ax_hal::axtest::axhal_irq_entry_keeps_irqs_disabled_until_preemption_is_reenabled
+AXTEST_CASE status=pass module=ax_hal::axtest name=axhal_irq_entry_keeps_irqs_disabled_until_preemption_is_reenabled
+AXTEST_SUMMARY pass=80 fail=0 skip=0 total=80
+AXTEST_SUITE_OK
+=== SUCCESS PATTERN MATCHED: AXTEST_SUITE_OK ===
+
+[axbuild] qemu run package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json ... done (2.63s)

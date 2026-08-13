@@ -8,11 +8,11 @@ $ErrorActionPreference = "Stop"
 $scriptRoot = $PSScriptRoot
 $repoRoot = (Resolve-Path (Join-Path $scriptRoot "../..")).Path
 if (-not $OutputPath) {
-    $OutputPath = Join-Path $repoRoot "competition/results/current-source-smoke-20260812/demo-5min.mp4"
+    $OutputPath = Join-Path $repoRoot "competition/results/current-source-smoke-20260813/demo-5min.mp4"
 }
 $outputFullPath = [System.IO.Path]::GetFullPath($OutputPath)
 $evidenceRoot = [System.IO.Path]::GetFullPath(
-    (Join-Path $repoRoot "competition/results/current-source-smoke-20260812")
+    (Join-Path $repoRoot "competition/results/current-source-smoke-20260813")
 )
 if (-not $outputFullPath.StartsWith($evidenceRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "Output must stay inside $evidenceRoot"
