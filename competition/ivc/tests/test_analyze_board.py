@@ -1205,6 +1205,29 @@ BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=4250
             "/home/orangepi/ivc-r",
         )
 
+    def test_restart_profile_recovers_a_damaged_rtos_restart_summary(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        log = "\n".join(
+            line
+            for line in self.restart_profile_log(
+                pre_reset_raw_csv=pre_reset_raw
+            ).splitlines()
+            if "IVC-RTOS-RESTART session_resets=" not in line
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log + "\n"),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertEqual(result["rtos"]["restart_counters_source"], "events")
+        self.assertEqual(result["rtos"]["session_resets"], 1)
+        self.assertEqual(result["rtos"]["session_rejections"], 1)
+
     def test_restart_ready_record_fits_the_shared_uart_budget(self) -> None:
         line = (
             "[guest-console:pl011-zephyr] "
@@ -1328,6 +1351,43 @@ BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=4250
 
         self.assertTrue(result["restart_recovery"]["actual_vm_reset"])
         self.assertEqual(result["restart_recovery"]["host_cpu"], 3)
+
+    def test_restart_profile_recovers_a_truncated_running_status(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            "ready_wait_ms=450 status=running",
+            "ready_wait_ms=450 status=runni",
+            1,
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertEqual(result["restart_recovery"]["ready_wait_ms"], 450)
+
+    def test_restart_profile_rejects_a_non_running_status(self) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            "ready_wait_ms=450 status=running",
+            "ready_wait_ms=450 status=stopped",
+            1,
+        )
+
+        with self.assertRaisesRegex(analyzer.AnalysisError, "not observed running"):
+            analyzer.analyze(
+                self.write_log(log),
+                4,
+                self.write_raw_csv(),
+                profile="restart",
+                pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+                expected_pre_reset_count=20,
+            )
 
     def test_restart_profile_uses_the_host_record_quorum_after_uart_escape_damage(
         self,

@@ -351,6 +351,17 @@ static void report_restart_evidence(const struct ivc_server *server)
 	report_recovery_evidence(server);
 }
 
+static void report_restart_summary(const struct ivc_server *server)
+{
+	printk("IVC-RTOS-RESTART session_resets=%llu session_rejections=%llu "
+	       "safe_fallbacks=%llu recoveries=%llu stale_status_sent=%llu "
+	       "stale_acks_sent=%llu\n",
+	       server->receive_window.metrics.session_resets,
+	       server->receive_window.metrics.session_rejections,
+	       server->safe_fallbacks, server->recoveries, server->stale_status_sent,
+	       server->stale_acknowledgements_sent);
+}
+
 static void report_compact_result(const struct ivc_server *server, const char *profile)
 {
 	uint32_t copy;
@@ -370,14 +381,7 @@ static void report_compact_result(const struct ivc_server *server, const char *p
 		if (strcmp(profile, "restart") == 0) {
 			report_restart_evidence(server);
 			k_sleep(K_MSEC(IVC_RESULT_RECORD_PAUSE_MS));
-			printk("IVC-RTOS-RESTART session_resets=%llu session_rejections=%llu "
-			       "safe_fallbacks=%llu recoveries=%llu stale_status_sent=%llu "
-			       "stale_acks_sent=%llu\n",
-			       server->receive_window.metrics.session_resets,
-			       server->receive_window.metrics.session_rejections,
-			       server->safe_fallbacks, server->recoveries,
-			       server->stale_status_sent,
-			       server->stale_acknowledgements_sent);
+			report_restart_summary(server);
 			k_sleep(K_MSEC(IVC_RESULT_RECORD_PAUSE_MS));
 		}
 	}
@@ -406,6 +410,9 @@ static void report_poweroff_evidence(const struct ivc_server *server, const char
 	k_sleep(K_MSEC(IVC_POWEROFF_INITIAL_PAUSE_MS));
 	for (copy = 0U; copy < IVC_POWEROFF_RECORD_COPIES; ++copy) {
 		report_combined_result(server, profile);
+		if (strcmp(profile, "restart") == 0) {
+			report_restart_summary(server);
+		}
 		printk("IVC-RTOS-POWEROFF accepted=%llu\n",
 		       server->receive_window.metrics.accepted);
 		k_sleep(K_MSEC(IVC_POWEROFF_RECORD_PAUSE_MS));
