@@ -1996,7 +1996,7 @@ def parse_restart_recovery(
     ):
         raise AnalysisError("retired-session ERROR reason is invalid")
 
-    ordered_events = (
+    event_specs = (
         (
             AXVISOR_RESTART_ARMED_PREFIX,
             ("schema", "vm_id", "host_cpu", "delay_ms", "ready_timeout_ms"),
@@ -2061,14 +2061,48 @@ def parse_restart_recovery(
         RTOS_STALE_REPLAY_PREFIX,
         RTOS_RECOVERY_PREFIX,
     }
-    event_indexes = [
-        first_record_start_index(lines, prefix)
-        if prefix in replayed_event_prefixes
-        else first_complete_record_index(lines, prefix, fields)
-        for prefix, fields in ordered_events
-    ]
-    if event_indexes != sorted(event_indexes) or len(set(event_indexes)) != len(
-        event_indexes
+    event_indexes = {
+        prefix: (
+            first_record_start_index(lines, prefix)
+            if prefix in replayed_event_prefixes
+            else first_complete_record_index(lines, prefix, fields)
+        )
+        for prefix, fields in event_specs
+    }
+    # StarryOS persists and syncs its pre-reset evidence before emitting ARMED,
+    # while Zephyr independently enters its timeout fallback after the final
+    # pre-reset command. Those two records are concurrent branches: both must
+    # be bounded by RUNNING and TRIGGER, but either may reach the UART first.
+    causal_chains = (
+        (
+            AXVISOR_RESTART_ARMED_PREFIX,
+            AXVISOR_RESTART_PLACED_PREFIX,
+            AXVISOR_RESTART_RUNNING_PREFIX,
+        ),
+        (
+            AXVISOR_RESTART_RUNNING_PREFIX,
+            STARRY_RESTART_ARMED_PREFIX,
+            AXVISOR_RESTART_TRIGGER_PREFIX,
+        ),
+        (
+            AXVISOR_RESTART_RUNNING_PREFIX,
+            RTOS_SAFE_FALLBACK_PREFIX,
+            AXVISOR_RESTART_TRIGGER_PREFIX,
+        ),
+        (
+            AXVISOR_RESTART_TRIGGER_PREFIX,
+            STARRY_RESTART_RESUME_PREFIX,
+            RTOS_STALE_REPLAY_PREFIX,
+            RTOS_RECOVERY_PREFIX,
+            AXVISOR_RESTART_COMPLETE_PREFIX,
+        ),
+    )
+    if len(set(event_indexes.values())) != len(event_indexes) or any(
+        any(
+            event_indexes[before] >= event_indexes[after]
+            for before, after in zip(chain, chain[1:])
+        )
+        for chain in causal_chains
     ):
         raise AnalysisError("restart evidence markers are not in causal order")
 
