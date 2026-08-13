@@ -1738,22 +1738,22 @@ def parse_pre_reset_raw_samples(
 def parse_restart_recovery(
     lines: list[str], expected_count: int, expected_pre_reset_count: int
 ) -> dict[str, object]:
-    armed = find_record(
+    armed = find_axvisor_restart_record(
         lines,
         AXVISOR_RESTART_ARMED_PREFIX,
         ("schema", "vm_id", "host_cpu", "delay_ms", "ready_timeout_ms"),
     )
-    placed = find_record(
+    placed = find_axvisor_restart_record(
         lines,
         AXVISOR_RESTART_PLACED_PREFIX,
         ("schema", "vm_id", "requested_pcpu", "actual_pcpu", "affinity_mask"),
     )
-    running = find_record(
+    running = find_axvisor_restart_record(
         lines,
         AXVISOR_RESTART_RUNNING_PREFIX,
         ("schema", "vm_id", "host_cpu", "ready_wait_ms", "status"),
     )
-    trigger = find_record(
+    trigger = find_axvisor_restart_record(
         lines,
         AXVISOR_RESTART_TRIGGER_PREFIX,
         (
@@ -1766,7 +1766,7 @@ def parse_restart_recovery(
             "reset_count",
         ),
     )
-    complete = find_record(
+    complete = find_axvisor_restart_record(
         lines,
         AXVISOR_RESTART_COMPLETE_PREFIX,
         (
@@ -1778,7 +1778,7 @@ def parse_restart_recovery(
             "reset_count",
         ),
     )
-    timing = find_record(
+    timing = find_axvisor_restart_record(
         lines,
         AXVISOR_RESTART_TIMING_PREFIX,
         (
@@ -2305,6 +2305,20 @@ def find_record(
     if record is None:
         raise AnalysisError(f"missing complete {prefix.strip()} record")
     return record
+
+
+def find_axvisor_restart_record(
+    lines: list[str], prefix: str, required_fields: tuple[str, ...]
+) -> dict[str, str]:
+    """Select the unique majority from Axvisor's repeated UART records.
+
+    The producer emits every restart record three times. A shared-UART escape
+    collision can leave one copy field-complete but byte-damaged, so strict
+    equality across all copies would discard two matching intact copies. A
+    single record remains accepted for synthetic and legacy evidence, while
+    any tied disagreement is rejected.
+    """
+    return find_quorum_record(lines, prefix, required_fields, minimum_votes=1)
 
 
 def find_quorum_record(
