@@ -27,6 +27,7 @@
 #define IVC_READY_RECORD_COPIES 2U
 #define IVC_RESULT_RECORD_COPIES 2U
 #define IVC_RESULT_RECORD_PAUSE_MS 10
+#define IVC_RESTART_EVENT_RECORD_COPIES 2U
 #define IVC_RESTART_RECORD_PAUSE_MS 50
 #define IVC_POWEROFF_RECORD_COPIES 5U
 #define IVC_POWEROFF_INITIAL_PAUSE_MS 500
@@ -308,22 +309,46 @@ static void report_safe_fallback_evidence(const struct ivc_server *server)
 	       server->safe_fallbacks);
 }
 
+static void report_stale_replay_evidence(const struct ivc_server *server)
+{
+	uint32_t copy;
+
+	for (copy = 0U; copy < IVC_RESTART_EVENT_RECORD_COPIES; ++copy) {
+		printk("IVC-RTOS-STALE-REPLAY old_session=%u old_sequence=%u new_session=%u "
+		       "stale_status_sent=%llu stale_acks_sent=%llu\n",
+		       server->restart_old_session, server->restart_old_sequence,
+		       server->restart_new_session, server->stale_status_sent,
+		       server->stale_acknowledgements_sent);
+		if (copy + 1U < IVC_RESTART_EVENT_RECORD_COPIES) {
+			k_sleep(K_MSEC(IVC_RESTART_RECORD_PAUSE_MS));
+		}
+	}
+}
+
+static void report_recovery_evidence(const struct ivc_server *server)
+{
+	uint32_t copy;
+
+	for (copy = 0U; copy < IVC_RESTART_EVENT_RECORD_COPIES; ++copy) {
+		printk("IVC-RTOS-RECOVERY session=%u seq=%u from=controller-timeout "
+		       "mode=%s actuator_permille=%u recoveries=%llu\n",
+		       server->restart_new_session, server->restart_recovery_sequence,
+		       ivc_control_mode_name(server->restart_recovery_mode),
+		       (unsigned int)server->restart_recovery_actuator_permille,
+		       server->recoveries);
+		if (copy + 1U < IVC_RESTART_EVENT_RECORD_COPIES) {
+			k_sleep(K_MSEC(IVC_RESTART_RECORD_PAUSE_MS));
+		}
+	}
+}
+
 static void report_restart_evidence(const struct ivc_server *server)
 {
 	report_safe_fallback_evidence(server);
 	k_sleep(K_MSEC(IVC_RESTART_RECORD_PAUSE_MS));
-	printk("IVC-RTOS-STALE-REPLAY old_session=%u old_sequence=%u new_session=%u "
-	       "stale_status_sent=%llu stale_acks_sent=%llu\n",
-	       server->restart_old_session, server->restart_old_sequence,
-	       server->restart_new_session, server->stale_status_sent,
-	       server->stale_acknowledgements_sent);
+	report_stale_replay_evidence(server);
 	k_sleep(K_MSEC(IVC_RESTART_RECORD_PAUSE_MS));
-	printk("IVC-RTOS-RECOVERY session=%u seq=%u from=controller-timeout "
-	       "mode=%s actuator_permille=%u recoveries=%llu\n",
-	       server->restart_new_session, server->restart_recovery_sequence,
-	       ivc_control_mode_name(server->restart_recovery_mode),
-	       (unsigned int)server->restart_recovery_actuator_permille,
-	       server->recoveries);
+	report_recovery_evidence(server);
 }
 
 static void report_compact_result(const struct ivc_server *server, const char *profile)
@@ -560,11 +585,7 @@ static void process_control(struct ivc_server *server, int socket_fd,
 				server->restart_old_sequence = previous_sequence;
 				server->restart_new_session = frame->header.session_id;
 				server->restart_stale_observed = true;
-				printk("IVC-RTOS-STALE-REPLAY old_session=%u old_sequence=%u "
-				       "new_session=%u stale_status_sent=%llu stale_acks_sent=%llu\n",
-				       previous_session, previous_sequence, frame->header.session_id,
-				       server->stale_status_sent,
-				       server->stale_acknowledgements_sent);
+				report_stale_replay_evidence(server);
 			}
 			ivc_endpoint_begin_session(&server->endpoint);
 		}
@@ -589,12 +610,7 @@ static void process_control(struct ivc_server *server, int socket_fd,
 			server->restart_recovery_actuator_permille =
 				server->endpoint.actuator_permille;
 			server->restart_recovery_observed = true;
-			printk("IVC-RTOS-RECOVERY session=%u seq=%u from=controller-timeout "
-			       "mode=%s actuator_permille=%u recoveries=%llu\n",
-			       frame->header.session_id, frame->header.sequence,
-			       ivc_control_mode_name(command->mode),
-			       (unsigned int)server->endpoint.actuator_permille,
-			       server->recoveries);
+			report_recovery_evidence(server);
 		}
 		ivc_thermal_plant_step(&server->plant, server->endpoint.actuator_permille,
 				       server->applied_commands);
