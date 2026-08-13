@@ -63,6 +63,16 @@ run_x86_acpi_check() {
   fi
 }
 
+run_dedicated_smp2_check() {
+  online=$(/bin/busybox cat /sys/devices/system/cpu/online 2>/dev/null)
+  if [ "$online" = "0-1" ]; then
+    echo AXVISOR_DEDICATED_PARTITION_PASS
+    echo "AXVISOR_DEDICATED_PARTITION_ONLINE=$online"
+  else
+    echo "AXVISOR_DEDICATED_PARTITION_FAIL online=$online expected=0-1"
+  fi
+}
+
 cmdline=$(/bin/busybox cat /proc/cmdline)
 case "$cmdline" in
   *axvisor.acpi_case=direct*) run_x86_acpi_check AXVISOR_X86_DIRECT_ACPI_PASSED; exec /bin/busybox sh -i ;;
@@ -75,6 +85,7 @@ case "$cmdline" in
     fi
     exec /bin/busybox sh -i
     ;;
+  *axvisor.smp_case=dedicated-smp2*) run_dedicated_smp2_check; exec /bin/busybox sh -i ;;
   *axvisor.timer_case=gicv3-its*) success_marker=AXVISOR_GICV3_ITS_TIMER_STRESS_PASSED; require_its=1 ;;
   *axvisor.timer_case=gicv2*) success_marker=AXVISOR_GICV2_TIMER_STRESS_PASSED; require_its=0 ;;
   *axvisor.timer_case=gicv3*) success_marker=AXVISOR_GICV3_TIMER_STRESS_PASSED; require_its=0 ;;
@@ -365,9 +376,10 @@ fn write_padding(writer: &mut impl Write, written: usize) -> anyhow::Result<()> 
 
 #[cfg(test)]
 mod tests {
-    use std::io::Read;
+    use std::{fs, io::Read, path::Path};
 
     use flate2::read::GzDecoder;
+    use ostool::run::qemu::QemuConfig;
     use tempfile::tempdir;
 
     use super::*;
@@ -431,6 +443,46 @@ mod tests {
         );
         for applet in ["cat", "date", "dmesg", "grep", "mount", "sh", "sleep"] {
             assert_eq!(entries.get(&format!("bin/{applet}")).unwrap(), b"busybox");
+        }
+    }
+
+    #[test]
+    fn dedicated_smp2_qemu_case_uses_initramfs_assertion() {
+        let workspace_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let qemu_path = workspace_root
+            .join("test-suit/axvisor/normal/qemu-partition/dedicated-smp2/qemu-aarch64.toml");
+        let qemu: QemuConfig = toml::from_str(&fs::read_to_string(&qemu_path).unwrap()).unwrap();
+        let guest_path =
+            workspace_root.join("os/axvisor/configs/vms/qemu/aarch64/linux-smp2-dedicated.toml");
+        let guest: toml::Value = toml::from_str(&fs::read_to_string(&guest_path).unwrap()).unwrap();
+        let cmdline = guest["kernel"]["cmdline"]
+            .as_str()
+            .expect("dedicated SMP guest should provide a kernel command line");
+
+        assert!(cmdline.contains("axvisor.smp_case=dedicated-smp2"));
+        assert!(qemu.shell_prefix.is_none());
+        assert!(qemu.shell_init_cmd.is_none());
+        assert_eq!(
+            qemu.success_regex,
+            [r"(?m)^AXVISOR_DEDICATED_PARTITION_PASS\s*$"]
+        );
+        assert!(
+            qemu.fail_regex
+                .iter()
+                .any(|regex| regex.contains("AXVISOR_GUEST_ASSERTION_CASE_UNKNOWN"))
+        );
+        for required_script_contract in [
+            b"axvisor.smp_case=dedicated-smp2".as_slice(),
+            b"AXVISOR_DEDICATED_PARTITION_PASS".as_slice(),
+            b"AXVISOR_DEDICATED_PARTITION_FAIL".as_slice(),
+        ] {
+            assert!(
+                INIT_SCRIPT
+                    .windows(required_script_contract.len())
+                    .any(|window| window == required_script_contract),
+                "generated initramfs should contain `{}`",
+                String::from_utf8_lossy(required_script_contract)
+            );
         }
     }
 

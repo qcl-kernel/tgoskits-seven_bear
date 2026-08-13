@@ -8,6 +8,7 @@ use std::sync::Arc;
 
 use arm_vcpu::*;
 use arm_vgic::{GicV3VcpuBinding, IntId, VgicCore};
+use ax_std::os::arceos::guard::{IrqSaveGuard, PreemptGuard};
 use axvm_types::{VmBackendError as BackendError, VmBackendResult as BackendResult, *};
 
 use super::*;
@@ -297,6 +298,7 @@ fn vgic_runtime(vm: &crate::AxVM) -> AxVmResult<Arc<vgic::Aarch64VgicRuntime>> {
         .require::<Aarch64VgicRuntimeKey>()?)
 }
 
+#[derive(Debug)]
 struct AxvmArmHostOps;
 
 impl ArmHostOps for AxvmArmHostOps {
@@ -309,12 +311,22 @@ impl ArmHostOps for AxvmArmHostOps {
     }
 
     fn handle_current_host_irq() {
+        // Keep the acknowledged GIC transaction indivisible from the host
+        // scheduler's point of view. The dynamic IRQ registry takes inner
+        // preemption guards; without this outer guard, an RR timer tick can
+        // switch tasks as an inner guard drops, before the physical token is
+        // deactivated. The outer IRQ guard also prevents a newly pending
+        // level-triggered source from recursively entering that switch tail.
+        let irq_guard = IrqSaveGuard::new();
+        let preempt_guard = PreemptGuard::new();
         if let Some(token) = gic::acknowledge_host_irq()
             && let Err(error) = gic::route_acknowledged_host_irq(token)
         {
             warn!("{error}");
         }
         crate::check_timer_events();
+        drop(preempt_guard);
+        drop(irq_guard);
     }
 }
 

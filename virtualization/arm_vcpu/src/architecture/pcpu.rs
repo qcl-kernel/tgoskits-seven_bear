@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use core::mem;
-
 use aarch64_cpu::registers::*;
 
 use super::host::ArmHostOps;
@@ -25,14 +23,7 @@ use crate::ArmVcpuResult;
 pub struct ArmPerCpu {
     /// per cpu id
     pub cpu_id: usize,
-    /// The original value of `VBAR_EL2` (exception vector base) before enabling
-    /// the virtualization.
-    pub original_vbar_el2: u64,
     timer_frequency_hz: u64,
-}
-
-unsafe extern "C" {
-    fn exception_vector_base_vcpu();
 }
 
 impl ArmPerCpu {
@@ -44,7 +35,6 @@ impl ArmPerCpu {
         }
         Ok(Self {
             cpu_id,
-            original_vbar_el2: 0,
             timer_frequency_hz,
         })
     }
@@ -56,15 +46,6 @@ impl ArmPerCpu {
 
     /// Enables AArch64 virtualization on the current CPU.
     pub fn hardware_enable<H: ArmHostOps>(&mut self) -> ArmVcpuResult {
-        // First we save origin `exception_vector_base`.
-        // Safety:
-        // Todo: take care of `preemption`
-        self.original_vbar_el2 = VBAR_EL2.get();
-
-        // Set current `VBAR_EL2` to `exception_vector_base_vcpu`
-        // defined in this crate.
-        VBAR_EL2.set(exception_vector_base_vcpu as *const () as usize as _);
-
         HCR_EL2.modify(
             HCR_EL2::VM::Enable + HCR_EL2::RW::EL1IsAarch64 + HCR_EL2::TSC::EnableTrapEl1SmcToEl2,
         );
@@ -89,11 +70,6 @@ impl ArmPerCpu {
 
     /// Disables AArch64 virtualization on the current CPU.
     pub fn hardware_disable(&mut self) -> ArmVcpuResult {
-        // Reset `VBAR_EL2` into previous value.
-        // Safety:
-        // Todo: take care of `preemption`
-        VBAR_EL2.set(mem::take(&mut self.original_vbar_el2));
-
         HCR_EL2.set(HCR_EL2::VM::Disable.into());
         super::host::clear_current_el_irq_handler();
         Ok(())

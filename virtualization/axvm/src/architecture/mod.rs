@@ -1,5 +1,7 @@
 //! Architecture-neutral contracts shared by target implementations.
 
+#[cfg(any(target_arch = "aarch64", test))]
+pub(crate) mod aarch64_stage2;
 pub(crate) mod capabilities;
 #[cfg_attr(
     not(any(target_arch = "aarch64", target_arch = "riscv64")),

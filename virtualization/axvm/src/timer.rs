@@ -65,10 +65,14 @@ impl PublishedTimerDeadline {
         self.deadline_nanos.store(deadline, Ordering::Release);
     }
 
-    /// Removes an elapsed publication before the common IRQ path rearms the
+    /// Claims an elapsed publication before the common IRQ path rearms the
     /// shared host comparator. The AxVM worker republishes the next wheel
     /// deadline after consuming all expired events.
-    pub(crate) fn clear_if_elapsed(&self, now_nanos: u64) {
+    ///
+    /// Returns `true` only when this caller claimed an AxVM deadline and must
+    /// wake the deferred timer worker. Unrelated host timer IRQs leave future
+    /// or empty publications untouched and do not need to schedule that task.
+    pub(crate) fn claim_if_elapsed(&self, now_nanos: u64) -> bool {
         let mut observed = self.deadline_nanos.load(Ordering::Acquire);
         while observed != NO_PUBLISHED_DEADLINE && observed <= now_nanos {
             match self.deadline_nanos.compare_exchange_weak(
@@ -77,10 +81,11 @@ impl PublishedTimerDeadline {
                 Ordering::AcqRel,
                 Ordering::Acquire,
             ) {
-                Ok(_) => break,
+                Ok(_) => return true,
                 Err(current) => observed = current,
             }
         }
+        false
     }
 }
 
@@ -350,14 +355,21 @@ pub(crate) fn init_percpu() {
 }
 
 fn with_timer_wheels<R>(operation: impl FnOnce(&mut TimerWheels) -> R) -> R {
-    let timer_wheels = TIMER_WHEELS.get_or_init(|| IrqSafeMutex::new(TimerWheels::new()));
-    operation(&mut timer_wheels.lock())
+    operation(&mut timer_wheels().lock())
 }
 
 fn with_current_timer_wheels<R>(operation: impl FnOnce(usize, &mut TimerWheels) -> R) -> R {
+    // `std::sync::OnceLock` may wait through the libc futex path when another
+    // CPU is initializing the shared wheel. Finish that potentially sleeping
+    // transition before pinning this task with a preemption guard.
+    let timer_wheels = timer_wheels();
     let _guard = PreemptGuard::new();
     let cpu_id = current_cpu_id();
-    with_timer_wheels(|timer_wheels| operation(cpu_id, timer_wheels))
+    operation(cpu_id, &mut timer_wheels.lock())
+}
+
+fn timer_wheels() -> &'static IrqSafeMutex<TimerWheels> {
+    TIMER_WHEELS.get_or_init(|| IrqSafeMutex::new(TimerWheels::new()))
 }
 
 #[cfg(not(test))]
@@ -561,15 +573,16 @@ mod tests {
     }
 
     #[test]
-    fn timer_irq_clears_only_an_elapsed_publication() {
+    fn timer_irq_claims_only_an_elapsed_publication() {
         let source = PublishedTimerDeadline::new();
         source.publish(Some(Duration::from_nanos(20)));
 
-        source.clear_if_elapsed(19);
+        assert!(!source.claim_if_elapsed(19));
         assert_eq!(source.deadline_nanos(), Some(20));
 
-        source.clear_if_elapsed(20);
+        assert!(source.claim_if_elapsed(20));
         assert_eq!(source.deadline_nanos(), None);
+        assert!(!source.claim_if_elapsed(21));
     }
 
     #[test]

@@ -173,7 +173,7 @@ impl GuestConsoleMux {
         let multiple_running = state.running.len() > 1;
         let replay = state.output.resume_boot_multiplex(vm_id, multiple_running);
         drop(state);
-        write_host_bytes(&replay);
+        submit_host_bytes(&replay);
         Some(replay)
     }
 

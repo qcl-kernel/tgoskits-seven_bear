@@ -185,8 +185,9 @@ pub(crate) trait HostTimePlatform {
             published_deadline.deadline_nanos()
         });
         ax_std::os::arceos::modules::ax_task::register_timer_irq_callback(move |now| {
-            deadline_source.clear_if_elapsed(now.as_nanos().min(u64::MAX as u128) as u64);
-            notify.notify_irq();
+            if deadline_source.claim_if_elapsed(now.as_nanos().min(u64::MAX as u128) as u64) {
+                notify.notify_irq();
+            }
         });
     }
 }

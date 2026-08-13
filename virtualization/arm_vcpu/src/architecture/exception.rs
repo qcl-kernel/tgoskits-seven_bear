@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use aarch64_cpu::registers::{ESR_EL2, HCR_EL2, Readable, SCTLR_EL1, VTCR_EL2, VTTBR_EL2};
+use aarch64_cpu::registers::{ESR_EL2, FAR_EL2, HCR_EL2, Readable, SCTLR_EL1, VTCR_EL2, VTTBR_EL2};
 use log::error;
 
 use super::{
@@ -332,10 +332,26 @@ fn current_el_sync_handler(tf: &mut TrapFrame) {
     let esr = ESR_EL2.extract();
     let ec = ESR_EL2.read(ESR_EL2::EC);
     let iss = ESR_EL2.read(ESR_EL2::ISS);
+    let tpidr_el0: usize;
+    let tpidr_el2: usize;
+    unsafe {
+        core::arch::asm!(
+            "mrs {tpidr_el0}, tpidr_el0",
+            "mrs {tpidr_el2}, tpidr_el2",
+            tpidr_el0 = out(reg) tpidr_el0,
+            tpidr_el2 = out(reg) tpidr_el2,
+            options(nomem, nostack, preserves_flags),
+        );
+    }
 
-    error!("ESR_EL2: {:#x}", esr.get());
-    error!("Exception Class: {ec:#x}");
-    error!("Instruction Specific Syndrome: {iss:#x}");
+    error!(
+        "Unhandled current-EL exception: ESR_EL2={:#x}, EC={ec:#x}, ISS={iss:#x}, FAR_EL2={:#x}, \
+         ELR_EL2={:#x}, SP_EL0={:#x}, TPIDR_EL0={tpidr_el0:#x}, TPIDR_EL2={tpidr_el2:#x}",
+        esr.get(),
+        FAR_EL2.get(),
+        tf.exception_pc(),
+        tf.sp_el0,
+    );
 
     panic!(
         "Unhandled synchronous exception from current EL: {:#x?}",
@@ -390,10 +406,17 @@ unsafe extern "C" fn vmexit_trampoline() -> ! {
         "msr sp_el0, x11",
         "ldr x10, [x9]", // Get `host_stack_top` value from `&ArmVcpu.host.stack_top`.
         "mov sp, x10",   // Set `sp` as the host stack top.
+        // Return current-EL exception ownership to ax-cpu only after both host
+        // stack registers are valid. No Rust executes while the vCPU vector is live.
+        "ldr x11, [x9, {host_vbar_el2_delta}]",
+        "msr vbar_el2, x11",
+        "isb",
         restore_regs_from_stack!(), // Restore host function context frame.
         "ret", /* Control flow is handed back to ArmVcpu::run(), simulating the normal return of the `run_guest` function. */
         host_stack_top_offset = const crate::ARM_VCPU_HOST_STACK_TOP_OFFSET,
         host_sp_el0_delta = const crate::ARM_VCPU_HOST_SP_EL0_OFFSET - crate::ARM_VCPU_HOST_STACK_TOP_OFFSET,
+        host_vbar_el2_delta = const crate::architecture::vcpu::ARM_VCPU_HOST_VBAR_EL2_OFFSET
+            - crate::ARM_VCPU_HOST_STACK_TOP_OFFSET,
     )
 }
 
