@@ -1269,6 +1269,32 @@ BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=4250
         self.assertTrue(result["restart_recovery"]["actual_vm_reset"])
         self.assertEqual(result["restart_recovery"]["host_cpu"], 3)
 
+    def test_restart_profile_uses_the_host_record_quorum_after_uart_escape_damage(
+        self,
+    ) -> None:
+        pre_reset_raw = repeated_raw_csv(20)
+        placement = (
+            "AXVISOR_GUEST_RESTART_PLACED schema=1 vm_id=1 requested_pcpu=3 "
+            "actual_pcpu=3 affinity_mask=8"
+        )
+        damaged_placement = f"\x1b{placement}[m"
+        log = self.restart_profile_log(pre_reset_raw_csv=pre_reset_raw).replace(
+            placement,
+            f"{damaged_placement}\n{placement}\n{placement}",
+        )
+
+        result = analyzer.analyze(
+            self.write_log(log),
+            4,
+            self.write_raw_csv(),
+            profile="restart",
+            pre_reset_raw_path=self.write_raw_csv(pre_reset_raw),
+            expected_pre_reset_count=20,
+        )
+
+        self.assertTrue(result["restart_recovery"]["actual_vm_reset"])
+        self.assertEqual(result["restart_recovery"]["host_cpu"], 3)
+
     def test_restart_profile_orders_replayed_rtos_evidence_from_its_first_prefix(
         self,
     ) -> None:
