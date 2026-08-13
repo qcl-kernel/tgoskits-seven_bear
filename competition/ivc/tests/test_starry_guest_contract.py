@@ -178,6 +178,12 @@ class StarryGuestContractTests(unittest.TestCase):
             script.index('install -m 0644 "$built_kernel"'),
         )
 
+    def test_starry_build_invokes_checked_in_helper_scripts_through_bash(self) -> None:
+        script = STARRY_BUILD.read_text(encoding="utf-8")
+
+        self.assertIn('bash "$script_dir/build-guest-dtb.sh"', script)
+        self.assertIn('bash "$script_dir/build-rootfs.sh"', script)
+
     def test_native_profiles_stage_the_selected_starry_artifacts(self) -> None:
         runner = ORANGEPI_STARRY_RUNNER.read_text(encoding="utf-8")
         stager = ORANGEPI_STARRY_STAGER.read_text(encoding="utf-8")

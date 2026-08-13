@@ -33,21 +33,21 @@ fi
 
 mkdir -p "$output_dir"
 install -m 0644 "$built_kernel" "$output_dir/starryos.bin"
-"$script_dir/build-guest-dtb.sh"
-"$script_dir/build-rootfs.sh" --profile smoke --policy neural --backend native \
+bash "$script_dir/build-guest-dtb.sh"
+bash "$script_dir/build-rootfs.sh" --profile smoke --policy neural --backend native \
     --output "$output_dir/starry-ivc-rootfs-smoke.img"
-"$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
+bash "$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
     --output "$output_dir/starry-ivc-rootfs.img"
-"$script_dir/build-rootfs.sh" --profile smoke --policy manual --backend native \
+bash "$script_dir/build-rootfs.sh" --profile smoke --policy manual --backend native \
     --output "$output_dir/starry-ivc-rootfs-manual-smoke.img"
-"$script_dir/build-rootfs.sh" --profile full --policy manual --backend native \
+bash "$script_dir/build-rootfs.sh" --profile full --policy manual --backend native \
     --output "$output_dir/starry-ivc-rootfs-manual.img"
-"$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
+bash "$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
     --count 100 --output "$output_dir/starry-ivc-rootfs-ack-loss.img"
-"$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
+bash "$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
     --fault-profile error --count 100 \
     --output "$output_dir/starry-ivc-rootfs-error.img"
-"$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
+bash "$script_dir/build-rootfs.sh" --profile full --policy neural --backend native \
     --fault-profile restart --count 100 \
     --output "$output_dir/starry-ivc-rootfs-restart.img"
 
