@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "status": "pass",
+  "captured_at_utc": "2026-08-15T04:25:23Z/2026-08-15T04:28:29Z",
+  "scope": "AxVisor three-guest virtual-switch isolation on QEMU/AArch64",
+  "source": {
+    "branch": "feat/rt-axvisor-partition-virtio-net",
+    "commit": "ec3c363b1a61956069365a06c262091ce847b335",
+    "tracked_worktree_clean": true,
+    "clean_commit_evidence": true,
+    "note": "Locally ignored prior board and model artifacts were present but were not campaign inputs."
+  },
+  "environment": {
+    "qemu": "QEMU emulator version 6.2.0 (Debian 1:6.2+dfsg-2ubuntu6.31)",
+    "rustc": "rustc 1.99.0-nightly (da80ed070 2026-07-14)",
+    "cargo": "cargo 1.99.0-nightly (59800466c 2026-07-07)",
+    "machine": "virt,virtualization=on,gic-version=3",
+    "cpu_model": "cortex-a72",
+    "cpu_count": 4,
+    "memory": "4 GiB"
+  },
+  "command": "bash apps/arceos/virtio-net-peer/run-isolation.sh",
+  "topology": {
+    "vm1": {
+      "pcpu": 1,
+      "segment_id": 1,
+      "ipv4": "10.0.2.15/24",
+      "mac": "52:54:00:00:00:01",
+      "role": "TCP server and cross-segment UDP observer"
+    },
+    "vm2": {
+      "pcpu": 2,
+      "segment_id": 1,
+      "ipv4": "10.0.2.16/24",
+      "mac": "52:54:00:00:00:02",
+      "role": "TCP client"
+    },
+    "vm3": {
+      "pcpu": 3,
+      "segment_id": 2,
+      "ipv4": "10.0.2.17/24",
+      "mac": "52:54:00:00:00:03",
+      "default_routes": 0,
+      "role": "isolated UDP probe sender"
+    }
+  },
+  "results": {
+    "same_segment_tcp_bytes": 65536,
+    "same_segment_tcp_checksum": "0x7f8000",
+    "cross_segment_udp_probes": 100,
+    "vm3_tx_frames": 100,
+    "vm1_cross_segment_probes_received": 0,
+    "observation_ms": 7000
+  },
+  "pass_markers": [
+    "VM2_VIRTIO_NET_TX bytes=65536 checksum=0x7f8000",
+    "VM3_VIRTIO_NET_ISOLATED_PASS default_routes=0 probes=100 tx_frames=100 target=10.0.2.255:5002",
+    "VM1_VIRTIO_NET_ISOLATION_PASS received_cross_segment_probes=0 observation_ms=7000",
+    "VM1_VIRTIO_NET_PASS",
+    "VM2_VIRTIO_NET_PASS",
+    "VM3_VIRTIO_NET_PASS"
+  ],
+  "artifacts": {
+    "console_build_log_gzip": {
+      "path": "qemu.log.gz",
+      "bytes": 10304,
+      "sha256": "16059aa0660c59d37010f5837578ce79e6cae71bed2463a15ca80de916e88ab4",
+      "uncompressed_bytes": 60342,
+      "uncompressed_sha256": "56157cf655b53ea48d642b4cda0e4213521a0d2b59c4e0c4c3338c7af7c0665d"
+    }
+  },
+  "limitations": [
+    "QEMU evidence, not an Orange Pi 5 Plus board run",
+    "dynamic case covers segment separation and no-default-route behavior",
+    "MAC-spoof and unknown-unicast rejection remain lower-layer policy tests"
+  ]
+}
