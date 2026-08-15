@@ -70,6 +70,9 @@ git diff --name-only 077ba386c20c29b84749f509b29e8a3f6f76e1e2..\
 | Rust | 仓库固定 `nightly-2026-07-15` |
 | Python | 3.11+；3.10 需 `competition/requirements-host.txt` |
 | Zephyr | upstream v4.3.0，commit `3568e1b6d5cdd51a6b964a2a1d6d29200fea2056` |
+| RT-Thread | upstream v5.2.2，commit `ddf52e2cdd977f14fc04035c88672ac204aec713` |
+| FreeRTOS | `freertos-over-bao` `cb9112f9…`、FreeRTOS-Kernel `f1043c49…`、Bao runtime `c5006808…` |
+| 原生 RTOS 工具链 | Arm GNU Toolchain 13.2.Rel1；下载包 SHA-256 `7fe7b8548258f079d6ce9be9144d2a10bd2bf93b551dafbf20fe7f2e44e014b8` |
 | Board | Orange Pi 5 Plus / RK3588 / 16 GiB |
 | 串口 | CH340，1,500,000 baud，由 board service 独占 |
 | Board Linux | SSH、`rsync`、仅 `sync/reboot` 使用无密码 sudo 白名单；rootfs 为 ext4 rw |
@@ -144,6 +147,9 @@ python3 -m unittest discover -s competition/ivc/tests -p 'test_*.py'
 python3 -m unittest discover \
   -s scripts/benchmark/axvisor-rt/tests -p 'test_*.py'
 bash competition/ivc/zephyr/run-host-tests.sh
+bash competition/rt-baseline/common/tests/run.sh
+python3 -m unittest discover -s competition/rt-baseline/rtthread/tests -p 'test_*.py'
+python3 -m unittest discover -s competition/evidence/tests -p 'test_*.py'
 bash scripts/benchmark/axvisor-rt/tests/test_runner.sh
 bash scripts/benchmark/axvisor-rt/tests/test_starry_runner.sh
 ```
@@ -167,7 +173,8 @@ FDT；基础 DTB 不得重复声明 `virtio_mmio@...`。
 
 ## 4. 构建 IVC 客户机
 
-本节及第 5 节先进入 IVC 实跑源码 worktree：
+第 4.1、4.2 节及第 5 节复核冻结的实体 IVC 证据时，先进入对应 clean
+source worktree：
 
 ```sh
 cd ../tgoskits-ivc-source-598b357f9
@@ -219,6 +226,75 @@ sha256sum \
 
 当前证据使用 `7153dfca0787eab0d516b39b1f459a4e02fcf09ca1c831673c5df33864b8261b`。
 完整 Zephyr SDK/非 SDK 构建说明见 [`ivc/zephyr/README.md`](ivc/zephyr/README.md)。
+
+### 4.3 原生 RTOS 对照（不属于 IVC 客户机）
+
+以下三条路径直接运行在 QEMU，不经过 AxVisor。它们用于任务一的相同/等价平台
+RTOS 对照；不能从这些原生结果推导任何 AxVisor guest/IVC 结论。以下步骤和第
+4.4 节应回到包含本次升级的当前交付分支执行。
+
+```sh
+# Zephyr v4.3.0
+bash competition/rt-baseline/zephyr/prepare.sh
+bash competition/rt-baseline/zephyr/run.sh all \
+  tmp/competition/rt-baseline/zephyr/reproduction-1
+
+# RT-Thread v5.2.2
+bash competition/rt-baseline/rtthread/prepare.sh
+bash competition/rt-baseline/rtthread/run.sh all \
+  tmp/competition/rt-baseline/rtthread/reproduction-1
+
+# FreeRTOS
+bash competition/rt-baseline/freertos/prepare.sh
+bash competition/rt-baseline/freertos/run.sh all \
+  tmp/competition/rt-baseline/freertos/reproduction-1
+```
+
+每个 runner 都会构建 idle/cpu-stress、运行 100 次 warm-up + 10,000 次 1 ms
+周期、捕获 build/console/config/ELF/binary/command，最后对 pinned clean source
+做 attestation 并生成 `summary.json`。输出目录或 summary 已存在时会失败，复测必须
+使用新目录。支持层级、方法差异和参考结果见
+[`rt-baseline/README.md`](rt-baseline/README.md)。
+
+### 4.4 RT-Thread/FreeRTOS AxVisor Guest/IVC
+
+先准备固定上游源码和 Linux 控制端 rootfs；脚本会拒绝错误 commit、dirty 第三方
+源码、已有 Guest 输出和已有证据目录：
+
+```sh
+bash competition/ivc/rtthread/prepare.sh
+bash competition/ivc/freertos/prepare.sh
+bash competition/ivc/linux/build-initramfs.sh
+
+bash competition/ivc/run-rtos-qemu.sh rtthread normal \
+  tmp/competition/ivc/results/rtthread-normal-reproduction-1
+bash competition/ivc/run-rtos-qemu.sh rtthread ack-loss \
+  tmp/competition/ivc/results/rtthread-ack-loss-reproduction-1
+bash competition/ivc/run-rtos-qemu.sh freertos normal \
+  tmp/competition/ivc/results/freertos-normal-reproduction-1
+bash competition/ivc/run-rtos-qemu.sh freertos ack-loss \
+  tmp/competition/ivc/results/freertos-ack-loss-reproduction-1
+```
+
+每次运行先核对 Guest `SHA256SUMS` 和 ELF entry/`LOAD` 区间，再通过
+`cargo xtask axvisor qemu` 启动 VM1 Linux controller 与 VM2 RTOS endpoint。
+normal 要求 100/100 ACK、零重传、零协议错误；ACK-loss 固定丢 20 个 ACK，要求
+20 次重传、20 次 duplicate suppression、20 次恢复且 `applied` 仍为 100。
+输出包含配置、实际命令、原始 `qemu.log`、`summary.json` 和总校验清单。完整资源
+契约与限制见 [`ivc/README.md`](ivc/README.md)。
+
+### 4.5 QEMU 三客户机动态隔离
+
+```sh
+set -o pipefail
+bash apps/arceos/virtio-net-peer/run-isolation.sh 2>&1 | \
+  tee tmp/competition/virtio-net-isolation-qemu.log
+```
+
+成功条件为：VM1/VM2 的 64 KiB TCP 长度与 checksum 一致；VM3 无默认路由并
+发送 100 个跨 segment 探针；VM1 观察 7 秒收到 0 个；三台 VM 均出现 pass marker，
+且未命中 fail/panic regex。参考证据见
+[`results/axvisor-isolation-reference`](results/axvisor-isolation-reference/)。
 
 ## 5. 当前源码 IVC 实体冒烟
 
@@ -474,6 +550,21 @@ sh "$bundle/validation/verify-source-index.sh" . \
   "$bundle/source-files.git-ls-tree.txt"
 ```
 
+将完整本地 raw 目录制成不可覆盖、可逐文件核验的确定性归档：
+
+```sh
+python3 competition/evidence/package.py \
+  competition/results/orangepi-5-plus \
+  tmp/publish/tgoskits-competition-full-evidence.tar.gz
+
+cd tmp/publish
+sha256sum -c tgoskits-competition-full-evidence.tar.gz.sha256
+```
+
+命令同时生成外置 manifest 和 SHA-256 sidecar，并把同一 manifest 嵌入 tar。
+脚本会拒绝链接、特殊文件、重复输出，并回读验证每个 archive member。仍需把三个
+文件上传到同一不可变 release/dataset；本地打包不能代替公开 URL 或服务端 checksum。
+
 五分钟成片：
 
 ```text
@@ -496,3 +587,7 @@ competition/results/current-source-smoke-20260813/demo-5min.mp4
 
 QEMU/host tests、离线 replay、串口中看到一行成功 marker 都不能单独替代上述实体
 生命周期门。
+
+原生 RTOS QEMU case 则以 analyzer exit 0、唯一且完整的机器 marker、固定样本数、
+idle/stress 实测 CPU 记账、零 early wake、pinned clean-source attestation 和全部
+artifact hash 为成功条件；它独立于实体板生命周期门，也不得标成 RK3588 结果。

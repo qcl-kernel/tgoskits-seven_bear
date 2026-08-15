@@ -72,6 +72,9 @@ AI 框架：允许 YOLO、ONNX Runtime、ncnn 等开源框架及厂商 NPU SDK�
 | 架构、device graph、隔离和协议设计 | [`design.md`](design.md) |
 | 可执行构建、板测、复析和校验命令 | [`reproduce.md`](reproduce.md) |
 | 当前 Orange Pi 原始证据、哈希和源码边界 | [`results/current-source-smoke-20260813`](results/current-source-smoke-20260813/) |
+| Zephyr/RT-Thread/FreeRTOS 原生基线 | [`rt-baseline/README.md`](rt-baseline/README.md) |
+| 三客户机 QEMU 动态隔离证据 | [`results/axvisor-isolation-reference`](results/axvisor-isolation-reference/) |
+| 确定性完整证据归档工具 | [`evidence/README.md`](evidence/README.md) |
 | 五分钟成片和镜头—证据索引 | [`video-storyboard.md`](video-storyboard.md) |
 
 证据口径：当前 IVC 实跑绑定 clean commit `598b357f9…`，当前 RT shared/partitioned

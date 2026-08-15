@@ -1,6 +1,6 @@
 # 测试与证据报告
 
-报告日期：2026-08-13。最终 IVC 实体板运行绑定 clean commit
+报告更新日期：2026-08-15。最终 IVC 实体板运行绑定 clean commit
 `598b357f92c848e669c12cca830a4d08d0a50e36`；RT shared/partitioned 实体板运行绑定
 `077ba386c20c29b84749f509b29e8a3f6f76e1e2`。两者都包含 `upstream/dev`
 `56f8bfc8207f38d4b395dae0cf533ecdb079fca8`，二者之间只改动四个
@@ -16,6 +16,7 @@
 | C-RT | `077ba386c…` 的 Orange Pi 5 Plus RT shared/partitioned 实体冒烟 | 当前 RT device graph、双 vCPU 放置、两侧采集、lossless IRQ trace、快照和 Linux 回切链可用 |
 | F | 历史 clean commit 上预注册的正式实体板多轮活动 | 统计性性能、可靠性和 AI 对照结论；不得改标为当前源码结果 |
 | H / D | host、QEMU、单元、契约、静态测试和设计溯源 | 软件边界、失败路径和机制存在；不得替代实体板时延 |
+| H-IVC-RTOS | 当前工作区的 RT-Thread/FreeRTOS AxVisor QEMU 双 Guest 活动 | Guest boot、VirtIO/IP、IVC/1 normal 与 ACK-loss 端点成立；不是 clean-commit、StarryOS 组合或实体板证据 |
 
 ## 1. 结论摘要
 
@@ -29,6 +30,9 @@
 | RT 正式受控干扰门 | PASS | F；五配对、每指标每 run 10,000 样本、shared/partitioned 双 soak ≥1,800 秒 |
 | manual/neural 控制效果 | 混合结果 | F；RMSE 和 IAE 改善，最大超调退化，完整披露 |
 | ACK-loss、ERROR、VM restart 故障活动 | PASS | F 各 3/3；C-IVC 另有一次当前源码实际 restart |
+| Zephyr、RT-Thread、FreeRTOS 原生对照 | PASS | H；三种 QEMU/AArch64 RTOS 均有 idle/stress 各 10,000 样本、固定源码和保留证据 |
+| RT-Thread、FreeRTOS Guest/IVC | PASS | H-IVC-RTOS；normal/ACK-loss 共 4/4，每组 100/100，故障组各 20 次重传/去重/恢复 |
+| 三客户机跨 segment 动态隔离 | PASS | H；VM3 发送 100 个 UDP 探针，VM1 观察 7 秒收到 0 个，VM3 default route=0 |
 | 完整历史 raw 可公开下载 | **尚未完成** | 本地约 844 MiB；仓库提交精简索引和当前 C-IVC/C-RT raw，仍缺不可变公开 URL |
 
 ## 2. 当前源码实体板：IVC 重启恢复
@@ -168,7 +172,72 @@ full-loop p99 只有 2/5 配对有利于 neural，因此不声称神经策略延
 两种后端的 full-loop p99 约 12–13.5 ms。它们证明 StarryOS 内推理部署和网络闭环，
 不把不同执行设备的墙钟值当作公平加速比。
 
-## 6. 源码、设备图与产物溯源
+## 6. QEMU 原生多 RTOS 与三客户机隔离
+
+### 6.1 原生 RTOS idle/stress
+
+三种 RTOS 都直接运行于等价 QEMU/AArch64 平台，不经过 AxVisor。每个 workload
+使用 1 ms 周期、100 次 warm-up 和 10,000 个保留样本。下表为单次参考 capture，
+单位为 ns：
+
+| RTOS | Workload | wake p99 / max | dispatch p99 / max | 负载验证 | 完成记录 |
+| --- | --- | ---: | ---: | --- | --- |
+| Zephyr v4.3.0 | idle | 186,256 / 841,264 | 40,288 / 162,896 | idle 988‰ | measured coalescing 0 |
+| Zephyr v4.3.0 | stress | 669,408 / 6,236,608 | 134,912 / 1,141,536 | stress 985‰ | measured coalescing 68，全部保留在样本中 |
+| RT-Thread v5.2.2 | idle | 179,792 / 441,824 | 43,696 / 143,984 | idle 1,000‰ | timer miss 0，early wake 0 |
+| RT-Thread v5.2.2 | stress | 190,784 / 4,848,912 | 45,408 / 199,312 | stress 1,000‰ | timer miss 0，early wake 0 |
+| FreeRTOS `f1043c49…` | idle | 209,136 / 4,370,096 | 62,480 / 642,816 | idle 983‰ | timer miss 0，early wake 0 |
+| FreeRTOS `f1043c49…` | stress | 201,888 / 3,483,376 | 58,144 / 475,872 | stress 984‰ | timer miss 0，early wake 0 |
+
+RT-Thread/FreeRTOS 原生结果来自 2026-08-14 的 clean upstream source attestation；
+summary、原始 console/build gzip、hash 和复现命令分别位于
+[`native-rtthread-reference`](results/native-rtthread-reference/) 与
+[`native-freertos-reference`](results/native-freertos-reference/)。这些数据支持
+“多原生 RTOS 等价平台对照”，本身不支持 AxVisor Guest/IVC 结论；后者由下一节
+完全独立的运行路径和证据支持。
+
+### 6.2 RT-Thread/FreeRTOS Guest/IVC
+
+2026-08-15 在当前工作区用 QEMU 6.2.0 TCG/Cortex-A72 运行 AxVisor，VM1 为双 vCPU
+Linux controller，VM2 分别替换为单 vCPU RT-Thread 或 FreeRTOS endpoint。四次
+runner 均先验证固定上游、Guest SHA-256、ELF entry/非空 `LOAD` 区间和显式 rootfs，
+再由严格 analyzer 核对 RTOS 身份、profile 与计数。
+
+| Endpoint / profile | accepted / applied | duplicate / drop | ACK / retransmit / recovery | protocol error |
+| --- | ---: | ---: | ---: | ---: |
+| RT-Thread normal | 100 / 100 | 0 / 0 | 100 / 0 / 0 | 0 |
+| RT-Thread ACK-loss | 100 / 100 | 20 / 20 | 100 / 20 / 20 | 0 |
+| FreeRTOS normal | 100 / 100 | 0 / 0 | 100 / 0 / 0 | 0 |
+| FreeRTOS ACK-loss | 100 / 100 | 20 / 20 | 100 / 20 / 20 | 0 |
+
+ACK-loss 固定丢弃序号 5、10、…、100 的确认，20 个重复 CONTROL 均返回状态与 ACK
+但不再次应用。RT-Thread 首次运行暴露 MMU 开启后直接访问 `0x0b000000` 的 translation
+fault；先加入失败回归，再用 `rt_ioremap` 建立 Device mapping，重建后的两种 profile
+均通过。紧凑机器记录、输入/日志/summary 哈希和 working-tree 边界位于
+[`rtos-guest-ivc-qemu-20260815`](results/rtos-guest-ivc-qemu-20260815/)。完整 raw 保留
+在记录所列的 `tmp/competition/ivc/results/` 目录，可由 [`reproduce.md`](reproduce.md)
+第 4.4 节重新生成。
+
+该证据不声称 RT-Thread/FreeRTOS 已在 RK3588 运行，也未实际替换实体路径中的
+StarryOS controller。轮询 RX、QEMU host scheduling、RT-Thread 上游编译 warning 和
+FreeRTOS/Bao RWX `LOAD` linker warning 均保留为已知边界。
+
+### 6.3 三客户机动态隔离
+
+QEMU 使用 4 个 Cortex-A72：AxVisor 位于 pCPU0，三个单 vCPU ArceOS guest 分别固定
+到 pCPU1/2/3。VM1 `10.0.2.15` 与 VM2 `10.0.2.16` 位于 segment 1，完成
+65,536-byte TCP 交换并核对 checksum `0x7f8000`；VM3 `10.0.2.17` 位于 segment 2，
+验证 default route 数量为 0 后向 `10.0.2.255:5002` 发送 100 个 UDP 探针，guest
+NIC TX 计数增加 100。VM1 预先绑定 UDP 端口并在 TCP 完成后观察 7,000 ms，收到
+跨 segment 探针数为 0。三台 guest 均到达 terminal pass marker。
+
+完整 60,529-byte QEMU/build log 的 gzip 与机器 summary 位于
+[`axvisor-isolation-reference`](results/axvisor-isolation-reference/)。该 capture 绑定
+基线 commit `2bf6fc54…` 加本次工作区隔离实现，不是 clean final-commit 或实体板
+证据；动态覆盖 segment separation 与无默认路由，MAC spoof/unknown-unicast 仍由
+`axvm-net` 最低层 policy tests 覆盖。
+
+## 7. 源码、设备图与产物溯源
 
 端口后的运行入口均使用当前 typed device graph：设备资源由配置声明并经
 parse/validate/allocate/instantiate 阶段进入 VM，OS/guest 不再依赖旧的隐式全局设备
@@ -185,28 +254,45 @@ claim、PSCI `CPU_ON` 异步生命周期以及无抢占 guest console mux。
 `commands/` 是带 clean/source 断言的可复用 wrapper；跨机器步骤见
 [`reproduce.md`](reproduce.md)。
 
-## 7. 已执行验证
+## 8. 已执行验证
 
-与实体运行源码对应的验证包括：
+已执行的实体、QEMU 和 host 验证包括；每项结论继续受前述证据层级约束：
 
-- IVC 完整 test discovery：194/194；analyzer 单元测试：77/77；
+- 冻结历史证据对应的 IVC 完整 test discovery：194/194；analyzer 单元测试：77/77；
 - Zephyr v4.3.0 guest：190-step `-Wall -Wextra -Werror` cross build 与 host tests；
 - `arm_vcpu`：13/13；`axvm` host-test：273 项及 device-graph boundary/contract tests；
 - `axvm` 八个 feature matrix、`arm_vcpu`、`axbuild` targeted clippy；
 - AArch64 QEMU `axtest` 80/80 与 dedicated-smp2 1/1 marker、RT Python
   tests/shell runners、rustfmt；
-- 当前 raw 的重新分析、JSON/gzip、Markdown 链接、五分钟媒体与 bundle checksum。
+- 当前 raw 的重新分析、JSON/gzip、Markdown 链接、五分钟媒体与 bundle checksum；
+- RTOS 公共 C 统计/miss accounting、Python analyzer 负例、RT-Thread 配置测试；
+- RT-Thread 与 FreeRTOS idle/stress 原生 QEMU 端到端构建、运行和 analyzer 验证；
+- RT-Thread 与 FreeRTOS AxVisor Guest/IVC normal、ACK-loss 共 4/4，含共享 C host
+  tests、ELF/config 负例、严格身份/计数分析和证据 checksum；
+- 三 guest AxVisor/ArceOS QEMU 动态隔离运行，64 KiB 同 segment TCP 与 100 个跨
+  segment 探针后零接收；
+- 确定性 evidence packager 的相同字节、拒绝覆盖、输出边界和重复 manifest 负例。
 
-最终命令输出保存在
-[`validation/`](results/current-source-smoke-20260813/validation/)。
+本次升级在当前工作区执行的 RTOS Guest/IVC focused Python suite 为 36/36，公共
+fake-MMIO/transport host tests、Zephyr host logic tests 和原生 RTOS 公共逻辑测试 7/7
+均通过。当前 Windows 工作区的全量 IVC discovery 未列为本次通过项：部分既有 campaign
+shell 脚本使用 CRLF、部分板端 fixture 的 raw SHA 与快照记录不一致，且 RKNN reference
+tests 缺少 NumPy 依赖；这些问题不属于本次 RTOS Guest/IVC 改动范围，也未通过放宽测试规避。
 
-## 8. 测量限制与待补强项
+实体冒烟对应的最终命令输出保存在
+[`validation/`](results/current-source-smoke-20260813/validation/)；新增 QEMU 运行的
+console/build 日志和机器 summary 分别保存在第 6 节链接的参考证据目录。
+
+## 9. 测量限制与待补强项
 
 - 当前 C-RT 同 commit 单对 M2 为 **FAIL**；若要闭合当前源码的正式性能主张，仍应
   重跑预注册五配对和双 soak，不能把历史 F 层结果改标成当前提交。
 - 完整历史 raw archive 仍只在本地 `results/orangepi-5-plus/`；应发布不可变下载和
   总 SHA-256，仓库中的精简 summary 不能重算全部历史统计。
-- 原生 Zephyr 基线是等价 QEMU 平台，不是同一 RK3588，无法消除硬件/时钟源差异。
-- 隔离有 device graph、switch policy 和 H 层负例，但没有恶意第三 guest 的动态 capture。
+- 三种原生 RTOS 基线和新增 RT-Thread/FreeRTOS Guest/IVC 都是等价 QEMU 平台，
+  不是同一 RK3588，无法消除硬件、时钟源和 QEMU/host scheduling 差异；新增端点
+  也尚未与实体 StarryOS controller 组合验证。
+- 三客户机隔离是 QEMU 动态 capture，不是实体板；动态 spoof/unknown-unicast 流量
+  尚未加入该端到端 case，但对应最低层 policy tests 已存在。
 - 五分钟视频是已归档实体串口与机器 JSON 的后验回放，不伪装成现场同步拍摄。
 - 所有 maximum 都是观察样本最大值，不是 WCET 证明或硬实时上界。
