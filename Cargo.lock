@@ -443,6 +443,7 @@ dependencies = [
 name = "arceos-virtio-net-peer"
 version = "0.1.0"
 dependencies = [
+ "ax-errno",
  "ax-net",
  "ax-std",
 ]
