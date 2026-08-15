@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 
 set -euo pipefail
 
@@ -24,6 +25,17 @@ CARGO_TARGET_DIR="$target_dir" \
 mkdir -p "$output_dir"
 cp --reflink=auto --sparse=always "$managed_image" "$output_image"
 
+# The managed image may carry a pending journal from its last use. Replaying it
+# before raw debugfs writes prevents the later mount from reverting new files.
+set +e
+e2fsck -fy "$output_image"
+fsck_status=$?
+set -e
+if ((fsck_status > 1)); then
+    echo "e2fsck failed before populating $output_image" >&2
+    exit "$fsck_status"
+fi
+
 # The image is a private copy. Replacing exact paths inside it is recoverable by
 # rerunning this script and never mutates the managed source image.
 debugfs -w -R "rm /usr/local/bin/ivcproto" "$output_image" >/dev/null 2>&1 || true
@@ -36,6 +48,17 @@ debugfs -w -R "set_inode_field /usr/local/bin/ivcproto mode 0100755" "$output_im
 debugfs -w -R "rm /ivc-init.sh" "$output_image" >/dev/null 2>&1 || true
 debugfs -w -R "write $script_dir/ivc-init.sh /ivc-init.sh" "$output_image"
 debugfs -w -R "set_inode_field /ivc-init.sh mode 0100755" "$output_image"
+
+# Commit the debugfs updates as the filesystem's clean baseline. AxVisor's ext4
+# implementation may otherwise replay an older journal when it mounts the disk.
+set +e
+e2fsck -fy "$output_image"
+fsck_status=$?
+set -e
+if ((fsck_status > 1)); then
+    echo "e2fsck failed after populating $output_image" >&2
+    exit "$fsck_status"
+fi
 
 debugfs -R "stat /usr/local/bin/ivcproto" "$output_image"
 debugfs -R "stat /ivc-init.sh" "$output_image"

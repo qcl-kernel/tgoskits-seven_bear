@@ -255,6 +255,10 @@ static void test_thermal_plant_step_matches_rust_reference(void)
 	ivc_thermal_plant_init(&plant);
 	ivc_thermal_plant_step(&plant, 1000, 0);
 	assert(ivc_thermal_plant_temperature(&plant) == 20280);
+	ivc_thermal_plant_step(&plant, 0, 1);
+	assert(ivc_thermal_plant_temperature(&plant) == 20279);
+	ivc_thermal_plant_step(&plant, 0, 850);
+	assert(ivc_thermal_plant_temperature(&plant) == 20243);
 }
 
 int main(void)

@@ -81,7 +81,8 @@ enum ivc_timeout_result {
 };
 
 struct ivc_thermal_plant {
-	float temperature_c;
+	/* Micro-degrees retain sub-millidegree state without requiring an FPU. */
+	int64_t temperature_micro_c;
 };
 
 void ivc_receive_window_init(struct ivc_receive_window *window);

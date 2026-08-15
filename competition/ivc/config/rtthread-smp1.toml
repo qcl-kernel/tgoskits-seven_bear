@@ -1,0 +1,26 @@
+[base]
+id = 2
+name = "rtthread-ivc-endpoint"
+guest_type = "virtualized"
+cpu_num = 1
+phys_cpu_ids = [0]
+phys_cpu_sets = [0x1]
+dedicated_cpus = true
+
+[kernel]
+entry_point = 0x4008_0000
+image_location = "memory"
+kernel_path = "../../../tmp/competition/ivc/guests/rtthread/normal/rtthread.bin"
+kernel_load_addr = 0x4008_0000
+dtb_load_addr = 0x47e0_0000
+
+memory_regions = [
+  [0x4000_0000, 0x0800_0000, 0x7, 0],
+]
+
+[devices]
+passthrough = []
+disabled = []
+virtual = [
+  { id = "net0", model = "virtio-net-mmio", mac_suffix = 2, segment_id = 1, header_mode = "fixed-twelve-byte" },
+]

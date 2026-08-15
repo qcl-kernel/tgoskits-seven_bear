@@ -164,6 +164,21 @@ Current Axvisor LoongArch QEMU bring-up uses the dynamic UEFI platform path. The
   AMD/SVM QEMU cases because their host CPU exposure differs, but neither case may select a
   Cargo `vmx` or `svm` feature. Both cases must use the same backend-neutral guest baseline so
   their result isolates the runtime CPUID-selected virtualization path.
+- **Raw RTOS guest/IVC images**: trace `kernel_path` resolution through the selected
+  `image_location` and loader, and validate the ELF entry plus every non-empty `PT_LOAD` against
+  the VM GPA RAM range before converting or booting a raw image. `MapAlloc(0)` keeps a declared
+  guest GPA fixed; `MapIdentical(1)` may relocate the guest-visible base and is not interchangeable.
+  Pass the controller rootfs explicitly to `cargo xtask axvisor qemu`; axbuild may replace a disk
+  path from the QEMU file with its managed default. Raw guests that compile device resources into
+  the image must match the resolved device graph's MMIO base/size, virtual-controller INTID, MAC,
+  header mode, and segment. If an RTOS enables an MMU, map the device GPA through its ioremap/device
+  API rather than dereferencing the physical value; DMA queue addresses still need a separately
+  justified guest-physical translation contract. Treat native QEMU boot as baseline evidence only,
+  never as Axvisor Guest/IVC evidence. For multiplexed consoles, normalize only an exact leading
+  `[VM n] ` tag before parsing identity and terminal markers. When injecting files into an ext4
+  image with `debugfs`, run `e2fsck` before and after writes and verify `stat` output contains an
+  inode, because debugfs can exit successfully for a missing path. Preserve raw failures and use a
+  new immutable evidence directory after each fix.
 - **someboot arch layer**: implement or audit entry, relocation, BSS clearing, stack setup, memory map parsing, paging, trap vectors, timer, IRQ, power, SMP, and address translation.
 - **CPU-local startup**: the final ELF carries exactly one `.percpu.template` plus
   `.percpu.init` and `.percpu.align`; it never carries a linked runtime area or compatibility

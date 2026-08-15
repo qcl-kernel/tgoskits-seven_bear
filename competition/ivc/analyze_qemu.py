@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate one Linux/Zephyr AxVisor IVC console log and emit JSON evidence."""
+"""Validate one Linux/RTOS AxVisor IVC console log and emit JSON evidence."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from typing import Sequence
 
 
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+VM_CONSOLE_PREFIX = re.compile(r"^\[VM [0-9]+\] ?")
 CONTROLLER_PREFIX = "IVC-CONTROLLER-RESULT "
 RTOS_PREFIX = "IVC-RTOS-PROGRESS "
 RTOS_READY_PREFIX = "IVC-RTOS-READY "
@@ -22,6 +23,7 @@ DUPLICATE_PREFIX = "IVC-RTOS-DUPLICATE "
 LINUX_DONE = "IVC-LINUX-DONE exit=0"
 POLICIES = {"neural", "manual-fixed"}
 RUN_PROFILES = {"normal", "ack-loss"}
+RTOS_NAMES = {"zephyr", "rt-thread", "freertos"}
 INTEGER_FIELDS = (
     "sent",
     "acknowledged",
@@ -61,12 +63,14 @@ def analyze(
     *,
     profile: str = "normal",
     drop_ack_every: int = 0,
+    expected_rtos: str | None = None,
 ) -> dict[str, object]:
     if expected_count <= 0:
         raise AnalysisError("expected count must be positive")
     validate_profile(profile, expected_count, drop_ack_every)
     text = ANSI_ESCAPE.sub("", log_path.read_text(encoding="utf-8", errors="replace"))
-    lines = text.splitlines()
+    lines = [normalize_console_line(line) for line in text.splitlines()]
+    rtos_name = validate_rtos_identity(lines, expected_rtos)
     controller = find_single_record(lines, CONTROLLER_PREFIX)
     progress_index, progress = find_final_progress(lines, expected_count)
     if LINUX_DONE not in lines:
@@ -75,8 +79,8 @@ def analyze(
     result = parse_controller(controller, expected_count)
     if profile == "normal":
         validate_normal_controller(result)
-        reject_fault_markers(lines)
-        rtos = parse_rtos_progress(progress, expected_count, expected_duplicates=0)
+        reject_ack_loss_markers(lines)
+        rtos = parse_normal_rtos(lines, progress_index, progress, expected_count)
     else:
         expected_recoveries = expected_count // drop_ack_every
         validate_ack_loss_controller(result, expected_recoveries)
@@ -91,6 +95,7 @@ def analyze(
     return {
         "schema_version": 1,
         "profile": profile,
+        "rtos_name": rtos_name,
         "source_log": {
             "path": str(log_path),
             "sha256": sha256_file(log_path),
@@ -98,6 +103,12 @@ def analyze(
         "controller": result,
         "rtos": rtos,
     }
+
+
+def normalize_console_line(line: str) -> str:
+    """Remove AxVisor's per-VM mux prefix without altering evidence fields."""
+
+    return VM_CONSOLE_PREFIX.sub("", line).lstrip("\x00")
 
 
 def validate_profile(profile: str, expected_count: int, drop_ack_every: int) -> None:
@@ -174,10 +185,86 @@ def validate_normal_controller(controller: dict[str, object]) -> None:
         raise AnalysisError("normal run reported retransmissions or recoveries")
 
 
-def reject_fault_markers(lines: list[str]) -> None:
-    prefixes = (ACK_LOSS_INJECT_PREFIX, DUPLICATE_PREFIX, RTOS_RESULT_PREFIX)
+def reject_ack_loss_markers(lines: list[str]) -> None:
+    prefixes = (ACK_LOSS_INJECT_PREFIX, DUPLICATE_PREFIX)
     if any(line.startswith(prefixes) for line in lines):
         raise AnalysisError("normal run contains ACK-loss evidence markers")
+
+
+def validate_rtos_identity(lines: list[str], expected_rtos: str | None) -> str | None:
+    if expected_rtos is not None and expected_rtos not in RTOS_NAMES:
+        raise AnalysisError(f"unsupported RTOS identity: {expected_rtos}")
+    prefixes = (
+        RTOS_PREFIX,
+        RTOS_READY_PREFIX,
+        RTOS_RESULT_PREFIX,
+        ACK_LOSS_INJECT_PREFIX,
+        DUPLICATE_PREFIX,
+    )
+    records = [
+        parse_fields(line, prefix)
+        for line in lines
+        for prefix in prefixes
+        if line.startswith(prefix)
+    ]
+    identities = {record["rtos"] for record in records if "rtos" in record}
+    if len(identities) > 1:
+        raise AnalysisError("RTOS evidence records contain mixed identities")
+    observed = next(iter(identities), None)
+    if expected_rtos is not None:
+        if not records or any(record.get("rtos") != expected_rtos for record in records):
+            raise AnalysisError(
+                f"RTOS evidence identity does not consistently match {expected_rtos}"
+            )
+        return expected_rtos
+    return observed
+
+
+def parse_normal_rtos(
+    lines: list[str],
+    progress_index: int,
+    progress: dict[str, str],
+    expected_count: int,
+) -> dict[str, object]:
+    progress_result = parse_rtos_progress(
+        progress, expected_count, expected_duplicates=0
+    )
+    terminal_records = [
+        (index, parse_fields(line, RTOS_RESULT_PREFIX))
+        for index, line in enumerate(lines)
+        if line.startswith(RTOS_RESULT_PREFIX)
+    ]
+    if not terminal_records:
+        return progress_result
+    if len(terminal_records) != 1:
+        raise AnalysisError(
+            f"expected at most one normal RTOS result, found {len(terminal_records)}"
+        )
+    terminal_index, terminal = terminal_records[0]
+    if terminal_index <= progress_index:
+        raise AnalysisError("normal RTOS terminal result precedes final progress")
+    if required(terminal, "profile") != "normal":
+        raise AnalysisError("normal RTOS terminal result has the wrong profile")
+    expected_terminal = {
+        "accepted": expected_count,
+        "applied": expected_count,
+        "duplicates": 0,
+        "acks_dropped": 0,
+        "status_sent": expected_count,
+        "acks_sent": expected_count,
+        "errors_sent": 0,
+        "protocol_errors": 0,
+    }
+    terminal_values = {
+        field: integer(terminal, field) for field in expected_terminal
+    }
+    for field, expected in expected_terminal.items():
+        if terminal_values[field] != expected:
+            raise AnalysisError(
+                f"normal RTOS terminal {field}={terminal_values[field]} "
+                f"does not match {expected}"
+            )
+    return {**progress_result, **terminal_values}
 
 
 def validate_ack_loss_controller(
@@ -420,6 +507,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--expected-count", type=int, default=1800)
     parser.add_argument("--profile", choices=sorted(RUN_PROFILES), default="normal")
     parser.add_argument("--drop-ack-every", type=int, default=0)
+    parser.add_argument("--expected-rtos", choices=sorted(RTOS_NAMES))
     return parser.parse_args(argv)
 
 
@@ -431,6 +519,7 @@ def main() -> int:
             args.expected_count,
             profile=args.profile,
             drop_ack_every=args.drop_ack_every,
+            expected_rtos=args.expected_rtos,
         )
     except (AnalysisError, OSError) as error:
         raise SystemExit(f"IVC analysis failed: {error}") from error

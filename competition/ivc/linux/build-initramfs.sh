@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 
 set -euo pipefail
 
@@ -64,6 +65,16 @@ gzip -t "$output_archive"
 # device owned by the outer QEMU machine.
 debugfs -w -R "rm /guest/linux/initramfs.cpio.gz" "$rootfs_image" >/dev/null 2>&1 || true
 debugfs -w -R "write $output_archive /guest/linux/initramfs.cpio.gz" "$rootfs_image"
+
+set +e
+e2fsck -fy "$rootfs_image"
+fsck_status=$?
+set -e
+if ((fsck_status > 1)); then
+    echo "e2fsck failed after embedding $output_archive" >&2
+    exit "$fsck_status"
+fi
+
 debugfs -R "stat /guest/linux/initramfs.cpio.gz" "$rootfs_image"
 
 sha256sum "$output_archive"

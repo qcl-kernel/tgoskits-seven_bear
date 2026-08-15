@@ -292,27 +292,33 @@ const char *ivc_apply_result_name(enum ivc_apply_result result)
 
 void ivc_thermal_plant_init(struct ivc_thermal_plant *plant)
 {
-	plant->temperature_c = (float)IVC_INITIAL_TEMPERATURE_MILLI_C / 1000.0F;
+	plant->temperature_micro_c =
+		(int64_t)IVC_INITIAL_TEMPERATURE_MILLI_C * INT64_C(1000);
 }
 
 void ivc_thermal_plant_step(struct ivc_thermal_plant *plant, uint16_t actuator_permille,
 			    uint32_t step)
 {
-	const float ambient_c = 20.0F;
-	const float heater_c_per_s = 2.8F;
-	const float cooling_per_s = 0.04F;
-	const float dt_s = 0.1F;
-	const float actuator = (float)actuator_permille / 1000.0F;
-	const float disturbance = step >= 850U && step < 950U ? -0.35F : 0.0F;
-	const float derivative = heater_c_per_s * actuator -
-				 cooling_per_s * (plant->temperature_c - ambient_c) + disturbance;
+	const int64_t ambient_micro_c = INT64_C(20000000);
+	const int64_t heater_delta_micro_c =
+		(INT64_C(280000) * actuator_permille) / INT64_C(1000);
+	const int64_t cooling_delta_micro_c =
+		((plant->temperature_micro_c - ambient_micro_c) * INT64_C(4)) /
+		INT64_C(1000);
+	const int64_t disturbance_delta_micro_c =
+		step >= 850U && step < 950U ? -INT64_C(35000) : 0;
 
-	plant->temperature_c += derivative * dt_s;
+	plant->temperature_micro_c += heater_delta_micro_c - cooling_delta_micro_c +
+				      disturbance_delta_micro_c;
 }
 
 int32_t ivc_thermal_plant_temperature(const struct ivc_thermal_plant *plant)
 {
-	float scaled = plant->temperature_c * 1000.0F;
+	int64_t temperature_micro_c = plant->temperature_micro_c;
 
-	return (int32_t)(scaled >= 0.0F ? scaled + 0.5F : scaled - 0.5F);
+	if (temperature_micro_c >= 0) {
+		return (int32_t)((temperature_micro_c + INT64_C(500)) /
+				 INT64_C(1000));
+	}
+	return (int32_t)((temperature_micro_c - INT64_C(500)) / INT64_C(1000));
 }

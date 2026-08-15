@@ -1,0 +1,11 @@
+features = [
+  "ax-driver/virtio-blk",
+  "fs",
+]
+log = "Info"
+target = "aarch64-unknown-none-softfloat"
+vm_configs = [
+  "competition/ivc/config/linux-smp2-rtos.toml",
+  "competition/ivc/config/freertos-smp1-ack-loss.toml",
+]
+max_cpu_num = 4
