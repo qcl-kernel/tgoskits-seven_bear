@@ -9,6 +9,7 @@ default = ["arceos"]
 arceos = ["dep:ax-std", "ax-std/arceos", "ax-std/net"]
 
 [dependencies]
+ax-errno.workspace = true
 ax-std = { workspace = true, optional = true, features = ["default"] }
 ax-net.workspace = true
 
