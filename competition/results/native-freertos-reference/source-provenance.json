@@ -1,0 +1,39 @@
+{
+  "captured_at_utc": "2026-08-14T10:04:16.031240+00:00",
+  "kind": "freertos",
+  "repositories": {
+    "FreeRTOS-Kernel": {
+      "commit": "f1043c49d59944353291654c175852bd17b34f99",
+      "core_autocrlf": "false",
+      "git_index": {
+        "bytes": 104787,
+        "path": "FreeRTOS-Kernel/.git/index",
+        "sha256": "86c9da103c819dfcbd6515e2290eb22b2a0cc9d750113b8d9de039e66b94c233"
+      },
+      "worktree": "clean"
+    },
+    "bao-baremetal-runtime": {
+      "commit": "c50068084212ef33115a4c05f9f714cc637f30bc",
+      "core_autocrlf": "false",
+      "git_index": {
+        "bytes": 26929,
+        "path": "bao-baremetal-runtime/.git/index",
+        "sha256": "8725bb2fb49cd40c9482ed73bde6c37c6444f368d8a1bea12fe3e1ec490b7c90"
+      },
+      "worktree": "clean"
+    },
+    "freertos-over-bao": {
+      "commit": "cb9112f982c2768872536b811e013254d0184811",
+      "core_autocrlf": "false",
+      "git_index": {
+        "bytes": 4113,
+        "path": "freertos-over-bao/.git/index",
+        "sha256": "e274a6916fec742bfe9c680902521fa1be2b4c387900b701d8345c433f5642a7"
+      },
+      "worktree": "clean"
+    }
+  },
+  "schema_version": 1,
+  "source_root": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/upstream/freertos-over-bao-wsl",
+  "validity": "post-run clean-tree attestation; analyzers recheck commits and indexes"
+}

@@ -1,0 +1,14 @@
+from building import *
+
+cwd = GetCurrentDir()
+sources = ["main.c", "latency_stats.c"]
+
+group = DefineGroup(
+    "Applications",
+    sources,
+    depend=[""],
+    CPPPATH=[cwd],
+    LOCAL_CCFLAGS=" -std=c11 -Wall -Wextra",
+)
+
+Return("group")

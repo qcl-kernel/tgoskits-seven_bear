@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "../src/miss_accounting.h"
+#include "../../common/miss_accounting.h"
 
 #define WARMUP_COUNT 100U
 #define SAMPLE_COUNT 10000U
