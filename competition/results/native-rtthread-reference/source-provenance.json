@@ -1,0 +1,20 @@
+{
+  "captured_at_utc": "2026-08-14T10:01:27.967488+00:00",
+  "kind": "rt-thread",
+  "repositories": {
+    "rt-thread": {
+      "commit": "ddf52e2cdd977f14fc04035c88672ac204aec713",
+      "core_autocrlf": "unset",
+      "git_index": {
+        "bytes": 4673236,
+        "path": "rt-thread/.git/index",
+        "sha256": "374755c702cb1a3bacc8ce3275beec19095030569cc8ca1632fa2133d91216a7"
+      },
+      "version": "v5.2.2",
+      "worktree": "clean"
+    }
+  },
+  "schema_version": 1,
+  "source_root": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/upstream/rt-thread-git2",
+  "validity": "post-run clean-tree attestation; analyzers recheck commits and indexes"
+}

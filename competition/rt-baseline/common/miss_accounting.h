@@ -11,9 +11,9 @@ struct coalesced_expirations {
 };
 
 /*
- * A binary semaphore represents the first unprocessed expiration. Any later
- * expiration already available at that observation was coalesced. Partition
- * those later expiration indexes at the warm-up/measurement boundary.
+ * One wake represents the first unprocessed expiration. Any later expiration
+ * already available at that observation was coalesced. Partition those later
+ * expiration indexes at the warm-up/measurement boundary.
  */
 static inline struct coalesced_expirations count_coalesced_expirations(
 	uint32_t processed_expirations, uint32_t available_expirations,
