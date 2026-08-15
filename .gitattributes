@@ -12,6 +12,14 @@ competition/results/current-source-smoke-20260812/**/*.sha256 text eol=lf
 competition/results/current-source-smoke-20260812/**/*.txt text eol=lf
 competition/results/current-source-smoke-20260812/**/*.gz binary
 competition/results/current-source-smoke-20260812/*.mp4 binary
+competition/results/rtos-guest-ivc-qemu-20260815/*.md text eol=lf
+competition/results/rtos-guest-ivc-qemu-20260815/*.json text eol=lf
+competition/results/rtos-guest-ivc-qemu-20260815/SHA256SUMS text eol=lf
+competition/results/rtos-guest-ivc-qemu-20260815/*.gz binary
+competition/results/axvisor-isolation-reference/*.md text eol=lf
+competition/results/axvisor-isolation-reference/*.json text eol=lf
+competition/results/axvisor-isolation-reference/*.sha256 text eol=lf
+competition/results/axvisor-isolation-reference/*.gz binary
 competition/video/*.ass text eol=lf
 competition/video/*.json text eol=lf
 competition/video/*.md text eol=lf

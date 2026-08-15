@@ -16,7 +16,7 @@
 | C-RT | `077ba386c…` 的 Orange Pi 5 Plus RT shared/partitioned 实体冒烟 | 当前 RT device graph、双 vCPU 放置、两侧采集、lossless IRQ trace、快照和 Linux 回切链可用 |
 | F | 历史 clean commit 上预注册的正式实体板多轮活动 | 统计性性能、可靠性和 AI 对照结论；不得改标为当前源码结果 |
 | H / D | host、QEMU、单元、契约、静态测试和设计溯源 | 软件边界、失败路径和机制存在；不得替代实体板时延 |
-| H-IVC-RTOS | 当前工作区的 RT-Thread/FreeRTOS AxVisor QEMU 双 Guest 活动 | Guest boot、VirtIO/IP、IVC/1 normal 与 ACK-loss 端点成立；不是 clean-commit、StarryOS 组合或实体板证据 |
+| H-IVC-RTOS | clean commit `ec3c363b1…` 的 RT-Thread/FreeRTOS AxVisor QEMU 双 Guest 活动 | Guest boot、VirtIO/IP、IVC/1 normal 与 ACK-loss 端点成立；不是 StarryOS 组合或实体板证据 |
 
 ## 1. 结论摘要
 
@@ -198,8 +198,9 @@ summary、原始 console/build gzip、hash 和复现命令分别位于
 
 ### 6.2 RT-Thread/FreeRTOS Guest/IVC
 
-2026-08-15 在当前工作区用 QEMU 6.2.0 TCG/Cortex-A72 运行 AxVisor，VM1 为双 vCPU
-Linux controller，VM2 分别替换为单 vCPU RT-Thread 或 FreeRTOS endpoint。四次
+2026-08-15 在 clean commit `ec3c363b1a61956069365a06c262091ce847b335` 上用
+QEMU 6.2.0 TCG/Cortex-A72 运行 AxVisor，VM1 为双 vCPU Linux controller，VM2
+分别替换为单 vCPU RT-Thread 或 FreeRTOS endpoint。四次
 runner 均先验证固定上游、Guest SHA-256、ELF entry/非空 `LOAD` 区间和显式 rootfs，
 再由严格 analyzer 核对 RTOS 身份、profile 与计数。
 
@@ -213,9 +214,9 @@ runner 均先验证固定上游、Guest SHA-256、ELF entry/非空 `LOAD` 区间
 ACK-loss 固定丢弃序号 5、10、…、100 的确认，20 个重复 CONTROL 均返回状态与 ACK
 但不再次应用。RT-Thread 首次运行暴露 MMU 开启后直接访问 `0x0b000000` 的 translation
 fault；先加入失败回归，再用 `rt_ioremap` 建立 Device mapping，重建后的两种 profile
-均通过。紧凑机器记录、输入/日志/summary 哈希和 working-tree 边界位于
+均通过。紧凑机器记录、压缩完整日志、输入/summary 哈希和 clean-commit 边界位于
 [`rtos-guest-ivc-qemu-20260815`](results/rtos-guest-ivc-qemu-20260815/)。完整 raw 保留
-在记录所列的 `tmp/competition/ivc/results/` 目录，可由 [`reproduce.md`](reproduce.md)
+在记录所列的 `tmp/competition/final-evidence-ec3c363b1/` 目录，可由 [`reproduce.md`](reproduce.md)
 第 4.4 节重新生成。
 
 该证据不声称 RT-Thread/FreeRTOS 已在 RK3588 运行，也未实际替换实体路径中的
@@ -231,10 +232,10 @@ QEMU 使用 4 个 Cortex-A72：AxVisor 位于 pCPU0，三个单 vCPU ArceOS gues
 NIC TX 计数增加 100。VM1 预先绑定 UDP 端口并在 TCP 完成后观察 7,000 ms，收到
 跨 segment 探针数为 0。三台 guest 均到达 terminal pass marker。
 
-完整 60,529-byte QEMU/build log 的 gzip 与机器 summary 位于
+完整 60,342-byte QEMU/build log 的 gzip 与机器 summary 位于
 [`axvisor-isolation-reference`](results/axvisor-isolation-reference/)。该 capture 绑定
-基线 commit `2bf6fc54…` 加本次工作区隔离实现，不是 clean final-commit 或实体板
-证据；动态覆盖 segment separation 与无默认路由，MAC spoof/unknown-unicast 仍由
+clean commit `ec3c363b1a61956069365a06c262091ce847b335`，不是实体板证据；动态覆盖
+segment separation 与无默认路由，MAC spoof/unknown-unicast 仍由
 `axvm-net` 最低层 policy tests 覆盖。
 
 ## 7. 源码、设备图与产物溯源
@@ -273,9 +274,9 @@ claim、PSCI `CPU_ON` 异步生命周期以及无抢占 guest console mux。
   segment 探针后零接收；
 - 确定性 evidence packager 的相同字节、拒绝覆盖、输出边界和重复 manifest 负例。
 
-本次升级在当前工作区执行的 RTOS Guest/IVC focused Python suite 为 36/36，公共
+本次升级在 clean commit `ec3c363b1…` 上执行的 RTOS Guest/IVC focused Python suite 为 36/36，公共
 fake-MMIO/transport host tests、Zephyr host logic tests 和原生 RTOS 公共逻辑测试 7/7
-均通过。当前 Windows 工作区的全量 IVC discovery 未列为本次通过项：部分既有 campaign
+均通过。Windows 环境的全量 IVC discovery 未列为本次通过项：部分既有 campaign
 shell 脚本使用 CRLF、部分板端 fixture 的 raw SHA 与快照记录不一致，且 RKNN reference
 tests 缺少 NumPy 依赖；这些问题不属于本次 RTOS Guest/IVC 改动范围，也未通过放宽测试规避。
 

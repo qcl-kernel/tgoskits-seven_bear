@@ -4,7 +4,7 @@
 >
 > 对照基线：`upstream/dev` `56f8bfc8207f38d4b395dae0cf533ecdb079fca8`
 >
-> 当前交付分支：`feat/rt-axvisor-partition-virtio-net`，开发基线 HEAD `2bf6fc54ffae5282811270a944a08f58e8fd1160`；本周新增能力尚在工作区，运行证据按各自源码状态单独标注
+> 当前交付分支：`feat/rt-axvisor-partition-virtio-net`；RT-Thread/FreeRTOS Guest/IVC 与三客户机隔离的 QEMU 复验绑定 clean commit `ec3c363b1a61956069365a06c262091ce847b335`
 
 ## 本周概述
 
