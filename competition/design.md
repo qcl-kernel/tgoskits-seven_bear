@@ -153,6 +153,31 @@ CPU planner 在任何 vCPU 激活前解析所有 VM：专用 mask 必须非零�
 partitioned 干扰在 pCPU3，五对 direct IRQ p99 全部通过，worst-of-runs 改善
 87.771%，并有 shared/partitioned 双侧至少 1,800 秒 soak。两个证据层不得互换。
 
+### 5.3 多 RTOS 支持边界
+
+赛题允许在相同或等价平台运行原生 RTOS 对照。当前提供三条可复现路径：
+
+| RTOS | 原生 QEMU 基线 | AxVisor guest boot | IVC/1 端点 |
+| --- | --- | --- | --- |
+| Zephyr v4.3.0 | 已验证 | 已验证 | 已验证 |
+| RT-Thread v5.2.2 | 已验证 | QEMU/AArch64 已验证 | normal 与 ACK-loss 已验证 |
+| FreeRTOS Kernel `f1043c49…` | 已验证 | QEMU/AArch64 已验证 | normal 与 ACK-loss 已验证 |
+
+三种基线都使用单核 AArch64、1 ms 周期、100 次 warm-up，以及 idle/stress 各
+10,000 个样本；公共统计和 miss accounting 复用同一实现，但各自保留真实 timer、
+优先级和 RTOS 调度记账语义。原生基线直接运行在 QEMU、不经过 AxVisor，因此只用于
+任务一的原生/等价 RTOS 对照和多 RTOS 加分，不能替代 Orange Pi 实体时延，也不被
+用作客户机网络互通证据。完整基线设计见
+[`competition-multi-rtos-baselines.md`](../book/design/competition-multi-rtos-baselines.md)。
+
+另有独立的 AxVisor 双 Guest QEMU 路径：Linux 控制端使用 2 vCPU，RT-Thread 或
+FreeRTOS 端点使用 1 vCPU，通过 segment 1 的 VirtIO 1.x MMIO 网卡执行相同 IVC/1
+协议。两种端点均完成 100-command normal 与每 5 次丢 1 个 ACK 的确定性活动；后者
+严格得到 20 次重传、20 次去重、20 次恢复且只应用 100 次。该结果证明 Guest boot、
+IP/virtio-net 和 IVC 端点兼容性，但仍是 QEMU/AArch64，不是 RK3588 实体板证据。
+设计与复现入口见 [`competition-rtos-guest-ivc.md`](../book/design/competition-rtos-guest-ivc.md)
+和 [`ivc/README.md`](ivc/README.md)。
+
 ## 6. 网络隔离
 
 `virtio-net-mmio` model 根据 `mac_suffix` 生成固定 MAC，并把 port 注册到
@@ -168,6 +193,13 @@ partitioned 干扰在 pCPU3，五对 direct IRQ p99 全部通过，worst-of-runs
 本 profile 没有 host-facing NIC、bridge、NAT、default route、vsock、共享内存或
 HyperCall 应用通道，因此不需要 host firewall rule。将来增加外部 NIC 必须单独
 设计 route/firewall/threat model，不能沿用当前“无出口 segment”的结论。
+
+QEMU 动态负例另启三个 ArceOS guest：VM1/VM2 在 segment 1 完成 64 KiB TCP
+交换；VM3 在 segment 2、无默认路由，并向 `10.0.2.255:5002` 发送 100 个 UDP
+探针。VM1 先绑定非阻塞 UDP 监听，再在 TCP 完成后观察 7 秒，必须收到 0 个跨
+segment 探针；同时 VM3 的 guest NIC 发送计数必须至少增加 100。该用例证明动态
+segment 分离和无默认路由，anti-spoof 与 unknown-unicast 丢弃仍由更低层的
+`axvm-net` policy tests 验证，不能描述成动态 spoof capture。
 
 ## 7. IVC/1 协议
 
@@ -266,8 +298,9 @@ lease 覆盖 staging 和串口操作。仓库不保存 SSH/smart-plug 凭据。
 - 当前 C-RT 只有一对 100-sample cpu-stress，机器判定 M2 未通过，也不满足正式
   五配对+双 soak；
 - 历史 formal raw 全量约 844 MiB，compact summary 已提交，但仍需公开不可变下载；
-- native Zephyr baseline 在 QEMU，不是同一 RK3588 裸机等价平台；
-- switch 有完整 policy tests，但没有恶意第三 guest 的动态负例 capture；
+- 三种 native RTOS baseline 都在等价 QEMU/AArch64 平台，不是同一 RK3588 裸机；
+- 三客户机动态隔离已覆盖跨 segment 与无默认路由，MAC spoof/unknown-unicast
+  仍只有最低层 policy tests，未做实体板动态恶意流量 capture；
 - observed maximum 不是数学/静态证明的 WCET；
 - pCPU partition 不等于全部宿主任务、cache/memory bus 和物理 IRQ 的硬隔离；
 - 串口共享会造成日志粘连，所以成功以短 marker、snapshot raw 和 checksum 的冗余

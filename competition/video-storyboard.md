@@ -8,6 +8,12 @@ Orange Pi 5 Plus 串口标记、机器 JSON、哈希和源码入口制作，不�
 [`current-source-smoke-20260813`](results/current-source-smoke-20260813/)，观众可以在
 视频结束后逐项复核。
 
+成片冻结于 2026-08-13，因此不包含 2026-08-14 新增的 RT-Thread/FreeRTOS 原生
+基线和三客户机 QEMU 隔离画面；这两项作为补充机器证据分别保存在
+[`rt-baseline`](rt-baseline/) 和
+[`axvisor-isolation-reference`](results/axvisor-isolation-reference/)，不反向改写
+已生成视频的内容。
+
 ## 时间轴
 
 | 时间 | 画面与讲解 | 对应证据 |
@@ -30,7 +36,9 @@ Orange Pi 5 Plus 串口标记、机器 JSON、哈希和源码入口制作，不�
 - 当前源码的 IVC restart 和 RT 两侧管线在实体板通过，但当前 RT 单对 M2 未通过，不作性能改善主张。
 - 正式五配对改善属于记录在各自 clean commit 的历史 F 层活动，不能改标成当前提交。
 - neural 相对 manual 改善 RMSE 35.93%、IAE 51.94%，但最大超调退化 96.32%。
-- 当前原生 Zephyr 基线不是同一 RK3588，隔离也缺恶意第三客户机动态 capture。
+- 三种原生 RTOS 基线均为等价 QEMU/AArch64 而非同一 RK3588；三客户机动态隔离
+  已补齐跨 segment/无默认路由，但不在本成片中，动态 spoof/unknown-unicast 仍只有
+  最低层 policy tests。
 - 精简包不包含本地约 844 MiB 的完整历史 raw archive。
 
 ## 录制与验收清单
@@ -44,4 +52,5 @@ Orange Pi 5 Plus 串口标记、机器 JSON、哈希和源码入口制作，不�
 - [x] 历史正式数据与当前源码证据使用不同标签。
 - [x] AI 改善和超调退化同时出现。
 - [x] 视频文件纳入同一 `checksums.sha256`。
+- [x] 8 月 14 日新增能力在文档中明确标为补充证据，不伪装成视频已有画面。
 - [ ] 发布完整历史 raw archive 的不可变下载 URL 和顶层 SHA-256。

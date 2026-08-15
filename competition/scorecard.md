@@ -12,6 +12,9 @@
 | C-RT | clean commit `077ba386c20c29b84749f509b29e8a3f6f76e1e2` 的实体 RT shared/partitioned 冒烟；之后只改 `competition/ivc/`，精确路径证明见 [`source-delta.txt`](results/current-source-smoke-20260813/source-delta.txt) |
 | F | 历史 clean commit 上预注册的正式多轮实体板活动；本仓库提交精简 summary/preregistration，完整约 844 MiB raw 档案尚需单独发布 |
 | H | host/QEMU/单元/契约测试；只能证明相应软件边界，不能替代实体板时延 |
+| H-RTOS | Zephyr、RT-Thread、FreeRTOS 原生 QEMU/AArch64 idle/stress 基线；证明等价平台的可复现对照，不是 RK3588 裸机结果 |
+| H-IVC-RTOS | RT-Thread、FreeRTOS 在 AxVisor QEMU/AArch64 下的双 Guest normal/ACK-loss 活动；证明 Guest boot、VirtIO/IP 和 IVC/1 端点，不替代 StarryOS/实体板组合证据 |
+| H-ISO | 三个 ArceOS guest 的 AxVisor QEMU 动态隔离活动；证明 segment 分离和无默认路由，不替代实体板或动态 spoof 测试 |
 | D | 设计或源码静态证据 |
 
 关键边界：C-RT 验证当前 RT 运行时的 device-graph 配置、shared/partitioned 启动、
@@ -27,23 +30,24 @@
 | ≥2 vCPU 客户机及 CPU/内存/设备/IRQ/启动配置 | 4 | [`starry-orangepi-5-plus-smp2-partitioned.toml`](../scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml)；`phys_cpu_sets=[0x2,0x4]`、2 vCPU、256 MiB、typed `virtio-blk-mmio` | C-RT 两侧双 vCPU 启动、零迁移、lossless trace | 证据充分；使用 StarryOS 替代 Linux |
 | 改造前后完整数据并体现 worst-case/抖动改善 | 5 | shared/partitioned 正交配置与比较器 | F 五配对：direct IRQ worst-of-runs 改善 87.771%，5/5；dispatch worst-of-runs 改善 99.773%；双 soak | **有历史正式证据，但当前源码未重跑五配对；保守扣 1 分风险** |
 | idle 与 stress 对比充分 | 4 | RT capture/aggregate 脚本、guest CPU1 stress、受控 host-noise | F host-noise idle 五对 + 双 soak；F guest stress 五对；C-RT shared/partitioned stress 冒烟 | 证据充分，报告中分开解释两种干扰变量 |
-| 原生 Zephyr/RTOS 基线合理且可复现 | 5 | [`rt-baseline/zephyr`](rt-baseline/zephyr/)、[`results/native-zephyr-reference`](results/native-zephyr-reference/) | H：Zephyr v4.3.0 idle/stress 10,000 样本 | **平台为 QEMU `qemu_cortex_a53`，不是同一 RK3588；保守扣 2 分风险** |
+| 原生 Zephyr/RTOS 基线合理且可复现 | 5 | [`rt-baseline`](rt-baseline/)；Zephyr v4.3.0、RT-Thread v5.2.2、FreeRTOS Kernel `f1043c49…` | H-RTOS：三种 RTOS 均完成 idle/stress、每组 10,000 样本、固定源码/工具链和 fail-closed 分析 | **赛题允许相同或等价平台；QEMU/AArch64 方法可复现且差异已披露，证据充分** |
 
-任务一可辩护证据估计：`27/30`。最有效的补强是从最终提交 commit 重跑受控
-host-noise 五对和双 soak，并在同一 Orange Pi 上裸跑 Zephyr 等价基线。
+任务一可辩护证据估计：`29/30`。剩余 1 分风险来自正式五配对和双 soak 尚未从
+最终交付 commit 重跑；同一 Orange Pi 裸机 RTOS 对照仍可进一步增强外部有效性，
+但不再作为“等价平台基线”细则的缺失项。
 
 ## 任务二：基于网络的客户机间通信（25 分）
 
 | 细则 | 分值 | 实现入口 | 证据 | 当前判断 |
 | --- | ---: | --- | --- | --- |
-| Starry/Linux—RTOS IP 网络链路与配置 | 4 | 两个 typed `virtio-net-mmio` 节点接入 AxVisor segment 1；Starry `10.0.0.1/24`，Zephyr `10.0.0.2:5500` | C-IVC fault-restart；F normal/fault campaigns | 证据充分 |
-| 应用协议字段完整且位于 UDP/IP | 5 | [`ivcproto`](../tools/ivcproto/src/lib.rs)：magic/version/type/length/session/sequence/timestamp/error/CRC | H Rust+C 跨实现 golden/negative tests；C-IVC 实际 UDP | 证据充分 |
-| CONTROL、STATUS、错误通知可用 | 5 | Starry controller 与 Zephyr endpoint | C-IVC：120 CONTROL 应用、122 STATUS/ACK、1 ERROR；F full campaigns | 证据充分 |
-| ACK/超时/重传/乱序重复/重连恢复 | 4 | receive window、exactly-once duplicate suppression、retry、session retirement、safe fallback | F ACK-loss/error/restart 各 3/3；C-IVC actual VM reset | 证据充分 |
-| 自动化测试数据 | 4 | board runner、analyzer、campaign aggregator | F 5×1,800 normal paired；3×fault；C-IVC machine summary/raw/checksum | 证据充分 |
-| 网络隔离与访问控制 | 3 | 无 host NIC/default route/NAT/vsock；segment membership、精确单播、anti-spoof、unknown-unicast drop | H policy tests + D topology | **缺少恶意第三客户机实体/QEMU 动态负例；保守扣 1 分风险** |
+| Starry/Linux—RTOS IP 网络链路与配置 | 4 | typed `virtio-net-mmio` 节点接入 AxVisor segment 1；controller `10.0.0.1/24`，RTOS `10.0.0.2:5500` | C-IVC Starry/Zephyr；H-IVC-RTOS Linux/RT-Thread/FreeRTOS | 证据充分；新增 RTOS 路径明确限定 QEMU |
+| 应用协议字段完整且位于 UDP/IP | 5 | [`ivcproto`](../tools/ivcproto/src/lib.rs)：magic/version/type/length/session/sequence/timestamp/error/CRC | H Rust+C 跨实现 golden/negative tests；C-IVC 与 H-IVC-RTOS 实际 UDP | 证据充分 |
+| CONTROL、STATUS、错误通知可用 | 5 | Starry/Linux controller 与共享 RTOS endpoint core | C-IVC：120 CONTROL 应用、122 STATUS/ACK、1 ERROR；H-IVC-RTOS 两种 RTOS normal 各 100/100 | 证据充分 |
+| ACK/超时/重传/乱序重复/重连恢复 | 4 | receive window、exactly-once duplicate suppression、retry、session retirement、safe fallback | F ACK-loss/error/restart 各 3/3；C-IVC actual VM reset；H-IVC-RTOS 各 20 次重传/去重/恢复 | 证据充分 |
+| 自动化测试数据 | 4 | board/QEMU runner、strict analyzer、campaign aggregator | F 5×1,800 normal paired；3×fault；C-IVC 与 H-IVC-RTOS machine summary/raw/checksum | 证据充分 |
+| 网络隔离与访问控制 | 3 | 无 host NIC/default route/NAT/vsock；segment membership、精确单播、anti-spoof、unknown-unicast drop；第三 guest 位于 segment 2 | H policy tests + D topology + H-ISO：VM3 发 100 个跨 segment UDP 探针、VM1 观察 7 秒收到 0 个、VM3 default route=0 | 证据充分；动态 spoof/unknown-unicast 仍由最低层 policy tests 覆盖 |
 
-任务二可辩护证据估计：`24/25`。
+任务二可辩护证据估计：`25/25`。
 
 ## 任务三：AI 控制闭环（25 分）
 
@@ -51,8 +55,8 @@ host-noise 五对和双 soak，并在同一 Orange Pi 上裸跑 Zephyr 等价基
 | --- | ---: | --- | --- | --- |
 | StarryOS 中完成神经网络推理 | 4 | native 4×6×1、同源 ONNX、RKNN NPU、ONNX Runtime CPU 后端 | F RKNN/ORT 各 5×1,800；C-IVC native controller | 证据充分；不同后端结果分开标注 |
 | 模型输出通过任务二协议发送 | 5 | controller `CONTROL` payload | C-IVC/F raw 与 RTOS counters | 证据充分 |
-| RTOS 根据输出执行可观察动作 | 5 | Zephyr actuator + deterministic thermal plant | C-IVC `applied=120`；F 9,000/9,000 | 证据充分 |
-| 状态回传形成闭环 | 4 | `STATUS` 作为下一周期观测，`ACK` 确认 side effect | C-IVC/F | 证据充分 |
+| RTOS 根据输出执行可观察动作 | 5 | 共享 actuator + deterministic thermal plant；Zephyr、RT-Thread、FreeRTOS adapter | C-IVC `applied=120`；F 9,000/9,000；H-IVC-RTOS 两种 RTOS 各 `applied=100` | 证据充分 |
+| 状态回传形成闭环 | 4 | `STATUS` 作为下一周期观测，`ACK` 确认 side effect | C-IVC/F；H-IVC-RTOS 4/4 campaigns | 证据充分 |
 | 端到端延迟方法与数据 | 3 | Starry 单时钟 round trip：pre-send / transport / full-loop | C-IVC 100 post-reset samples；F full profiles | 证据充分；不做跨客户机时钟相减 |
 | 与固定参数手动控制比较至少两项 | 4 | AB/BA 五对 manual/neural | F：RMSE 改善 35.93%，IAE 改善 51.94%；overshoot 退化 96.32% 被保留 | 证据充分且披露负向指标 |
 
@@ -74,7 +78,7 @@ host-noise 五对和双 soak，并在同一 Orange Pi 上裸跑 Zephyr 等价基
 | 细则 | 分值 | 证据 | 当前判断 |
 | --- | ---: | --- | --- |
 | 实时/网络/控制方案创新 | 2 | device-graph typed virtual NIC/block、直接跨层 IRQ trace、受控 host interference、actual guest restart | 证据充分 |
-| 扩展到更多 guest/RTOS/场景 | 2 | code-registered device model、segment/port、profile/backend 分层 | 设计与代码充分 |
+| 扩展到更多 guest/RTOS/场景 | 2 | code-registered device model、segment/port、profile/backend 分层；RT-Thread 与 FreeRTOS 共享 transport/core、独立 OS glue | H-IVC-RTOS 4/4 严格 QEMU 活动，设计与代码充分 |
 | 代码质量与工程规范 | 1 | typed config/errors、fail-closed analyzer、atomic staging、checksum/readback、回归测试 | 证据充分 |
 
 创新与扩展性可辩护证据估计：`5/5`。
@@ -85,15 +89,16 @@ host-noise 五对和双 soak，并在同一 Orange Pi 上裸跑 Zephyr 等价基
 | --- | ---: | --- |
 | StarryOS 替代 Linux | 4 | **可主张 4 分**：当前实体 IVC 和 RT 客户机均为 StarryOS |
 | StarryOS syscall 完善并合入 `dev` | 4 | **当前不主张**：本工作增强网络/文件系统/实体运行，但没有把新增 syscall 数量和已合入 upstream `dev` 的证据绑定到本提交 |
-| 多 RTOS 或多开发板基线 | 2 | **当前不主张**：一个 Zephyr RTOS、一个 Orange Pi 5 Plus；QEMU 不是第二块开发板 |
+| 多 RTOS 或多开发板基线 | 2 | **可主张 2 分**：三种原生 RTOS 基线均有固定上游与保留证据，RT-Thread/FreeRTOS 还完成独立 Guest/IVC QEMU 活动；不以 QEMU 冒充第二块开发板 |
 
 ## 保守汇总与下一步
 
-按上述“证据可辩护”口径，当前主评分约为 `95/100`，可主张 StarryOS
-替代 Linux `+4`；这不是官方评分。最值得投入的五项工作按收益排序：
+按上述“证据可辩护”口径，当前主评分约为 `98/100`，可主张 StarryOS
+替代 Linux `+4` 和多 RTOS `+2`，合计加分 `+6`；这不是官方评分。最值得投入的
+后续工作按收益排序：
 
 1. 从最终提交 commit 重跑 RT 受控干扰五配对和 shared/partitioned 双 soak，消除正式性能结论与当前提交之间的证据断层。
 2. 发布完整 844 MiB raw 证据归档（GitHub Release/LFS/不可变数据集），给出下载 URL、总 SHA-256 和逐文件 manifest。
-3. 在同一 RK3588 上裸跑 Zephyr 的 idle/stress/soak 等价基线，记录时钟源、CPU 亲和和原始样本。
-4. 增加恶意第三客户机动态隔离用例：跨 segment、MAC spoof、unknown unicast、无默认路由，并保留串口/pcap/计数器证据。
+3. 在同一 RK3588 上裸跑至少一种 RTOS 的 idle/stress/soak，记录时钟源、CPU 亲和和原始样本，作为比等价 QEMU 更强的补充对照。
+4. 将已通过的 RT-Thread/FreeRTOS Guest/IVC 路径移植到 Orange Pi 5 Plus，并至少运行一组 StarryOS controller 组合；当前只主张 QEMU/AArch64 endpoint 支持。
 5. 如要争取额外 4 分，单独选择有明确 Linux ABI 依据的 StarryOS syscall 缺口，按项目规范实现、测试并真正合入 upstream `dev`；不要把普通平台修复包装成 syscall 加分。

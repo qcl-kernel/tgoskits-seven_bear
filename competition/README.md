@@ -31,6 +31,10 @@ default route、vsock、共享内存或 HyperCall 应用数据通道。
 | RKNN NPU / ONNX Runtime CPU | 历史活动各 5×1,800 通过 | [`historical-formal/rknpu`](results/current-source-smoke-20260813/historical-formal/rknpu/)、[`ort`](results/current-source-smoke-20260813/historical-formal/ort/) |
 | 五分钟视频 | 实体串口与机器 JSON 的 300 秒证据回放版 | [`demo-5min.mp4`](results/current-source-smoke-20260813/demo-5min.mp4) |
 | upstream `dev` rebase | 运行源码包含 `56f8bfc8207f…`；IVC source 0 behind / 50 ahead | [`provenance.json`](results/current-source-smoke-20260813/provenance.json) |
+| 原生多 RTOS 对照 | Zephyr、RT-Thread、FreeRTOS 均完成 idle/stress 各 10,000 样本的 QEMU/AArch64 基线 | [`rt-baseline`](rt-baseline/)、[`native-rtthread-reference`](results/native-rtthread-reference/)、[`native-freertos-reference`](results/native-freertos-reference/) |
+| RT-Thread/FreeRTOS Guest/IVC | QEMU/AArch64 双 Guest normal 与 ACK-loss 共 4/4 通过；每组 100/100，故障组各 20 次重传/去重/恢复 | [`ivc/README.md`](ivc/README.md)、[`competition-rtos-guest-ivc.md`](../book/design/competition-rtos-guest-ivc.md) |
+| 三客户机网络隔离 | QEMU 动态通过：同 segment TCP 64 KiB；隔离 segment 发送 100 个探针，接收端 7 秒收到 0 个 | [`axvisor-isolation-reference`](results/axvisor-isolation-reference/) |
+| 证据归档工具 | 确定性 tar+gzip、逐文件 manifest、SHA-256、拒绝覆盖并回读验证 | [`evidence`](evidence/) |
 
 当前 100 样本 RT 冒烟有同提交 shared/partitioned 对照，但 periodic 与 dispatch
 尾延迟退化，且只有一对、没有受控 host interference，机器判定
@@ -51,6 +55,10 @@ default route、vsock、共享内存或 HyperCall 应用数据通道。
 - [`video-storyboard.md`](video-storyboard.md)：五分钟成片的镜头、字幕、
   真实性边界与重新录制方法。
 - [`requirement.md`](requirement.md)：比赛原始要求，不作为完成状态声明。
+- [`rt-baseline/README.md`](rt-baseline/README.md)：Zephyr、RT-Thread、
+  FreeRTOS 的支持层级、统一测量边界和复现入口。
+- [`ivc/README.md`](ivc/README.md)：三种 RTOS 的 Guest/IVC 支持矩阵，
+  RT-Thread/FreeRTOS 构建、QEMU 活动、严格计数和已知限制。
 
 ## 源码入口
 
@@ -60,9 +68,11 @@ default route、vsock、共享内存或 HyperCall 应用数据通道。
 | 虚拟网卡与隔离交换 | [`virtio_net`](../virtualization/axdevice/src/virtio_net/mod.rs)、[`axvm-net`](../virtualization/axvm-net/src/lib.rs) |
 | CPU partition / timer / IRQ | [`axvm`](../virtualization/axvm/src/)、[`RT harness`](../scripts/benchmark/axvisor-rt/) |
 | IVC/1 协议与神经控制 | [`ivcproto`](../tools/ivcproto/src/lib.rs) |
-| Starry/Zephyr 镜像与配置 | [`ivc`](ivc/)、[`RT configs`](../scripts/benchmark/axvisor-rt/config/) |
+| Starry/Zephyr/RT-Thread/FreeRTOS 镜像与配置 | [`ivc`](ivc/)、[`RT configs`](../scripts/benchmark/axvisor-rt/config/) |
 | 板端生命周期 | [`board-runner.sh`](ivc/orangepi/board-runner.sh)、[`run-orangepi-5-plus.sh`](ivc/run-orangepi-5-plus.sh) |
 | 当前源码原始证据与溯源 | [`current-source-smoke-20260813`](results/current-source-smoke-20260813/) |
+| 多 RTOS 原生基线 | [`rt-baseline`](rt-baseline/)、[`native-zephyr-reference`](results/native-zephyr-reference/)、[`native-rtthread-reference`](results/native-rtthread-reference/)、[`native-freertos-reference`](results/native-freertos-reference/) |
+| 三客户机隔离与归档 | [`run-isolation.sh`](../apps/arceos/virtio-net-peer/run-isolation.sh)、[`axvisor-isolation-reference`](results/axvisor-isolation-reference/)、[`package.py`](evidence/package.py) |
 
 ## 最快的离线检查
 
@@ -71,6 +81,8 @@ python3 -m unittest discover -s competition/ivc/tests -p 'test_*.py'
 python3 -m unittest discover -s scripts/benchmark/axvisor-rt/tests -p 'test_*.py'
 bash scripts/benchmark/axvisor-rt/tests/test_runner.sh
 bash scripts/benchmark/axvisor-rt/tests/test_starry_runner.sh
+bash competition/rt-baseline/common/tests/run.sh
+python3 -m unittest discover -s competition/evidence/tests -p 'test_*.py'
 
 cd competition/results/current-source-smoke-20260813
 sha256sum -c checksums.sha256
