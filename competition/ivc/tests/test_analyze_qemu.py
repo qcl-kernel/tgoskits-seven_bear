@@ -222,6 +222,39 @@ class AnalyzeQemuTests(unittest.TestCase):
             with self.assertRaisesRegex(analyzer.AnalysisError, "ACK-loss evidence"):
                 analyzer.analyze(log, 1800)
 
+    def test_accepts_named_rtos_with_a_normal_terminal_result(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            log = Path(temporary_dir) / "qemu.log"
+            log.write_text(valid_named_normal_log(), encoding="utf-8")
+
+            result = analyzer.analyze(log, 3, expected_rtos="rt-thread")
+
+            self.assertEqual(result["rtos_name"], "rt-thread")
+            self.assertEqual(result["rtos"]["applied"], 3)
+            self.assertEqual(result["rtos"]["status_sent"], 3)
+
+    def test_accepts_axvisor_vm_console_prefixes(self) -> None:
+        prefixed_lines = []
+        for line in valid_named_normal_log().splitlines():
+            vm_id = 2 if line.startswith("IVC-RTOS-") else 1
+            prefixed_lines.append(f"[VM {vm_id}] {line}")
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            log = Path(temporary_dir) / "qemu.log"
+            log.write_text("\n".join(prefixed_lines) + "\n", encoding="utf-8")
+
+            result = analyzer.analyze(log, 3, expected_rtos="rt-thread")
+
+            self.assertEqual(result["rtos_name"], "rt-thread")
+            self.assertEqual(result["controller"]["errors"], 0)
+
+    def test_rejects_mixed_or_unexpected_rtos_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            log = Path(temporary_dir) / "qemu.log"
+            log.write_text(valid_named_normal_log(), encoding="utf-8")
+
+            with self.assertRaisesRegex(analyzer.AnalysisError, "identity"):
+                analyzer.analyze(log, 3, expected_rtos="freertos")
+
 
 def valid_log() -> str:
     return """\
@@ -255,6 +288,16 @@ IVC-RTOS-INJECT drop_ack_seq=10
 IVC-RTOS-DUPLICATE seq=10 next_expected=11 duplicates=2
 IVC-RTOS-RESULT profile=ack-loss accepted=10 applied=10 duplicates=2 acks_dropped=2 status_sent=12 acks_sent=10 errors_sent=0 protocol_errors=0
 IVC-CONTROLLER-RESULT policy=neural sent=10 acknowledged=10 errors=0 timeouts=0 retransmissions=2 recoveries=2 success_percent=100.000 full_loop_p50_us=3767 full_loop_p95_us=104429 full_loop_p99_us=105992 full_loop_max_us=106154 pre_send_p50_us=10 pre_send_p95_us=12 pre_send_p99_us=23 pre_send_max_us=331 transport_p50_us=3756 transport_p95_us=104419 transport_p99_us=105981 transport_max_us=106823 throughput_msg_s=8.963 rmse_milli_c=5932.491 iae_milli_c_s=686993.400 max_overshoot_milli_c=13428
+IVC-LINUX-DONE exit=0
+"""
+
+
+def valid_named_normal_log() -> str:
+    return """\
+IVC-RTOS-READY rtos=rt-thread bind=10.0.0.2:5500 window_bits=64 ack_loss_drop_every=0 expected_commands=3 expected_protocol_errors=0
+IVC-RTOS-PROGRESS rtos=rt-thread accepted=3 seq=3 mode=Neural actuator_permille=303 measured_milli_c=20252 duplicates=0 protocol_errors=0
+IVC-RTOS-RESULT rtos=rt-thread profile=normal accepted=3 applied=3 duplicates=0 acks_dropped=0 status_sent=3 acks_sent=3 errors_sent=0 protocol_errors=0
+IVC-CONTROLLER-RESULT policy=neural sent=3 acknowledged=3 errors=0 timeouts=0 retransmissions=0 recoveries=0 success_percent=100.000 full_loop_p50_us=3767 full_loop_p95_us=4429 full_loop_p99_us=4992 full_loop_max_us=23154 pre_send_p50_us=10 pre_send_p95_us=12 pre_send_p99_us=23 pre_send_max_us=331 transport_p50_us=3756 transport_p95_us=4419 transport_p99_us=4981 transport_max_us=22823 throughput_msg_s=9.963 rmse_milli_c=5932.491 iae_milli_c_s=686993.400 max_overshoot_milli_c=13428
 IVC-LINUX-DONE exit=0
 """
 

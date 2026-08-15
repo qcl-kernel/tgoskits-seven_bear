@@ -37,6 +37,7 @@ kernel_argument() {
 mode=$(kernel_argument ivc.mode neural)
 count=$(kernel_argument ivc.count 1800)
 period_ms=$(kernel_argument ivc.period_ms 100)
+ack_timeout_ms=$(kernel_argument ivc.ack_timeout_ms 500)
 exit_after_run=$(kernel_argument ivc.exit_after_run 0)
 
 case "$exit_after_run" in
@@ -46,8 +47,14 @@ case "$exit_after_run" in
         exec sh
         ;;
 esac
+case "$ack_timeout_ms" in
+    ''|*[!0-9]*|0)
+        echo "IVC-LINUX-FATAL reason=invalid-ack-timeout-ms value=$ack_timeout_ms"
+        exec sh
+        ;;
+esac
 
-echo "IVC-LINUX-BOOT mode=$mode count=$count period_ms=$period_ms exit_after_run=$exit_after_run"
+echo "IVC-LINUX-BOOT mode=$mode count=$count period_ms=$period_ms ack_timeout_ms=$ack_timeout_ms exit_after_run=$exit_after_run"
 
 attempt=0
 while [ "$attempt" -lt 60 ] && [ ! -e /sys/class/net/eth0/address ]; do
@@ -67,7 +74,8 @@ ip link set eth0 up
 ip route replace 10.0.0.0/24 dev eth0
 
 echo "IVC-LINUX-NET iface=eth0 mac=$mac ip=10.0.0.1/24 peer=10.0.0.2 udp_port=5500 segment=1"
-if /usr/local/bin/ivcproto controller 10.0.0.2:5500 "$count" "$mode" "$period_ms"; then
+if /usr/local/bin/ivcproto controller 10.0.0.2:5500 "$count" "$mode" \
+        "$period_ms" --ack-timeout-ms "$ack_timeout_ms"; then
     result=0
 else
     result=$?

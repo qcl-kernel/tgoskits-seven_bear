@@ -1,0 +1,27 @@
+from building import *
+
+cwd = GetCurrentDir()
+sources = [
+    "main.c",
+    "network.c",
+    "protocol.c",
+    "endpoint.c",
+    "ivc_rtos_server.c",
+    "virtio_net_mmio.c",
+]
+
+group = DefineGroup(
+    "IVC RT-Thread endpoint",
+    sources,
+    depend=[""],
+    CPPPATH=[cwd],
+    # RT-Thread v5.2.2 declares rt_atomic_t as a volatile typedef, so every
+    # consumer sees ignored-qualifier warnings in its public header. Keep our
+    # sources warning-fatal while preserving that pinned upstream diagnostic.
+    LOCAL_CCFLAGS=(
+        " -std=c11 -Wall -Wextra -Werror "
+        "-Wno-error=ignored-qualifiers"
+    ),
+)
+
+Return("group")
