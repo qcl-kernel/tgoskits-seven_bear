@@ -9,11 +9,10 @@
 [`provenance.json`](results/current-source-smoke-20260813/provenance.json)。
 
 最新正式 RT 活动独立绑定 clean commit
-`77704718a1b46fc2fbf51ea6a184aa1071eee0ac`（tree
-`f65ec1707eb91c92183064a29b3a6a860382cc68`）。之后只修改 RT baseline prepare 的宿主
-调用方式，以及 `rsext4` 的 `#[cfg(test)]` fixture；二者均不进入测量镜像。后者由交付
-校验器锁定精确旧/新 Git blob，而非按路径放行；正式预注册中的 34 个运行输入仍均按
-Git blob 证明未变。
+`c82da8464ab69e7da95e9be08293559e67b28fac`（tree
+`424d62d908518601acf8c4e8debea6a0662e9522`）。RT-Thread/FreeRTOS Guest/IVC 与
+三客户机隔离也从同一 detached clean worktree 复验；之后仅更新交付文档、证据和
+校验工具。正式预注册中的 34 个运行输入仍均按 Git blob 证明未变。
 
 本报告严格区分五类证据：
 
@@ -21,10 +20,10 @@ Git blob 证明未变。
 | --- | --- | --- |
 | C-IVC | `598b357f9…` 的 Orange Pi 5 Plus IVC fault-restart 实体冒烟 | 当前 device graph、构建、部署、双 guest 启动、实际 VM reset、会话恢复、快照和 Linux 回切链可用 |
 | C-RT | `077ba386c…` 的 Orange Pi 5 Plus RT shared/partitioned 实体冒烟 | 当前 RT device graph、双 vCPU 放置、两侧采集、lossless IRQ trace、快照和 Linux 回切链可用 |
-| C-RT-F | `77704718a…` 的 Orange Pi 5 Plus 预注册五配对与双 soak | 当前正式 M2 性能结论；每项每侧 10,000 样本，12 个独立回执和完整 raw manifest |
+| C-RT-F | `c82da8464…` 的 Orange Pi 5 Plus 预注册五配对与双 soak | 当前正式 M2 性能结论；每项每侧 10,000 样本，12 个独立回执和完整 raw manifest |
 | F | 历史 clean commit 上预注册的正式实体板多轮活动 | 统计性性能、可靠性和 AI 对照结论；不得改标为当前源码结果 |
 | H / D | host、QEMU、单元、契约、静态测试和设计溯源 | 软件边界、失败路径和机制存在；不得替代实体板时延 |
-| H-IVC-RTOS | clean commit `16a1f3198…` 的 RT-Thread/FreeRTOS AxVisor QEMU 双 Guest 活动 | Guest boot、VirtIO/IP、IVC/1 normal 与 ACK-loss 端点成立；不是 StarryOS 组合或实体板证据 |
+| H-IVC-RTOS | clean commit `c82da8464…` 的 RT-Thread/FreeRTOS AxVisor QEMU 双 Guest 活动 | Guest boot、VirtIO/IP、IVC/1 normal 与 ACK-loss 端点成立；不是 StarryOS 组合或实体板证据 |
 
 ## 1. 结论摘要
 
@@ -41,7 +40,7 @@ Git blob 证明未变。
 | Zephyr、RT-Thread、FreeRTOS 原生对照 | PASS | H；三种 QEMU/AArch64 RTOS 均有 idle/stress 各 10,000 样本、固定源码和保留证据 |
 | RT-Thread、FreeRTOS Guest/IVC | PASS | H-IVC-RTOS；normal/ACK-loss 共 4/4，每组 100/100，故障组各 20 次重传/去重/恢复 |
 | 三客户机跨 segment 动态隔离 | PASS | H；VM3 发送 100 个 UDP 探针，VM1 观察 7 秒收到 0 个，VM3 default route=0 |
-| 完整 raw 可公开下载 | **尚未完成** | 当前正式 RT 约 41 MiB 压缩 archive 与历史约 844 MiB raw 均在本地；仓库已提交逐文件 manifest，仍缺不可变公开 URL |
+| 完整 raw 可公开下载 | **尚未完成** | 当前正式 RT 42,722,019-byte 压缩 archive 与历史约 844 MiB raw 均在本地；仓库已提交逐文件 manifest，仍缺不可变公开 URL |
 
 ## 2. 当前源码实体板：IVC 重启恢复
 
@@ -120,18 +119,18 @@ dispatch p99 退化，且该 smoke 只有一对、没有 controlled host interfe
 
 ### 3.2 2026-08-16 当前正式性能复验
 
-C-RT-F 从 clean commit `77704718a1b46fc2fbf51ea6a184aa1071eee0ac`
+C-RT-F 从 clean commit `c82da8464ab69e7da95e9be08293559e67b28fac`
 预注册全部输入、AB/BA/AB/BA/AB 顺序和门槛后，在同一 Orange Pi 5 Plus
 `bf61f4d4a1d994ad` 上完成五个 shared/partitioned 配对。每个 half 的四项指标各采集
-10,000 个样本；随后完成 shared 1,864.332 秒和 partitioned 1,845.872 秒 soak。
+10,000 个样本；随后完成 shared 1,864.677 秒和 partitioned 1,845.735 秒 soak。
 两侧受控 busy-loop 的请求 pCPU 分别为 1 和 3，观测掩码严格为 `0x2` 和 `0x8`。
 
 | 指标 | max 改善配对 | shared / partitioned worst-of-runs max (ns) | 改善 | p99 五对门 |
 | --- | ---: | ---: | ---: | ---: |
-| dispatch latency | 5/5 | 50,451,625 / 250,250 | 99.504% | 5/5 非退化 |
-| emulated IRQ response | 5/5 | 93,980,416 / 502,917 | 99.465% | 5/5 非退化 |
-| periodic jitter | 5/5 | 97,835,500 / 476,917 | 99.513% | 5/5 非退化 |
-| virtual timer injection → guest IRQ | 5/5 | 847,251,416 / 447,057,041 | 47.234% | 5/5 非退化 |
+| dispatch latency | 5/5 | 50,300,542 / 336,583 | 99.331% | 5/5 非退化 |
+| emulated IRQ response | 5/5 | 93,470,375 / 519,875 | 99.444% | 5/5 非退化 |
+| periodic jitter | 5/5 | 97,742,000 / 441,584 | 99.548% | 5/5 非退化 |
+| virtual timer injection → guest IRQ | 5/5 | 804,099,041 / 454,771,333 | 43.443% | 5/5 非退化 |
 
 机器汇总同时给出 `five_pair_matrix_gate_met=true`、
 `soak_evidence_collected=true` 和 `m2_exit_gate_met=true`。结论只适用于预注册的
@@ -139,8 +138,10 @@ idle guest + 受控 host interference treatment，不外推为 WCET 或所有压
 23 个 compact 文件位于
 [`axvisor-rt-formal-20260816`](results/axvisor-rt-formal-20260816/)；12 份回执逐项绑定
 source commit/tree、板卡、原始日志、guest/host trace、字节数和 SHA-256。
-完整 deterministic archive 包含 110 个文件、raw payload 543,799,035 字节，压缩包
-SHA-256 为 `60fedba15032a7d5a036355102859571a6bfec628d61676fffaa3d312d398ba9`。
+完整 deterministic archive 包含 113 个文件、raw payload 541,817,801 字节，压缩包
+SHA-256 为 `68c1efb1ae0338692a84943c7056e104e2abed9e62a89dcdb0e2540ea1f9859e`。
+归档保留一次测量前 U-Boot 命令握手超时；该尝试没有回执、未推进预注册槽位，后续
+重试及 12 个正式 measurement slot 均完成。
 
 ## 4. 历史正式 RT 活动
 
@@ -232,7 +233,7 @@ summary、原始 console/build gzip、hash 和复现命令分别位于
 
 ### 6.2 RT-Thread/FreeRTOS Guest/IVC
 
-2026-08-16 在 clean commit `16a1f3198243a5e1b1bc1810faba6371f7de3215` 上用
+2026-08-16 在 clean commit `c82da8464ab69e7da95e9be08293559e67b28fac` 上用
 QEMU 6.2.0 TCG/Cortex-A72 运行 AxVisor，VM1 为双 vCPU Linux controller，VM2
 分别替换为单 vCPU RT-Thread 或 FreeRTOS endpoint。四次
 runner 均先验证固定上游、Guest SHA-256、ELF entry/非空 `LOAD` 区间和显式 rootfs，
@@ -250,7 +251,7 @@ ACK-loss 固定丢弃序号 5、10、…、100 的确认，20 个重复 CONTROL 
 fault；先加入失败回归，再用 `rt_ioremap` 建立 Device mapping，重建后的两种 profile
 均通过。紧凑机器记录、压缩完整日志、输入/summary 哈希和 clean-commit 边界位于
 [`rtos-guest-ivc-qemu-20260815`](results/rtos-guest-ivc-qemu-20260815/)。完整 raw 保留
-在记录所列的 `tmp/competition/ivc/results/refresh-16a1f319-*` 目录，可由 [`reproduce.md`](reproduce.md)
+在记录所列的 `tmp/competition/ivc/results/refresh-c82da846-*` 目录，可由 [`reproduce.md`](reproduce.md)
 第 4.4 节重新生成。
 
 该证据不声称 RT-Thread/FreeRTOS 已在 RK3588 运行，也未实际替换实体路径中的
@@ -266,9 +267,9 @@ QEMU 使用 4 个 Cortex-A72：AxVisor 位于 pCPU0，三个单 vCPU ArceOS gues
 NIC TX 计数增加 100。VM1 预先绑定 UDP 端口并在 TCP 完成后观察 7,000 ms，收到
 跨 segment 探针数为 0。三台 guest 均到达 terminal pass marker。
 
-完整 64,159-byte QEMU/build log 的 gzip 与机器 summary 位于
+完整 61,141-byte QEMU/build log 的 gzip 与机器 summary 位于
 [`axvisor-isolation-reference`](results/axvisor-isolation-reference/)。该 capture 绑定
-clean commit `16a1f3198243a5e1b1bc1810faba6371f7de3215`，不是实体板证据；动态覆盖
+clean commit `c82da8464ab69e7da95e9be08293559e67b28fac`，不是实体板证据；动态覆盖
 segment separation 与无默认路由，MAC spoof/unknown-unicast 仍由
 `axvm-net` 最低层 policy tests 覆盖。
 
@@ -295,7 +296,7 @@ claim、PSCI `CPU_ON` 异步生命周期以及无抢占 guest console mux。
 
 - 冻结历史证据对应的 IVC 完整 test discovery：194/194；analyzer 单元测试：77/77；
 - Zephyr v4.3.0 guest：190-step `-Wall -Wextra -Werror` cross build 与 host tests；
-- `arm_vcpu`：13/13；`axvm --features host-test`：276 项及 2 项 vCPU 调度契约测试；
+- `arm_vcpu`：13/13；`axvm --features host-test`：273 项，另有集成与文档测试；
 - `axvm` 八个 feature matrix、`arm_vcpu`、`axbuild` targeted clippy；
 - AArch64 QEMU `axtest` 80/80 与 dedicated-smp2 1/1 marker、RT Python
   tests/shell runners、rustfmt；
@@ -310,9 +311,9 @@ claim、PSCI `CPU_ON` 异步生命周期以及无抢占 guest console mux。
 - 统一交付门禁的 23 个负例/正例测试：checksum 全覆盖、gzip 双重身份与解压上限、
   RTOS 业务计数、完整隔离 marker 契约、共同 source commit、提交后 runtime 变更和
   `.gitattributes`/交付文档范围越界检测；另检查正式 RT 的预注册顺序、M2 门、soak、
-  12 份回执、110 项 archive manifest 和 34 个源码输入，并确保 CI 仅按交付路径触发。
+  12 份回执、113 项 archive manifest 和 34 个源码输入，并确保 CI 仅按交付路径触发。
 
-本次升级在 clean commit `16a1f3198…` 上执行的 RTOS Guest/IVC focused Python suite 为 36/36，公共
+本次升级在 clean commit `c82da8464…` 上执行的 RTOS Guest/IVC focused Python suite 为 36/36，公共
 fake-MMIO/transport host tests、Zephyr host logic tests 和原生 RTOS 公共逻辑测试 7/7
 均通过。Windows 环境的全量 IVC discovery 未列为本次通过项：部分既有 campaign
 shell 脚本使用 CRLF、部分板端 fixture 的 raw SHA 与快照记录不一致，且 RKNN reference

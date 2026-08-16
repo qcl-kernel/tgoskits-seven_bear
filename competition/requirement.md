@@ -79,6 +79,7 @@ AI 框架：允许 YOLO、ONNX Runtime、ncnn 等开源框架及厂商 NPU SDK�
 | 五分钟成片和镜头—证据索引 | [`video-storyboard.md`](video-storyboard.md) |
 
 证据口径：IVC 实跑绑定 clean commit `598b357f9…`，早期 RT 单对实跑绑定
-`077ba386c…`；当前正式 RT 五配对和双 soak 独立绑定 `77704718a…`。各批数据保留
+`077ba386c…`；当前正式 RT、RT-Thread/FreeRTOS Guest/IVC 与三客户机隔离复验绑定
+`c82da8464…`。各批数据保留
 各自的 clean source commit，不拼接、不改标；交付校验器逐项验证正式活动的 34 个
 预注册源码输入未在后续提交中变化。

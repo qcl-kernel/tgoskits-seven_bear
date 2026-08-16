@@ -4,7 +4,7 @@
 >
 > 对照基线：`upstream/dev` `56f8bfc8207f38d4b395dae0cf533ecdb079fca8`
 >
-> 当前交付分支：`feat/rt-axvisor-partition-virtio-net`；正式 RT 复验绑定 clean commit `77704718a1b46fc2fbf51ea6a184aa1071eee0ac`，RT-Thread/FreeRTOS Guest/IVC 与三客户机隔离的 QEMU 复验绑定 clean commit `16a1f3198243a5e1b1bc1810faba6371f7de3215`
+> 当前交付分支：`feat/rt-axvisor-partition-virtio-net`；正式 RT、RT-Thread/FreeRTOS Guest/IVC 与三客户机隔离复验统一绑定 clean commit `c82da8464ab69e7da95e9be08293559e67b28fac`
 
 ## 本周概述
 
@@ -32,17 +32,20 @@ HyperCall 传输应用数据。
 - 完成 AxVisor 的 dedicated CPU/vCPU 放置、虚拟 timer、GIC/IRQ 路径、直接 IRQ
   trace、预分配采集与 device graph 资源声明等改造；支持多核 StarryOS 客户机稳定
   启动。
+- 修复 configured VirtIO 设备在 machine patcher 与 resolved device graph 间重复维护
+  FDT 资源的问题；AArch64/RISC-V 现在统一从已解析设备图生成 MMIO/IRQ 固件节点，
+  并由回归测试防止恢复按 model 名称硬编码地址和中断。
 - 在 Orange Pi 5 Plus 上完成 shared 和 partitioned 两种双 vCPU 配置的当前源码实体
   冒烟。vCPU 的物理 CPU 掩码为 `0x2`、`0x4`，两侧均记录为 0 次迁移；采集链、快照、
   host 文件系统同步和 Linux 回切均通过。
 - 已完成历史正式的受控 host interference 五配对和 shared/partitioned 双侧 1,800 秒
   soak。该受控场景中，direct IRQ 最大延迟的 worst-of-runs 改善为 87.771%，dispatch
   最大延迟改善为 99.773%；同 VM CPU stress 的结果为混合结果，已单独保留并不外推。
-- 从 clean commit `77704718a…` 重新完成当前正式五配对 AB/BA 矩阵和双侧 soak：
+- 从 clean commit `c82da8464…` 重新完成当前正式五配对 AB/BA 矩阵和双侧 soak：
   四项 max 均为 5/5 改善；dispatch、emulated IRQ、periodic jitter、direct IRQ 的
-  worst-of-runs 分别改善 99.504%、99.465%、99.513%、47.234%，全部 p99 配对通过
+  worst-of-runs 分别改善 99.331%、99.444%、99.548%、43.443%，全部 p99 配对通过
   5% 非退化门，机器给出 `m2_exit_gate_met=true`。shared/partitioned soak 分别运行
-  1,864.332/1,845.872 秒，采集 229,046/440,413 个 direct IRQ pairs。
+  1,864.677/1,845.735 秒，采集 229,099/434,108 个 direct IRQ pairs。
 - 已将原生 RTOS 对照从 Zephyr v4.3.0 扩展到 RT-Thread v5.2.2 与 FreeRTOS：三者均
   提供固定上游版本、idle/stress 两种 workload、100 次 warm-up、10,000 个 1 ms
   周期样本、负例分析器和不可覆盖证据目录。新增两组结果均为零 timer miss/early wake：
@@ -115,7 +118,7 @@ HyperCall 传输应用数据。
   可验证打包问题，但公开上传 URL 仍需要外部发布步骤。
 - 新增标准库实现的一键交付门禁并接入 CI：逐项校验 32 个 compact evidence 文件、
   5 份 QEMU gzip、四组 RTOS 计数、完整隔离 marker、正式 M2/soak 契约、12 份回执、
-  110 项 archive manifest 和 34 个预注册源码输入；独立 CI 仅按交付路径触发，
+  113 项 archive manifest 和 34 个预注册源码输入；独立 CI 仅按交付路径触发，
   交付 verifier 配套 23 个确定性正负例，连同归档工具共 27 项 evidence tests。
 - 修复 fork CI 容器路由：非 `rcore-os` 仓库统一消费 upstream 公开 base/LVZ 镜像，
   路由回归、YAML 解析和两类 manifest 可用性检查均通过；远端 lock-lint、format、
@@ -145,8 +148,8 @@ Linux 的 `+4` 与多 RTOS 的 `+2`，合计加分 `+6`；该数字为内部证�
 
 ## 当前风险与下周计划
 
-1. 将已生成的约 41 MiB 当前正式 RT archive 发布到不可变地址；总 SHA-256 为
-   `60fedba15032a7d5a036355102859571a6bfec628d61676fffaa3d312d398ba9`，110 项 manifest 已提交。
+1. 将已生成的 42,722,019-byte 当前正式 RT archive 发布到不可变地址；总 SHA-256 为
+   `68c1efb1ae0338692a84943c7056e104e2abed9e62a89dcdb0e2540ea1f9859e`，113 项 manifest 已提交。
 2. 在同一 Orange Pi 5 Plus 上完成至少一种 RTOS 的 idle、stress 和 soak 裸机基线，
    进一步消除现有 QEMU 等价基线带来的平台与时钟源差异。
 3. 发布完整历史 raw 归档的不可变下载地址、总 SHA-256 和逐文件 manifest；当前仓库

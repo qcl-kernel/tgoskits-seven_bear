@@ -35,18 +35,18 @@
       "size_bytes": 1534
     },
     "host_toolchain": {
-      "path": "/home/seven_wsl/Workspace/starry/results/rt-formal-20260816-77704718a1b46fc2fbf51ea6a184aa1071eee0ac/build/host-toolchain.json",
-      "sha256": "6f086842b78376a8001544e4274d4b467706457559ab3232d42996287f0da7d7",
-      "size_bytes": 1153
+      "path": "tmp/competition/axvisor-rt-formal-20260816-c82da8464/build/host-toolchain.json",
+      "sha256": "0fe1f4e1b469e9da4049cbc20f28b39a8f304ed099d029a0ebd45ade9dccb8c3",
+      "size_bytes": 1171
     },
     "pair_kernel": {
       "path": "tmp/axvisor-rt/starryos-rt.bin",
-      "sha256": "d523ee8495f653bbcbc572cae018f78271fb4d36db2894d5f2ed52e701aaada6",
+      "sha256": "3895fde9e3e489b34ab3cf2abc0b36ed5446485c90297de41fc12198595b633f",
       "size_bytes": 13799424
     },
     "pair_rootfs": {
       "path": "tmp/axvisor-rt/starry-rt-capture-rootfs.img",
-      "sha256": "4480b9406198c8f23cd1b8e90b44edf8ec23df327fa585ce8cb1a04ee416393c",
+      "sha256": "d4f98a274631bc8037967e6b17b83971881b682ff7ef6ea75bc78200e6614325",
       "size_bytes": 67108864
     },
     "probe": {
@@ -56,12 +56,12 @@
     },
     "soak_kernel": {
       "path": "tmp/axvisor-rt/starryos-rt-soak.bin",
-      "sha256": "fb983840a4771949f1367ad2be5985c16330a1a7cd4f9a9de9ff8bb7d14d66a1",
+      "sha256": "fa733a7d62195905bc416422a49e5dc799c10634231b6b67db9387db06c714db",
       "size_bytes": 13799424
     },
     "soak_rootfs": {
       "path": "tmp/axvisor-rt/starry-rt-soak-rootfs.img",
-      "sha256": "57960c1b8b5e686bfc709e7a9e86292cae507899a7b12596495a0f9c12c2a51d",
+      "sha256": "205816cc9e16ec0bf33f6cb0f4fc868ea2f7b2da217090485ec60e3f34adb6b1",
       "size_bytes": 67108864
     }
   },
@@ -71,7 +71,7 @@
     "service_id": "orangepi-5-plus-1",
     "type": "OrangePi-5-Plus"
   },
-  "created_at_utc": "2026-08-16T04:26:53Z",
+  "created_at_utc": "2026-08-16T08:55:27Z",
   "measurement": {
     "pair": {
       "fifo_priority": 80,
@@ -151,9 +151,9 @@
   ],
   "source": {
     "clean_worktree_required": true,
-    "commit": "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
+    "commit": "c82da8464ab69e7da95e9be08293559e67b28fac",
     "ref": "feat/rt-axvisor-partition-virtio-net",
-    "tree": "f65ec1707eb91c92183064a29b3a6a860382cc68"
+    "tree": "424d62d908518601acf8c4e8debea6a0662e9522"
   },
   "source_inputs": {
     "competition/ivc/orangepi/board-runner.sh": {

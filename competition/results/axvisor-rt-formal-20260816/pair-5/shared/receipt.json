@@ -1,50 +1,50 @@
 {
   "board": {
     "board_id": "bf61f4d4a1d994ad",
-    "harvest_cpu_temp_milli_c": 39769,
+    "harvest_cpu_temp_milli_c": 43461,
     "hostname": "orangepi5plus",
     "service_id": "orangepi-5-plus-1",
-    "stage_cpu_temp_milli_c": 38846,
+    "stage_cpu_temp_milli_c": 43461,
     "type": "OrangePi-5-Plus"
   },
   "evidence": {
     "console_log": {
-      "path": "pair-5/shared/attempts/20260816T050445Z-583676/console.log",
-      "sha256": "679e79d6276b95feb2f5786559777fed4ab8464d62655a7e0dd117b57b8121dd",
-      "size_bytes": 81037
+      "path": "pair-5/shared/attempts/20260816T093318Z-683276/console.log",
+      "sha256": "4e37ee775bf34daa7ed30fc3ec3ff2f6e2991c5ac2a77349ee7a1ac01e2259bc",
+      "size_bytes": 80671
     },
     "guest_irq": {
-      "path": "pair-5/shared/attempts/20260816T050445Z-583676/guest-irq.log.gz",
-      "sha256": "79d9278627515fbf6e91aeb553982896a39a7806bf6d60ec67450f597d81c607",
-      "size_bytes": 78080
+      "path": "pair-5/shared/attempts/20260816T093318Z-683276/guest-irq.log.gz",
+      "sha256": "0c602c3fc198dadcc6f3dc7a0fd16a9e68b3108775a5038ea88328f953f6d6c3",
+      "size_bytes": 79343
     },
     "harvest_log": {
-      "path": "pair-5/shared/attempts/20260816T050445Z-583676/harvest.log",
-      "sha256": "c03206a466527bac3bd9c2ca8edbaa8045eab7aa2d631c33c8a2186c07186631",
-      "size_bytes": 1447
+      "path": "pair-5/shared/attempts/20260816T093318Z-683276/harvest.log",
+      "sha256": "12e74c3eae13d5e67fc8a8c3e51731633951ec938849737c5ce78ce9bcf592a8",
+      "size_bytes": 1539
     },
     "host_trace": {
-      "path": "pair-5/shared/attempts/20260816T050445Z-583676/host.log",
-      "sha256": "db8481c64bf75020c0f97696e71bc89ddd12dc4f8e73705d9faecb01854f564b",
-      "size_bytes": 10695573
+      "path": "pair-5/shared/attempts/20260816T093318Z-683276/host.log",
+      "sha256": "dddca00cc13f52c9f47faf8347b22fbb33f596d07209e9d306257507e46c7122",
+      "size_bytes": 10734009
     },
     "raw": {
-      "path": "pair-5/shared/attempts/20260816T050445Z-583676/raw.log",
-      "sha256": "f1dd5d465b30726fd883bbaba595a1a3f8c9e2aca1fb39be331a5c2cb01568dd",
-      "size_bytes": 4134034
+      "path": "pair-5/shared/attempts/20260816T093318Z-683276/raw.log",
+      "sha256": "3a5868575e55dd088303683ace3a8f8d2fb46fcea29d3705e427491280eaaf6a",
+      "size_bytes": 4133985
     },
     "stage_log": {
-      "path": "pair-5/shared/attempts/20260816T050445Z-583676/stage.log",
-      "sha256": "b9ca35357d1961cfb1dd27f5ca7ab0ae1fdbba56e01043b9509c7fd3e03798f3",
+      "path": "pair-5/shared/attempts/20260816T093318Z-683276/stage.log",
+      "sha256": "acc803a0fc33240a471375a6e4f7bbc7bf8b6c091d9ab00e5596ec58abb9d87b",
       "size_bytes": 812
     },
     "summary": {
-      "path": "pair-5/shared/attempts/20260816T050445Z-583676/summary.json",
-      "sha256": "61dd58c44e6c9fe7c34376d27fd2a6137a9e6720c9968c670ff73201ba3ffe40",
-      "size_bytes": 1760963
+      "path": "pair-5/shared/attempts/20260816T093318Z-683276/summary.json",
+      "sha256": "9bdb522f11b41dc1b46f27c5afd1a10a8f2faee54b81cfa48f25afeeb08a505d",
+      "size_bytes": 1800652
     }
   },
-  "finished_at": "2026-08-16T05:09:01Z",
+  "finished_at": "2026-08-16T09:37:34Z",
   "schema_version": 1,
   "slot": {
     "pair": 5,
@@ -52,8 +52,8 @@
     "profile": "shared"
   },
   "source": {
-    "commit": "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
-    "tree": "f65ec1707eb91c92183064a29b3a6a860382cc68"
+    "commit": "c82da8464ab69e7da95e9be08293559e67b28fac",
+    "tree": "424d62d908518601acf8c4e8debea6a0662e9522"
   },
-  "started_at": "2026-08-16T05:04:45Z"
+  "started_at": "2026-08-16T09:33:18Z"
 }
