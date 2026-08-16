@@ -10,6 +10,7 @@
 | --- | --- |
 | C-IVC | clean commit `598b357f92c848e669c12cca830a4d08d0a50e36` 的实体 IVC 重启闭环；runner、analyzer、metadata 和退出码绑定同一提交，可从 [`results/current-source-smoke-20260813`](results/current-source-smoke-20260813/) 核验 |
 | C-RT | clean commit `077ba386c20c29b84749f509b29e8a3f6f76e1e2` 的实体 RT shared/partitioned 冒烟；之后只改 `competition/ivc/`，精确路径证明见 [`source-delta.txt`](results/current-source-smoke-20260813/source-delta.txt) |
+| C-RT-F | clean commit `77704718a1b46fc2fbf51ea6a184aa1071eee0ac` 的预注册五配对 + 双 soak 正式实体 RT 活动；23 个 compact 文件、12 份回执和 110 项 raw 归档清单见 [`axvisor-rt-formal-20260816`](results/axvisor-rt-formal-20260816/) |
 | F | 历史 clean commit 上预注册的正式多轮实体板活动；本仓库提交精简 summary/preregistration，完整约 844 MiB raw 档案尚需单独发布 |
 | H | host/QEMU/单元/契约测试；只能证明相应软件边界，不能替代实体板时延 |
 | H-RTOS | Zephyr、RT-Thread、FreeRTOS 原生 QEMU/AArch64 idle/stress 基线；证明等价平台的可复现对照，不是 RK3588 裸机结果 |
@@ -17,24 +18,24 @@
 | H-ISO | 三个 ArceOS guest 的 AxVisor QEMU 动态隔离活动；证明 segment 分离和无默认路由，不替代实体板或动态 spoof 测试 |
 | D | 设计或源码静态证据 |
 
-关键边界：C-RT 验证当前 RT 运行时的 device-graph 配置、shared/partitioned 启动、
-采集、快照和恢复链；本单对 `m2_exit_gate_met=false`，不能声称当前 M2 性能门通过。M2 改善结论来自 F
-层五配对受控干扰活动，并保留其原始 source commit，不改写成当前源码结果。
+关键边界：C-RT 的早期单对仅验证 device-graph、shared/partitioned 启动、采集、
+快照和恢复链；C-RT-F 才承担当前正式性能结论。其 `m2_exit_gate_met=true`，来源为
+五配对受控干扰和双侧 30 分钟 soak。后续提交只改 RT baseline prepare 调用和交付材料；
+校验器逐项证明 34 个预注册运行输入的 Git blob 未变化。
 
 ## 任务一：实时 RTOS 化改造（30 分）
 
 | 细则 | 分值 | 实现入口 | 证据 | 当前判断 |
 | --- | ---: | --- | --- | --- |
-| 实时化目标和关键路径分析 | 4 | [`design.md`](design.md)、[`improvement-plan.md`](improvement-plan.md)；vCPU 放置、timer/GIC 进入退出顺序、直接 IRQ trace、host-noise 模型 | D；F `historical-formal/rt-host-noise` | 证据充分 |
+| 实时化目标和关键路径分析 | 4 | [`design.md`](design.md)、[`improvement-plan.md`](improvement-plan.md)；vCPU 放置、timer/GIC 进入退出顺序、直接 IRQ trace、host-noise 模型 | D；C-RT-F | 证据充分 |
 | AxVisor 关键机制有实质改造 | 8 | `axvm` dedicated CPU、timer context、GIC/IRQ 路径、host-noise、预分配 trace；device graph 负责设备资源声明/分配/实例化 | D；相关 Rust/配置测试 | 证据充分 |
-| ≥2 vCPU 客户机及 CPU/内存/设备/IRQ/启动配置 | 4 | [`starry-orangepi-5-plus-smp2-partitioned.toml`](../scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml)；`phys_cpu_sets=[0x2,0x4]`、2 vCPU、256 MiB、typed `virtio-blk-mmio` | C-RT 两侧双 vCPU 启动、零迁移、lossless trace | 证据充分；使用 StarryOS 替代 Linux |
-| 改造前后完整数据并体现 worst-case/抖动改善 | 5 | shared/partitioned 正交配置与比较器 | F 五配对：direct IRQ worst-of-runs 改善 87.771%，5/5；dispatch worst-of-runs 改善 99.773%；双 soak | **有历史正式证据，但当前源码未重跑五配对；保守扣 1 分风险** |
+| ≥2 vCPU 客户机及 CPU/内存/设备/IRQ/启动配置 | 4 | [`starry-orangepi-5-plus-smp2-partitioned.toml`](../scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml)；`phys_cpu_sets=[0x2,0x4]`、2 vCPU、256 MiB、typed `virtio-blk-mmio` | C-RT-F 两侧双 vCPU 启动、零迁移、lossless trace | 证据充分；使用 StarryOS 替代 Linux |
+| 改造前后完整数据并体现 worst-case/抖动改善 | 5 | shared/partitioned 正交配置与比较器 | C-RT-F 五配对：dispatch、emulated IRQ、periodic jitter、direct IRQ max 均 5/5 改善；worst-of-runs 分别改善 99.504%、99.465%、99.513%、47.234%；双 soak | **当前正式证据完整，机器 M2 门通过** |
 | idle 与 stress 对比充分 | 4 | RT capture/aggregate 脚本、guest CPU1 stress、受控 host-noise | F host-noise idle 五对 + 双 soak；F guest stress 五对；C-RT shared/partitioned stress 冒烟 | 证据充分，报告中分开解释两种干扰变量 |
 | 原生 Zephyr/RTOS 基线合理且可复现 | 5 | [`rt-baseline`](rt-baseline/)；Zephyr v4.3.0、RT-Thread v5.2.2、FreeRTOS Kernel `f1043c49…` | H-RTOS：三种 RTOS 均完成 idle/stress、每组 10,000 样本、固定源码/工具链和 fail-closed 分析 | **赛题允许相同或等价平台；QEMU/AArch64 方法可复现且差异已披露，证据充分** |
 
-任务一可辩护证据估计：`29/30`。剩余 1 分风险来自正式五配对和双 soak 尚未从
-最终交付 commit 重跑；同一 Orange Pi 裸机 RTOS 对照仍可进一步增强外部有效性，
-但不再作为“等价平台基线”细则的缺失项。
+任务一可辩护证据估计：`30/30`。同一 Orange Pi 裸机 RTOS 对照仍可进一步增强
+外部有效性，但不再作为“等价平台基线”细则的缺失项。
 
 ## 任务二：基于网络的客户机间通信（25 分）
 
@@ -69,7 +70,7 @@
 | 设计方案完整 | 4 | [`design.md`](design.md) 覆盖 device graph、资源、协议、隔离、故障与测量边界 | 证据充分 |
 | 测试文档完整 | 4 | [`test-report.md`](test-report.md)、机器 JSON、validation logs | 证据充分 |
 | 源码和配置完整 | 4 | 当前 branch、typed device configs、stager/runner/analyzer；[`provenance.json`](results/current-source-smoke-20260813/provenance.json) | 证据充分 |
-| 复现说明可操作 | 3 | [`reproduce.md`](reproduce.md)、source/input/checksum manifests | **精简包可复核；完整 844 MiB raw 档案尚无公开下载地址，保守扣 1 分风险** |
+| 复现说明可操作 | 3 | [`reproduce.md`](reproduce.md)、source/input/checksum manifests | **精简包可复核；当前正式 RT 约 41 MiB archive 和历史约 844 MiB raw 尚无公开下载地址，保守扣 1 分风险** |
 
 工程完整性可辩护证据估计：`14/15`。
 
@@ -79,7 +80,7 @@
 | --- | ---: | --- | --- |
 | 实时/网络/控制方案创新 | 2 | device-graph typed virtual NIC/block、直接跨层 IRQ trace、受控 host interference、actual guest restart | 证据充分 |
 | 扩展到更多 guest/RTOS/场景 | 2 | code-registered device model、segment/port、profile/backend 分层；RT-Thread 与 FreeRTOS 共享 transport/core、独立 OS glue | H-IVC-RTOS 4/4 严格 QEMU 活动，设计与代码充分 |
-| 代码质量与工程规范 | 1 | typed config/errors、fail-closed analyzer、atomic staging、checksum/readback、回归测试 | 证据充分 |
+| 代码质量与工程规范 | 1 | typed config/errors、fail-closed analyzer、atomic staging、checksum/readback、回归测试；`verify_delivery.py` 将 32 个 compact 文件、5 份 QEMU 日志、110 项 raw 清单、业务门槛和源码输入新鲜度接入 CI | 证据充分 |
 
 创新与扩展性可辩护证据估计：`5/5`。
 
@@ -93,12 +94,15 @@
 
 ## 保守汇总与下一步
 
-按上述“证据可辩护”口径，当前主评分约为 `98/100`，可主张 StarryOS
+按上述“证据可辩护”口径，当前主评分约为 `99/100`，可主张 StarryOS
 替代 Linux `+4` 和多 RTOS `+2`，合计加分 `+6`；这不是官方评分。最值得投入的
 后续工作按收益排序：
 
-1. 从最终提交 commit 重跑 RT 受控干扰五配对和 shared/partitioned 双 soak，消除正式性能结论与当前提交之间的证据断层。
-2. 发布完整 844 MiB raw 证据归档（GitHub Release/LFS/不可变数据集），给出下载 URL、总 SHA-256 和逐文件 manifest。
+新增正式活动消除了任务一与当前实现之间的性能证据断层；剩余 1 分风险只保留在
+完整 raw 归档尚无公开不可变下载地址。
+
+1. 将已生成的约 41 MiB 当前正式 RT archive 发布到 GitHub Release/LFS/不可变数据集；总 SHA-256 为 `60fedba15032a7d5a036355102859571a6bfec628d61676fffaa3d312d398ba9`，110 项逐文件 manifest 已提交。
+2. 如需统一公开全部历史活动，再发布约 844 MiB 历史 raw 归档并给出不可变 URL。
 3. 在同一 RK3588 上裸跑至少一种 RTOS 的 idle/stress/soak，记录时钟源、CPU 亲和和原始样本，作为比等价 QEMU 更强的补充对照。
 4. 将已通过的 RT-Thread/FreeRTOS Guest/IVC 路径移植到 Orange Pi 5 Plus，并至少运行一组 StarryOS controller 组合；当前只主张 QEMU/AArch64 endpoint 支持。
 5. 如要争取额外 4 分，单独选择有明确 Linux ABI 依据的 StarryOS syscall 缺口，按项目规范实现、测试并真正合入 upstream `dev`；不要把普通平台修复包装成 syscall 加分。
