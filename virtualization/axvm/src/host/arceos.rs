@@ -253,11 +253,13 @@ pub(crate) fn spawn_task(task: ArceOsTaskInner) -> ArceOsAxTaskRef {
 pub(crate) fn prepare_task_with_initial_cpu(
     task: ArceOsTaskInner,
     initial_cpu: usize,
-) -> api::AxResult<ArceOsPreparedTask> {
+) -> modules::ax_task::future::TaskResult<ArceOsPreparedTask> {
     modules::ax_task::prepare_task_with_initial_cpu(task, initial_cpu)
 }
 
-pub(crate) fn activate_task(task: ArceOsPreparedTask) -> api::AxResult<ArceOsAxTaskRef> {
+pub(crate) fn activate_task(
+    task: ArceOsPreparedTask,
+) -> modules::ax_task::future::TaskResult<ArceOsAxTaskRef> {
     modules::ax_task::activate_task(task)
 }
 

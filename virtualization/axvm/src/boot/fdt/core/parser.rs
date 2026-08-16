@@ -1590,7 +1590,7 @@ mod tests {
         let mut vm_cfg = AxVMConfig::new(AxVMConfigParams {
             id: 1,
             name: "passthrough".to_string(),
-            phys_cpu_ls: PhysCpuList::new(1, None, None),
+            phys_cpu_ls: PhysCpuList::new(1, None, None, false),
             pass_through_devices: vec![HostDeviceAssignment {
                 name: "/".to_string(),
                 ..Default::default()

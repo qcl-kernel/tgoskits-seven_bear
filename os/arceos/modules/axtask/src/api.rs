@@ -7,7 +7,6 @@ use alloc::{
 };
 use core::fmt;
 
-use ax_errno::{AxError, AxResult};
 use ax_memory_addr::VirtAddr;
 
 #[cfg(feature = "lockdep")]
@@ -15,10 +14,13 @@ pub use crate::lockdep::{HeldLock, HeldLockStack};
 pub(crate) use crate::run_queue::{
     current_run_queue, run_queue_for_cpu, select_run_queue, select_wake_run_queue,
 };
-use crate::sync::PreemptIrqSaveState;
 #[cfg_attr(doc, doc(cfg(feature = "task-ext")))]
 #[cfg(feature = "task-ext")]
 pub use crate::task::{AxTaskExt, TaskExt};
+use crate::{
+    future::{TaskError, TaskResult},
+    sync::PreemptIrqSaveState,
+};
 pub use crate::{
     interrupt::InterruptSnapshot,
     task::{CurrentTask, TaskId, TaskInner, TaskState},
@@ -328,12 +330,12 @@ pub fn prepare_task(task: TaskInner) -> PreparedTask {
 ///
 /// # Errors
 ///
-/// Returns [`AxError::InvalidInput`] when `initial_cpu` is outside the
+/// Returns [`TaskError::InvalidInput`] when `initial_cpu` is outside the
 /// configured CPU range or excluded by the task's affinity.
 pub fn prepare_task_with_initial_cpu(
     task: TaskInner,
     initial_cpu: usize,
-) -> AxResult<PreparedTask> {
+) -> TaskResult<PreparedTask> {
     validate_initial_cpu(task.cpumask(), initial_cpu)?;
     Ok(prepare_task_with_placement(
         task,
@@ -347,9 +349,9 @@ fn prepare_task_with_placement(task: TaskInner, placement: PreparedTaskPlacement
     PreparedTask { task, placement }
 }
 
-fn validate_initial_cpu(cpumask: AxCpuMask, initial_cpu: usize) -> AxResult {
+fn validate_initial_cpu(cpumask: AxCpuMask, initial_cpu: usize) -> TaskResult {
     if initial_cpu >= ax_hal::cpu_num() || !cpumask.get(initial_cpu) {
-        Err(AxError::InvalidInput)
+        Err(TaskError::InvalidInput)
     } else {
         Ok(())
     }
@@ -359,9 +361,9 @@ fn validate_initial_cpu(cpumask: AxCpuMask, initial_cpu: usize) -> AxResult {
 ///
 /// # Errors
 ///
-/// Returns [`AxError::InvalidInput`] when a requested initial CPU is outside
+/// Returns [`TaskError::InvalidInput`] when a requested initial CPU is outside
 /// the configured CPU range or is no longer allowed by the task's affinity.
-pub fn activate_task(prepared: PreparedTask) -> AxResult<AxTaskRef> {
+pub fn activate_task(prepared: PreparedTask) -> TaskResult<AxTaskRef> {
     let PreparedTask { task, placement } = prepared;
     match placement {
         PreparedTaskPlacement::SchedulerDefault => {
@@ -376,7 +378,7 @@ pub fn activate_task(prepared: PreparedTask) -> AxResult<AxTaskRef> {
 }
 
 /// Adds a task to a specific initial run queue and returns its reference.
-pub fn spawn_task_with_initial_cpu(task: TaskInner, initial_cpu: usize) -> AxResult<AxTaskRef> {
+pub fn spawn_task_with_initial_cpu(task: TaskInner, initial_cpu: usize) -> TaskResult<AxTaskRef> {
     prepare_task_with_initial_cpu(task, initial_cpu).and_then(activate_task)
 }
 
@@ -801,11 +803,11 @@ mod tests {
 
         assert!(matches!(
             super::validate_initial_cpu(super::AxCpuMask::new(), 0),
-            Err(ax_errno::AxError::InvalidInput)
+            Err(super::TaskError::InvalidInput)
         ));
         assert!(matches!(
             super::validate_initial_cpu(super::cpu_mask_full(), ax_hal::cpu_num()),
-            Err(ax_errno::AxError::InvalidInput)
+            Err(super::TaskError::InvalidInput)
         ));
     }
 }
