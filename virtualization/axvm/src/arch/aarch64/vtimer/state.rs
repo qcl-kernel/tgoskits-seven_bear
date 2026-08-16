@@ -219,10 +219,8 @@ impl Aarch64TimerBinding {
                             },
                         );
                         #[cfg(not(feature = "rt-trace"))]
-                        let notify_result = crate::runtime::vcpus::notify_vcpu(
-                            binding.vm_id,
-                            binding.vcpu.raw(),
-                        );
+                        let notify_result =
+                            crate::runtime::vcpus::notify_vcpu(binding.vm_id, binding.vcpu.raw());
                         if let Err(error) = notify_result {
                             warn!(
                                 "failed to wake VM[{}] vCPU {} for architectural timer: {error:?}",

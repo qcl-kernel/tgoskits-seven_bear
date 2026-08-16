@@ -9,10 +9,8 @@ use std::{
 };
 
 #[cfg(feature = "arceos")]
-use ax_errno::AxError;
-#[cfg(feature = "arceos")]
 use ax_net::{
-    InterfaceId, RecvOptions, SocketAddrEx, SocketOps,
+    InterfaceId, NetError, RecvOptions, SocketAddrEx, SocketOps,
     options::{Configurable, SetSocketOption},
     udp::UdpSocket as AxUdpSocket,
 };
@@ -159,7 +157,7 @@ fn confirm_no_cross_segment_probe(listener: &AxUdpSocket) -> std::io::Result<()>
                     "received {length} bytes from the isolated segment"
                 )));
             }
-            Err(AxError::WouldBlock) => thread::sleep(ISOLATION_PROBE_INTERVAL),
+            Err(NetError::WouldBlock) => thread::sleep(ISOLATION_PROBE_INTERVAL),
             Err(error) => return Err(network_error("receive isolation probe", error)),
         }
     }
@@ -208,7 +206,7 @@ fn tx_packets(interface_id: InterfaceId) -> std::io::Result<u64> {
 }
 
 #[cfg(feature = "arceos")]
-fn network_error(operation: &str, error: AxError) -> std::io::Error {
+fn network_error(operation: &str, error: NetError) -> std::io::Error {
     std::io::Error::other(format!("{operation}: {error}"))
 }
 

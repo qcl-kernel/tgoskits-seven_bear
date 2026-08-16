@@ -291,11 +291,10 @@ mod tests {
     };
     use std::sync::Mutex as StdMutex;
 
-    use ax_errno::{AxError, AxResult};
     use axfs_ng_vfs::MetadataUpdate;
 
     use super::*;
-    use crate::block::FsBlockDevice;
+    use crate::{BlockError, BlockResult, block::FsBlockDevice};
 
     const TEST_DEVICE_BYTES: usize = 100 * 1024 * 1024;
 
@@ -317,31 +316,37 @@ mod tests {
             rsext4::BLOCK_SIZE
         }
 
-        fn read_block(&mut self, block_id: u64, buf: &mut [u8]) -> AxResult {
+        fn read_block(&mut self, block_id: u64, buf: &mut [u8]) -> BlockResult {
             let start = usize::try_from(block_id)
                 .ok()
                 .and_then(|block| block.checked_mul(rsext4::BLOCK_SIZE))
-                .ok_or(AxError::InvalidInput)?;
-            let end = start.checked_add(buf.len()).ok_or(AxError::InvalidInput)?;
+                .ok_or(BlockError::InvalidRequest)?;
+            let end = start
+                .checked_add(buf.len())
+                .ok_or(BlockError::InvalidRequest)?;
             let storage = self.storage.lock().unwrap();
-            let source = storage.get(start..end).ok_or(AxError::InvalidInput)?;
+            let source = storage.get(start..end).ok_or(BlockError::InvalidRequest)?;
             buf.copy_from_slice(source);
             Ok(())
         }
 
-        fn write_block(&mut self, block_id: u64, buf: &[u8]) -> AxResult {
+        fn write_block(&mut self, block_id: u64, buf: &[u8]) -> BlockResult {
             let start = usize::try_from(block_id)
                 .ok()
                 .and_then(|block| block.checked_mul(rsext4::BLOCK_SIZE))
-                .ok_or(AxError::InvalidInput)?;
-            let end = start.checked_add(buf.len()).ok_or(AxError::InvalidInput)?;
+                .ok_or(BlockError::InvalidRequest)?;
+            let end = start
+                .checked_add(buf.len())
+                .ok_or(BlockError::InvalidRequest)?;
             let mut storage = self.storage.lock().unwrap();
-            let destination = storage.get_mut(start..end).ok_or(AxError::InvalidInput)?;
+            let destination = storage
+                .get_mut(start..end)
+                .ok_or(BlockError::InvalidRequest)?;
             destination.copy_from_slice(buf);
             Ok(())
         }
 
-        fn flush(&mut self) -> AxResult {
+        fn flush(&mut self) -> BlockResult {
             self.flushes.fetch_add(1, Ordering::Relaxed);
             Ok(())
         }
