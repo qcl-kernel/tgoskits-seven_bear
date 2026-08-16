@@ -89,8 +89,8 @@ class CiPlanTests(unittest.TestCase):
         self,
     ) -> None:
         context = ci_plan.PlanContext(
-            repository="rcore-os/tgoskits",
-            repository_owner="rcore-os",
+            repository="contributor/tgoskits",
+            repository_owner="contributor",
             event_name="pull_request",
             base_ref="dev",
             impact=ci_plan.CiImpact(
