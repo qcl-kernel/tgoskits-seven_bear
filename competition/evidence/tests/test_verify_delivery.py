@@ -410,6 +410,15 @@ class SourceCommitTests(unittest.TestCase):
 
         verify_delivery.verify_source_commit(self.root, self.source_commit)
 
+    def test_accepts_ci_routing_test_after_source_commit(self) -> None:
+        routing_test = self.root / "scripts" / "test" / "check_ci_routing.py"
+        routing_test.parent.mkdir(parents=True)
+        routing_test.write_text("CI routing regression\n", encoding="utf-8")
+        self._git("add", ".")
+        self._git("commit", "--quiet", "-m", "add CI routing regression")
+
+        verify_delivery.verify_source_commit(self.root, self.source_commit)
+
     def test_rejects_runtime_change_after_source_commit(self) -> None:
         runtime = self.root / "competition" / "ivc" / "runtime.txt"
         runtime.write_text("changed runtime\n", encoding="utf-8")

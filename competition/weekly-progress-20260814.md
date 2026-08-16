@@ -116,7 +116,7 @@ HyperCall 传输应用数据。
 - 新增标准库实现的一键交付门禁并接入 CI：逐项校验 32 个 compact evidence 文件、
   5 份 QEMU gzip、四组 RTOS 计数、完整隔离 marker、正式 M2/soak 契约、12 份回执、
   110 项 archive manifest 和 34 个预注册源码输入；独立 CI 仅按交付路径触发，
-  交付 verifier 配套 21 个确定性正负例，连同归档工具共 25 项 evidence tests。
+  交付 verifier 配套 22 个确定性正负例，连同归档工具共 26 项 evidence tests。
 - 补齐 RT-Thread/FreeRTOS Guest 构建、AxVisor VM/QEMU 配置、Linux controller
   rootfs、严格 analyzer、host fake-MMIO/transport 测试、复现文档和紧凑验证记录；
   四组 raw 日志仍保留在 ignored `tmp/` 目录，机器哈希摘要进入 competition results。

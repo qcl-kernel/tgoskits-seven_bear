@@ -32,6 +32,7 @@ DELIVERY_ONLY_PATHS = frozenset(
     {
         ".github/workflows/competition-delivery.yml",
         ".github/workflows/ci.yml",
+        "scripts/test/check_ci_routing.py",
     }
 )
 DELIVERY_ONLY_PREFIXES = (
