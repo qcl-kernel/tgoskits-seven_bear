@@ -67,8 +67,9 @@ bash competition/evidence/run-host-validation.sh
 
 This also executes the 36 focused RTOS Guest/IVC tests, the common VirtIO/IVC
 and Zephyr C host tests, native RTOS analyzer/configuration tests, and evidence
-tool tests before checking the retained delivery artifacts. The evidence tool
-suite currently contains 21 deterministic positive and negative cases.
+tool tests before checking the retained delivery artifacts. The delivery
+verifier has 21 deterministic positive and negative cases; together with the
+four archive-packager cases, the evidence tool suite contains 25 tests.
 
 CI runs this command from the path-scoped `competition-delivery.yml` workflow
 when competition content, reviewed evidence attributes, or that workflow

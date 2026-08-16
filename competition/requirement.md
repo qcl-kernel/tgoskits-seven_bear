@@ -72,11 +72,13 @@ AI 框架：允许 YOLO、ONNX Runtime、ncnn 等开源框架及厂商 NPU SDK�
 | 架构、device graph、隔离和协议设计 | [`design.md`](design.md) |
 | 可执行构建、板测、复析和校验命令 | [`reproduce.md`](reproduce.md) |
 | 当前 Orange Pi 原始证据、哈希和源码边界 | [`results/current-source-smoke-20260813`](results/current-source-smoke-20260813/) |
+| 当前正式 RT 五配对、双 soak 与归档清单 | [`results/axvisor-rt-formal-20260816`](results/axvisor-rt-formal-20260816/) |
 | Zephyr/RT-Thread/FreeRTOS 原生基线 | [`rt-baseline/README.md`](rt-baseline/README.md) |
 | 三客户机 QEMU 动态隔离证据 | [`results/axvisor-isolation-reference`](results/axvisor-isolation-reference/) |
 | 确定性完整证据归档工具 | [`evidence/README.md`](evidence/README.md) |
 | 五分钟成片和镜头—证据索引 | [`video-storyboard.md`](video-storyboard.md) |
 
-证据口径：当前 IVC 实跑绑定 clean commit `598b357f9…`，当前 RT shared/partitioned
-实跑绑定 `077ba386c…`；二者之间只有 `competition/ivc/` 四个路径发生变化。
-历史正式多轮数据保留各自的 clean source commit，不改标成当前提交结果。
+证据口径：IVC 实跑绑定 clean commit `598b357f9…`，早期 RT 单对实跑绑定
+`077ba386c…`；当前正式 RT 五配对和双 soak 独立绑定 `77704718a…`。各批数据保留
+各自的 clean source commit，不拼接、不改标；交付校验器逐项验证正式活动的 34 个
+预注册源码输入未在后续提交中变化。

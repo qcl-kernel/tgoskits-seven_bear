@@ -1,11 +1,13 @@
 # 复现说明
 
 本文从源码固定、离线验证、镜像构建、实体板 staging、AxVisor 启动、结果
-harvest 到证据校验给出可执行步骤。默认从仓库根目录执行。当前已归档的实体冒烟
+harvest 到证据校验给出可执行步骤。默认从仓库根目录执行。已归档的早期实体冒烟
 分为两个明确层次：RT shared/partitioned 运行绑定
 `077ba386c20c29b84749f509b29e8a3f6f76e1e2`，最终 IVC 重启闭环绑定
 `598b357f92c848e669c12cca830a4d08d0a50e36`。两者之间仅修改
 `competition/ivc/`，精确边界在证据包的 `source-delta.txt`。
+当前正式 RT 五配对和双 soak 另行绑定 clean commit
+`77704718a1b46fc2fbf51ea6a184aa1071eee0ac`；它不与早期单对或历史正式数据拼接。
 
 ## 1. 固定源码与工作区
 
@@ -23,21 +25,27 @@ git config core.autocrlf false
 test -z "$(git status --porcelain=v1)"
 git cat-file -e 598b357f92c848e669c12cca830a4d08d0a50e36^{commit}
 git cat-file -e 077ba386c20c29b84749f509b29e8a3f6f76e1e2^{commit}
+git cat-file -e 77704718a1b46fc2fbf51ea6a184aa1071eee0ac^{commit}
 
 git worktree add --detach ../tgoskits-ivc-source-598b357f9 \
   598b357f92c848e669c12cca830a4d08d0a50e36
 git worktree add --detach ../tgoskits-rt-source-077ba386c \
   077ba386c20c29b84749f509b29e8a3f6f76e1e2
+git worktree add --detach ../tgoskits-rt-formal-77704718a \
+  77704718a1b46fc2fbf51ea6a184aa1071eee0ac
 
 test "$(git -C ../tgoskits-ivc-source-598b357f9 rev-parse HEAD^{tree})" = \
   33cd7bbf39569ed661c6303ac3b61f5f34d40306
 test "$(git -C ../tgoskits-rt-source-077ba386c rev-parse HEAD^{tree})" = \
   f4411a44c7fac2b5b57037005cadf8d3229a0d4f
+test "$(git -C ../tgoskits-rt-formal-77704718a rev-parse HEAD^{tree})" = \
+  f65ec1707eb91c92183064a29b3a6a860382cc68
 ```
 
 也可从 `git@github.com:qcl-kernel/tgoskits-seven_bear.git` 的 `dev` 分支取得同一
-交付提交。第 4–5 节在 `tgoskits-ivc-source-598b357f9` 执行，第 6 节在
-`tgoskits-rt-source-077ba386c` 执行；第 9 节回到 `tgoskits-rt-ivc-delivery`。
+交付提交。第 4–5 节在 `tgoskits-ivc-source-598b357f9` 执行，第 6 节的早期冒烟在
+`tgoskits-rt-source-077ba386c` 执行，第 7 节正式 RT 活动在
+`tgoskits-rt-formal-77704718a` 执行；第 9 节回到 `tgoskits-rt-ivc-delivery`。
 
 当前实体证据的完整 source attestation 在
 [`results/current-source-smoke-20260813/provenance.json`](results/current-source-smoke-20260813/provenance.json)：
@@ -48,6 +56,8 @@ IVC tested commit         598b357f92c848e669c12cca830a4d08d0a50e36
 IVC tested tree           33cd7bbf39569ed661c6303ac3b61f5f34d40306
 RT tested commit          077ba386c20c29b84749f509b29e8a3f6f76e1e2
 RT tested tree            f4411a44c7fac2b5b57037005cadf8d3229a0d4f
+RT formal commit          77704718a1b46fc2fbf51ea6a184aa1071eee0ac
+RT formal tree            f65ec1707eb91c92183064a29b3a6a860382cc68
 ```
 
 验证 source archive：
@@ -141,6 +151,17 @@ ssh -i "$ORANGEPI_SSH_IDENTITY" -o IdentitiesOnly=yes \
 `cargo xtask ... board` 分别抢占同一个 CH340。
 
 ## 3. 离线门
+
+赛题新增路径的快速、fail-closed host 门统一为：
+
+```sh
+bash competition/evidence/run-host-validation.sh
+```
+
+该入口已接入 CI，依次执行 focused RTOS Guest/IVC、公共 C transport、Zephyr host、
+原生 RTOS analyzer/configuration、证据工具测试，并验证 compact evidence 的逐文件
+哈希、解压后哈希、活动计数、终止 marker 和 source commit 新鲜度。以下命令保留为
+完整底层检查清单：
 
 ```sh
 python3 -m unittest discover -s competition/ivc/tests -p 'test_*.py'
@@ -282,6 +303,10 @@ normal 要求 100/100 ACK、零重传、零协议错误；ACK-loss 固定丢 20 
 20 次重传、20 次 duplicate suppression、20 次恢复且 `applied` 仍为 100。
 输出包含配置、实际命令、原始 `qemu.log`、`summary.json` 和总校验清单。完整资源
 契约与限制见 [`ivc/README.md`](ivc/README.md)。
+
+仓库中的 compact 参考日志已在 clean commit
+`16a1f3198243a5e1b1bc1810faba6371f7de3215` 上按上述四条命令刷新；若只复核已保存
+结果，运行 `python3 competition/evidence/verify_delivery.py`。
 
 ### 4.5 QEMU 三客户机动态隔离
 
@@ -449,6 +474,15 @@ RT 正式入口先在 clean worktree 中构建并冻结全部输入。`base_root
 `cargo xtask image pull rootfs-aarch64-busybox.img` 获取的受管镜像；`result_root`
 必须是尚不存在的新目录：
 
+复现当前正式活动时先固定已记录的 commit，而不是使用浮动 `HEAD`：
+
+```sh
+cd ../tgoskits-rt-formal-77704718a
+test "$(git rev-parse HEAD)" = 77704718a1b46fc2fbf51ea6a184aa1071eee0ac
+test "$(git rev-parse HEAD^{tree})" = f65ec1707eb91c92183064a29b3a6a860382cc68
+test -z "$(git status --porcelain=v1)"
+```
+
 ```sh
 commit=$(git rev-parse HEAD)
 source_ref=$(git symbolic-ref --quiet --short HEAD || printf 'detached-head')
@@ -500,6 +534,11 @@ jq -e '.assessment.m2_exit_gate_met == true' \
 (cd "$result_root" && sha256sum -c checksums.sha256)
 ```
 
+已归档活动应得到 5 个 comparison、10 个 pair receipt、2 个 soak receipt，shared 与
+partitioned soak 分别至少 1,800 秒。当前机器汇总的四项 max 均为 5/5 改善，且
+`m2_exit_gate_met=true`；compact 记录位于
+[`results/axvisor-rt-formal-20260816`](results/axvisor-rt-formal-20260816/)。
+
 正式入口在每个 half 前重验 commit/tree、关键源码和所有制品哈希，并验证 stage 与
 harvest 都是同一 `bf61f4d4a1d994ad/orangepi5plus` 实体板。任一步失败时不会创建
 `receipt.json`；修复源码后必须新提交并使用新的 `result_root` 重新预注册，不能编辑
@@ -536,6 +575,18 @@ operators 和数值容差由 [`ivc/model/README.md`](ivc/model/README.md) 与
 
 ## 9. 证据包与视频
 
+从任意交付 checkout 先验证新增 compact QEMU evidence：
+
+```sh
+python3 competition/evidence/verify_delivery.py
+```
+
+成功标志为 `COMPETITION_DELIVERY_EVIDENCE_PASS`，同时给出 QEMU/formal source
+commit、3 个证据集、32 个受检文件、5 份 QEMU 日志与 110 项 archive manifest。
+若 checksum 漏列/不符、gzip 解压身份不符、业务计数或成功 marker 不成立、QEMU
+证据 commit 不一致、正式 M2/soak/回执契约不成立，或者 34 个预注册源码输入发生
+变化，命令以 2 退出。文档、证据、验证工具和 CI 变更允许晚于运行 commit。
+
 从仓库根目录验证当前 compact bundle：
 
 ```sh
@@ -548,7 +599,23 @@ python3 "$bundle/validation/verify-evidence.py" .
 sh "$bundle/validation/verify-source-index.sh" . \
   598b357f92c848e669c12cca830a4d08d0a50e36 \
   "$bundle/source-files.git-ls-tree.txt"
+
+(cd competition/results/axvisor-rt-formal-20260816 && \
+  sha256sum -c SHA256SUMS)
 ```
+
+当前正式 RT raw archive 已确定性生成。取得 archive 后与仓库 sidecar 一起校验：
+
+```sh
+formal_archive=axvisor-rt-formal-20260816-77704718a.tar.gz
+cp competition/results/axvisor-rt-formal-20260816/archive.sha256 .
+sha256sum -c archive.sha256
+test "$(stat -c %s "$formal_archive")" -gt 40000000
+```
+
+其预期总 SHA-256 为
+`60fedba15032a7d5a036355102859571a6bfec628d61676fffaa3d312d398ba9`；
+`archive.manifest.json` 还应逐项核验 archive 内 110 个文件。
 
 将完整本地 raw 目录制成不可覆盖、可逐文件核验的确定性归档：
 

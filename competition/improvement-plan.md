@@ -1,8 +1,8 @@
 # Competition Improvement Plan
 
-> 状态：执行中（M0-M3 已闭环并冻结；M4-0/M4-1 的 canonical weights、Rust oracle、10,000 golden vectors、确定性 ONNX 和 manifest 已完成；M4-2 的固定 RKNN Toolkit2 2.3.2、确定性 RK3588 FP16 `.rknn`、算子映射和 host simulator 差分已完成；M4-3 的 Linux clean reference、AxVisor host 初始化/StarryOS guest 独占 handoff 及单次 10,000-vector NPU 物理 spike 已通过，v8 还关闭了单命令采集、恢复、分析和 checksum 集成门；当前需冻结 clean commit 并完成重复性/资源门，之后仍需 M4-4 full、M4-plus ORT 实体路线和 M5）
+> 状态：执行中（M0-M3 已闭环并冻结；M2 已于 2026-08-16 从 clean commit 完成当前实现的五配对与双 soak 正式复验；M4-0/M4-1 的 canonical weights、Rust oracle、10,000 golden vectors、确定性 ONNX 和 manifest 已完成；M4-2 的固定 RKNN Toolkit2 2.3.2、确定性 RK3588 FP16 `.rknn`、算子映射和 host simulator 差分已完成；M4-3 的 Linux clean reference、AxVisor host 初始化/StarryOS guest 独占 handoff 及单次 10,000-vector NPU 物理 spike 已通过，v8 还关闭了单命令采集、恢复、分析和 checksum 集成门；当前需冻结 clean commit 并完成重复性/资源门，之后仍需 M4-4 full、M4-plus ORT 实体路线和 M5）
 >
-> 更新日期：2026-08-04
+> 更新日期：2026-08-16
 >
 > 范围：补齐 `competition/requirement.md` 中 StarryOS 实体板、实时最坏延迟、手动控制基线、协议故障和重复性证据；以 ONNX 为唯一跨后端部署模型来源，在 StarryOS 上形成 RKNN NPU 主后端及 ONNX Runtime CPU 对照后端。
 >
@@ -66,6 +66,7 @@ M4 的 WSL2 转换、宿主差分和构建 spike 可以在等待实体板时进�
 - 根因是每次 VM exit 保存了 guest `CNTV_CTL_EL0`/`CNTP_CTL_EL0`，却让定时器源在宿主任务运行期间继续使能。修复流程现在先保存状态并完成 GIC 应答/硬件 LR 转移，再关闭本地 guest 定时器，且在下一次 guest entry 恢复 `CVAL/CTL`。实体板回归证明不能在 GIC 应答前关闭 level PPI，否则客户机会卡在中断初始化。
 - 修复后的 host-noise smoke 使用同一 StarryOS kernel、DTB、64 MiB idle rootfs、双 vCPU 映射、1 ms 周期和每项 20 个用户态样本，按 AB/BA/AB 完成三组。pair-1 的 shared/partitioned direct IRQ p99/max 为 `41,902,000/44,061,208 ns` 与 `3,745,291/7,597,916 ns`，改善 `91.062%/82.756%`；pair-2 为 `43,193,500/49,487,083 ns` 与 `3,751,708/7,806,458 ns`，改善 `91.314%/84.225%`；pair-3 为 `41,842,791/53,339,125 ns` 与 `3,728,083/7,655,958 ns`，改善 `91.090%/85.647%`。
 - 三组共六次调试运行的 `unowned_virtual_timer_irqs`、`dropped`、`incomplete`、`failed_injections` 和 `counter_frequency_mismatches` 均为零，所有控制台的未处理 IRQ、`ESR_EL2`、panic 和 nested-vCPU 标记也均为零；placement、coverage、snapshot/fsck、同步后恢复 Linux 及零迁移全部通过。重复 smoke 门已达到 3/3。随后从 clean commit `0588743ecb807d7363a3dec90c17a159179933b0` 完成 5 组 AB/BA 正式矩阵；每侧每项均为 10,000 样本。又从 clean commit `2e97430f2171667d4ec16c3a02931653f7ddedf8` 完成 shared/partitioned 双 soak；最终机器汇总给出 `five_pair_matrix_gate_met=true`、`soak_evidence_collected=true`、`m2_exit_gate_met=true`。
+- 2026-08-16 从 clean commit `77704718a1b46fc2fbf51ea6a184aa1071eee0ac` 对当前实现重新完成一套独立预注册活动：5 对短测、每项每侧 10,000 样本及 shared/partitioned 双侧 ≥1,800 秒 soak 全部通过。四项 max 均 5/5 改善，dispatch、emulated IRQ、periodic jitter、direct IRQ worst-of-runs 分别改善 99.504%、99.465%、99.513%、47.234%，全部 p99 配对通过 5% 非退化门，`m2_exit_gate_met=true`。12 份回执、23 个 compact 文件和 110 项 archive manifest 已提交；约 41 MiB deterministic archive 已生成，待发布不可变 URL。
 - 板卡 gate 现在只把 `AXVISOR_SNAPSHOT_SYNC_OK` 作为终止成功条件，host-noise 完成由回收分析器独立验证；本地实体运行必须经仓库内 `competition/ivc/orangepi/board-runner.sh`，由它完成 SSH 重启、临时 `uboot-shell` 兼容补丁、串口 lease、同步后冷启动和 Linux 根文件系统恢复，不得用裸 `cargo xtask axvisor board` 代替完整状态机。
 - Windows 与 WSL2 的本次 host-noise/PPI27 修复源码、配置、分析器、说明和证据已精确同步；AArch64 timer/GIC 顺序回归、RT trace 合约、Python 分析器、shell runner、格式化、相关 crate clippy，以及 shared/partitioned 两套 OrangePi 构建均已通过。
 - guest CPU1 stress 正式矩阵已从 clean capture commit `96ff161270f5d16c7a08e491f19436b925e8b3e1` 按 AB/BA/AB/BA/AB 完成 5 对、10 个有效半程；每半程包含三项各 10,000 个用户态样本，总计 300,000 个 raw samples。10 个快照均 fsck clean，Linux 均恢复为 `/dev/mmcblk1p2 ext4 rw`，host/guest trace 全部无损，vCPU0/1 固定为 `0x2`/`0x4` 且迁移数为零。
@@ -106,8 +107,8 @@ M3 restart recovery 正式证据位于
 
 1. 保持常规 `starry-rt-shared/partitioned` 为单 guest 可用基线；跨 VM noise 只允许通过显式 `starry-noise-*` 诊断 profile 启动，不再作为当前正式路线。
 2. 保持已冻结的 AxVisor host-noise/PPI27 修复：pCPU1/pCPU3、RR、正式 600 秒上限、先 GIC 应答后关闭 guest timer、持久 trace schema、`unowned_virtual_timer_irqs=0` 和 snapshot-sync 唯一成功门均不得随实验轮次变化。
-3. 正式矩阵已冻结在 clean commit `0588743ecb807d7363a3dec90c17a159179933b0`；镜像/配置哈希、AB/BA/AB/BA/AB 顺序、10,000 样本数、门槛和结果目录记录在 `campaign-preregistration.json`，运行时修正只允许追加 amendment，不得改写预注册文件或把调试 smoke 重新标记为正式证据。
-4. 正式 5 组 AB/BA controlled-interference、shared/partitioned 双 soak 和 guest CPU1 stress 5-pair 矩阵均已完成并通过各自机器门；冻结这三组 M2 正式证据，不再依据结果调整阈值或重跑成功 half。
+3. 当前正式矩阵冻结在 clean commit `77704718a1b46fc2fbf51ea6a184aa1071eee0ac`；镜像/配置哈希、AB/BA/AB/BA/AB 顺序、10,000 样本数、门槛和结果目录记录在 `preregistration.json`，不得改写预注册文件或把早期 smoke 重新标记为正式证据。
+4. 当前正式 5 组 AB/BA controlled-interference 与 shared/partitioned 双 soak 已通过机器门；冻结这批 M2 证据，不再依据结果调整阈值或重跑成功 half。下一交付动作是发布 SHA-256 为 `60fedba15032a7d5a036355102859571a6bfec628d61676fffaa3d312d398ba9` 的完整 archive。
 5. 冻结 ACK loss、ERROR 和 restart recovery 各 3/3 次的 M3 正式证据，不再依据结果修改故障契约或删除失败批次。
 6. 冻结 M1 v5 的 5 对 manual/native 正式证据；v4 仅作为分析器缺陷和 fail-closed 行为的无效档案，不得拼接或重标为成功批次。
 7. M4-0/M4-1、NPU 平台审计、M4-2 确定性 RKNN FP16 转换、clean-source Linux 实体 reference，以及 AxVisor/StarryOS 单次离线 NPU spike 均已完成；当前先冻结 clean commit 并关闭冷启动重复、加载/卸载和资源门，再进入 StarryOS + Zephyr full。ORT CPU 同时做独立可行性门，但不得阻塞 RKNN 主路线。
