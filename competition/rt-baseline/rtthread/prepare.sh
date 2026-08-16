@@ -17,7 +17,7 @@ for command in git python3 qemu-system-aarch64; do
     fi
 done
 
-"$script_dir/../common/prepare_toolchain.sh"
+bash "$script_dir/../common/prepare_toolchain.sh"
 mkdir -p -- "$workspace"
 if [[ ! -d "$source_root/.git" ]]; then
     git clone --branch v5.2.2 --depth 1 --filter=blob:none --no-checkout \
