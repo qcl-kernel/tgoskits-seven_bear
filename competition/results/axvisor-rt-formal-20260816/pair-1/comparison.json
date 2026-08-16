@@ -9,69 +9,69 @@
   "metrics": {
     "dispatch_latency": {
       "max": {
-        "change_ns": -50235792,
+        "change_ns": -49962208,
         "improved": true,
-        "improvement_percent": 99.572,
+        "improvement_percent": 99.331,
         "meets_ten_percent_target": true,
-        "partitioned_ns": 215833,
-        "shared_ns": 50451625
+        "partitioned_ns": 336583,
+        "shared_ns": 50298791
       },
       "p99": {
-        "change_ns": -8751,
-        "improvement_percent": 6.522,
-        "partitioned_ns": 125416,
-        "shared_ns": 134167,
+        "change_ns": -4959,
+        "improvement_percent": 3.672,
+        "partitioned_ns": 130083,
+        "shared_ns": 135042,
         "within_non_regression_limit": true
       }
     },
     "emulated_irq_response": {
       "max": {
-        "change_ns": -93537707,
+        "change_ns": -93074458,
         "improved": true,
-        "improvement_percent": 99.529,
+        "improvement_percent": 99.576,
         "meets_ten_percent_target": true,
-        "partitioned_ns": 442709,
-        "shared_ns": 93980416
+        "partitioned_ns": 395917,
+        "shared_ns": 93470375
       },
       "p99": {
-        "change_ns": -92582166,
-        "improvement_percent": 99.724,
-        "partitioned_ns": 255917,
-        "shared_ns": 92838083,
+        "change_ns": -92288625,
+        "improvement_percent": 99.727,
+        "partitioned_ns": 252334,
+        "shared_ns": 92540959,
         "within_non_regression_limit": true
       }
     },
     "periodic_jitter": {
       "max": {
-        "change_ns": -96770833,
+        "change_ns": -96951832,
         "improved": true,
-        "improvement_percent": 99.645,
+        "improvement_percent": 99.547,
         "meets_ten_percent_target": true,
-        "partitioned_ns": 344917,
-        "shared_ns": 97115750
+        "partitioned_ns": 441584,
+        "shared_ns": 97393416
       },
       "p99": {
-        "change_ns": -95921374,
-        "improvement_percent": 99.766,
-        "partitioned_ns": 224709,
-        "shared_ns": 96146083,
+        "change_ns": -96264791,
+        "improvement_percent": 99.727,
+        "partitioned_ns": 263334,
+        "shared_ns": 96528125,
         "within_non_regression_limit": true
       }
     },
     "virtual_timer_injection_to_guest_irq": {
       "max": {
-        "change_ns": -349650875,
+        "change_ns": -349783583,
         "improved": true,
-        "improvement_percent": 43.925,
+        "improvement_percent": 43.5,
         "meets_ten_percent_target": true,
-        "partitioned_ns": 446362875,
-        "shared_ns": 796013750
+        "partitioned_ns": 454315458,
+        "shared_ns": 804099041
       },
       "p99": {
-        "change_ns": -5059250,
-        "improvement_percent": 96.238,
-        "partitioned_ns": 197750,
-        "shared_ns": 5257000,
+        "change_ns": -5234542,
+        "improvement_percent": 96.318,
+        "partitioned_ns": 200083,
+        "shared_ns": 5434625,
         "within_non_regression_limit": true
       }
     }
@@ -80,20 +80,20 @@
     "controlled_interference": {
       "implementation": "busy-loop",
       "max_duration_ms": 600000,
-      "partitioned_elapsed_ticks": 928793404,
+      "partitioned_elapsed_ticks": 929495371,
       "partitioned_requested_pcpu": 3,
       "placement_and_coverage_validated": true,
-      "shared_elapsed_ticks": 1344874657,
+      "shared_elapsed_ticks": 1357981268,
       "shared_requested_pcpu": 1
     },
     "iterations_per_metric": 10000,
     "partitioned_raw": {
-      "path": "/home/seven_wsl/Workspace/starry/results/rt-formal-20260816-77704718a1b46fc2fbf51ea6a184aa1071eee0ac/pair-1/partitioned/attempts/20260816T043225Z-578903/raw.log",
-      "sha256": "4e1d0d96d0330058e15490ec3bb8f4893372d03b68393b2baa768033534b1e25"
+      "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260816-c82da8464/tmp/competition/axvisor-rt-formal-20260816-c82da8464/pair-1/partitioned/attempts/20260816T090358Z-678190/raw.log",
+      "sha256": "90091ace3e0bd70568f56286e0197db72d6b092b1a1b18a732fd8e59132fbe81"
     },
     "shared_raw": {
-      "path": "/home/seven_wsl/Workspace/starry/results/rt-formal-20260816-77704718a1b46fc2fbf51ea6a184aa1071eee0ac/pair-1/shared/attempts/20260816T042706Z-574696/raw.log",
-      "sha256": "26ec4d77d54751ce3d76921ab56802f4aefe855fff5d9f01cf555b6350fac192"
+      "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-formal-20260816-c82da8464/tmp/competition/axvisor-rt-formal-20260816-c82da8464/pair-1/shared/attempts/20260816T085916Z-677475/raw.log",
+      "sha256": "017e08dcc86946b57729bdd23c27070e6a795aded0d3d667c702e720cb55705a"
     },
     "workload": "idle"
   },

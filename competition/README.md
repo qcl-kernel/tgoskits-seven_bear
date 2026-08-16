@@ -25,7 +25,7 @@ default route、vsock、共享内存或 HyperCall 应用数据通道。
 | device-graph 配置入口 | 完成 | typed `[devices]`、initramfs、配置解析回归 |
 | 当前源码实体 IVC 重启恢复 | 通过；同一 clean commit 的 runner/analyzer exit 0 | [`current-source-smoke-20260813/ivc`](results/current-source-smoke-20260813/ivc/) |
 | 早期 RT shared/partitioned 实体冒烟 | 两侧管线通过；单对诊断不满足 M2 正式矩阵 | [`rt/comparison.json`](results/current-source-smoke-20260813/rt/comparison.json) |
-| 当前正式 RT 五配对 + 双 soak | clean commit `77704718a…` 实体活动通过，`m2_exit_gate_met=true` | [`axvisor-rt-formal-20260816`](results/axvisor-rt-formal-20260816/) |
+| 当前正式 RT 五配对 + 双 soak | clean commit `c82da8464…` 实体活动通过，`m2_exit_gate_met=true` | [`axvisor-rt-formal-20260816`](results/axvisor-rt-formal-20260816/) |
 | manual/neural 五配对闭环 | 历史活动通过；RMSE/IAE 改善，overshoot 退化 | [`historical-formal/ivc-control`](results/current-source-smoke-20260813/historical-formal/ivc-control/) |
 | ACK-loss / ERROR / restart | 历史活动各 3/3；当前 restart 再次通过 | [`historical-formal`](results/current-source-smoke-20260813/historical-formal/) |
 | RKNN NPU / ONNX Runtime CPU | 历史活动各 5×1,800 通过 | [`historical-formal/rknpu`](results/current-source-smoke-20260813/historical-formal/rknpu/)、[`ort`](results/current-source-smoke-20260813/historical-formal/ort/) |
@@ -35,14 +35,14 @@ default route、vsock、共享内存或 HyperCall 应用数据通道。
 | RT-Thread/FreeRTOS Guest/IVC | QEMU/AArch64 双 Guest normal 与 ACK-loss 共 4/4 通过；每组 100/100，故障组各 20 次重传/去重/恢复 | [`ivc/README.md`](ivc/README.md)、[`competition-rtos-guest-ivc.md`](../book/design/competition-rtos-guest-ivc.md) |
 | 三客户机网络隔离 | QEMU 动态通过：同 segment TCP 64 KiB；隔离 segment 发送 100 个探针，接收端 7 秒收到 0 个 | [`axvisor-isolation-reference`](results/axvisor-isolation-reference/) |
 | 证据归档工具 | 确定性 tar+gzip、逐文件 manifest、SHA-256、拒绝覆盖并回读验证 | [`evidence`](evidence/) |
-| 交付一致性门禁 | 32 个 compact 文件、5 份 QEMU gzip、110 项正式归档清单、业务门槛与源码输入统一 fail-closed 校验，并接入 CI | [`verify_delivery.py`](evidence/verify_delivery.py) |
+| 交付一致性门禁 | 32 个 compact 文件、5 份 QEMU gzip、113 项正式归档清单、业务门槛与源码输入统一 fail-closed 校验，并接入 CI | [`verify_delivery.py`](evidence/verify_delivery.py) |
 
 2026-08-13 的 100 样本单对冒烟仍作为诊断记录保留，但不再承担正式性能结论。
-2026-08-16 在 clean commit `77704718a…` 上完成预注册五配对、每项每侧 10,000
+2026-08-16 在 clean commit `c82da8464…` 上完成预注册五配对、每项每侧 10,000
 样本及 shared/partitioned 双侧 30 分钟 soak，机器判定
 `m2_exit_gate_met=true`。正式改善结论严格限定在该受控 host interference 活动；
-之后的 `16a1f3198…` 只修复 RT baseline prepare 脚本的调用方式，34 个预注册运行输入
-经 Git blob 校验均未变化。详见
+RT-Thread/FreeRTOS Guest/IVC 与三客户机隔离也在同一 clean commit 上重新运行，后续仅
+更新交付文档、证据和校验工具；34 个预注册运行输入经 Git blob 校验均未变化。详见
 [`test-report.md`](test-report.md) 和 [`scorecard.md`](scorecard.md)。
 
 ## 文档导航

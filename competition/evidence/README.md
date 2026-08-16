@@ -51,7 +51,7 @@ The command fails closed unless all of the following hold:
 - both QEMU evidence sets name the same clean source commit;
 - the formal RT evidence contains the preregistered five-pair AB/BA matrix,
   10,000 samples per metric and half, both 30-minute soaks, the passing M2
-  decision, twelve source/board-bound receipts, and 110 archive entries;
+  decision, twelve source/board-bound receipts, and 113 archive entries;
 - all receipt artifacts match the full archive manifest, and all 34
   preregistered runtime inputs still match their source-commit and `HEAD` Git
   blobs even when unrelated runtime paths changed later;
@@ -90,17 +90,19 @@ The gate does not rerun QEMU or a physical board, publish the full raw archive,
 or convert QEMU evidence into a board/performance claim. Those remain separate
 campaign and publication steps.
 
-The post-capture `rsext4` test repair is not covered by a path-wide exception.
-The gate requires the measured source blob
+The narrowly reviewed `rsext4` test repair is not covered by a path-wide
+exception. The gate requires the measured source blob
 `b5471e08cb7db1d168628a5a94ae89e9e9ea1b6e` and the reviewed test-only target
 blob `7b94e102a9ae424dbfc1aebed38e90b3aba59f35` exactly. Any other committed or
 uncommitted change to that source file remains runtime-relevant and is rejected.
+The current `c82da8464` evidence source already contains the reviewed target
+blob, so the exception is not exercised by this delivery.
 
 The current formal RT raw payload has already been packaged locally as
-`axvisor-rt-formal-20260816-77704718a.tar.gz` (about 41 MiB compressed). Its
+`axvisor-rt-formal-20260816-c82da8464.tar.gz` (42,722,019 bytes compressed). Its
 SHA-256 is
-`60fedba15032a7d5a036355102859571a6bfec628d61676fffaa3d312d398ba9`;
+`68c1efb1ae0338692a84943c7056e104e2abed9e62a89dcdb0e2540ea1f9859e`;
 the tracked compact set at
 [`../results/axvisor-rt-formal-20260816`](../results/axvisor-rt-formal-20260816/)
-contains the sidecar and 110-file manifest. Publishing the archive to an
+contains the sidecar and 113-file manifest. Publishing the archive to an
 immutable URL remains an external release step.

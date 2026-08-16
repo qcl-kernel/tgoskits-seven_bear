@@ -108,7 +108,8 @@ EXPECTED_FORMAL_METRICS = (
     "periodic_jitter",
     "virtual_timer_injection_to_guest_irq",
 )
-EXPECTED_ARCHIVE_NAME = "axvisor-rt-formal-20260816-77704718a.tar.gz"
+EXPECTED_ARCHIVE_ROOT = "axvisor-rt-formal-20260816-c82da8464"
+EXPECTED_ARCHIVE_NAME = f"{EXPECTED_ARCHIVE_ROOT}.tar.gz"
 MAX_UNCOMPRESSED_LOG_BYTES = 16 * 1024 * 1024
 
 
@@ -362,7 +363,7 @@ def verify_formal_archive(
     require_equal(
         manifest,
         "source_root",
-        f"rt-formal-20260816-{source_commit}",
+        EXPECTED_ARCHIVE_ROOT,
         "formal archive manifest",
     )
     declared_count = require_positive_integer(

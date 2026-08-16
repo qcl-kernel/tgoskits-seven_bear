@@ -567,10 +567,10 @@ class FormalRealtimeEvidenceTests(unittest.TestCase):
 
         self.assertEqual(
             report.source_commit,
-            "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
+            "c82da8464ab69e7da95e9be08293559e67b28fac",
         )
         self.assertEqual(report.checked_files, 23)
-        self.assertEqual(report.archive_files, 110)
+        self.assertEqual(report.archive_files, 113)
         self.assertGreaterEqual(len(report.source_inputs), 30)
 
     def test_accepts_all_three_repository_evidence_sets(self) -> None:
@@ -584,10 +584,10 @@ class FormalRealtimeEvidenceTests(unittest.TestCase):
         self.assertEqual(report.evidence_sets, 3)
         self.assertEqual(report.checked_files, 32)
         self.assertEqual(report.qemu_logs, 5)
-        self.assertEqual(report.archive_files, 110)
+        self.assertEqual(report.archive_files, 113)
         self.assertEqual(
             report.formal_source_commit,
-            "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
+            "c82da8464ab69e7da95e9be08293559e67b28fac",
         )
 
     def test_rejects_false_aggregate_m2_claim(self) -> None:

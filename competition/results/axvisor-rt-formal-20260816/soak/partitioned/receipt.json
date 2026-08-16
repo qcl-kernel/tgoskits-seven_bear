@@ -1,50 +1,50 @@
 {
   "board": {
     "board_id": "bf61f4d4a1d994ad",
-    "harvest_cpu_temp_milli_c": 42538,
+    "harvest_cpu_temp_milli_c": 44384,
     "hostname": "orangepi5plus",
     "service_id": "orangepi-5-plus-1",
-    "stage_cpu_temp_milli_c": 41615,
+    "stage_cpu_temp_milli_c": 46230,
     "type": "OrangePi-5-Plus"
   },
   "evidence": {
     "console_log": {
-      "path": "soak/partitioned/attempts/20260816T054851Z-585934/console.log",
-      "sha256": "2452e98d255925c24141a954d510770120e73af4e89df664e99dbf24dac81ca7",
-      "size_bytes": 74162
+      "path": "soak/partitioned/attempts/20260816T101657Z-685641/console.log",
+      "sha256": "66828dd27abb228f5d8ab61f461d8cd96acc15a52f1f4fe89dcdad8a6e829577",
+      "size_bytes": 82591
     },
     "guest_irq": {
-      "path": "soak/partitioned/attempts/20260816T054851Z-585934/guest-irq.log.gz",
-      "sha256": "23806cf1fb83208cc29010a5251916f8b73044f69ef4922095be983328f1fc57",
-      "size_bytes": 4368069
+      "path": "soak/partitioned/attempts/20260816T101657Z-685641/guest-irq.log.gz",
+      "sha256": "111017ec90dcb90f036f3a4a8a071c55a88b5a4c89c092e9b54207eebe1cf2ae",
+      "size_bytes": 4312278
     },
     "harvest_log": {
-      "path": "soak/partitioned/attempts/20260816T054851Z-585934/harvest.log",
-      "sha256": "9e0a213519533bddd3cba012407c75a82cb7f4e294148c51a9c772fda4f0665a",
-      "size_bytes": 1466
+      "path": "soak/partitioned/attempts/20260816T101657Z-685641/harvest.log",
+      "sha256": "a332f71e4ac1a14988c1b8617a4cc5de39d79fc7877206d97274485273f600f3",
+      "size_bytes": 1558
     },
     "host_trace": {
-      "path": "soak/partitioned/attempts/20260816T054851Z-585934/host.log",
-      "sha256": "c2a647a1d68d4d72b2562ee17adf6b1a2e7a1de4c2b9ff35a47b67c622c1d345",
-      "size_bytes": 120158630
+      "path": "soak/partitioned/attempts/20260816T101657Z-685641/host.log",
+      "sha256": "afc4149a8cea9a0182f9e3bd1348213b3791bc7aafc054539a5c1e55f9e540a1",
+      "size_bytes": 118982217
     },
     "raw": {
-      "path": "soak/partitioned/attempts/20260816T054851Z-585934/raw.log",
-      "sha256": "79e0ca72754cddc8504259f93710f11bc90954e1d3d1c024c3d9c17365392edf",
-      "size_bytes": 4184188
+      "path": "soak/partitioned/attempts/20260816T101657Z-685641/raw.log",
+      "sha256": "b1d57cf4e21b718051aaa550389659df226b0a731bc79f7f45a7cb405f475777",
+      "size_bytes": 4184205
     },
     "stage_log": {
-      "path": "soak/partitioned/attempts/20260816T054851Z-585934/stage.log",
-      "sha256": "77c4ae07462b2630dff19b55b45f597c951a97fb0bdfbec9c9494074ca9c00f4",
+      "path": "soak/partitioned/attempts/20260816T101657Z-685641/stage.log",
+      "sha256": "30fc0458c7a8a5ce1e103726af556b0cc520d73fe91dd9155cd247e2a599264d",
       "size_bytes": 806
     },
     "summary": {
-      "path": "soak/partitioned/attempts/20260816T054851Z-585934/summary.json",
-      "sha256": "3853579714f0f9fc56b1c6b1a460ce40973b7064a8f99f53aa43ae6d7e9b5666",
-      "size_bytes": 80122957
+      "path": "soak/partitioned/attempts/20260816T101657Z-685641/summary.json",
+      "sha256": "94d76d221e4771ed70698ad1820e5d7100c6e2d655ee13ca5374e4a99fa377dc",
+      "size_bytes": 79029198
     }
   },
-  "finished_at": "2026-08-16T06:23:58Z",
+  "finished_at": "2026-08-16T10:52:05Z",
   "schema_version": 1,
   "slot": {
     "pair": null,
@@ -52,8 +52,8 @@
     "profile": "partitioned"
   },
   "source": {
-    "commit": "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
-    "tree": "f65ec1707eb91c92183064a29b3a6a860382cc68"
+    "commit": "c82da8464ab69e7da95e9be08293559e67b28fac",
+    "tree": "424d62d908518601acf8c4e8debea6a0662e9522"
   },
-  "started_at": "2026-08-16T05:48:51Z"
+  "started_at": "2026-08-16T10:16:57Z"
 }
