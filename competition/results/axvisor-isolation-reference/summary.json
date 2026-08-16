@@ -1,14 +1,14 @@
 {
   "schema_version": 2,
   "status": "pass",
-  "captured_at_utc": "2026-08-15T04:25:23Z/2026-08-15T04:28:29Z",
+  "captured_at_utc": "2026-08-16T06:49:17Z/2026-08-16T06:50:26Z",
   "scope": "AxVisor three-guest virtual-switch isolation on QEMU/AArch64",
   "source": {
     "branch": "feat/rt-axvisor-partition-virtio-net",
-    "commit": "ec3c363b1a61956069365a06c262091ce847b335",
+    "commit": "16a1f3198243a5e1b1bc1810faba6371f7de3215",
     "tracked_worktree_clean": true,
     "clean_commit_evidence": true,
-    "note": "Locally ignored prior board and model artifacts were present but were not campaign inputs."
+    "note": "Captured from a detached clean worktree; generated build and result artifacts were ignored campaign outputs."
   },
   "environment": {
     "qemu": "QEMU emulator version 6.2.0 (Debian 1:6.2+dfsg-2ubuntu6.31)",
@@ -54,6 +54,7 @@
   },
   "pass_markers": [
     "VM2_VIRTIO_NET_TX bytes=65536 checksum=0x7f8000",
+    "VM1_VIRTIO_NET_RX bytes=65536 checksum=0x7f8000 peer=10.0.2.16:49152",
     "VM3_VIRTIO_NET_ISOLATED_PASS default_routes=0 probes=100 tx_frames=100 target=10.0.2.255:5002",
     "VM1_VIRTIO_NET_ISOLATION_PASS received_cross_segment_probes=0 observation_ms=7000",
     "VM1_VIRTIO_NET_PASS",
@@ -63,10 +64,10 @@
   "artifacts": {
     "console_build_log_gzip": {
       "path": "qemu.log.gz",
-      "bytes": 10304,
-      "sha256": "16059aa0660c59d37010f5837578ce79e6cae71bed2463a15ca80de916e88ab4",
-      "uncompressed_bytes": 60342,
-      "uncompressed_sha256": "56157cf655b53ea48d642b4cda0e4213521a0d2b59c4e0c4c3338c7af7c0665d"
+      "bytes": 10779,
+      "sha256": "fa000988a399d78aff1f4dbeb0e687ca0c0dd48ff03afce9dca73c27bf4d4a37",
+      "uncompressed_bytes": 64159,
+      "uncompressed_sha256": "215f0020c9f8381e18d86aa2b8592d2d784621533d3fdca1908dd6e16fd16b53"
     }
   },
   "limitations": [

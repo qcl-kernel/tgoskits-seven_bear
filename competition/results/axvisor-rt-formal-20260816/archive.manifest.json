@@ -1,0 +1,669 @@
+{
+  "archive_format": "deterministic tar+gzip; mtime/uid/gid fixed to zero",
+  "file_count": 110,
+  "files": [
+    {
+      "bytes": 330,
+      "mode": "0644",
+      "path": "build/guest-dtb.log",
+      "sha256": "7a627f65a11b04539e06aaef4b0aafa8fb20560ce581b430b6edcf61ab106a97"
+    },
+    {
+      "bytes": 1153,
+      "mode": "0644",
+      "path": "build/host-toolchain.json",
+      "sha256": "6f086842b78376a8001544e4274d4b467706457559ab3232d42996287f0da7d7"
+    },
+    {
+      "bytes": 16359,
+      "mode": "0644",
+      "path": "build/pair-kernel.log",
+      "sha256": "280c2688a61b53b7cf5a693328da0fdd55b54e6214462057fb48e7b5f8276a21"
+    },
+    {
+      "bytes": 3383,
+      "mode": "0644",
+      "path": "build/pair-rootfs.log",
+      "sha256": "f067ac3b2cb9da64a875e39f2caa39a0a610088b698ce4217fbd32ee17116884"
+    },
+    {
+      "bytes": 10902,
+      "mode": "0644",
+      "path": "build/soak.log",
+      "sha256": "c11aa77ed1f34efcbb6ef3f225d607c249a48954aa1a0c9d39a507c871ae0089"
+    },
+    {
+      "bytes": 11085,
+      "mode": "0644",
+      "path": "campaign-summary.json",
+      "sha256": "21710f603c1fee55134b3e04d38f5ac4bc2236bc80bdd6dac3cc06c03c73396a"
+    },
+    {
+      "bytes": 13150,
+      "mode": "0644",
+      "path": "checksums.sha256",
+      "sha256": "1cd893082e754ea8cefdc35a8c775c46562a06e317db5782d445af27f6aa02e9"
+    },
+    {
+      "bytes": 3570,
+      "mode": "0644",
+      "path": "pair-1/comparison.json",
+      "sha256": "f33bbc5d085ce8ab2b6422496575521022347724aaffae55b682984016a6b9e9"
+    },
+    {
+      "bytes": 81830,
+      "mode": "0644",
+      "path": "pair-1/partitioned/attempts/20260816T043225Z-578903/console.log",
+      "sha256": "27e1029fe09cfbb68393234c427c4ec7cf0a59652c41a59ba66ec341a56f2258"
+    },
+    {
+      "bytes": 265662,
+      "mode": "0644",
+      "path": "pair-1/partitioned/attempts/20260816T043225Z-578903/guest-irq.log.gz",
+      "sha256": "52b6764b89b5f8b18e76debf6e6f375f2ae892ce6025d04346deab6b4fb2d6ec"
+    },
+    {
+      "bytes": 1473,
+      "mode": "0644",
+      "path": "pair-1/partitioned/attempts/20260816T043225Z-578903/harvest.log",
+      "sha256": "78aa3a6b81e904afc4d9f59721fb9a3cb7b5c45e4f165a4f9554413d4b82b933"
+    },
+    {
+      "bytes": 14410903,
+      "mode": "0644",
+      "path": "pair-1/partitioned/attempts/20260816T043225Z-578903/host.log",
+      "sha256": "d3d49a850b0106ec050a5a2175be170c2053482bd10e37dd61926bb2e0a4a170"
+    },
+    {
+      "bytes": 4092286,
+      "mode": "0644",
+      "path": "pair-1/partitioned/attempts/20260816T043225Z-578903/raw.log",
+      "sha256": "4e1d0d96d0330058e15490ec3bb8f4893372d03b68393b2baa768033534b1e25"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-1/partitioned/attempts/20260816T043225Z-578903/stage.log",
+      "sha256": "7c7082eddb2542c7ecd02e1633176bf78453bd40679eb26bb48fb65e05267f09"
+    },
+    {
+      "bytes": 5548709,
+      "mode": "0644",
+      "path": "pair-1/partitioned/attempts/20260816T043225Z-578903/summary.json",
+      "sha256": "cf9adff616480ecc1f670aa2291686c084dacef6672e4b3c62b4972e5a8bdbb4"
+    },
+    {
+      "bytes": 2091,
+      "mode": "0644",
+      "path": "pair-1/partitioned/receipt.json",
+      "sha256": "c94970452b924ff363a21aefef8a52198fb5f7aad95eabbe95eb33f1fcfb8bc6"
+    },
+    {
+      "bytes": 97751,
+      "mode": "0644",
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/console.log",
+      "sha256": "91e36f911dd4d1b6b37e8f704fd8183d823f3d8c8632433820c9c3aab8a7bb7b"
+    },
+    {
+      "bytes": 77257,
+      "mode": "0644",
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/guest-irq.log.gz",
+      "sha256": "75cace7c0a4d817af2d725221369708debc194ae6224b473267d5bac25f95d43"
+    },
+    {
+      "bytes": 1447,
+      "mode": "0644",
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/harvest.log",
+      "sha256": "ee798472128a24ebb80f4774e6185ad04365aff8b7c03d04ac3995f0271b15cc"
+    },
+    {
+      "bytes": 10696622,
+      "mode": "0644",
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/host.log",
+      "sha256": "6ce10829e4525472d0f4c6bf2a56ef97f1c00d796c3424b2dde267caf656d905"
+    },
+    {
+      "bytes": 4133559,
+      "mode": "0644",
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/raw.log",
+      "sha256": "26ec4d77d54751ce3d76921ab56802f4aefe855fff5d9f01cf555b6350fac192"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/stage.log",
+      "sha256": "e88cb2a0715c226e4299d13cf5fbb1162880bfa1a94dd935421a2cb1a4bd3d66"
+    },
+    {
+      "bytes": 1775260,
+      "mode": "0644",
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/summary.json",
+      "sha256": "37bc88c1d1e699847529da5062a4b0a0a5f921be6c728ee8c7df60b6b10e129c"
+    },
+    {
+      "bytes": 2050,
+      "mode": "0644",
+      "path": "pair-1/shared/receipt.json",
+      "sha256": "bdc0ec482dd4c5d2f657a4581b358fb14439d2b5e8a6e1327451443971bcf747"
+    },
+    {
+      "bytes": 3570,
+      "mode": "0644",
+      "path": "pair-2/comparison.json",
+      "sha256": "56ad082eb646943353ab040aaa8597ea000277fb968ffc3cbd515d34ce83a5ac"
+    },
+    {
+      "bytes": 82263,
+      "mode": "0644",
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/console.log",
+      "sha256": "e92851295d2613a0543e9b666cea6b7df5da779dbc274222620ce433088635b7"
+    },
+    {
+      "bytes": 267272,
+      "mode": "0644",
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/guest-irq.log.gz",
+      "sha256": "3a10774c88752bb27d5c9a1a0115418264d35bc3183e273ea53d7bf4d9aa8adb"
+    },
+    {
+      "bytes": 1473,
+      "mode": "0644",
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/harvest.log",
+      "sha256": "9c8c9f638608b7162659527f6f5858753c5ddbdc06deee783dacef55ec922d18"
+    },
+    {
+      "bytes": 14417145,
+      "mode": "0644",
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/host.log",
+      "sha256": "ca8923c99dbf6d2301cb99408876f8121a1608c02d7a8329a72b2a304680859d"
+    },
+    {
+      "bytes": 4092290,
+      "mode": "0644",
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/raw.log",
+      "sha256": "80aee1fabe354b692257fb5c6f794812e969909f7545937c2df6389acc7ace45"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/stage.log",
+      "sha256": "6b3faa499d084eb1ed23d38bfe3ee3e33f7b79f9bc8fd83c7cdba2f6b62f57e5"
+    },
+    {
+      "bytes": 5568893,
+      "mode": "0644",
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/summary.json",
+      "sha256": "4be2f33d197ac69343915fb939b5df250c5a0931062443c83fc1746611c14438"
+    },
+    {
+      "bytes": 2091,
+      "mode": "0644",
+      "path": "pair-2/partitioned/receipt.json",
+      "sha256": "8c9b53f773d542ef209f60cb692e53dcbd14e81de89169a67cbc5e17524c9969"
+    },
+    {
+      "bytes": 78904,
+      "mode": "0644",
+      "path": "pair-2/shared/attempts/20260816T044207Z-580261/console.log",
+      "sha256": "a7b672feb8f76129aac8a320319a1d860c72f660723d3bd6ff42e7badb55c5f7"
+    },
+    {
+      "bytes": 76066,
+      "mode": "0644",
+      "path": "pair-2/shared/attempts/20260816T044207Z-580261/guest-irq.log.gz",
+      "sha256": "eb96884f4ae16c3dc191a00267de6fee5f375a65ea6c595a104f9853450941a8"
+    },
+    {
+      "bytes": 1447,
+      "mode": "0644",
+      "path": "pair-2/shared/attempts/20260816T044207Z-580261/harvest.log",
+      "sha256": "4bc7b2905747baf4e5b694fb8bc431589b4fcec9b08563ac93f91bad11d4218d"
+    },
+    {
+      "bytes": 10655312,
+      "mode": "0644",
+      "path": "pair-2/shared/attempts/20260816T044207Z-580261/host.log",
+      "sha256": "efc3edbab31adbb51a5703b78a79ed3c33221c2e8f3bc2a1ea015a83e89d1e8b"
+    },
+    {
+      "bytes": 4133517,
+      "mode": "0644",
+      "path": "pair-2/shared/attempts/20260816T044207Z-580261/raw.log",
+      "sha256": "15331c37785489cad00f4c8b2e0a92a183b39b9b7390235023732b16b48499eb"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-2/shared/attempts/20260816T044207Z-580261/stage.log",
+      "sha256": "6b3faa499d084eb1ed23d38bfe3ee3e33f7b79f9bc8fd83c7cdba2f6b62f57e5"
+    },
+    {
+      "bytes": 1721609,
+      "mode": "0644",
+      "path": "pair-2/shared/attempts/20260816T044207Z-580261/summary.json",
+      "sha256": "6d86081d3bcc03ea3728a971701d13af201a9004cc7e0d8bfc845d928cc6979a"
+    },
+    {
+      "bytes": 2050,
+      "mode": "0644",
+      "path": "pair-2/shared/receipt.json",
+      "sha256": "486428ecee60b9c6499eeb128e5e1430d3af89725e8fa4e2fac4683df617f96a"
+    },
+    {
+      "bytes": 3569,
+      "mode": "0644",
+      "path": "pair-3/comparison.json",
+      "sha256": "e3b38cbfb52143533c89f7f3a7ce71e5a7da147104f21368921b727e2e8a318a"
+    },
+    {
+      "bytes": 80722,
+      "mode": "0644",
+      "path": "pair-3/partitioned/attempts/20260816T045124Z-581598/console.log",
+      "sha256": "b75aadaaf56c93fc2b6c2b914fd9d4413c5b12445316e1a51fdc1ec1d314600b"
+    },
+    {
+      "bytes": 264432,
+      "mode": "0644",
+      "path": "pair-3/partitioned/attempts/20260816T045124Z-581598/guest-irq.log.gz",
+      "sha256": "a78aabf08b5a24953f5cf99665552e6360c7bfebab1a753cb85e4cd2508d820f"
+    },
+    {
+      "bytes": 1473,
+      "mode": "0644",
+      "path": "pair-3/partitioned/attempts/20260816T045124Z-581598/harvest.log",
+      "sha256": "180c8d61b17662e29fb42f9e177228bd66a486ccdc2bf4029763fe603e4d5762"
+    },
+    {
+      "bytes": 14419794,
+      "mode": "0644",
+      "path": "pair-3/partitioned/attempts/20260816T045124Z-581598/host.log",
+      "sha256": "b79c4afcdb1ca67f5a734e65e4e4bf949bff6f9554074f959e8540eb0c23b059"
+    },
+    {
+      "bytes": 4092305,
+      "mode": "0644",
+      "path": "pair-3/partitioned/attempts/20260816T045124Z-581598/raw.log",
+      "sha256": "a94e0c0f74b2140cb0fd9e31ed629bc1ac85b7fb1d00f9e60271403edb232843"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-3/partitioned/attempts/20260816T045124Z-581598/stage.log",
+      "sha256": "33ee24fb491d55a169e76aa704a5e939212af76a2e682c924583a43f3524098e"
+    },
+    {
+      "bytes": 5573844,
+      "mode": "0644",
+      "path": "pair-3/partitioned/attempts/20260816T045124Z-581598/summary.json",
+      "sha256": "84355808488d6631ec04302241ba75bff4d663a85191848db65d0c46f81f84da"
+    },
+    {
+      "bytes": 2091,
+      "mode": "0644",
+      "path": "pair-3/partitioned/receipt.json",
+      "sha256": "1084fefd60fd5cb36cd2ca417e361a6e4e8c51f94bc22174e2fe089e8c6ef887"
+    },
+    {
+      "bytes": 80972,
+      "mode": "0644",
+      "path": "pair-3/shared/attempts/20260816T044645Z-580975/console.log",
+      "sha256": "2d51bb359cd5c363c7927ce57807e526e73040bb8be1603164a252dd04c99947"
+    },
+    {
+      "bytes": 75910,
+      "mode": "0644",
+      "path": "pair-3/shared/attempts/20260816T044645Z-580975/guest-irq.log.gz",
+      "sha256": "7590de207cd8280147b735df0d96523d24d7037fa9d98331d918f4cc98e0ca5e"
+    },
+    {
+      "bytes": 1447,
+      "mode": "0644",
+      "path": "pair-3/shared/attempts/20260816T044645Z-580975/harvest.log",
+      "sha256": "42e757cfbba4c227455761c6e315187713e55e3549499223219e56fa36e248d2"
+    },
+    {
+      "bytes": 10677943,
+      "mode": "0644",
+      "path": "pair-3/shared/attempts/20260816T044645Z-580975/host.log",
+      "sha256": "93c2da10fdeb84b57aae46891f595d5e9f268971fb24bf64da2abe60a76320ba"
+    },
+    {
+      "bytes": 4133861,
+      "mode": "0644",
+      "path": "pair-3/shared/attempts/20260816T044645Z-580975/raw.log",
+      "sha256": "27d948632e0e15b41643ba0fe138d0fc0823f1d060bdc56b46f4cc49a169963f"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-3/shared/attempts/20260816T044645Z-580975/stage.log",
+      "sha256": "6b3faa499d084eb1ed23d38bfe3ee3e33f7b79f9bc8fd83c7cdba2f6b62f57e5"
+    },
+    {
+      "bytes": 1747696,
+      "mode": "0644",
+      "path": "pair-3/shared/attempts/20260816T044645Z-580975/summary.json",
+      "sha256": "356983bcd11b19652b92904d095c7aa1d7615a76bba5686c7aafd0ef832b5939"
+    },
+    {
+      "bytes": 2050,
+      "mode": "0644",
+      "path": "pair-3/shared/receipt.json",
+      "sha256": "a21a5b920d0b4b008970a2e7c7485f3815c8de7a141d57c3d485d5ec9ec458d3"
+    },
+    {
+      "bytes": 3567,
+      "mode": "0644",
+      "path": "pair-4/comparison.json",
+      "sha256": "ef29e6765e4323ddff1ee0994807a4aa3fbe526c71a1091494e1e6546a610661"
+    },
+    {
+      "bytes": 81321,
+      "mode": "0644",
+      "path": "pair-4/partitioned/attempts/20260816T045552Z-582310/console.log",
+      "sha256": "1057c01c8f2cc7b04d21cb4612415668eac02b2f002a27b47352c4ae4778b445"
+    },
+    {
+      "bytes": 256098,
+      "mode": "0644",
+      "path": "pair-4/partitioned/attempts/20260816T045552Z-582310/guest-irq.log.gz",
+      "sha256": "14c2be67ac0c5102406cbf84c1929b4cc2f06fbee5efa7b53aa9098784432501"
+    },
+    {
+      "bytes": 1473,
+      "mode": "0644",
+      "path": "pair-4/partitioned/attempts/20260816T045552Z-582310/harvest.log",
+      "sha256": "088cd4c60b7b96bc125c7ee5c59bf632a970fd0a352594042fb983710f3e6484"
+    },
+    {
+      "bytes": 14230745,
+      "mode": "0644",
+      "path": "pair-4/partitioned/attempts/20260816T045552Z-582310/host.log",
+      "sha256": "549321f00b783d2df09ae5956aee9aa603f46fb272d2c4e996a6139586fd2ac3"
+    },
+    {
+      "bytes": 4092295,
+      "mode": "0644",
+      "path": "pair-4/partitioned/attempts/20260816T045552Z-582310/raw.log",
+      "sha256": "ce3f712b587ab39e61b4286ffec0e811289ea989806e22c90649e37667c6da1d"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-4/partitioned/attempts/20260816T045552Z-582310/stage.log",
+      "sha256": "616cc058a7938b86d28b4a82845ea067b1d8b5fe2b78ce06640cb6b91eafdeef"
+    },
+    {
+      "bytes": 5383480,
+      "mode": "0644",
+      "path": "pair-4/partitioned/attempts/20260816T045552Z-582310/summary.json",
+      "sha256": "aa713667284f0a6103433d53b84c1f26ab8b774e8fad339692b92fd6333393bc"
+    },
+    {
+      "bytes": 2091,
+      "mode": "0644",
+      "path": "pair-4/partitioned/receipt.json",
+      "sha256": "42a9a90a98e45688adfab313ecd18c0ef14945acef2ef27e6346c8b3788a7230"
+    },
+    {
+      "bytes": 81692,
+      "mode": "0644",
+      "path": "pair-4/shared/attempts/20260816T050007Z-582955/console.log",
+      "sha256": "843c02ff3635c83425279354298067138860086f6ba6cd4beaa149cc4e9b6fa8"
+    },
+    {
+      "bytes": 76509,
+      "mode": "0644",
+      "path": "pair-4/shared/attempts/20260816T050007Z-582955/guest-irq.log.gz",
+      "sha256": "27b694a0591dc890ac3249ca4d2ef7bf1700db88510a0a167e70ef71610d405e"
+    },
+    {
+      "bytes": 1447,
+      "mode": "0644",
+      "path": "pair-4/shared/attempts/20260816T050007Z-582955/harvest.log",
+      "sha256": "1df4655b2d9df2e44b6a7dfe875808084c8ed4a56f32bf86feb0f0cb84aa64a1"
+    },
+    {
+      "bytes": 10675166,
+      "mode": "0644",
+      "path": "pair-4/shared/attempts/20260816T050007Z-582955/host.log",
+      "sha256": "e10f9efe6037279c07c816dcd6e85633e2885303ff621e170fbdd44c068d8655"
+    },
+    {
+      "bytes": 4133664,
+      "mode": "0644",
+      "path": "pair-4/shared/attempts/20260816T050007Z-582955/raw.log",
+      "sha256": "d85194a21536fe49cac123a4784764a045f0ee4b8e3c92d806278851b4a358af"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-4/shared/attempts/20260816T050007Z-582955/stage.log",
+      "sha256": "9a3a12f9d880a13fe7adff2a9552e04e9efa51746337e90aa6fa85f8cc456179"
+    },
+    {
+      "bytes": 1751224,
+      "mode": "0644",
+      "path": "pair-4/shared/attempts/20260816T050007Z-582955/summary.json",
+      "sha256": "c57f8172f9ee5146a11326b5d01fb28d198af433633b9d6f15ec3aa7f7c5b5f6"
+    },
+    {
+      "bytes": 2050,
+      "mode": "0644",
+      "path": "pair-4/shared/receipt.json",
+      "sha256": "70289070d0d7f3c77b58d18ada49188679b74826248ae5fb0fd20e7e575eced8"
+    },
+    {
+      "bytes": 3570,
+      "mode": "0644",
+      "path": "pair-5/comparison.json",
+      "sha256": "b52fdfe58ffce4617037c2d7bb69dcae24e41163f28ccbe2014275f841495d1f"
+    },
+    {
+      "bytes": 80634,
+      "mode": "0644",
+      "path": "pair-5/partitioned/attempts/20260816T050911Z-584298/console.log",
+      "sha256": "c28b0ceb7f486c3a56452db1cef876c7612813d2edb84e93d9740463833240fe"
+    },
+    {
+      "bytes": 256223,
+      "mode": "0644",
+      "path": "pair-5/partitioned/attempts/20260816T050911Z-584298/guest-irq.log.gz",
+      "sha256": "49337fa13099bb55564d357501d11b268a6ef14082de32649084c81560610e21"
+    },
+    {
+      "bytes": 1473,
+      "mode": "0644",
+      "path": "pair-5/partitioned/attempts/20260816T050911Z-584298/harvest.log",
+      "sha256": "01b03f3e3e6204c04e3b538016a1927150b2437a85f0a8e2d66c31a75b62909f"
+    },
+    {
+      "bytes": 14228077,
+      "mode": "0644",
+      "path": "pair-5/partitioned/attempts/20260816T050911Z-584298/host.log",
+      "sha256": "65261e5112669e919337c550981f8ccc10ef0d7c60c67347511c7b563b31e8eb"
+    },
+    {
+      "bytes": 4092291,
+      "mode": "0644",
+      "path": "pair-5/partitioned/attempts/20260816T050911Z-584298/raw.log",
+      "sha256": "580694c526bc3197230f5a561aa51422a0df577f7d46332324dc9d09f7d965ba"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-5/partitioned/attempts/20260816T050911Z-584298/stage.log",
+      "sha256": "6b3faa499d084eb1ed23d38bfe3ee3e33f7b79f9bc8fd83c7cdba2f6b62f57e5"
+    },
+    {
+      "bytes": 5383754,
+      "mode": "0644",
+      "path": "pair-5/partitioned/attempts/20260816T050911Z-584298/summary.json",
+      "sha256": "e2bb702b815b758500330d650efffba89d2884bf2e48ad25a41d2ce0a356a6b4"
+    },
+    {
+      "bytes": 2091,
+      "mode": "0644",
+      "path": "pair-5/partitioned/receipt.json",
+      "sha256": "e323391f48c999de23be75325ec2fa52ac78012e1eea70abfb7ddd1ed076bd02"
+    },
+    {
+      "bytes": 81037,
+      "mode": "0644",
+      "path": "pair-5/shared/attempts/20260816T050445Z-583676/console.log",
+      "sha256": "679e79d6276b95feb2f5786559777fed4ab8464d62655a7e0dd117b57b8121dd"
+    },
+    {
+      "bytes": 78080,
+      "mode": "0644",
+      "path": "pair-5/shared/attempts/20260816T050445Z-583676/guest-irq.log.gz",
+      "sha256": "79d9278627515fbf6e91aeb553982896a39a7806bf6d60ec67450f597d81c607"
+    },
+    {
+      "bytes": 1447,
+      "mode": "0644",
+      "path": "pair-5/shared/attempts/20260816T050445Z-583676/harvest.log",
+      "sha256": "c03206a466527bac3bd9c2ca8edbaa8045eab7aa2d631c33c8a2186c07186631"
+    },
+    {
+      "bytes": 10695573,
+      "mode": "0644",
+      "path": "pair-5/shared/attempts/20260816T050445Z-583676/host.log",
+      "sha256": "db8481c64bf75020c0f97696e71bc89ddd12dc4f8e73705d9faecb01854f564b"
+    },
+    {
+      "bytes": 4134034,
+      "mode": "0644",
+      "path": "pair-5/shared/attempts/20260816T050445Z-583676/raw.log",
+      "sha256": "f1dd5d465b30726fd883bbaba595a1a3f8c9e2aca1fb39be331a5c2cb01568dd"
+    },
+    {
+      "bytes": 812,
+      "mode": "0644",
+      "path": "pair-5/shared/attempts/20260816T050445Z-583676/stage.log",
+      "sha256": "b9ca35357d1961cfb1dd27f5ca7ab0ae1fdbba56e01043b9509c7fd3e03798f3"
+    },
+    {
+      "bytes": 1760963,
+      "mode": "0644",
+      "path": "pair-5/shared/attempts/20260816T050445Z-583676/summary.json",
+      "sha256": "61dd58c44e6c9fe7c34376d27fd2a6137a9e6720c9968c670ff73201ba3ffe40"
+    },
+    {
+      "bytes": 2050,
+      "mode": "0644",
+      "path": "pair-5/shared/receipt.json",
+      "sha256": "877735a866683fb9fd680bd9ec558c502766993d5ad4adc49b2f01678985e872"
+    },
+    {
+      "bytes": 13830,
+      "mode": "0644",
+      "path": "preregistration.json",
+      "sha256": "4796fdc3b1d5d9d9a38f45c9f931c34b178a94fb22b18db0d8e920c7fb766193"
+    },
+    {
+      "bytes": 87,
+      "mode": "0644",
+      "path": "preregistration.sha256",
+      "sha256": "31a43f90c1516b8fb6475eaaf4487392f9af10330e807dcb361e03ab862a2669"
+    },
+    {
+      "bytes": 74162,
+      "mode": "0644",
+      "path": "soak/partitioned/attempts/20260816T054851Z-585934/console.log",
+      "sha256": "2452e98d255925c24141a954d510770120e73af4e89df664e99dbf24dac81ca7"
+    },
+    {
+      "bytes": 4368069,
+      "mode": "0644",
+      "path": "soak/partitioned/attempts/20260816T054851Z-585934/guest-irq.log.gz",
+      "sha256": "23806cf1fb83208cc29010a5251916f8b73044f69ef4922095be983328f1fc57"
+    },
+    {
+      "bytes": 1466,
+      "mode": "0644",
+      "path": "soak/partitioned/attempts/20260816T054851Z-585934/harvest.log",
+      "sha256": "9e0a213519533bddd3cba012407c75a82cb7f4e294148c51a9c772fda4f0665a"
+    },
+    {
+      "bytes": 120158630,
+      "mode": "0644",
+      "path": "soak/partitioned/attempts/20260816T054851Z-585934/host.log",
+      "sha256": "c2a647a1d68d4d72b2562ee17adf6b1a2e7a1de4c2b9ff35a47b67c622c1d345"
+    },
+    {
+      "bytes": 4184188,
+      "mode": "0644",
+      "path": "soak/partitioned/attempts/20260816T054851Z-585934/raw.log",
+      "sha256": "79e0ca72754cddc8504259f93710f11bc90954e1d3d1c024c3d9c17365392edf"
+    },
+    {
+      "bytes": 806,
+      "mode": "0644",
+      "path": "soak/partitioned/attempts/20260816T054851Z-585934/stage.log",
+      "sha256": "77c4ae07462b2630dff19b55b45f597c951a97fb0bdfbec9c9494074ca9c00f4"
+    },
+    {
+      "bytes": 80122957,
+      "mode": "0644",
+      "path": "soak/partitioned/attempts/20260816T054851Z-585934/summary.json",
+      "sha256": "3853579714f0f9fc56b1c6b1a460ce40973b7064a8f99f53aa43ae6d7e9b5666"
+    },
+    {
+      "bytes": 2083,
+      "mode": "0644",
+      "path": "soak/partitioned/receipt.json",
+      "sha256": "c909297f01c347916130d393e12f7c1124dab94b29d84cd2c28471f929f13e49"
+    },
+    {
+      "bytes": 81166,
+      "mode": "0644",
+      "path": "soak/shared/attempts/20260816T051333Z-585114/console.log",
+      "sha256": "8db615837d992632523adb33d6a088a4dabf8c68c9e74ec6d51abc885db3162d"
+    },
+    {
+      "bytes": 2194702,
+      "mode": "0644",
+      "path": "soak/shared/attempts/20260816T051333Z-585114/guest-irq.log.gz",
+      "sha256": "8fde3c0fcecdbf3b9ac76183438494108c45ec64a7a76d7a57cecbf3952f92e1"
+    },
+    {
+      "bytes": 1441,
+      "mode": "0644",
+      "path": "soak/shared/attempts/20260816T051333Z-585114/harvest.log",
+      "sha256": "bb08a4ec22cdf129f170035ab7fe979ce4a2cc8b8ae3670f6aa6b732c71397b5"
+    },
+    {
+      "bytes": 80419737,
+      "mode": "0644",
+      "path": "soak/shared/attempts/20260816T051333Z-585114/host.log",
+      "sha256": "bfc0f35340ba72f81257cb7c918f341c227378ccdf3c5f4089841238b6ac30db"
+    },
+    {
+      "bytes": 4222525,
+      "mode": "0644",
+      "path": "soak/shared/attempts/20260816T051333Z-585114/raw.log",
+      "sha256": "1804c3045c24571cd3e1e5260a7edea17db6371a6ae5c8f28bec0b7572c94552"
+    },
+    {
+      "bytes": 806,
+      "mode": "0644",
+      "path": "soak/shared/attempts/20260816T051333Z-585114/stage.log",
+      "sha256": "55c8e5ce1e0f54de5c00604dcc44dc51f94348d45680a770838ea4d996599ac0"
+    },
+    {
+      "bytes": 42859256,
+      "mode": "0644",
+      "path": "soak/shared/attempts/20260816T051333Z-585114/summary.json",
+      "sha256": "bf1a489a314b444adf43fa223b95279a26f5b01b37a6d7e43b7160ac92a6144a"
+    },
+    {
+      "bytes": 2042,
+      "mode": "0644",
+      "path": "soak/shared/receipt.json",
+      "sha256": "be4544de6bf75a29487c741f3c7a0bbb2e087cd97cd2c160520f49a1a89db385"
+    }
+  ],
+  "payload_bytes": 543799035,
+  "schema_version": 1,
+  "source_root": "rt-formal-20260816-77704718a1b46fc2fbf51ea6a184aa1071eee0ac"
+}

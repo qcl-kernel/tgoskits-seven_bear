@@ -1,0 +1,335 @@
+{
+  "acceptance": {
+    "direct_irq_max_improvement_target_percent": 10.0,
+    "direct_irq_max_must_improve_in_at_least_pairs": 4,
+    "direct_irq_p99_non_regression_limit_percent": 5.0,
+    "harvest_each_half_before_next_boot": true,
+    "linux_restore_required": true,
+    "pair_count": 5,
+    "required_console_absence": [
+      "Unhandled IRQ",
+      "ESR_EL2:",
+      "panicked at",
+      "AXVM_NESTED_VCPU_OPERATION",
+      "Unhandled synchronous exception",
+      "AXVISOR_RT_STARRY_CAPTURE_FAILED"
+    ],
+    "required_zero_counters": [
+      "dropped",
+      "incomplete",
+      "failed_injections",
+      "unowned_virtual_timer_irqs",
+      "counter_frequency_mismatches"
+    ],
+    "snapshot_fsck": "clean"
+  },
+  "artifacts": {
+    "base_rootfs": {
+      "path": "/home/seven_wsl/Workspace/starry/tgoskits-rt-wake-21b3/tmp/axbuild/rootfs/rootfs-aarch64-busybox.img/rootfs-aarch64-busybox.img",
+      "sha256": "91bc626b930f7a5d94a1e0888512e0aa830bc2f119ddae7a374851e6b3c3a83d",
+      "size_bytes": 33554432
+    },
+    "guest_dtb": {
+      "path": "tmp/competition/ivc/starry/starry-orangepi-5-plus.dtb",
+      "sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "size_bytes": 1534
+    },
+    "host_toolchain": {
+      "path": "/home/seven_wsl/Workspace/starry/results/rt-formal-20260816-77704718a1b46fc2fbf51ea6a184aa1071eee0ac/build/host-toolchain.json",
+      "sha256": "6f086842b78376a8001544e4274d4b467706457559ab3232d42996287f0da7d7",
+      "size_bytes": 1153
+    },
+    "pair_kernel": {
+      "path": "tmp/axvisor-rt/starryos-rt.bin",
+      "sha256": "d523ee8495f653bbcbc572cae018f78271fb4d36db2894d5f2ed52e701aaada6",
+      "size_bytes": 13799424
+    },
+    "pair_rootfs": {
+      "path": "tmp/axvisor-rt/starry-rt-capture-rootfs.img",
+      "sha256": "4480b9406198c8f23cd1b8e90b44edf8ec23df327fa585ce8cb1a04ee416393c",
+      "size_bytes": 67108864
+    },
+    "probe": {
+      "path": "competition/results/axvisor-rt-reference/axvisor-rt-probe",
+      "sha256": "8b3f6e7471dc9ecf60d5b64ab5f3c3a4657af8743fde1aa6b1772358c62806da",
+      "size_bytes": 718296
+    },
+    "soak_kernel": {
+      "path": "tmp/axvisor-rt/starryos-rt-soak.bin",
+      "sha256": "fb983840a4771949f1367ad2be5985c16330a1a7cd4f9a9de9ff8bb7d14d66a1",
+      "size_bytes": 13799424
+    },
+    "soak_rootfs": {
+      "path": "tmp/axvisor-rt/starry-rt-soak-rootfs.img",
+      "sha256": "57960c1b8b5e686bfc709e7a9e86292cae507899a7b12596495a0f9c12c2a51d",
+      "size_bytes": 67108864
+    }
+  },
+  "board": {
+    "hardware_id": "bf61f4d4a1d994ad",
+    "hostname": "orangepi5plus",
+    "service_id": "orangepi-5-plus-1",
+    "type": "OrangePi-5-Plus"
+  },
+  "created_at_utc": "2026-08-16T04:26:53Z",
+  "measurement": {
+    "pair": {
+      "fifo_priority": 80,
+      "guest_vcpus": 2,
+      "host_noise": {
+        "implementation": "busy-loop",
+        "max_duration_ms": 600000,
+        "partitioned_pcpu": 3,
+        "shared_pcpu": 1
+      },
+      "iterations_per_metric": 10000,
+      "measurement_cpu": 0,
+      "period_us": 1000,
+      "stress_cpu": 1,
+      "warmup_iterations": 100,
+      "workload": "idle"
+    },
+    "soak": {
+      "fifo_priority": 80,
+      "guest_vcpus": 2,
+      "host_noise": {
+        "implementation": "busy-loop",
+        "max_duration_ms": 3600000,
+        "partitioned_pcpu": 3,
+        "shared_pcpu": 1
+      },
+      "iterations_per_metric": 10000,
+      "measurement_cpu": 0,
+      "minimum_elapsed_ns": 1800000000000,
+      "period_us": 90000,
+      "stress_cpu": 1,
+      "warmup_iterations": 100,
+      "workload": "idle"
+    }
+  },
+  "pair_order": [
+    {
+      "order": [
+        "shared",
+        "partitioned"
+      ],
+      "pair": 1
+    },
+    {
+      "order": [
+        "partitioned",
+        "shared"
+      ],
+      "pair": 2
+    },
+    {
+      "order": [
+        "shared",
+        "partitioned"
+      ],
+      "pair": 3
+    },
+    {
+      "order": [
+        "partitioned",
+        "shared"
+      ],
+      "pair": 4
+    },
+    {
+      "order": [
+        "shared",
+        "partitioned"
+      ],
+      "pair": 5
+    }
+  ],
+  "schema_version": 2,
+  "soak_order": [
+    "shared",
+    "partitioned"
+  ],
+  "source": {
+    "clean_worktree_required": true,
+    "commit": "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
+    "ref": "feat/rt-axvisor-partition-virtio-net",
+    "tree": "f65ec1707eb91c92183064a29b3a6a860382cc68"
+  },
+  "source_inputs": {
+    "competition/ivc/orangepi/board-runner.sh": {
+      "path": "competition/ivc/orangepi/board-runner.sh",
+      "sha256": "d10c260288bb7be932da6dc09acf0295d46c3a971bd5fa33bbae222c337d2e6e",
+      "size_bytes": 13997
+    },
+    "competition/ivc/orangepi/prepare-service-dtb.sh": {
+      "path": "competition/ivc/orangepi/prepare-service-dtb.sh",
+      "sha256": "ca822a5c346c9f8b80756c5d683672bf8f7c8e00fada70989759bf0c4500ede8",
+      "size_bytes": 2386
+    },
+    "competition/ivc/orangepi/restore-linux.sh": {
+      "path": "competition/ivc/orangepi/restore-linux.sh",
+      "sha256": "4fa7c9ab18cfa95240db8ea300054462668d153fb9ed95c314b0efe62224f94b",
+      "size_bytes": 6912
+    },
+    "competition/ivc/starry/build-guest-dtb.sh": {
+      "path": "competition/ivc/starry/build-guest-dtb.sh",
+      "sha256": "271f59ae3cfcc76dfc2fc0f8b1a876758b82a69231a7d645e116aa1ecf148c05",
+      "size_bytes": 611
+    },
+    "competition/ivc/starry/orangepi-5-plus.dts": {
+      "path": "competition/ivc/starry/orangepi-5-plus.dts",
+      "sha256": "980e7923e7d305632f2662d01fe52a55ff096a0a94b783d049aa7d3fc7933be7",
+      "size_bytes": 1652
+    },
+    "scripts/benchmark/axvisor-rt/aggregate_starry_board.py": {
+      "path": "scripts/benchmark/axvisor-rt/aggregate_starry_board.py",
+      "sha256": "c0a4348bb6eef5aae1de04714448f94b0d1003f35e0e5828be04db1974959416",
+      "size_bytes": 19875
+    },
+    "scripts/benchmark/axvisor-rt/analyze_irq_trace.py": {
+      "path": "scripts/benchmark/axvisor-rt/analyze_irq_trace.py",
+      "sha256": "4f962b68881427ca95b14e6a7167c46a1ba1e25ec1efbc6fb51fd3938720c294",
+      "size_bytes": 25467
+    },
+    "scripts/benchmark/axvisor-rt/analyze_starry_board.py": {
+      "path": "scripts/benchmark/axvisor-rt/analyze_starry_board.py",
+      "sha256": "2eab8a254d0d7085e32b5c3c9006ee1a9dd73e834c5f1da80841b4b8758c3d0f",
+      "size_bytes": 24368
+    },
+    "scripts/benchmark/axvisor-rt/build-starry-kernel.sh": {
+      "path": "scripts/benchmark/axvisor-rt/build-starry-kernel.sh",
+      "sha256": "b150063bc53e83c4d00afabee0d4cc72e7ab5e7ff115e7ffa858d1fd47a8a3b8",
+      "size_bytes": 2176
+    },
+    "scripts/benchmark/axvisor-rt/build-starry-rootfs.sh": {
+      "path": "scripts/benchmark/axvisor-rt/build-starry-rootfs.sh",
+      "sha256": "62db060bad89fb54ba6f0b5456f1d1cd874827d19f9a1eb7ff01576eeab324fb",
+      "size_bytes": 7014
+    },
+    "scripts/benchmark/axvisor-rt/compare_starry_board.py": {
+      "path": "scripts/benchmark/axvisor-rt/compare_starry_board.py",
+      "sha256": "0515fe525f0782d3aea72095593e4a7aff7e13f0ff0a8817a843eda35a78bbf4",
+      "size_bytes": 12729
+    },
+    "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-formal-partitioned.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-formal-partitioned.toml",
+      "sha256": "7dcb7130af85a861d7d5dee0942cec8a40dc79f4e7459f374c2e85759ada7958",
+      "size_bytes": 328
+    },
+    "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-formal-shared.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-formal-shared.toml",
+      "sha256": "455ad83c56f4c92e1c11e7f42581aaf0f5589b4c205ed6bd32bff218ed4bfa21",
+      "size_bytes": 323
+    },
+    "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-soak-partitioned.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-soak-partitioned.toml",
+      "sha256": "18c1b5e18be5d5f1cc627b5939f278a31ca781830447414582cd76ff0b4c9bbf",
+      "size_bytes": 339
+    },
+    "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-soak-shared.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/axvisor-orangepi-5-plus-starry-host-noise-soak-shared.toml",
+      "sha256": "ca00351b4bbc57b33527249fbe08df91eef37fa6880e9c20c67579f7e8c2aa67",
+      "size_bytes": 334
+    },
+    "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-formal-partitioned.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-formal-partitioned.toml",
+      "sha256": "bc721079b7193e8b30b50b9e343344417ac664154eff330facd9bea5023c31b2",
+      "size_bytes": 679
+    },
+    "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-formal-shared.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-formal-shared.toml",
+      "sha256": "bc721079b7193e8b30b50b9e343344417ac664154eff330facd9bea5023c31b2",
+      "size_bytes": 679
+    },
+    "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-soak-partitioned.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-soak-partitioned.toml",
+      "sha256": "bbc96c41037b629d9e6824e226f81a21140ab4c7113dff8259338aca2ce5d7a0",
+      "size_bytes": 679
+    },
+    "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-soak-shared.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/board-orangepi-5-plus-starry-host-noise-soak-shared.toml",
+      "sha256": "bbc96c41037b629d9e6824e226f81a21140ab4c7113dff8259338aca2ce5d7a0",
+      "size_bytes": 679
+    },
+    "scripts/benchmark/axvisor-rt/config/starry-aarch64-rt-soak.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/starry-aarch64-rt-soak.toml",
+      "sha256": "67d3a056b2ebf5304a2daec4bf45156892b1edee3b1b031e78c8f7d6ccad4183",
+      "size_bytes": 145
+    },
+    "scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/starry-aarch64-rt.toml",
+      "sha256": "0e6b7bef0047bdb10ff332379a52e9a32722d42aaf90ec59a1a4f08966ad7e2d",
+      "size_bytes": 140
+    },
+    "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-partitioned.toml",
+      "sha256": "7845ea1a5dd8b98eb6d0b68dce4aece9766057372b61b8c38c5ee48b1362b32d",
+      "size_bytes": 731
+    },
+    "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-shared.toml",
+      "sha256": "de5aecc0e1049c77ce292f7bd4e6f913e3f65e539cc73ca74875622c5f1eaaed",
+      "size_bytes": 961
+    },
+    "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-soak-partitioned.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-soak-partitioned.toml",
+      "sha256": "a79b2421438f2980ed61b6f59b2ccd5377d044dafd446ad6f8730de25a2579da",
+      "size_bytes": 733
+    },
+    "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-soak-shared.toml": {
+      "path": "scripts/benchmark/axvisor-rt/config/starry-orangepi-5-plus-smp2-soak-shared.toml",
+      "sha256": "e91ba31e38266f06292ea47412f1ad5127c960e110fbf4c1a405bbec4ffd9c51",
+      "size_bytes": 883
+    },
+    "scripts/benchmark/axvisor-rt/formal_campaign.py": {
+      "path": "scripts/benchmark/axvisor-rt/formal_campaign.py",
+      "sha256": "9360b1a09063a94e3b9e80820c64366dcd4306e8e7619554625b42428c35f4ee",
+      "size_bytes": 8712
+    },
+    "scripts/benchmark/axvisor-rt/formal_campaign_contract.py": {
+      "path": "scripts/benchmark/axvisor-rt/formal_campaign_contract.py",
+      "sha256": "2cd2351d3951a364ec6b565a43bd417660aecdbe41b93ff1e0aef80c4b8677ee",
+      "size_bytes": 31446
+    },
+    "scripts/benchmark/axvisor-rt/formal_campaign_receipt.py": {
+      "path": "scripts/benchmark/axvisor-rt/formal_campaign_receipt.py",
+      "sha256": "bbc0a24a9efe4ff5a144a9349e6014dadd894e6584954a74eff5bd65af63ab0c",
+      "size_bytes": 12933
+    },
+    "scripts/benchmark/axvisor-rt/guest/starry_rt_capture_run.sh": {
+      "path": "scripts/benchmark/axvisor-rt/guest/starry_rt_capture_run.sh",
+      "sha256": "38473826ce2d5b36a4fca809200791a74d898b4c47d05f58735319b40677fd6b",
+      "size_bytes": 6922
+    },
+    "scripts/benchmark/axvisor-rt/harvest-starry-board.sh": {
+      "path": "scripts/benchmark/axvisor-rt/harvest-starry-board.sh",
+      "sha256": "399e0ecaa6e754b6212e1c88448481d096a36782808dff5f363ff077bf099763",
+      "size_bytes": 15572
+    },
+    "scripts/benchmark/axvisor-rt/prepare-freestanding-c-toolchain.sh": {
+      "path": "scripts/benchmark/axvisor-rt/prepare-freestanding-c-toolchain.sh",
+      "sha256": "edc7fdb32d222a39ad6dda9361effdf9ffcf424cd31e1f9e3faaa336f26fc1fb",
+      "size_bytes": 7386
+    },
+    "scripts/benchmark/axvisor-rt/prepare-starry-soak.sh": {
+      "path": "scripts/benchmark/axvisor-rt/prepare-starry-soak.sh",
+      "sha256": "e1f881c73832b198eccef2f63bf32ce184faec043efc0e396a3f0a9ecaa3c2df",
+      "size_bytes": 1556
+    },
+    "scripts/benchmark/axvisor-rt/run-formal-campaign.sh": {
+      "path": "scripts/benchmark/axvisor-rt/run-formal-campaign.sh",
+      "sha256": "efab3f1ec982dc5fbebe878b27be4565e3fd6d471c19ad30959c93d90199875c",
+      "size_bytes": 18829
+    },
+    "scripts/benchmark/axvisor-rt/stage-starry-board.sh": {
+      "path": "scripts/benchmark/axvisor-rt/stage-starry-board.sh",
+      "sha256": "f82e2573ff704d6ba25dd9b4a18f1358349e34b786cbac3138ad42c02ff53af4",
+      "size_bytes": 8490
+    }
+  },
+  "status": "preregistered",
+  "timeouts_seconds": {
+    "pair": 900,
+    "soak": 4500
+  }
+}
