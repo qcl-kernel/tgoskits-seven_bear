@@ -278,6 +278,20 @@ class FormalCampaignContractTests(unittest.TestCase):
         with self.assertRaisesRegex(campaign.ContractError, "raw SHA-256"):
             campaign.build_receipt(**arguments)
 
+    def test_receipt_accepts_non_utf8_serial_noise(self) -> None:
+        arguments = self.receipt_arguments()
+        console = arguments["console_log"]
+        assert isinstance(console, Path)
+        console.write_bytes(
+            b"firmware-prefix:\x00\xfe\n"
+            + console.read_bytes()
+            + b"firmware-suffix:\xff\x00\n"
+        )
+
+        receipt = campaign.build_receipt(**arguments)
+
+        self.assertEqual(receipt["slot"]["profile"], "shared")
+
     def receipt_arguments(self) -> dict[str, object]:
         result_root = Path(self.temporary.name) / "results"
         attempt = result_root / "pair-1" / "shared" / "attempts" / "fixture"

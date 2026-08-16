@@ -222,8 +222,11 @@ def validate_runtime_evidence(
     stage_text = evidence_paths["stage_log"].read_text(
         encoding="utf-8", errors="strict"
     )
+    # A raw serial capture may contain firmware bytes outside UTF-8 during
+    # reset. Marker validation uses decoded text, while the receipt continues
+    # to bind the original console bytes by size and SHA-256.
     console_text = evidence_paths["console_log"].read_text(
-        encoding="utf-8", errors="strict"
+        encoding="utf-8", errors="replace"
     )
     harvest_text = evidence_paths["harvest_log"].read_text(
         encoding="utf-8", errors="strict"
