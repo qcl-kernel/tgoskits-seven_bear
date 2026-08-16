@@ -50,6 +50,14 @@ pub fn default_task_stack_size() -> usize {
     crate::build_info::DEFAULT_TASK_STACK_SIZE
 }
 
+/// Reports whether the configured scheduler preempts runnable tasks by time slice.
+///
+/// FIFO is cooperative and therefore returns `false`; RR and CFS return `true`.
+#[doc(hidden)]
+pub const fn scheduler_preempts_runnable_tasks() -> bool {
+    cfg!(any(feature = "sched-rr", feature = "sched-cfs"))
+}
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "sched-rr")] {
         const MAX_TIME_SLICE: usize = 5;

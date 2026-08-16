@@ -265,6 +265,10 @@ pub(crate) fn yield_now() {
     thread::yield_now();
 }
 
+pub(crate) const fn scheduler_preempts_runnable_tasks() -> bool {
+    modules::ax_task::scheduler_preempts_runnable_tasks()
+}
+
 pub(crate) fn wait_queue_wait_until(
     queue: &api::task::AxWaitQueueHandle,
     condition: impl Fn() -> bool,

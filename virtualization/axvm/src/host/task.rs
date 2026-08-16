@@ -45,6 +45,10 @@ pub(crate) fn yield_now() {
     arceos::yield_now();
 }
 
+pub(crate) const fn scheduler_preempts_runnable_tasks() -> bool {
+    arceos::scheduler_preempts_runnable_tasks()
+}
+
 pub(crate) fn cpu_mask_from_raw_bits(bits: usize) -> arceos::ArceOsCpuMask {
     arceos::cpu_mask_from_raw_bits(bits)
 }
