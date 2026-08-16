@@ -241,12 +241,15 @@ impl ArchOps for Aarch64Arch {
         vm: &crate::AxVMRef,
         vcpu: &crate::vm::AxVCpuRef<Self::VCpu>,
         runtime: &crate::vm::VmRuntimeHandle,
+        event_channel: &crate::vm::VcpuEventChannel,
     ) {
-        let wait_snapshot = runtime.vcpu_event_wait_snapshot();
+        let wait_snapshot = event_channel.snapshot();
         if !vm.running() {
             return;
         }
-        if wait_snapshot.has_pending_event(runtime) {
+        if wait_snapshot.has_pending_event(event_channel)
+            || (vcpu.id() == 0 && runtime.device_poll_requested())
+        {
             return;
         }
         match vcpu.get_arch_vcpu().has_pending_interrupt() {
@@ -283,10 +286,10 @@ impl ArchOps for Aarch64Arch {
         }
 
         crate::vm::wait_for_vcpu_event_if_idle(
-            runtime,
+            event_channel,
             &wait_snapshot,
-            || vm.running(),
-            |condition| runtime.wait_until(condition),
+            || vm.running() && (vcpu.id() != 0 || !runtime.device_poll_requested()),
+            |condition| event_channel.wait_until(condition),
         );
     }
 }

@@ -44,6 +44,8 @@ mod task;
 mod timer;
 mod vcpu;
 mod vm;
+#[cfg(feature = "rt-trace")]
+mod wake_trace;
 
 pub mod config;
 

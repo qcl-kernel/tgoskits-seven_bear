@@ -17,6 +17,7 @@ from typing import Iterable, Sequence
 
 HOST_HEADER = "AXVISOR_RT_HOST_TRACE"
 HOST_IRQ = "AXVISOR_RT_HOST_IRQ"
+HOST_WAKE = "AXVISOR_RT_VCPU_WAKE"
 HOST_PCPU = "AXVISOR_RT_HOST_PCPU"
 HOST_VCPU = "AXVISOR_RT_HOST_VCPU"
 HOST_NOISE = "AXVISOR_RT_HOST_NOISE"
@@ -369,6 +370,144 @@ def _summarize_ticks(latencies_ticks: Sequence[int], frequency_hz: int) -> dict[
     }
 
 
+def _parse_target_vcpu_wakes(
+    fields_list: Sequence[dict[str, str]],
+    header: dict[str, str],
+    footer: dict[str, str],
+    frequency_hz: int,
+) -> dict[str, object] | None:
+    declared = _integer(header, "wake_records", HOST_HEADER, default=0)
+    completed = _integer(footer, "wake_records", HOST_COMPLETE, default=declared)
+    if declared != len(fields_list) or completed != len(fields_list):
+        raise AnalysisError(
+            "target-vCPU wake record count mismatch: "
+            f"header={declared}, footer={completed}, actual={len(fields_list)}"
+        )
+    if not fields_list:
+        return None
+
+    dropped = _integer(header, "wake_dropped", HOST_HEADER, default=0)
+    incomplete = _integer(header, "wake_incomplete", HOST_HEADER, default=0)
+    events: list[dict[str, int | str]] = []
+    for fields in fields_list:
+        event: dict[str, int | str] = {
+            key: _integer(fields, key, HOST_WAKE)
+            for key in (
+                "sequence",
+                "wake_id",
+                "vm",
+                "vcpu",
+                "pcpu",
+                "counter_ticks",
+            )
+        }
+        source = fields.get("source")
+        phase = fields.get("phase")
+        if source not in {"deferred_irq", "timer_deadline"}:
+            raise AnalysisError(f"{HOST_WAKE} has unsupported source {source!r}")
+        if phase not in {
+            "publish",
+            "deferred_worker",
+            "runtime_notify",
+            "ipi_sent",
+            "vcpu_run",
+        }:
+            raise AnalysisError(f"{HOST_WAKE} has unsupported phase {phase!r}")
+        event["source"] = source
+        event["phase"] = phase
+        events.append(event)
+
+    sequences = [int(event["sequence"]) for event in events]
+    if len(sequences) != len(set(sequences)):
+        raise AnalysisError(f"{HOST_WAKE} contains duplicate sequence numbers")
+
+    vm_id = _integer(header, "vm", HOST_HEADER)
+    pipelines: dict[int, dict[str, dict[str, int | str]]] = defaultdict(dict)
+    sources: dict[int, str] = {}
+    identities: dict[int, tuple[int, int]] = {}
+    for event in sorted(events, key=lambda item: int(item["sequence"])):
+        wake_id = int(event["wake_id"])
+        event_vm = int(event["vm"])
+        vcpu_id = int(event["vcpu"])
+        source = str(event["source"])
+        phase = str(event["phase"])
+        if wake_id == 0:
+            raise AnalysisError(f"{HOST_WAKE} wake_id must be positive")
+        if event_vm != vm_id:
+            raise AnalysisError(f"{HOST_WAKE} contains records from another VM")
+        if wake_id in sources and sources[wake_id] != source:
+            raise AnalysisError(f"wake {wake_id} changes source within one pipeline")
+        if wake_id in identities and identities[wake_id] != (event_vm, vcpu_id):
+            raise AnalysisError(f"wake {wake_id} changes target within one pipeline")
+        if phase in pipelines[wake_id]:
+            raise AnalysisError(f"wake {wake_id} contains duplicate {phase} phases")
+        sources[wake_id] = source
+        identities[wake_id] = (event_vm, vcpu_id)
+        pipelines[wake_id][phase] = event
+
+    publish_to_run: list[int] = []
+    publish_to_worker: list[int] = []
+    worker_to_notify: list[int] = []
+    notify_to_ipi: list[int] = []
+    notify_to_run: list[int] = []
+    complete = 0
+    source_counts: dict[str, int] = defaultdict(int)
+    for wake_id, phases in pipelines.items():
+        source = sources[wake_id]
+        expected = {"publish", "runtime_notify", "ipi_sent", "vcpu_run"}
+        if source == "deferred_irq":
+            expected.add("deferred_worker")
+        if set(phases) != expected:
+            continue
+        ordered = ["publish"]
+        if source == "deferred_irq":
+            ordered.append("deferred_worker")
+        ordered.extend(("runtime_notify", "vcpu_run"))
+        ticks = [int(phases[phase]["counter_ticks"]) for phase in ordered]
+        if ticks != sorted(ticks):
+            raise AnalysisError(f"wake {wake_id} phases are not monotonic")
+        ipi_ticks = int(phases["ipi_sent"]["counter_ticks"])
+        complete += 1
+        source_counts[source] += 1
+        publish_to_run.append(ticks[-1] - ticks[0])
+        notify_index = ordered.index("runtime_notify")
+        if ipi_ticks < ticks[notify_index]:
+            raise AnalysisError(f"wake {wake_id} IPI precedes runtime notification")
+        notify_to_ipi.append(ipi_ticks - ticks[notify_index])
+        notify_to_run.append(ticks[-1] - ticks[notify_index])
+        if source == "deferred_irq":
+            worker_index = ordered.index("deferred_worker")
+            publish_to_worker.append(ticks[worker_index] - ticks[0])
+            worker_to_notify.append(ticks[notify_index] - ticks[worker_index])
+
+    result: dict[str, object] = {
+        "event_count": len(events),
+        "pipeline_count": len(pipelines),
+        "complete_pipeline_count": complete,
+        "dropped": dropped,
+        "incomplete": incomplete,
+        "complete_by_source": dict(sorted(source_counts.items())),
+    }
+    if publish_to_run:
+        result["publish_to_vcpu_run_ns"] = _summarize_ticks(
+            publish_to_run, frequency_hz
+        )
+        result["runtime_notify_to_ipi_ns"] = _summarize_ticks(
+            notify_to_ipi, frequency_hz
+        )
+        result["runtime_notify_to_vcpu_run_ns"] = _summarize_ticks(
+            notify_to_run, frequency_hz
+        )
+    if publish_to_worker:
+        result["publish_to_deferred_worker_ns"] = _summarize_ticks(
+            publish_to_worker, frequency_hz
+        )
+        result["deferred_worker_to_runtime_notify_ns"] = _summarize_ticks(
+            worker_to_notify, frequency_hz
+        )
+    return result
+
+
 def analyze_irq_traces(host_path: Path, guest_path: Path) -> dict[str, object]:
     """Validate and pair one lossless host/guest architectural-timer trace."""
     host_raw, host_text = _read_text(host_path)
@@ -378,6 +517,7 @@ def analyze_irq_traces(host_path: Path, guest_path: Path) -> dict[str, object]:
         (
             HOST_HEADER,
             HOST_IRQ,
+            HOST_WAKE,
             HOST_PCPU,
             HOST_VCPU,
             HOST_NOISE,
@@ -438,6 +578,9 @@ def analyze_irq_traces(host_path: Path, guest_path: Path) -> dict[str, object]:
 
     host_accounting = _parse_host_accounting(host_records, host_header)
     host_noise = _parse_host_noise(host_records, host_header)
+    target_vcpu_wake = _parse_target_vcpu_wakes(
+        host_records[HOST_WAKE], host_header, host_footer, host_frequency
+    )
     accounting_by_vcpu = {item["vcpu"]: item for item in host_accounting["vcpus"]}
     for event in host_events:
         accounting = accounting_by_vcpu.get(event["vcpu"])
@@ -470,6 +613,7 @@ def analyze_irq_traces(host_path: Path, guest_path: Path) -> dict[str, object]:
         },
         "host_accounting": host_accounting,
         "host_noise": host_noise,
+        "target_vcpu_wake": target_vcpu_wake,
     }
 
 

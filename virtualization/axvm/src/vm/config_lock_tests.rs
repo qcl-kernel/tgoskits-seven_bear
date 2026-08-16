@@ -172,7 +172,7 @@ fn with_config_remains_available_without_machine_resources() {
 
 #[test]
 fn runtime_handle_returns_without_machine_lock() {
-    let runtime = Arc::new(VmRuntimeHandle::new());
+    let runtime = Arc::new(VmRuntimeHandle::new(1));
     let vm = test_vm_with_machine(
         7,
         Machine::Stopping {
