@@ -137,6 +137,10 @@ pub(crate) fn notify_vcpu(vm_id: usize, vcpu_id: usize) -> AxVmResult {
     notify_vcpu_with(vm_id, vcpu_id, || {}, || {})
 }
 
+const fn should_yield_after_vcpu_exit(scheduler_preempts_runnable_tasks: bool) -> bool {
+    !scheduler_preempts_runnable_tasks
+}
+
 #[cfg(feature = "rt-trace")]
 pub(crate) fn notify_vcpu_traced(
     vm_id: usize,
@@ -757,11 +761,14 @@ fn vcpu_run() {
             break;
         }
 
-        // AxVM may run on ArceOS's cooperative FIFO scheduler. Yield after
-        // every completed VM exit so host services such as the management
-        // console and virtual serial input can make progress alongside a
-        // continuously runnable guest.
-        crate::host::task::yield_now();
+        // Cooperative FIFO needs an explicit yield so host services can run
+        // alongside a continuously runnable guest. RR and CFS already bound
+        // guest CPU residency with scheduler time slices; yielding on every
+        // VM exit would discard the remaining slice and can starve guest
+        // thread-level work behind a continuously runnable host task.
+        if should_yield_after_vcpu_exit(crate::host::task::scheduler_preempts_runnable_tasks()) {
+            crate::host::task::yield_now();
+        }
     }
 
     info!("VM[{}] VCpu[{}] exiting...", vm_id, vcpu_id);
@@ -812,6 +819,12 @@ mod tests {
         assert!(!vcpu_start_is_ready(true, false));
         assert!(vcpu_start_is_ready(true, true));
         assert!(!vcpu_start_is_ready(false, true));
+    }
+
+    #[test]
+    fn vcpu_exit_yield_is_reserved_for_cooperative_schedulers() {
+        assert!(should_yield_after_vcpu_exit(false));
+        assert!(!should_yield_after_vcpu_exit(true));
     }
 
     #[test]
