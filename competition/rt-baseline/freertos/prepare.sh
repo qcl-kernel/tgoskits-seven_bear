@@ -18,7 +18,7 @@ for command in git make python3 qemu-system-aarch64; do
     fi
 done
 
-"$script_dir/../common/prepare_toolchain.sh"
+bash "$script_dir/../common/prepare_toolchain.sh"
 mkdir -p -- "$workspace"
 if [[ ! -d "$source_root/.git" ]]; then
     git -c core.autocrlf=false clone \
