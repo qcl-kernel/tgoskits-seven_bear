@@ -55,9 +55,10 @@ The command fails closed unless all of the following hold:
 - all receipt artifacts match the full archive manifest, and all 34
   preregistered runtime inputs still match their source-commit and `HEAD` Git
   blobs even when unrelated runtime paths changed later;
-- the QEMU commit is an ancestor of `HEAD`, with only competition documentation,
-  evidence, verification tooling, CI, or the reviewed evidence-only Git
-  attributes afterwards.
+- the QEMU commit is an ancestor of `HEAD`, with descendants limited to
+  competition documentation, evidence, verification tooling, CI, the reviewed
+  evidence-only Git attributes, and one exact `rsext4` `#[cfg(test)]` fixture
+  transition that cannot enter a measured runtime image.
 
 For the complete dependency-free host regression used by CI, run:
 
@@ -68,8 +69,8 @@ bash competition/evidence/run-host-validation.sh
 This also executes the 36 focused RTOS Guest/IVC tests, the common VirtIO/IVC
 and Zephyr C host tests, native RTOS analyzer/configuration tests, and evidence
 tool tests before checking the retained delivery artifacts. The delivery
-verifier has 22 deterministic positive and negative cases; together with the
-four archive-packager cases, the evidence tool suite contains 26 tests.
+verifier has 23 deterministic positive and negative cases; together with the
+four archive-packager cases, the evidence tool suite contains 27 tests.
 
 CI runs this command from the path-scoped `competition-delivery.yml` workflow
 when competition content, reviewed evidence attributes, or that workflow
@@ -88,6 +89,12 @@ third-party dependency, and does not alter a runtime protocol or image.
 The gate does not rerun QEMU or a physical board, publish the full raw archive,
 or convert QEMU evidence into a board/performance claim. Those remain separate
 campaign and publication steps.
+
+The post-capture `rsext4` test repair is not covered by a path-wide exception.
+The gate requires the measured source blob
+`b5471e08cb7db1d168628a5a94ae89e9e9ea1b6e` and the reviewed test-only target
+blob `7b94e102a9ae424dbfc1aebed38e90b3aba59f35` exactly. Any other committed or
+uncommitted change to that source file remains runtime-relevant and is rejected.
 
 The current formal RT raw payload has already been packaged locally as
 `axvisor-rt-formal-20260816-77704718a.tar.gz` (about 41 MiB compressed). Its

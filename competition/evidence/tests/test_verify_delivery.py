@@ -14,10 +14,12 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 EVIDENCE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(EVIDENCE_DIR))
 
+import delivery_support  # noqa: E402
 import verify_delivery  # noqa: E402
 
 
@@ -394,6 +396,11 @@ class SourceCommitTests(unittest.TestCase):
         runtime = self.root / "competition" / "ivc" / "runtime.txt"
         runtime.parent.mkdir(parents=True)
         runtime.write_text("validated runtime\n", encoding="utf-8")
+        reviewed_test = (
+            self.root / "fs" / "rsext4" / "src" / "blockdev" / "journal.rs"
+        )
+        reviewed_test.parent.mkdir(parents=True)
+        reviewed_test.write_text("runtime logic\n", encoding="utf-8")
         self._git("add", ".")
         self._git("commit", "--quiet", "-m", "validated source")
         self.source_commit = self._git("rev-parse", "HEAD").stdout.strip()
@@ -418,6 +425,34 @@ class SourceCommitTests(unittest.TestCase):
         self._git("commit", "--quiet", "-m", "add CI routing regression")
 
         verify_delivery.verify_source_commit(self.root, self.source_commit)
+
+    def test_accepts_only_exact_reviewed_test_blob_transition(self) -> None:
+        relative = "fs/rsext4/src/blockdev/journal.rs"
+        reviewed_test = self.root / relative
+        source_blob = self._git(
+            "rev-parse", f"{self.source_commit}:{relative}"
+        ).stdout.strip()
+        reviewed_test.write_text("runtime logic\ntest regression\n", encoding="utf-8")
+        self._git("add", ".")
+        self._git("commit", "--quiet", "-m", "repair test regression")
+        target_blob = self._git("rev-parse", f"HEAD:{relative}").stdout.strip()
+
+        transitions = {relative: (source_blob, target_blob)}
+        with patch.dict(
+            delivery_support.REVIEWED_TEST_ONLY_TRANSITIONS,
+            transitions,
+            clear=True,
+        ):
+            verify_delivery.verify_source_commit(self.root, self.source_commit)
+
+            reviewed_test.write_text("changed runtime logic\n", encoding="utf-8")
+            self._git("add", ".")
+            self._git("commit", "--quiet", "-m", "change runtime logic")
+            with self.assertRaisesRegex(
+                verify_delivery.EvidenceVerificationError,
+                "runtime-relevant paths changed",
+            ):
+                verify_delivery.verify_source_commit(self.root, self.source_commit)
 
     def test_rejects_runtime_change_after_source_commit(self) -> None:
         runtime = self.root / "competition" / "ivc" / "runtime.txt"

@@ -10,8 +10,10 @@
 
 最新正式 RT 活动独立绑定 clean commit
 `77704718a1b46fc2fbf51ea6a184aa1071eee0ac`（tree
-`f65ec1707eb91c92183064a29b3a6a860382cc68`）。之后的源码提交只修改 RT baseline
-prepare 调用方式；正式预注册中的 34 个运行输入均由交付校验器按 Git blob 证明未变。
+`f65ec1707eb91c92183064a29b3a6a860382cc68`）。之后只修改 RT baseline prepare 的宿主
+调用方式，以及 `rsext4` 的 `#[cfg(test)]` fixture；二者均不进入测量镜像。后者由交付
+校验器锁定精确旧/新 Git blob，而非按路径放行；正式预注册中的 34 个运行输入仍均按
+Git blob 证明未变。
 
 本报告严格区分五类证据：
 
@@ -305,7 +307,7 @@ claim、PSCI `CPU_ON` 异步生命周期以及无抢占 guest console mux。
 - 三 guest AxVisor/ArceOS QEMU 动态隔离运行，64 KiB 同 segment TCP 与 100 个跨
   segment 探针后零接收；
 - 确定性 evidence packager 的相同字节、拒绝覆盖、输出边界和重复 manifest 负例。
-- 统一交付门禁的 21 个负例/正例测试：checksum 全覆盖、gzip 双重身份与解压上限、
+- 统一交付门禁的 23 个负例/正例测试：checksum 全覆盖、gzip 双重身份与解压上限、
   RTOS 业务计数、完整隔离 marker 契约、共同 source commit、提交后 runtime 变更和
   `.gitattributes`/交付文档范围越界检测；另检查正式 RT 的预注册顺序、M2 门、soak、
   12 份回执、110 项 archive manifest 和 34 个源码输入，并确保 CI 仅按交付路径触发。
