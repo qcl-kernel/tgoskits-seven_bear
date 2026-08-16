@@ -1,0 +1,59 @@
+{
+  "board": {
+    "board_id": "bf61f4d4a1d994ad",
+    "harvest_cpu_temp_milli_c": 39769,
+    "hostname": "orangepi5plus",
+    "service_id": "orangepi-5-plus-1",
+    "stage_cpu_temp_milli_c": 38846,
+    "type": "OrangePi-5-Plus"
+  },
+  "evidence": {
+    "console_log": {
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/console.log",
+      "sha256": "e92851295d2613a0543e9b666cea6b7df5da779dbc274222620ce433088635b7",
+      "size_bytes": 82263
+    },
+    "guest_irq": {
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/guest-irq.log.gz",
+      "sha256": "3a10774c88752bb27d5c9a1a0115418264d35bc3183e273ea53d7bf4d9aa8adb",
+      "size_bytes": 267272
+    },
+    "harvest_log": {
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/harvest.log",
+      "sha256": "9c8c9f638608b7162659527f6f5858753c5ddbdc06deee783dacef55ec922d18",
+      "size_bytes": 1473
+    },
+    "host_trace": {
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/host.log",
+      "sha256": "ca8923c99dbf6d2301cb99408876f8121a1608c02d7a8329a72b2a304680859d",
+      "size_bytes": 14417145
+    },
+    "raw": {
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/raw.log",
+      "sha256": "80aee1fabe354b692257fb5c6f794812e969909f7545937c2df6389acc7ace45",
+      "size_bytes": 4092290
+    },
+    "stage_log": {
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/stage.log",
+      "sha256": "6b3faa499d084eb1ed23d38bfe3ee3e33f7b79f9bc8fd83c7cdba2f6b62f57e5",
+      "size_bytes": 812
+    },
+    "summary": {
+      "path": "pair-2/partitioned/attempts/20260816T043755Z-579646/summary.json",
+      "sha256": "4be2f33d197ac69343915fb939b5df250c5a0931062443c83fc1746611c14438",
+      "size_bytes": 5568893
+    }
+  },
+  "finished_at": "2026-08-16T04:41:56Z",
+  "schema_version": 1,
+  "slot": {
+    "pair": 2,
+    "phase": "pair",
+    "profile": "partitioned"
+  },
+  "source": {
+    "commit": "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
+    "tree": "f65ec1707eb91c92183064a29b3a6a860382cc68"
+  },
+  "started_at": "2026-08-16T04:37:55Z"
+}

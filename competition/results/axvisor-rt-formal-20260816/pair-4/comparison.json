@@ -1,0 +1,112 @@
+{
+  "assessment": {
+    "direct_irq_max_improved_in_this_pair": true,
+    "m2_exit_gate_met": false,
+    "primary_guest_max_improved_in_this_pair": true,
+    "primary_guest_p99_within_non_regression_limit": true,
+    "reason": "one pair cannot satisfy the required five-pair shared/partitioned matrix"
+  },
+  "metrics": {
+    "dispatch_latency": {
+      "max": {
+        "change_ns": -50050875,
+        "improved": true,
+        "improvement_percent": 99.502,
+        "meets_ten_percent_target": true,
+        "partitioned_ns": 250250,
+        "shared_ns": 50301125
+      },
+      "p99": {
+        "change_ns": -2917,
+        "improvement_percent": 2.184,
+        "partitioned_ns": 130666,
+        "shared_ns": 133583,
+        "within_non_regression_limit": true
+      }
+    },
+    "emulated_irq_response": {
+      "max": {
+        "change_ns": -93285458,
+        "improved": true,
+        "improvement_percent": 99.583,
+        "meets_ten_percent_target": true,
+        "partitioned_ns": 390709,
+        "shared_ns": 93676167
+      },
+      "p99": {
+        "change_ns": -92495125,
+        "improvement_percent": 99.73,
+        "partitioned_ns": 250167,
+        "shared_ns": 92745292,
+        "within_non_regression_limit": true
+      }
+    },
+    "periodic_jitter": {
+      "max": {
+        "change_ns": -97401626,
+        "improved": true,
+        "improvement_percent": 99.597,
+        "meets_ten_percent_target": true,
+        "partitioned_ns": 393791,
+        "shared_ns": 97795417
+      },
+      "p99": {
+        "change_ns": -96578876,
+        "improvement_percent": 99.751,
+        "partitioned_ns": 240958,
+        "shared_ns": 96819834,
+        "within_non_regression_limit": true
+      }
+    },
+    "virtual_timer_injection_to_guest_irq": {
+      "max": {
+        "change_ns": -393526000,
+        "improved": true,
+        "improvement_percent": 46.816,
+        "meets_ten_percent_target": true,
+        "partitioned_ns": 447057041,
+        "shared_ns": 840583041
+      },
+      "p99": {
+        "change_ns": -4536875,
+        "improvement_percent": 95.8,
+        "partitioned_ns": 198916,
+        "shared_ns": 4735791,
+        "within_non_regression_limit": true
+      }
+    }
+  },
+  "pair": {
+    "controlled_interference": {
+      "implementation": "busy-loop",
+      "max_duration_ms": 600000,
+      "partitioned_elapsed_ticks": 928108076,
+      "partitioned_requested_pcpu": 3,
+      "placement_and_coverage_validated": true,
+      "shared_elapsed_ticks": 1348061575,
+      "shared_requested_pcpu": 1
+    },
+    "iterations_per_metric": 10000,
+    "partitioned_raw": {
+      "path": "/home/seven_wsl/Workspace/starry/results/rt-formal-20260816-77704718a1b46fc2fbf51ea6a184aa1071eee0ac/pair-4/partitioned/attempts/20260816T045552Z-582310/raw.log",
+      "sha256": "ce3f712b587ab39e61b4286ffec0e811289ea989806e22c90649e37667c6da1d"
+    },
+    "shared_raw": {
+      "path": "/home/seven_wsl/Workspace/starry/results/rt-formal-20260816-77704718a1b46fc2fbf51ea6a184aa1071eee0ac/pair-4/shared/attempts/20260816T050007Z-582955/raw.log",
+      "sha256": "d85194a21536fe49cac123a4784764a045f0ee4b8e3c92d806278851b4a358af"
+    },
+    "workload": "idle"
+  },
+  "schema_version": 1,
+  "scope": {
+    "controlled_interference_collected": true,
+    "direct_irq_latency_collected": true,
+    "host_pcpu_accounting_collected": true,
+    "timerfd_metric_is_proxy": true
+  },
+  "sign_convention": "positive improvement_percent means partitioned is lower",
+  "thresholds": {
+    "max_improvement_target_percent": 10.0,
+    "p99_non_regression_limit_percent": 5.0
+  }
+}

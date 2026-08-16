@@ -1,9 +1,10 @@
 # RT-Thread/FreeRTOS Guest/IVC QEMU validation
 
 This directory records the compact, machine-readable result of four validation
-campaigns run on 2026-08-15 (Asia/Shanghai). The campaigns used AxVisor on
+campaigns refreshed on 2026-08-16 (Asia/Shanghai). The campaigns used AxVisor on
 QEMU/AArch64 TCG, a two-vCPU Linux controller, and one single-vCPU RTOS
-endpoint. The tracked worktree was clean at commit `ec3c363b1a61956069365a06c262091ce847b335`.
+endpoint. The detached tracked worktree was clean at commit
+`16a1f3198243a5e1b1bc1810faba6371f7de3215`.
 
 All four strict analyzers returned success:
 

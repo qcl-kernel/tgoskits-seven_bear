@@ -31,13 +31,13 @@ pCPU3 respectively.
 ## Evidence boundary
 
 [`qemu.log.gz`](qemu.log.gz) is a deterministic `gzip -n -9` copy of the full
-60,342-byte console/build log. Its compressed SHA-256 is
-`16059aa0660c59d37010f5837578ce79e6cae71bed2463a15ca80de916e88ab4`;
+64,159-byte console/build log. Its compressed SHA-256 is
+`fa000988a399d78aff1f4dbeb0e687ca0c0dd48ff03afce9dca73c27bf4d4a37`;
 the decompressed SHA-256 is
-`56157cf655b53ea48d642b4cda0e4213521a0d2b59c4e0c4c3338c7af7c0665d`.
+`215f0020c9f8381e18d86aa2b8592d2d784621533d3fdca1908dd6e16fd16b53`.
 [`summary.json`](summary.json) records the topology, exact pass markers,
 environment, command, and clean source commit
-`ec3c363b1a61956069365a06c262091ce847b335`.
+`16a1f3198243a5e1b1bc1810faba6371f7de3215`.
 
 This is dynamic QEMU evidence for segment separation and absence of a default
 route. It does not claim a physical-board result, firewall/NAT validation,

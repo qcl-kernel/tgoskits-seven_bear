@@ -1,0 +1,59 @@
+{
+  "board": {
+    "board_id": "bf61f4d4a1d994ad",
+    "harvest_cpu_temp_milli_c": 43461,
+    "hostname": "orangepi5plus",
+    "service_id": "orangepi-5-plus-1",
+    "stage_cpu_temp_milli_c": 40692,
+    "type": "OrangePi-5-Plus"
+  },
+  "evidence": {
+    "console_log": {
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/console.log",
+      "sha256": "91e36f911dd4d1b6b37e8f704fd8183d823f3d8c8632433820c9c3aab8a7bb7b",
+      "size_bytes": 97751
+    },
+    "guest_irq": {
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/guest-irq.log.gz",
+      "sha256": "75cace7c0a4d817af2d725221369708debc194ae6224b473267d5bac25f95d43",
+      "size_bytes": 77257
+    },
+    "harvest_log": {
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/harvest.log",
+      "sha256": "ee798472128a24ebb80f4774e6185ad04365aff8b7c03d04ac3995f0271b15cc",
+      "size_bytes": 1447
+    },
+    "host_trace": {
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/host.log",
+      "sha256": "6ce10829e4525472d0f4c6bf2a56ef97f1c00d796c3424b2dde267caf656d905",
+      "size_bytes": 10696622
+    },
+    "raw": {
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/raw.log",
+      "sha256": "26ec4d77d54751ce3d76921ab56802f4aefe855fff5d9f01cf555b6350fac192",
+      "size_bytes": 4133559
+    },
+    "stage_log": {
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/stage.log",
+      "sha256": "e88cb2a0715c226e4299d13cf5fbb1162880bfa1a94dd935421a2cb1a4bd3d66",
+      "size_bytes": 812
+    },
+    "summary": {
+      "path": "pair-1/shared/attempts/20260816T042706Z-574696/summary.json",
+      "sha256": "37bc88c1d1e699847529da5062a4b0a0a5f921be6c728ee8c7df60b6b10e129c",
+      "size_bytes": 1775260
+    }
+  },
+  "finished_at": "2026-08-16T04:32:05Z",
+  "schema_version": 1,
+  "slot": {
+    "pair": 1,
+    "phase": "pair",
+    "profile": "shared"
+  },
+  "source": {
+    "commit": "77704718a1b46fc2fbf51ea6a184aa1071eee0ac",
+    "tree": "f65ec1707eb91c92183064a29b3a6a860382cc68"
+  },
+  "started_at": "2026-08-16T04:27:06Z"
+}
