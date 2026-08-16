@@ -418,6 +418,12 @@ mod tests {
         }
     }
 
+    fn queue_test_metadata(dev: &mut Jbd2Dev<MemBlockDev>) {
+        let metadata = vec![0; BLOCK_SIZE];
+        dev.write_blocks(&metadata, AbsoluteBN::new(10), 1, true)
+            .expect("queue metadata update");
+    }
+
     struct CountingBlockDevice {
         writes: Arc<AtomicUsize>,
     }
@@ -525,8 +531,7 @@ mod tests {
     fn umount_commit_propagates_device_flush_failure() {
         let mut dev = Jbd2Dev::initial_jbd2dev(0, MemBlockDev::with_failing_flush(256), true);
         dev.set_journal_superblock(JournalSuperBllockS::default(), AbsoluteBN::new(128));
-        dev.write_block(AbsoluteBN::new(10), true)
-            .expect("queue metadata update");
+        queue_test_metadata(&mut dev);
 
         let error = dev
             .umount_commit()
@@ -544,8 +549,7 @@ mod tests {
             true,
         );
         dev.set_journal_superblock(JournalSuperBllockS::default(), journal_superblock);
-        dev.write_block(AbsoluteBN::new(10), true)
-            .expect("queue metadata update");
+        queue_test_metadata(&mut dev);
 
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| dev.umount_commit()));
 
@@ -564,8 +568,7 @@ mod tests {
         dev.set_journal_superblock(JournalSuperBllockS::default(), AbsoluteBN::new(128));
         dev.read_block(cached_block).expect("prime cached block");
         dev.buffer_mut()[0] = 1;
-        dev.write_block(AbsoluteBN::new(10), true)
-            .expect("queue metadata update");
+        queue_test_metadata(&mut dev);
 
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| dev.umount_commit()));
 

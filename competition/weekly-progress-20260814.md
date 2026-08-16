@@ -116,7 +116,13 @@ HyperCall 传输应用数据。
 - 新增标准库实现的一键交付门禁并接入 CI：逐项校验 32 个 compact evidence 文件、
   5 份 QEMU gzip、四组 RTOS 计数、完整隔离 marker、正式 M2/soak 契约、12 份回执、
   110 项 archive manifest 和 34 个预注册源码输入；独立 CI 仅按交付路径触发，
-  交付 verifier 配套 22 个确定性正负例，连同归档工具共 26 项 evidence tests。
+  交付 verifier 配套 23 个确定性正负例，连同归档工具共 27 项 evidence tests。
+- 修复 fork CI 容器路由：非 `rcore-os` 仓库统一消费 upstream 公开 base/LVZ 镜像，
+  路由回归、YAML 解析和两类 manifest 可用性检查均通过；远端 lock-lint、format、
+  sync-lint、clippy 已实际越过容器初始化并通过。
+- 修复 `rsext4` 三个 JBD2 unmount 错误注入 fixture 与新缓存活动块约束不一致的问题；
+  Linux 完整 host-test 通过。该改动仅位于 `#[cfg(test)]`，交付门以精确旧/新 Git blob
+  对锁定这一转换，未对文件路径做宽泛豁免。
 - 补齐 RT-Thread/FreeRTOS Guest 构建、AxVisor VM/QEMU 配置、Linux controller
   rootfs、严格 analyzer、host fake-MMIO/transport 测试、复现文档和紧凑验证记录；
   四组 raw 日志仍保留在 ignored `tmp/` 目录，机器哈希摘要进入 competition results。
