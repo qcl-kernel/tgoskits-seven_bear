@@ -326,6 +326,11 @@ Current Axvisor LoongArch QEMU bring-up uses the dynamic UEFI platform path. The
 9. For guest SMP under a cooperative scheduler, give newly created vCPU tasks distinct initial host run queues whenever their effective affinity masks admit a matching. Keep guest hardware CPU IDs separate from dense host scheduler IDs, retain each task's full affinity for later migration, and publish VM runtime bookkeeping before activating a task on a remote CPU. Activation must revalidate the runtime CPU bound and current affinity, return an explicit error on mismatch, and roll back published vCPU/runtime lifecycle state if it fails.
 10. A guest `CPU_ON` exit is handled while the calling vCPU remains registered as current on the host CPU. Configure only the target vCPU's saved, inactive backend state under its `Starting` reservation; do not install the target as current or bind it until its published host task first runs on the selected CPU. PSCI requires this operation to be asynchronous: publish the target task and its VM-lifecycle participation before activation, return success once activation is accepted, and leave `Starting` observable as `ON_PENDING` until the target task binds. Never wait for target publication in the calling vCPU's non-preemptible run boundary; target-side cancellation or bind failure must roll back both the vCPU state and lifecycle participation.
 
+- **Resolved graph firmware emission**: emit conventional FDT nodes only after machine-owned
+  controller, timer, and serial topology is installed. Machine patchers must not inspect
+  configured model names or pre-create graph-owned nodes. If the sole default interrupt
+  controller lacks a firmware phandle, allocate one before publishing `interrupt-parent`.
+
 ## Validation Ladder
 
 Run the smallest useful check first, then climb:
