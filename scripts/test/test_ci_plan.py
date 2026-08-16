@@ -569,7 +569,7 @@ command = "true"
         self.assertEqual(static_rows["check-formatting"]["runs_on"], ["ubuntu-latest"])
         self.assertEqual(
             static_rows["check-formatting"]["container_image"],
-            "ghcr.io/contributor/tgoskits-container:latest",
+            "ghcr.io/rcore-os/tgoskits-container:latest",
         )
         self.assertFalse(static_rows["check-formatting"]["download_xtask_bin_artifact"])
         clippy = test_rows["run-clippy"]
