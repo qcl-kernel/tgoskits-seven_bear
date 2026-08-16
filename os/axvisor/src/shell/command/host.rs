@@ -176,7 +176,8 @@ fn write_host_rt_trace(
         output,
         "AXVISOR_RT_HOST_TRACE schema=1 vm={} counter_frequency_hz={} start_ticks={} \
          end_ticks={} records={} dropped={} incomplete={} failed_injections={} \
-         unowned_virtual_timer_irqs={} counter_frequency_mismatches={}",
+         unowned_virtual_timer_irqs={} counter_frequency_mismatches={} wake_records={} \
+         wake_dropped={} wake_incomplete={}",
         trace.vm_id,
         trace.counter_frequency_hz,
         trace.start_ticks,
@@ -187,6 +188,9 @@ fn write_host_rt_trace(
         trace.failed_injections,
         trace.unowned_virtual_timer_irqs,
         trace.counter_frequency_mismatches,
+        trace.wake_events.len(),
+        trace.wake_dropped,
+        trace.wake_incomplete,
     )?;
     crate::host_noise::write_persisted_evidence(output)?;
     for record in &trace.injections {
@@ -205,6 +209,21 @@ fn write_host_rt_trace(
             record.guest_counter_ticks,
             record.forwarding_ticks,
             u8::from(record.injected),
+        )?;
+    }
+    for event in &trace.wake_events {
+        writeln!(
+            output,
+            "AXVISOR_RT_VCPU_WAKE schema=1 sequence={} wake_id={} vm={} vcpu={} pcpu={} \
+             source={} phase={} counter_ticks={}",
+            event.sequence,
+            event.wake_id,
+            event.vm_id,
+            event.vcpu_id,
+            event.pcpu_id,
+            event.source.as_str(),
+            event.phase.as_str(),
+            event.counter_ticks,
         )?;
     }
     for accounting in &trace.pcpus {
@@ -237,8 +256,9 @@ fn write_host_rt_trace(
     }
     writeln!(
         output,
-        "AXVISOR_RT_HOST_TRACE_COMPLETE schema=1 records={}",
-        trace.injections.len()
+        "AXVISOR_RT_HOST_TRACE_COMPLETE schema=1 records={} wake_records={}",
+        trace.injections.len(),
+        trace.wake_events.len(),
     )
 }
 

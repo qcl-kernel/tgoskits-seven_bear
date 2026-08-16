@@ -46,6 +46,14 @@ AXVISOR_RT_HOST_NOISE schema=1 requested_pcpu=1 affinity_mask=0x2 observed_pcpu_
 AXVISOR_RT_HOST_NOISE_PCPU schema=1 pcpu=1 observed_wall_ticks=1000
 """
 
+HOST_WAKE = """\
+AXVISOR_RT_VCPU_WAKE schema=1 sequence=0 wake_id=1 vm=1 vcpu=0 pcpu=1 source=deferred_irq phase=publish counter_ticks=100
+AXVISOR_RT_VCPU_WAKE schema=1 sequence=1 wake_id=1 vm=1 vcpu=0 pcpu=2 source=deferred_irq phase=deferred_worker counter_ticks=110
+AXVISOR_RT_VCPU_WAKE schema=1 sequence=2 wake_id=1 vm=1 vcpu=0 pcpu=2 source=deferred_irq phase=runtime_notify counter_ticks=120
+AXVISOR_RT_VCPU_WAKE schema=1 sequence=3 wake_id=1 vm=1 vcpu=0 pcpu=2 source=deferred_irq phase=ipi_sent counter_ticks=125
+AXVISOR_RT_VCPU_WAKE schema=1 sequence=4 wake_id=1 vm=1 vcpu=0 pcpu=1 source=deferred_irq phase=vcpu_run counter_ticks=145
+"""
+
 
 class DirectIrqTraceTests(unittest.TestCase):
     @classmethod
@@ -76,6 +84,7 @@ class DirectIrqTraceTests(unittest.TestCase):
         self.assertEqual(len(result["host_accounting"]["pcpus"]), 2)
         self.assertEqual(len(result["host_accounting"]["vcpus"]), 2)
         self.assertIsNone(result["host_noise"])
+        self.assertIsNone(result["target_vcpu_wake"])
         self.assertEqual(
             result["lossless"],
             {
@@ -118,6 +127,30 @@ class DirectIrqTraceTests(unittest.TestCase):
         self.assertEqual(
             noise["pcpus"], [{"pcpu": 1, "observed_wall_ticks": 1000}]
         )
+
+    def test_reports_complete_target_vcpu_wake_pipeline(self) -> None:
+        host = HOST_TRACE.replace(
+            "unowned_virtual_timer_irqs=0",
+            "unowned_virtual_timer_irqs=0 wake_records=5 wake_dropped=0 wake_incomplete=0",
+            1,
+        ).replace(
+            "\nAXVISOR_RT_HOST_PCPU",
+            "\n" + HOST_WAKE + "AXVISOR_RT_HOST_PCPU",
+            1,
+        ).replace(
+            "AXVISOR_RT_HOST_TRACE_COMPLETE schema=1 records=3",
+            "AXVISOR_RT_HOST_TRACE_COMPLETE schema=1 records=3 wake_records=5",
+        )
+        temporary, host_path, guest_path = self.write_traces(host=host)
+        with temporary:
+            result = self.module.analyze_irq_traces(host_path, guest_path)
+
+        wake = result["target_vcpu_wake"]
+        self.assertEqual(wake["event_count"], 5)
+        self.assertEqual(wake["complete_pipeline_count"], 1)
+        self.assertEqual(wake["publish_to_vcpu_run_ns"]["samples_ns"], [1875])
+        self.assertEqual(wake["publish_to_deferred_worker_ns"]["samples_ns"], [416])
+        self.assertEqual(wake["runtime_notify_to_vcpu_run_ns"]["samples_ns"], [1041])
 
     def test_rejects_host_noise_that_escapes_requested_cpu(self) -> None:
         invalid_noise = HOST_NOISE.replace("observed_pcpu_mask=0x2", "observed_pcpu_mask=0xa")

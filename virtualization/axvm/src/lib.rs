@@ -43,6 +43,8 @@ mod sync;
 mod task;
 mod vcpu;
 mod vm;
+#[cfg(feature = "rt-trace")]
+mod wake_trace;
 
 pub mod config;
 

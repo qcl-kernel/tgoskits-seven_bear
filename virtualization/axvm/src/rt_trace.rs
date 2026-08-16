@@ -11,6 +11,7 @@ use core::{
 use std::vec::Vec;
 
 use crate::host::{HostCpu, HostTime, default_host};
+pub use crate::wake_trace::{VcpuWakePhase, VcpuWakePhaseRecord, VcpuWakeSource};
 
 #[cfg(feature = "rt-trace-soak")]
 const TRACE_CAPACITY: usize = 1_048_576;
@@ -242,6 +243,7 @@ pub(crate) fn begin_vm(vm_id: usize, vcpu_count: usize) {
     FAILED_INJECTIONS.store(0, Ordering::Relaxed);
     UNOWNED_VIRTUAL_TIMER_IRQS.store(0, Ordering::Relaxed);
     TIMER_INJECTIONS.reset_and_start();
+    crate::wake_trace::begin_vm(vm_id, vcpu_count);
 }
 
 /// Aborts a capture when VM startup fails before vCPUs can run.
@@ -251,6 +253,7 @@ pub(crate) fn abort_vm(vm_id: usize) {
         .is_ok()
     {
         TIMER_INJECTIONS.stop();
+        crate::wake_trace::abort_vm(vm_id);
         COMPLETED_VM.store(NO_VM, Ordering::Release);
     }
 }
@@ -261,6 +264,7 @@ pub(crate) fn end_vm(vm_id: usize) {
         return;
     }
     TIMER_INJECTIONS.stop();
+    crate::wake_trace::end_vm(vm_id);
     let host = default_host();
     let end_ticks = host.current_ticks();
     let host_cpu_count = HOST_CPU_COUNT.load(Ordering::Relaxed);
@@ -393,6 +397,12 @@ pub struct HostRtTraceSnapshot {
     /// Number of observations whose architectural counter frequency changed.
     pub counter_frequency_mismatches: u64,
     pub injections: Vec<VirtualTimerInjectionRecord>,
+    /// Number of wake phase records that exceeded the fixed trace capacity.
+    pub wake_dropped: usize,
+    /// Number of wake pipelines missing one or more source-specific phases.
+    pub wake_incomplete: usize,
+    /// Allocation-free phase observations for target-vCPU wakeups.
+    pub wake_events: Vec<VcpuWakePhaseRecord>,
     pub pcpus: Vec<HostPcpuAccounting>,
     pub vcpus: Vec<HostVcpuAccounting>,
 }
@@ -448,6 +458,7 @@ pub fn snapshot() -> Option<HostRtTraceSnapshot> {
         });
     }
 
+    let wake_trace = crate::wake_trace::snapshot();
     Some(HostRtTraceSnapshot {
         vm_id,
         counter_frequency_hz: COUNTER_FREQUENCY_HZ.load(Ordering::Acquire),
@@ -460,6 +471,9 @@ pub fn snapshot() -> Option<HostRtTraceSnapshot> {
         unowned_virtual_timer_irqs: UNOWNED_VIRTUAL_TIMER_IRQS.load(Ordering::Acquire),
         counter_frequency_mismatches: COUNTER_FREQUENCY_MISMATCHES.load(Ordering::Acquire),
         injections,
+        wake_dropped: wake_trace.dropped,
+        wake_incomplete: wake_trace.incomplete,
+        wake_events: wake_trace.events,
         pcpus,
         vcpus,
     })

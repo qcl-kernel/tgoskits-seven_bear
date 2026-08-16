@@ -126,7 +126,7 @@ pub(crate) fn queue_pending_interrupt(
 
     let runtime = vm.runtime_handle()?;
     let cpu_id = runtime.queue_pending_interrupt(vcpu_id, interrupt)?;
-    runtime.notify_all();
+    runtime.notify_vcpu_event(vcpu_id)?;
     crate::host::task::send_ipi(cpu_id);
     Ok(())
 }
@@ -134,6 +134,29 @@ pub(crate) fn queue_pending_interrupt(
 /// Wake and kick a target vCPU after an architecture IRQ backend has
 /// published pending state outside the generic runtime queue.
 pub(crate) fn notify_vcpu(vm_id: usize, vcpu_id: usize) -> AxVmResult {
+    notify_vcpu_with(vm_id, vcpu_id, || {}, || {})
+}
+
+#[cfg(feature = "rt-trace")]
+pub(crate) fn notify_vcpu_traced(
+    vm_id: usize,
+    vcpu_id: usize,
+    token: crate::wake_trace::VcpuWakeTraceToken,
+) -> AxVmResult {
+    notify_vcpu_with(
+        vm_id,
+        vcpu_id,
+        || crate::wake_trace::record_runtime_notify(token, vm_id, vcpu_id),
+        || crate::wake_trace::record_ipi_sent(token, vm_id, vcpu_id),
+    )
+}
+
+fn notify_vcpu_with(
+    vm_id: usize,
+    vcpu_id: usize,
+    runtime_notifying: impl FnOnce(),
+    ipi_sent: impl FnOnce(),
+) -> AxVmResult {
     let vm = crate::get_vm_by_id(vm_id)
         .ok_or_else(|| ax_err_type!(NotFound, format!("VM[{vm_id}] not found")))?;
     if !matches!(vm.status(), VmStatus::Running | VmStatus::Paused) {
@@ -145,8 +168,12 @@ pub(crate) fn notify_vcpu(vm_id: usize, vcpu_id: usize) -> AxVmResult {
 
     let runtime = vm.runtime_handle()?;
     let cpu_id = runtime.vcpu_cpu_id(vcpu_id)?;
-    runtime.notify_all();
+    // Publish trace correlation before the wait-queue wake. A remote target
+    // can run as soon as `notify_vcpu_event` makes it ready.
+    runtime_notifying();
+    runtime.notify_vcpu_event(vcpu_id)?;
     crate::host::task::send_ipi(cpu_id);
+    ipi_sent();
     Ok(())
 }
 
@@ -484,6 +511,9 @@ fn vcpu_run() {
         warn!("VM[{vm_id}] vCPU runtime not found, VCpu[{vcpu_id}] exiting");
         return;
     };
+    let event_channel = runtime
+        .vcpu_event_channel(vcpu_id)
+        .expect("prepared vCPU must have a runtime event channel");
 
     info!("VM[{}] VCpu[{}] waiting for running", vm.id(), vcpu.id());
     let cpu_on_start_ack = runtime.cpu_on_start_ack(vcpu_id);
@@ -542,6 +572,8 @@ fn vcpu_run() {
             let _ = poll_primary_vcpu_devices_with(&runtime, || poll_vm_devices(&vm));
         }
 
+        #[cfg(feature = "rt-trace")]
+        crate::wake_trace::record_vcpu_run(vm_id, vcpu_id);
         #[cfg(feature = "rt-trace")]
         let run_started_ticks = crate::rt_trace::current_ticks();
         #[cfg(feature = "rt-trace")]
@@ -635,7 +667,7 @@ fn vcpu_run() {
                 } => {
                     #[cfg(feature = "rt-trace")]
                     let wait_started_ticks = crate::rt_trace::current_ticks();
-                    CurrentArch::wait_for_vcpu_event(&vm, &vcpu, &runtime);
+                    CurrentArch::wait_for_vcpu_event(&vm, &vcpu, &runtime, event_channel);
                     #[cfg(feature = "rt-trace")]
                     crate::rt_trace::record_vcpu_wait(
                         vm_id,
@@ -784,22 +816,23 @@ mod tests {
 
     #[test]
     fn request_published_before_wfi_snapshot_prevents_sleep_and_is_consumed_once() {
-        let runtime = Arc::new(VmRuntimeHandle::new());
+        let runtime = Arc::new(VmRuntimeHandle::new(1));
         let request_published = Arc::new(std::sync::Barrier::new(2));
         let notifier_runtime = runtime.clone();
         let notifier_published = request_published.clone();
         let notifier = std::thread::spawn(move || {
-            notifier_runtime.notify_device_poll();
+            notifier_runtime.notify_device_poll().unwrap();
             notifier_published.wait();
         });
 
         request_published.wait();
-        let wait_snapshot = runtime.vcpu_event_wait_snapshot();
+        let event_channel = runtime.vcpu_event_channel(0).unwrap();
+        let wait_snapshot = event_channel.snapshot();
         let wait_count = std::cell::Cell::new(0);
         crate::vm::wait_for_vcpu_event_if_idle(
-            &runtime,
+            event_channel,
             &wait_snapshot,
-            || true,
+            || !runtime.device_poll_requested(),
             |_| wait_count.set(wait_count.get() + 1),
         );
 
@@ -820,8 +853,9 @@ mod tests {
 
     #[test]
     fn request_published_at_wait_boundary_prevents_sleep_and_is_consumed_once() {
-        let runtime = Arc::new(VmRuntimeHandle::new());
-        let wait_snapshot = runtime.vcpu_event_wait_snapshot();
+        let runtime = Arc::new(VmRuntimeHandle::new(1));
+        let event_channel = runtime.vcpu_event_channel(0).unwrap();
+        let wait_snapshot = event_channel.snapshot();
         let wait_boundary_reached = Arc::new(std::sync::Barrier::new(2));
         let request_published = Arc::new(std::sync::Barrier::new(2));
         let notifier_runtime = runtime.clone();
@@ -829,15 +863,15 @@ mod tests {
         let notifier_published = request_published.clone();
         let notifier = std::thread::spawn(move || {
             notifier_wait_boundary.wait();
-            notifier_runtime.notify_device_poll();
+            notifier_runtime.notify_device_poll().unwrap();
             notifier_published.wait();
         });
 
         let sleep_count = std::cell::Cell::new(0);
         crate::vm::wait_for_vcpu_event_if_idle(
-            &runtime,
+            event_channel,
             &wait_snapshot,
-            || true,
+            || !runtime.device_poll_requested(),
             |wake_condition| {
                 wait_boundary_reached.wait();
                 request_published.wait();
