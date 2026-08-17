@@ -1,0 +1,62 @@
+[Script Info]
+Title: AxVisor StarryOS competition demo
+ScriptType: v4.00+
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+PlayResX: 1280
+PlayResY: 720
+YCbCr Matrix: TV.709
+
+[V4+ Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: CardTitle,Microsoft YaHei,46,&H00F5FAFF,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.6,0,7,76,76,64,1
+Style: CardAccent,Microsoft YaHei,25,&H004FDDD5,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.2,0,7,80,80,180,1
+Style: CardBody,Microsoft YaHei,29,&H00DCE8F4,&H000000FF,&H00111D2E,&H00000000,0,0,0,0,100,100,0,0,1,1.2,0,7,86,86,252,1
+Style: CardGood,Microsoft YaHei,27,&H006FE8A8,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.2,0,7,86,86,215,1
+Style: CardBad,Microsoft YaHei,24,&H006B8CFF,&H000000FF,&H00111D2E,&H00000000,-1,0,0,0,100,100,0,0,1,1.2,0,7,86,86,475,1
+Style: Footer,Microsoft YaHei,18,&H008FA4BA,&H000000FF,&H00111D2E,&H00000000,0,0,0,0,100,100,0,0,1,0.8,0,1,76,76,34,1
+Style: Badge,Microsoft YaHei,17,&H00F5FAFF,&H000000FF,&H00111D2E,&H9A142337,-1,0,0,0,100,100,0,0,3,1,0,9,24,34,24,1
+Style: FastBadge,Microsoft YaHei,19,&H004FDDD5,&H000000FF,&H00111D2E,&H9A142337,-1,0,0,0,100,100,0,0,3,1,0,9,24,34,24,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:10.00,CardTitle,,0,0,0,,智能化工控中基于虚拟化的混合系统\N部署及联动实现
+Dialogue: 0,0:00:00.00,0:00:10.00,CardAccent,,0,0,0,,AxVisor · Orange Pi 5 Plus · StarryOS + Zephyr
+Dialogue: 0,0:00:00.00,0:00:10.00,CardBody,,0,0,0,,实时性改造 · UDP/IP 客户机通信 · AI 控制闭环\N\N同一 RK3588 平台协同运行智能计算与实时控制
+Dialogue: 0,0:00:00.00,0:00:10.00,Footer,,0,0,0,,任务一 实时性 · 任务二 网络通信 · 任务三 AI 控制闭环
+
+Dialogue: 0,0:00:10.00,0:00:35.00,Badge,,0,0,0,,SYSTEM · ORANGE PI 5 PLUS
+
+Dialogue: 0,0:00:35.00,0:00:39.00,CardTitle,,0,0,0,,任务一 / 实时 RTOS 化改造
+Dialogue: 0,0:00:35.00,0:00:39.00,CardAccent,,0,0,0,,CPU partition · timer/GIC · direct IRQ trace
+Dialogue: 0,0:00:35.00,0:00:39.00,Footer,,0,0,0,,五配对正式数据 · 双侧 soak · 三种原生 RTOS 基线
+
+Dialogue: 0,0:00:39.00,0:01:03.00,Badge,,0,0,0,,TASK 1 · SOURCE + CONFIG
+Dialogue: 0,0:01:03.00,0:01:39.00,Badge,,0,0,0,,TASK 1 · FORMAL BOARD RESULTS
+Dialogue: 0,0:01:39.00,0:01:59.00,Badge,,0,0,0,,TASK 1 · THREE RTOS BASELINES
+
+Dialogue: 0,0:01:59.00,0:02:03.00,CardTitle,,0,0,0,,任务二 / 基于网络的客户机间通信
+Dialogue: 0,0:01:59.00,0:02:03.00,CardAccent,,0,0,0,,virtio-net · UDP/IPv4 · IVC/1
+Dialogue: 0,0:01:59.00,0:02:03.00,Footer,,0,0,0,,CONTROL · STATUS · ACK · ERROR · 重传/去重/恢复/隔离
+
+Dialogue: 0,0:02:03.00,0:02:27.00,Badge,,0,0,0,,TASK 2 · PROTOCOL + ISOLATION
+Dialogue: 0,0:02:27.00,0:02:43.00,FastBadge,,0,0,0,,TASK 2 · ORANGE PI UART 2026-08-13 · 4×
+Dialogue: 0,0:02:43.00,0:03:08.00,Badge,,0,0,0,,TASK 2 · RECOVERY ANALYZER
+
+Dialogue: 0,0:03:08.00,0:03:12.00,CardTitle,,0,0,0,,任务三 / AI 模型与控制联动
+Dialogue: 0,0:03:08.00,0:03:12.00,CardAccent,,0,0,0,,inference → CONTROL → actuator → STATUS
+Dialogue: 0,0:03:08.00,0:03:12.00,Footer,,0,0,0,,完整闭环 · 端到端延迟 · manual/neural 对照
+
+Dialogue: 0,0:03:12.00,0:03:40.00,Badge,,0,0,0,,TASK 3 · CLOSED LOOP
+Dialogue: 0,0:03:40.00,0:04:05.00,Badge,,0,0,0,,TASK 3 · FIVE-PAIR RESULTS
+
+Dialogue: 0,0:04:05.00,0:04:09.00,CardTitle,,0,0,0,,工程完整性、创新与扩展
+Dialogue: 0,0:04:05.00,0:04:09.00,CardAccent,,0,0,0,,可复现命令 · fail-closed evidence · 多 RTOS
+Dialogue: 0,0:04:05.00,0:04:09.00,Footer,,0,0,0,,加分：StarryOS 替代 Linux · Zephyr / RT-Thread / FreeRTOS
+
+Dialogue: 0,0:04:09.00,0:04:44.00,Badge,,0,0,0,,ENGINEERING · EVIDENCE CHECK
+
+Dialogue: 0,0:04:44.00,0:05:00.00,CardTitle,,0,0,0,,评审关注 → 实现 → 机器证据
+Dialogue: 0,0:04:44.00,0:05:00.00,CardGood,,0,0,0,,实时性：CPU 隔离 + timer/GIC + 5×10k + 双 soak\N客户机通信：UDP/IP + 四类消息 + 故障恢复 + 网络隔离\NAI 控制：神经推理闭环 + 端到端延迟 + 五配对对照\N工程与扩展：可复现 runner · fail-closed analyzer · 多 RTOS
+Dialogue: 0,0:04:44.00,0:05:00.00,CardBad,,0,0,0,,证据边界：同板原生 RTOS 可继续增强 · 完整 raw 尚待公开 URL
+Dialogue: 0,0:04:44.00,0:05:00.00,Footer,,0,0,0,,competition/scorecard.md · test-report.md · reproduce.md

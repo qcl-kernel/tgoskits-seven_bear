@@ -635,11 +635,14 @@ sha256sum -c tgoskits-competition-full-evidence.tar.gz.sha256
 五分钟成片：
 
 ```text
-competition/results/current-source-smoke-20260813/demo-5min.mp4
+competition/results/terminal-demo-20260817/demo-terminal-5min.mp4
 ```
 
-它是实际串口日志和机器 summary 的后制证据回放，不伪装成同步拍摄的板卡视频。
-镜头和重新生成说明见 [`video-storyboard.md`](video-storyboard.md)。
+成片按评审顺序讲解总体架构、实时性改造与正式结果、基于 IP 的客户机通信、AI
+闭环控制和工程证据。归档 UART 以 4× 回放并常驻标识，主机侧分析器和 fail-closed
+verifier 在录制时实际执行。镜头、评分项映射、证据边界和重新生成说明见
+[`video-storyboard.md`](video-storyboard.md)。历史静态回放仍留在
+`current-source-smoke-20260813` 冻结包中，不修改原归档校验和。
 
 ## 10. 复现成功判定
 

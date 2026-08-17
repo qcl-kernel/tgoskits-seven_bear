@@ -1,0 +1,82 @@
+[
+  {
+    "id": "intro",
+    "duration_seconds": 10,
+    "text": "本作品在 Orange Pi 5 Plus 上，以 AxVisor 运行 StarryOS 与 Zephyr，完成智能工控闭环。"
+  },
+  {
+    "id": "architecture",
+    "duration_seconds": 25,
+    "text": "StarryOS 使用两个虚拟 CPU，固定到物理核一和二；Zephyr 独占物理核零。两端通过隔离网段通信：StarryOS 推理并发送控制量，Zephyr 执行动作、推进对象模型并返回状态。实体测试均由 StarryOS 替代 Linux。这为三个评分任务建立统一运行边界。"
+  },
+  {
+    "id": "task1-node",
+    "duration_seconds": 4,
+    "text": "任务一，实时性改造与验证。"
+  },
+  {
+    "id": "rt-mechanism",
+    "duration_seconds": 24,
+    "text": "改造覆盖四条关键路径：CPU partition 预留独占物理核并拒绝重叠；受控干扰分别落在共享核和隔离核；退出路径依次完成 GIC 应答、中断转移和停止客户机定时器；直接中断跟踪使用无分配、无锁缓冲区，避免测量扰动。"
+  },
+  {
+    "id": "rt-results",
+    "duration_seconds": 36,
+    "text": "正式实体板活动采用五个 shared 与 partitioned 配对，每项每侧一万个样本，并在两侧各完成三十分钟以上 soak。四项最大值在五个配对中全部改善：周期抖动、调度延迟和模拟中断响应的最坏运行改善均超过百分之九十九，直接中断最大值改善百分之四十三点四四三。跟踪无丢失，虚拟 CPU 无迁移，运行后 Linux 自动恢复，机器判定 M 二出口门通过。"
+  },
+  {
+    "id": "rt-baseline",
+    "duration_seconds": 20,
+    "text": "原生对照覆盖 Zephyr、RT-Thread 和 FreeRTOS：统一在 QEMU AArch64 上，以一毫秒周期运行空闲和高负载，每组一万个样本。画面给出 P 九十九和最大值；它是等价平台基线，不是同板 RK3588 裸机结果。"
+  },
+  {
+    "id": "task2-node",
+    "duration_seconds": 4,
+    "text": "任务二，客户机通信。"
+  },
+  {
+    "id": "network-protocol",
+    "duration_seconds": 24,
+    "text": "客户机只通过隔离 virtio-net 上的 UDP/IP 交换数据，不走共享内存。协议定义控制、状态、确认和类型化错误，并用重传、去重、安全回退和旧会话拒绝保证可靠性。同网段 TCP 传输六万五千五百三十六字节；一百个跨网段探针零接收。"
+  },
+  {
+    "id": "ivc-log",
+    "duration_seconds": 16,
+    "text": "实体板活动先执行二十个控制周期；控制器超时后，Zephyr 进入安全回退。AxVisor 随后重置虚拟机一中的 StarryOS，并以新会话恢复控制；旧会话被拒绝。"
+  },
+  {
+    "id": "ivc-analysis",
+    "duration_seconds": 25,
+    "text": "分析器从串口和原始 CSV 重新计算结果：一次虚拟机一重置和二十秒延迟被观察到；重启后控制与确认均为一百，错误、超时、重传为零。完整闭环 P 五十为二点三四毫秒，P 九十九为二十四点六九二毫秒，最终快照和 Linux 恢复通过。"
+  },
+  {
+    "id": "task3-node",
+    "duration_seconds": 4,
+    "text": "任务三，AI 控制闭环。"
+  },
+  {
+    "id": "ai-loop",
+    "duration_seconds": 28,
+    "text": "StarryOS 用温度、目标值、变化率和上次执行量构成四维输入，经四乘六乘一网络生成控制量，也可切换 ONNX Runtime CPU 或 RKNN NPU。Zephyr 应用控制、推进热模型，再返回状态和确认，作为下一周期输入，形成端到端闭环。因此展示的是闭环执行效果，而不是孤立推理。"
+  },
+  {
+    "id": "ai-results",
+    "duration_seconds": 25,
+    "text": "五个 A B、B A 配对各运行一千八百周期。神经策略的 RMSE 改善百分之三十五点九三，积分绝对误差改善百分之五十一点九三；但最大超调退化百分之九十六点三二。三类故障活动全部通过，RKNN 和 ONNX Runtime 各确认九千条指令。"
+  },
+  {
+    "id": "engineering-node",
+    "duration_seconds": 4,
+    "text": "最后，工程证据。"
+  },
+  {
+    "id": "verify",
+    "duration_seconds": 35,
+    "text": "交付把设计、测试、源码配置和复现命令逐项索引。校验器实际核对正式实时五配对和双 soak、三种 RTOS 原生基线、四组扩展客户机通信、三客户机网络隔离，以及 AI 两种推理后端。随后校验三十二份 JSON、五个压缩日志和 runner manifest，全部合同满足并退出零。评分要求、运行结果和复现入口由此进入同一证据链；任何缺项或哈希不符都会失败。"
+  },
+  {
+    "id": "outro",
+    "duration_seconds": 16,
+    "text": "三项核心任务均已对应实现与机器证据，并具备 StarryOS 和多 RTOS 加分条件。待补强项是同板原生 RTOS 对照，以及完整原始归档的公开不可变地址。"
+  }
+]
