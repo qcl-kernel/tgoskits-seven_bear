@@ -1,56 +1,54 @@
-# 五分钟演示视频脚本与证据索引
+# 五分钟比赛演示脚本与证据索引
 
-成片：[`demo-5min.mp4`](results/current-source-smoke-20260813/demo-5min.mp4)。
+成片：[`demo-terminal-5min.mp4`](results/terminal-demo-20260817/demo-terminal-5min.mp4)。
 
-这是一次**当前源码实体板结果的后验证据回放**：画面使用 2026-08-13 已归档的
-Orange Pi 5 Plus 串口标记、机器 JSON、哈希和源码入口制作，不冒充同时发生的现场
-录屏。完整原始输入保留在
-[`current-source-smoke-20260813`](results/current-source-smoke-20260813/)，观众可以在
-视频结束后逐项复核。
+视频直接围绕评审内容展开：先建立双客户机混合系统全貌，再依次回答实时性改造、
+客户机网络通信、AI 闭环控制三个核心任务，最后展示工程复现与证据校验。章节提示卡
+只用于帮助评委定位；每项结论均尽量在终端中对应到配置、命令、日志或机器结果。
 
-成片冻结于 2026-08-13，因此不包含 2026-08-14 新增的 RT-Thread/FreeRTOS 原生
-基线和三客户机 QEMU 隔离画面；这两项作为补充机器证据分别保存在
-[`rt-baseline`](rt-baseline/) 和
-[`axvisor-isolation-reference`](results/axvisor-isolation-reference/)，不反向改写
-已生成视频的内容。
+## 时间轴与评审关注点
 
-## 时间轴
+| 时间 | 对应评分内容 | 画面与讲解 | 速度 |
+| --- | --- | --- | --- |
+| 0:00–0:10 | 项目目标 | 比赛题目、Orange Pi 5 Plus / AxVisor / StarryOS / Zephyr 方案 | 1× |
+| 0:10–0:35 | 总体架构 | VM 资源、CPU 绑定、隔离网段与闭环数据流 | 1× |
+| 0:35–0:39 | 任务一 | 实时性改造与验证章节提示 | 1× |
+| 0:39–1:03 | 任务一：实现 | CPU partition、受控干扰、IRQ/timer 退出顺序、无锁跟踪 | 1× |
+| 1:03–1:39 | 任务一：结果 | 实体板五配对、每项每侧 10,000 样本、双 soak 与 M2 门禁 | 1× |
+| 1:39–1:59 | 任务一：对照 | Zephyr、RT-Thread、FreeRTOS 的统一 QEMU/AArch64 原生基线 | 1× |
+| 1:59–2:03 | 任务二 | 基于 IP 的客户机通信章节提示 | 1× |
+| 2:03–2:27 | 任务二：协议 | UDP/IPv4 主数据通道、ACK/重传/去重、网段隔离 | 1× |
+| 2:27–2:43 | 任务二：执行效果 | 实体板 UART：控制、状态、安全回退、VM1 重启与新会话 | 4× |
+| 2:43–3:08 | 任务二：分析 | 100 次恢复后控制、零超时/重传、延迟分位数与旧会话拒绝 | 1× |
+| 3:08–3:12 | 任务三 | AI 控制闭环章节提示 | 1× |
+| 3:12–3:40 | 任务三：实现 | 4→6→1 ReLU 网络、ORT/RKNN 后端与故障恢复路径 | 1× |
+| 3:40–4:05 | 任务三：结果 | 五配对控制质量、时延、可靠性及 overshoot 负向结果 | 1× |
+| 4:05–4:09 | 工程质量 | 可复现构建、证据链与多 RTOS 支持章节提示 | 1× |
+| 4:09–4:44 | 工程证据 | 评分任务覆盖、归档清单、输入哈希与 fail-closed 校验 | 1× |
+| 4:44–5:00 | 总结 | 将三项任务、工程质量和扩展能力映射到可复核证据 | 1× |
 
-| 时间 | 画面与讲解 | 对应证据 |
-| --- | --- | --- |
-| 0:00–0:20 | 赛题目标、Orange Pi 5 Plus / RK3588、StarryOS + Zephyr + AxVisor | `provenance.json` |
-| 0:20–0:45 | IVC `598b357f9…`、RT `077ba386c…`、`upstream/dev` 基线与 source boundary | `provenance.json`、`source-delta.txt`、`runtime-inputs.sha256` |
-| 0:45–1:15 | typed device graph：两个 VM、CPU/内存、两个独立 virtio-net、Starry block | `design.md`、两份 board TOML |
-| 1:15–1:40 | 双客户机 IP 拓扑与协议：`10.0.0.1 ↔ 10.0.0.2:5500`，CONTROL/STATUS/ACK/ERROR | `ivcproto`、IVC summary |
-| 1:40–2:20 | 实际 Zephyr VM restart：pCPU3 worker、20 s、session 切换、旧流量拒绝、safe fallback | `ivc/console.log.gz`、`ivc/summary.json` |
-| 2:20–2:45 | 重启后 100/100、0 error/timeout/retransmission，full-loop percentiles 和 clean snapshot | `ivc/summary.json` |
-| 2:45–3:20 | 当前 RT shared/partitioned 两侧各 3×100 样本，冷启动、lossless IRQ trace、Linux restore | `rt/shared`、`rt/partitioned` |
-| 3:20–3:50 | 原样展示单对负向结果与 `m2_exit_gate_met=false` | `rt/comparison.json` |
-| 3:50–4:20 | 历史正式五配对受控 host-noise 门通过，同时说明它不是当前源码复跑 | `historical-formal/rt-host-noise` |
-| 4:20–4:43 | manual/neural 五配对：RMSE、IAE 改善，overshoot 退化 | `historical-formal/ivc-control` |
-| 4:43–4:55 | ACK-loss / ERROR / restart 各 3/3，RKNN/ORT 各 9,000/9,000 | `historical-formal/` |
-| 4:55–5:00 | 复现入口、总校验清单和剩余缺口 | `reproduce.md`、`checksums.sha256` |
+## 结论与证据边界
 
-## 必须说清的边界
+- VM1 是 StarryOS 控制器，VM2 是 Zephyr 执行端；归档活动重置的是 VM1，
+  Zephyr 保持运行并进入安全回退。
+- 正式实时性结论来自 2026-08-16 的实体板五配对受控 host-interference
+  活动，并包含 shared/partitioned 双侧 30 分钟以上 soak。
+- 三种 RTOS 原生基线来自等价 QEMU/AArch64 平台，不描述为同一块 RK3588
+  裸机结果。
+- AI 结果同时展示 RMSE/IAE 改善和最大超调退化，不隐藏负向指标。
+- UART 是保留的实体板证据并在画面常驻标识；当前终端执行配置提取、机器摘要检查、
+  分析器与归档校验，不把归档回放冒充同步板卡直播。
 
-- 当前源码的 IVC restart 和 RT 两侧管线在实体板通过，但当前 RT 单对 M2 未通过，不作性能改善主张。
-- 正式五配对改善属于记录在各自 clean commit 的历史 F 层活动，不能改标成当前提交。
-- neural 相对 manual 改善 RMSE 35.93%、IAE 51.94%，但最大超调退化 96.32%。
-- 三种原生 RTOS 基线均为等价 QEMU/AArch64 而非同一 RK3588；三客户机动态隔离
-  已补齐跨 segment/无默认路由，但不在本成片中，动态 spoof/unknown-unicast 仍只有
-  最低层 policy tests。
-- 精简包不包含本地约 844 MiB 的完整历史 raw archive。
+## 成片验收
 
-## 录制与验收清单
+- [x] 300 秒，1280×720，H.264 30 fps，AAC 48 kHz 单声道。
+- [x] 终端采用 Hack 字体；关键命令、关键输出和结论保持可读。
+- [x] 十段终端素材由固定 digest 的 VHS 容器确定性录制。
+- [x] 仅冗长 UART 回放加速为 4×，其他演示保持正常速度。
+- [x] 三个核心任务依次覆盖实时性、客户机通信和 AI 控制，并补充工程质量与扩展能力。
+- [x] 归档 UART、当前机器结果和当前执行校验使用明确的常驻标签区分。
+- [x] 成片、FFprobe 元数据、SHA-256、输入哈希和源码状态一并交付。
 
-- [x] 时长约五分钟，1280×720，H.264。
-- [x] 明示后验回放，不冒充现场串口直播。
-- [x] 展示测试 source commit、upstream base、板卡 identity 与关键输入哈希。
-- [x] 展示 StarryOS 双 vCPU、Zephyr、IP/UDP 和 typed device graph。
-- [x] 展示实际 VM reset、新旧 session、安全回退和 Linux restore。
-- [x] 明示当前 RT 同提交单对的退化与 M2 fail，不隐藏负向结果。
-- [x] 历史正式数据与当前源码证据使用不同标签。
-- [x] AI 改善和超调退化同时出现。
-- [x] 视频文件纳入同一 `checksums.sha256`。
-- [x] 8 月 14 日新增能力在文档中明确标为补充证据，不伪装成视频已有画面。
-- [ ] 发布完整历史 raw archive 的不可变下载 URL 和顶层 SHA-256。
+制作方法与依赖见 [`video/README.md`](video/README.md)，成片元数据见
+[`terminal-demo-20260817`](results/terminal-demo-20260817/)。旧版静态回放仍保留在
+`current-source-smoke-20260813` 冻结包内，仅作为历史交付物。

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "intro",
+    "kind": "card",
+    "duration_seconds": 10
+  },
+  {
+    "id": "architecture",
+    "kind": "terminal",
+    "duration_seconds": 25,
+    "tape": "architecture.tape",
+    "speed": 1
+  },
+  {
+    "id": "task1-node",
+    "kind": "card",
+    "duration_seconds": 4
+  },
+  {
+    "id": "rt-mechanism",
+    "kind": "terminal",
+    "duration_seconds": 24,
+    "tape": "rt-mechanism.tape",
+    "speed": 1
+  },
+  {
+    "id": "rt-results",
+    "kind": "terminal",
+    "duration_seconds": 36,
+    "tape": "rt-results.tape",
+    "speed": 1
+  },
+  {
+    "id": "rt-baseline",
+    "kind": "terminal",
+    "duration_seconds": 20,
+    "tape": "rt-baseline.tape",
+    "speed": 1
+  },
+  {
+    "id": "task2-node",
+    "kind": "card",
+    "duration_seconds": 4
+  },
+  {
+    "id": "network-protocol",
+    "kind": "terminal",
+    "duration_seconds": 24,
+    "tape": "network-protocol.tape",
+    "speed": 1
+  },
+  {
+    "id": "ivc-log",
+    "kind": "terminal",
+    "duration_seconds": 16,
+    "tape": "ivc-log.tape",
+    "speed": 4
+  },
+  {
+    "id": "ivc-analysis",
+    "kind": "terminal",
+    "duration_seconds": 25,
+    "tape": "ivc-analysis.tape",
+    "speed": 1
+  },
+  {
+    "id": "task3-node",
+    "kind": "card",
+    "duration_seconds": 4
+  },
+  {
+    "id": "ai-loop",
+    "kind": "terminal",
+    "duration_seconds": 28,
+    "tape": "ai-loop.tape",
+    "speed": 1
+  },
+  {
+    "id": "ai-results",
+    "kind": "terminal",
+    "duration_seconds": 25,
+    "tape": "ai-results.tape",
+    "speed": 1
+  },
+  {
+    "id": "engineering-node",
+    "kind": "card",
+    "duration_seconds": 4
+  },
+  {
+    "id": "verify",
+    "kind": "terminal",
+    "duration_seconds": 35,
+    "tape": "verify.tape",
+    "speed": 1
+  },
+  {
+    "id": "outro",
+    "kind": "card",
+    "duration_seconds": 16
+  }
+]

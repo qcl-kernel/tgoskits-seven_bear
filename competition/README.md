@@ -29,7 +29,7 @@ default route、vsock、共享内存或 HyperCall 应用数据通道。
 | manual/neural 五配对闭环 | 历史活动通过；RMSE/IAE 改善，overshoot 退化 | [`historical-formal/ivc-control`](results/current-source-smoke-20260813/historical-formal/ivc-control/) |
 | ACK-loss / ERROR / restart | 历史活动各 3/3；当前 restart 再次通过 | [`historical-formal`](results/current-source-smoke-20260813/historical-formal/) |
 | RKNN NPU / ONNX Runtime CPU | 历史活动各 5×1,800 通过 | [`historical-formal/rknpu`](results/current-source-smoke-20260813/historical-formal/rknpu/)、[`ort`](results/current-source-smoke-20260813/historical-formal/ort/) |
-| 五分钟视频 | 实体串口与机器 JSON 的 300 秒证据回放版 | [`demo-5min.mp4`](results/current-source-smoke-20260813/demo-5min.mp4) |
+| 五分钟视频 | 按评分项讲解架构、实时性、客户机通信、AI 闭环与工程证据；关键命令及执行效果在终端展示 | [`demo-terminal-5min.mp4`](results/terminal-demo-20260817/demo-terminal-5min.mp4) |
 | upstream `dev` rebase | 运行源码包含 `56f8bfc8207f…`；IVC source 0 behind / 50 ahead | [`provenance.json`](results/current-source-smoke-20260813/provenance.json) |
 | 原生多 RTOS 对照 | Zephyr、RT-Thread、FreeRTOS 均完成 idle/stress 各 10,000 样本的 QEMU/AArch64 基线 | [`rt-baseline`](rt-baseline/)、[`native-rtthread-reference`](results/native-rtthread-reference/)、[`native-freertos-reference`](results/native-freertos-reference/) |
 | RT-Thread/FreeRTOS Guest/IVC | QEMU/AArch64 双 Guest normal 与 ACK-loss 共 4/4 通过；每组 100/100，故障组各 20 次重传/去重/恢复 | [`ivc/README.md`](ivc/README.md)、[`competition-rtos-guest-ivc.md`](../book/design/competition-rtos-guest-ivc.md) |
@@ -55,8 +55,8 @@ RT-Thread/FreeRTOS Guest/IVC 与三客户机隔离也在同一 clean commit 上�
   区分 smoke、formal、host/QEMU 证据。
 - [`reproduce.md`](reproduce.md)：从 source pin、构建、staging、实体运行、
   harvest 到 checksum 的可执行步骤。
-- [`video-storyboard.md`](video-storyboard.md)：五分钟成片的镜头、字幕、
-  真实性边界与重新录制方法。
+- [`video-storyboard.md`](video-storyboard.md)：五分钟成片的评分项映射、镜头、字幕与
+  证据边界。
 - [`requirement.md`](requirement.md)：比赛原始要求，不作为完成状态声明。
 - [`rt-baseline/README.md`](rt-baseline/README.md)：Zephyr、RT-Thread、
   FreeRTOS 的支持层级、统一测量边界和复现入口。

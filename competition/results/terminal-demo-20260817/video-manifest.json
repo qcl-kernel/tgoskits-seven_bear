@@ -1,0 +1,52 @@
+{
+    "schema_version":  1,
+    "generated_at_utc":  "2026-08-17T16:30:05Z",
+    "source_head":  "58c1cfc90eb7e55ff8c0fe0c571b476cfb182bb8",
+    "source_worktree_dirty":  true,
+    "output":  {
+                   "path":  "competition/results/terminal-demo-20260817/demo-terminal-5min.mp4",
+                   "sha256":  "afeff60df2f9f8ab854aad6000c48398bc08681b991ff41cb6f9b88b6efc4a31",
+                   "duration_seconds":  300,
+                   "width":  1280,
+                   "height":  720,
+                   "video_codec":  "h264",
+                   "audio_codec":  "aac"
+               },
+    "recording":  {
+                      "terminal_recorder":  "VHS official container",
+                      "vhs_image":  "ghcr.io/charmbracelet/vhs@sha256:9d5fc3dc0c160b0fb1d2212baff07e6bdf3fa9438c504a3237484567302fcf93",
+                      "shell":  "bash",
+                      "raw_capture_speed":  1,
+                      "accelerated_segments":  [
+                                                   {
+                                                       "id":  "ivc-log",
+                                                       "final_speed":  4
+                                                   }
+                                               ]
+                  },
+    "production_input_sha256":  {
+                                    "competition/video/render-terminal-demo.ps1":  "90d6df5cb01230e82f9f4bb29fd4cba7ab6e193a8217556000b4c6d7b0d7d042",
+                                    "competition/video/show-evidence.ps1":  "9fff4720e26b1a2aa34f178f97d02eeac1f0541ce8eeb7df3d4784b1f124c8db",
+                                    "competition/video/show-evidence.py":  "ed5630703a036b5689af81251cf5d0f5d6d1d09e079c59fff5eb6f8788e46db8",
+                                    "competition/video/terminal-demo.ass":  "d2eb20f837e0748ee0d835a5eaf1e528163e0691434187aa8787698c26bee86c",
+                                    "competition/video/terminal-narration.json":  "95bd9f14e203f522a1d99b63784f2e9181126241eaafae012fa76fed50af4226",
+                                    "competition/video/terminal-timeline.json":  "03d3f58d9619d1a2e065df6c4159bb624c7cc6776e8452edc05f55bbdf20bbcd",
+                                    "competition/video/tapes/architecture.tape":  "7b71cb51fba8f79e8c8ea20dd870406dbe514ecd2f9c5043943b4799900f0125",
+                                    "competition/video/tapes/rt-mechanism.tape":  "ed433bd47dba996dc1c004e6ad0c26dc33d76751f0d9ff226212bed31912db79",
+                                    "competition/video/tapes/rt-results.tape":  "eacaae62f940d03032260735144935c0d0f8929bafd258f67dc73991474af92a",
+                                    "competition/video/tapes/rt-baseline.tape":  "b676aef7cc1dca698f708343cd6fa6295e3c3f33d05eab884ee6a1f589493e44",
+                                    "competition/video/tapes/network-protocol.tape":  "937137c4f2240a6a440cf240b4917d1ce97e92b35c885f163521ab83b8f170ef",
+                                    "competition/video/tapes/ivc-log.tape":  "df396336c3b9c4f4b214804552e883ac881d110f97393100670131d975795742",
+                                    "competition/video/tapes/ivc-analysis.tape":  "4f874ca9d8d0e337429e15b7519c40024b01cacabed5be3e202e4985a1033826",
+                                    "competition/video/tapes/ai-loop.tape":  "e500c421bc21e7efefedfe2d52987b429fb4302fd45f112d2ab408550a1b7c70",
+                                    "competition/video/tapes/ai-results.tape":  "a395453f72920eccc524055c77ea834020830d8ca6dac962f40fd472bc462519",
+                                    "competition/video/tapes/verify.tape":  "9c6fd362627241bb34e5a06c969cba8efac1bf21e64f4e31bd75edf8e70ac995"
+                                },
+    "evidence_sha256":  {
+                            "competition/results/current-source-smoke-20260813/provenance.json":  "63a7977e18741013b21419669f4b59c933238c6fdd7e60c3758ac7f8bc4d15a3",
+                            "competition/results/current-source-smoke-20260813/ivc/console.log":  "a882953011ca296dd5f873b247055e0a3b12fafcfb5966583bb6a8dd65af57d7",
+                            "competition/results/current-source-smoke-20260813/ivc/summary.json":  "6ba1311b056641e8774dc301d7d38b9e15201c351c16141ced193916bebdc8e5",
+                            "competition/results/current-source-smoke-20260813/rt/comparison.json":  "448b3a33a05dbb8e1749d05ee169674f15e90d08535a3715e0c822b578c90f78",
+                            "competition/results/axvisor-rt-formal-20260816/campaign-summary.json":  "b4c978013461961ccf7cdd5f9ccd36267f9801a7c90867423747ef916454fe49"
+                        }
+}
