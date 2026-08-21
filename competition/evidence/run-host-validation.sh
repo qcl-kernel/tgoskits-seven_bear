@@ -29,6 +29,8 @@ bash competition/rt-baseline/common/tests/run.sh
     -s competition/rt-baseline/rtthread/tests -p 'test_*.py'
 "$python_command" -m unittest discover \
     -s competition/evidence/tests -p 'test_*.py'
+"$python_command" -m unittest discover \
+    -s competition/vision/tests -p 'test_*.py'
 "$python_command" competition/evidence/verify_delivery.py
 
-echo "COMPETITION_HOST_VALIDATION_PASS rtos_guest_tests=36 evidence_sets=3 qemu_logs=5 archive_files=113"
+echo "COMPETITION_HOST_VALIDATION_PASS rtos_guest_tests=36 vision_contract=pass evidence_sets=3 qemu_logs=5 archive_files=113"

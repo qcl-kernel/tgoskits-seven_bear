@@ -176,6 +176,11 @@ DetectionEntry::DetectionEntry(int cls_id_value, int score_value, int left_value
 {
 }
 
+SortingDecision::SortingDecision()
+    : action(SortingAction::Hold), detection_present(false), detection()
+{
+}
+
 ValidationImage::ValidationImage()
     : index(0), width(0), height(0)
 {
@@ -424,6 +429,30 @@ std::vector<DetectionEntry> ConvertDetections(const object_detect_result_list &r
             result.box.bottom));
     }
     return detections;
+}
+
+SortingDecision SelectSortingDecision(const std::vector<DetectionEntry> &detections,
+                                      int target_class_id,
+                                      int calibration_x)
+{
+    SortingDecision decision;
+    for (size_t i = 0; i < detections.size(); ++i) {
+        const DetectionEntry &candidate = detections[i];
+        if (candidate.cls_id != target_class_id ||
+            (decision.detection_present &&
+             candidate.score_q10000 <= decision.detection.score_q10000)) {
+            continue;
+        }
+        decision.detection_present = true;
+        decision.detection = candidate;
+    }
+    if (decision.detection_present) {
+        const int center_x =
+            decision.detection.left + (decision.detection.right - decision.detection.left) / 2;
+        decision.action = center_x < calibration_x ? SortingAction::SortLeft :
+                                                     SortingAction::SortRight;
+    }
+    return decision;
 }
 
 double DetectionIoU(const DetectionEntry &a, const DetectionEntry &b)

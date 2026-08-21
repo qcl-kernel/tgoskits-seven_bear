@@ -6,6 +6,7 @@
 using rknn_validation::DetectionEntry;
 using rknn_validation::ExpectedFile;
 using rknn_validation::ExpectedImage;
+using rknn_validation::SortingAction;
 
 static int require_true(bool value, const char *message)
 {
@@ -91,6 +92,29 @@ int main()
 
     actual[0] = DetectionEntry(32, 1000, 515, 935, 755, 1235);
     if (require_true(!rknn_validation::ValidateDetections(parsed.images[0], actual, &messages), "score delta fails") != 0) {
+        return 1;
+    }
+
+    actual.clear();
+    actual.push_back(DetectionEntry(32, 7081, 479, 706, 773, 1010));
+    rknn_validation::SortingDecision sorting =
+        rknn_validation::SelectSortingDecision(actual, 32, 625);
+    if (require_true(sorting.detection_present && sorting.action == SortingAction::SortRight &&
+                         sorting.detection.left == 479 && sorting.detection.right == 773,
+                     "sports ball right of calibration selects right") != 0) {
+        return 1;
+    }
+    actual.push_back(DetectionEntry(32, 8591, 517, 932, 730, 1151));
+    sorting = rknn_validation::SelectSortingDecision(actual, 32, 625);
+    if (require_true(sorting.action == SortingAction::SortLeft && sorting.detection.score_q10000 == 8591,
+                     "highest-confidence sports ball selects left") != 0) {
+        return 1;
+    }
+    actual.clear();
+    actual.push_back(DetectionEntry(58, 8159, 868, 335, 1167, 538));
+    sorting = rknn_validation::SelectSortingDecision(actual, 32, 625);
+    if (require_true(!sorting.detection_present && sorting.action == SortingAction::Hold,
+                     "missing target selects hold") != 0) {
         return 1;
     }
 
