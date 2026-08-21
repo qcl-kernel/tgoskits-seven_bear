@@ -7,15 +7,18 @@
 
 ## 支持边界
 
-| RTOS | 固定上游 | AxVisor guest boot | IVC/1 normal | IVC/1 ACK-loss |
-| --- | --- | --- | --- | --- |
-| Zephyr v4.3.0 | `3568e1b6…` | 已验证（QEMU/实体板） | 已验证 | 已验证 |
-| RT-Thread v5.2.2 | `ddf52e2c…` | 已验证（QEMU/AArch64） | 100/100 | 20 次丢 ACK、20 次去重恢复 |
-| FreeRTOS Kernel | `f1043c49…` | 已验证（QEMU/AArch64） | 100/100 | 20 次丢 ACK、20 次去重恢复 |
+| RTOS | 固定上游 | AxVisor guest boot | IVC/1 normal | IVC/1 ACK-loss | RK3588 + StarryOS smoke |
+| --- | --- | --- | --- | --- | --- |
+| Zephyr v4.3.0 | `3568e1b6…` | 已验证（QEMU/实体板） | 已验证 | 已验证 | 已验证 |
+| RT-Thread v5.2.2 | `ddf52e2c…` | 已验证（QEMU/AArch64/RK3588） | 100/100 | 20 次丢 ACK、20 次去重恢复 | 20/20，PSCI off |
+| FreeRTOS Kernel | `f1043c49…` | 已验证（QEMU/AArch64/RK3588） | 100/100 | 20 次丢 ACK、20 次去重恢复 | 20/20，PSCI off |
 
-RT-Thread/FreeRTOS 的结论限定为 QEMU/AArch64：尚未在 RK3588 实体板验证，也不把
-原生 RTOS 实时基线当作 Guest/IVC 证据。当前 QEMU 活动使用 Linux 控制端；它证明
-RTOS Guest 的 VirtIO/IP/IVC 端点兼容性，不替代 StarryOS + RTOS 的实体组合验证。
+RT-Thread/FreeRTOS 的 normal/ACK-loss 正式计数仍限定为 QEMU/AArch64。2026-08-18
+另在 Orange Pi 5 Plus 上分别与双 vCPU StarryOS 完成 20/20 smoke，证据位于
+[`orangepi-rtos-ivc-20260818`](../results/orangepi-rtos-ivc-20260818/)；两次均验证
+PSCI off、Starry done、snapshot fsck clean 和 Linux ext4 rw 恢复。实体 smoke 绑定
+当前工作树，不冒充此前 clean commit 的长时正式活动，也不把 Guest/IVC 当作原生
+RTOS 实时基线。
 
 ## 固定资源契约
 

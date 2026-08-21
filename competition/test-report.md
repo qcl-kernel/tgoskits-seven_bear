@@ -1,6 +1,6 @@
 # 测试与证据报告
 
-报告更新日期：2026-08-16。最终 IVC 实体板运行绑定 clean commit
+报告更新日期：2026-08-18。最终 IVC 实体板运行绑定 clean commit
 `598b357f92c848e669c12cca830a4d08d0a50e36`；RT shared/partitioned 实体板运行绑定
 `077ba386c20c29b84749f509b29e8a3f6f76e1e2`。两者都包含 `upstream/dev`
 `56f8bfc8207f38d4b395dae0cf533ecdb079fca8`，二者之间只改动四个
@@ -24,6 +24,10 @@
 | F | 历史 clean commit 上预注册的正式实体板多轮活动 | 统计性性能、可靠性和 AI 对照结论；不得改标为当前源码结果 |
 | H / D | host、QEMU、单元、契约、静态测试和设计溯源 | 软件边界、失败路径和机制存在；不得替代实体板时延 |
 | H-IVC-RTOS | clean commit `c82da8464…` 的 RT-Thread/FreeRTOS AxVisor QEMU 双 Guest 活动 | Guest boot、VirtIO/IP、IVC/1 normal 与 ACK-loss 端点成立；不是 StarryOS 组合或实体板证据 |
+| P-NATIVE | 2026-08-18 Orange Pi 5 Plus 原生 Zephyr 活动 | 同一 RK3588 上 idle/stress/约 30 分钟 soak 的补充基线；不经过 AxVisor |
+| P-IVC-RTOS | 2026-08-18 Orange Pi 5 Plus RT-Thread/FreeRTOS Guest/IVC 活动 | 两种 RTOS 分别与 StarryOS 实体组合可运行，并完成 PSCI off、快照、fsck 和 Linux 恢复；不是正式长时性能活动 |
+| P-VISION | 2026-08-18 Orange Pi 5 Plus 固定帧视觉闭环 | StarryOS 真实 RKNN/NPU 推理、UDP/IP 决策、Zephyr 动作和状态回传；不代表 Guest 实时 UVC/FPS |
+| R | 2026-08-18 两个 GitHub Release | 正式 RT 与历史 raw 的公开不可变 archive、manifest、SHA-256 sidecar 和服务端 digest |
 
 ## 1. 结论摘要
 
@@ -38,9 +42,11 @@
 | manual/neural 控制效果 | 混合结果 | F；RMSE 和 IAE 改善，最大超调退化，完整披露 |
 | ACK-loss、ERROR、VM restart 故障活动 | PASS | F 各 3/3；C-IVC 另有一次当前源码实际 restart |
 | Zephyr、RT-Thread、FreeRTOS 原生对照 | PASS | H；三种 QEMU/AArch64 RTOS 均有 idle/stress 各 10,000 样本、固定源码和保留证据 |
-| RT-Thread、FreeRTOS Guest/IVC | PASS | H-IVC-RTOS；normal/ACK-loss 共 4/4，每组 100/100，故障组各 20 次重传/去重/恢复 |
+| RK3588 原生 RTOS 补充对照 | PASS | P-NATIVE；Zephyr idle/stress/soak 各 10,000 样本，三组均零 miss |
+| RT-Thread、FreeRTOS Guest/IVC | PASS | H-IVC-RTOS：normal/ACK-loss 共 4/4；P-IVC-RTOS：实体 StarryOS 组合各 20/20 |
+| 固定帧视觉 AI 闭环 | PASS | P-VISION；真实 RKNN/NPU，`right/left/hold` 三帧请求动作等于实际动作 |
 | 三客户机跨 segment 动态隔离 | PASS | H；VM3 发送 100 个 UDP 探针，VM1 观察 7 秒收到 0 个，VM3 default route=0 |
-| 完整 raw 可公开下载 | **尚未完成** | 当前正式 RT 42,722,019-byte 压缩 archive 与历史约 844 MiB raw 均在本地；仓库已提交逐文件 manifest，仍缺不可变公开 URL |
+| 完整 raw 可公开下载 | PASS | R；正式 RT archive 42,722,019 bytes，历史 raw archive 87,648,734 bytes（解包约 844 MiB），两个 Release 均公开且服务端 digest 与 sidecar 一致 |
 
 ## 2. 当前源码实体板：IVC 重启恢复
 
@@ -140,6 +146,9 @@ idle guest + 受控 host interference treatment，不外推为 WCET 或所有压
 source commit/tree、板卡、原始日志、guest/host trace、字节数和 SHA-256。
 完整 deterministic archive 包含 113 个文件、raw payload 541,817,801 字节，压缩包
 SHA-256 为 `68c1efb1ae0338692a84943c7056e104e2abed9e62a89dcdb0e2540ea1f9859e`。
+archive、manifest 和 sidecar 已发布到不可变 Release
+[`axvisor-rt-formal-20260816-c82da8464`](https://github.com/yueneiqi/tgoskits-competition-evidence/releases/tag/axvisor-rt-formal-20260816-c82da8464)；
+服务端 asset digest 与上述 SHA-256 一致。
 归档保留一次测量前 U-Boot 命令握手超时；该尝试没有回执、未推进预注册槽位，后续
 重试及 12 个正式 measurement slot 均完成。
 
@@ -207,9 +216,27 @@ full-loop p99 只有 2/5 配对有利于 neural，因此不声称神经策略延
 两种后端的 full-loop p99 约 12–13.5 ms。它们证明 StarryOS 内推理部署和网络闭环，
 不把不同执行设备的墙钟值当作公平加速比。
 
-## 6. QEMU 原生多 RTOS 与三客户机隔离
+### 5.4 RK3588 固定帧视觉分拣闭环
 
-### 6.1 原生 RTOS idle/stress
+P-VISION 在同一 Orange Pi 5 Plus 上启动 AxVisor、StarryOS 与 Zephyr。StarryOS
+使用真实 RKNN/NPU 后端分析三张固定帧，以独立版本化视觉消息经 VirtIO Ethernet、
+UDP/IPv4 发送挡板决策，Zephyr 应用动作并回传实际状态：
+
+| 帧 | 推理结果 | 请求 / 实际动作 |
+| ---: | --- | --- |
+| 1 | `sports ball`，confidence 0.7081，bbox `479,706,773,1010` | right / right |
+| 2 | `sports ball`，confidence 0.8591，bbox `517,932,730,1151` | left / left |
+| 3 | 未检出目标 | hold / hold |
+
+3/3 均成功，零 retry、duplicate 和 protocol error；transport median 为 11,786 µs，
+固定帧输入到状态回传的 full-loop median 为 2,008,428 µs。后者包含逐帧启动 RKNN
+用户态验证进程和证据串联开销，不能换算成连续视频 FPS。验收证据位于
+[`fixed-frame-starry-zephyr-v7`](results/orangepi-vision-20260818/closed-loop/fixed-frame-starry-zephyr-v7/)；
+v1–v6 是保留的 bring-up 失败/不完整运行，不参与计数。
+
+## 6. 多 RTOS、实体 Guest/IVC 与三客户机隔离
+
+### 6.1 QEMU 原生 RTOS idle/stress
 
 三种 RTOS 都直接运行于等价 QEMU/AArch64 平台，不经过 AxVisor。每个 workload
 使用 1 ms 周期、100 次 warm-up 和 10,000 个保留样本。下表为单次参考 capture，
@@ -231,7 +258,24 @@ summary、原始 console/build gzip、hash 和复现命令分别位于
 “多原生 RTOS 等价平台对照”，本身不支持 AxVisor Guest/IVC 结论；后者由下一节
 完全独立的运行路径和证据支持。
 
-### 6.2 RT-Thread/FreeRTOS Guest/IVC
+### 6.2 RK3588 原生 Zephyr idle/stress/soak
+
+P-NATIVE 使用 Zephyr 4.3.0 直接运行在 Orange Pi 5 Plus Cortex-A55 CPU0，时钟源为
+24 MHz AArch64 architected counter，不经过 AxVisor：
+
+| 场景 | 样本 / 周期 | wake p99 / max | timer→task p99 / max | 负载 / miss |
+| --- | --- | ---: | ---: | --- |
+| idle | 10,000 / 1 ms | 2,875 / 4,000 ns | 1,458 / 2,625 ns | idle 999‰ / 0 |
+| CPU stress | 10,000 / 1 ms | 2,875 / 4,208 ns | 1,458 / 2,916 ns | stress 999‰，131,716 blocks/s / 0 |
+| stress soak | 10,000 / 180 ms；1,817.822 s | 3,291 / 4,291 ns | 2,041 / 2,916 ns | stress 999‰，132,282 blocks/s / 0 |
+
+证据位于 [`orangepi-native-zephyr-20260818`](results/orangepi-native-zephyr-20260818/)，
+包括原始串口、构建/恢复日志、参数、溯源、机器 summary 和逐文件 checksum。统计由板端
+保留 10,000 个样本后计算并复播；没有另存逐样本 CSV，因此这里只把 console 称为
+原始串口证据。短 stress 的一份 wake 复播存在字符交错，分析器使用完整一致副本并在
+summary 中保留该事实。
+
+### 6.3 QEMU RT-Thread/FreeRTOS Guest/IVC
 
 2026-08-16 在 clean commit `c82da8464ab69e7da95e9be08293559e67b28fac` 上用
 QEMU 6.2.0 TCG/Cortex-A72 运行 AxVisor，VM1 为双 vCPU Linux controller，VM2
@@ -258,7 +302,23 @@ fault；先加入失败回归，再用 `rt_ioremap` 建立 Device mapping，重�
 StarryOS controller。轮询 RX、QEMU host scheduling、RT-Thread 上游编译 warning 和
 FreeRTOS/Bao RWX `LOAD` linker warning 均保留为已知边界。
 
-### 6.3 三客户机动态隔离
+### 6.4 RK3588 StarryOS—RT-Thread/FreeRTOS Guest/IVC
+
+P-IVC-RTOS 在板卡 `bf61f4d4a1d994ad` 上分别运行双 vCPU StarryOS controller 与
+单 vCPU RT-Thread、FreeRTOS endpoint。每次 20 条神经网络控制命令均完成
+CONTROL → STATUS/ACK，随后 RTOS 通过 PSCI `SYSTEM_OFF` 停止：
+
+| RTOS | accepted / applied | transport p50 / p99 / max | full-loop p50 / p99 / max |
+| --- | ---: | ---: | ---: |
+| RT-Thread | 20 / 20 | 2,265 / 16,672 / 36,924 µs | 2,285 / 16,693 / 50,406 µs |
+| FreeRTOS | 20 / 20 | 1,910 / 16,627 / 37,588 µs | 1,929 / 16,647 / 50,663 µs |
+
+两次均为 0 error/timeout/retry/duplicate，且满足 PSCI off、Starry done、snapshot fsck
+clean、Linux ext4 rw restored。console、CSV、metadata、summary 与 checksum 位于
+[`orangepi-rtos-ivc-20260818`](results/orangepi-rtos-ivc-20260818/)。这是当前工作树的
+移植 smoke，不替代 C-RT-F 或历史正式长时活动。
+
+### 6.5 三客户机动态隔离
 
 QEMU 使用 4 个 Cortex-A72：AxVisor 位于 pCPU0，三个单 vCPU ArceOS guest 分别固定
 到 pCPU1/2/3。VM1 `10.0.2.15` 与 VM2 `10.0.2.16` 位于 segment 1，完成
@@ -272,6 +332,32 @@ NIC TX 计数增加 100。VM1 预先绑定 UDP 端口并在 TCP 完成后观察 
 clean commit `c82da8464ab69e7da95e9be08293559e67b28fac`，不是实体板证据；动态覆盖
 segment separation 与无默认路由，MAC spoof/unknown-unicast 仍由
 `axvm-net` 最低层 policy tests 覆盖。
+
+### 6.6 StarryOS `sync_file_range` Linux 语义回归
+
+优先级 6 选择了一个可由 Linux 对照直接判定的 syscall 语义缺口：StarryOS 原先先校验
+`flags`，再解析 fd；Linux 先解析 fd。因此“无效 fd + 无效 flags”在 StarryOS 返回
+`EINVAL`，而 Linux 返回 `EBADF`。修复将 `get_file_like(fd)` 移到范围与 flags 校验之前，
+不改变有效 fd 的后续同步与类型检查，并把既有 `test-sync-file-range` 从 known-fail 提升到
+分组测试。
+
+- Linux 主机同源 C 用例：16/16；
+- 修复前 StarryOS x86_64 QEMU：15/16，组合错误实际为 `EINVAL(22)`；
+- 修复后同一 StarryOS QEMU 用例：16/16，分组结果 1/1；
+- `cargo fmt -p starry-kernel --check`：通过；
+- upstream PR：[`rcore-os/tgoskits#2100`](https://github.com/rcore-os/tgoskits/pull/2100)，
+  提交 `ffc92277f0`（已 rebase 到最新 `dev`）。
+- 第二轮 upstream CI `32131644875` 中 Formatting、同步/锁策略、Workspace Clippy/std
+  tests 与 Starry x86_64/aarch64/loongarch64 均通过；RISC-V 在无关的
+  `test-nix-builder-lifecycle` 线程场景挂起并触发 1,800 秒 QEMU 超时。第一轮
+  `32127961360` 已在 RISC-V 上跑完本次 `test-sync-file-range` 16/16，随后才在无关的
+  `test-unix-cmsg-byte-marks` 挂起。两轮停顿位置不同，而同基线 `dev@c76ee0d121` 的
+  push CI `32130435526` 中 RISC-V Starry 全量套件通过，符合上游已由
+  [`#2101`](https://github.com/rcore-os/tgoskits/pull/2101) 单独处理的非确定性调度停顿；
+  `#2100` 不混入该跨子系统修复。
+
+该记录证明修复、失败回归和上游提交已经完成；在 PR 实际合入 `dev` 前，不把它记为
+“已合入”加分证据，也不由单个 errno 修复外推满额 syscall 数量。
 
 ## 7. 源码、设备图与产物溯源
 
@@ -305,6 +391,14 @@ claim、PSCI `CPU_ON` 异步生命周期以及无抢占 guest console mux。
 - RT-Thread 与 FreeRTOS idle/stress 原生 QEMU 端到端构建、运行和 analyzer 验证；
 - RT-Thread 与 FreeRTOS AxVisor Guest/IVC normal、ACK-loss 共 4/4，含共享 C host
   tests、ELF/config 负例、严格身份/计数分析和证据 checksum；
+- Orange Pi 5 Plus 原生 Zephyr idle/stress/soak 三组板测，均为 10,000 样本、零 miss；
+- Orange Pi 5 Plus 上 StarryOS—RT-Thread 与 StarryOS—FreeRTOS 实体 Guest/IVC，
+  各 20/20，并核验 PSCI off、快照 fsck 与 Linux rw 恢复；
+- Orange Pi 5 Plus 固定帧 StarryOS RKNN/NPU → UDP/IP → Zephyr 挡板闭环 3/3；
+- 本轮 focused Python：IVC/RTOS 新增回归 3/3、IVC/RTOS 契约与 QEMU analyzer 36/36、
+  原生 RT 基线 23/23、视觉闭环 46/46；
+- `sync_file_range` Linux 对照 16/16、StarryOS pre-fix 15/16 与 post-fix 16/16，
+  并提交 upstream PR #2100；
 - 三 guest AxVisor/ArceOS QEMU 动态隔离运行，64 KiB 同 segment TCP 与 100 个跨
   segment 探针后零接收；
 - 确定性 evidence packager 的相同字节、拒绝覆盖、输出边界和重复 manifest 负例。
@@ -326,12 +420,22 @@ console/build 日志和机器 summary 分别保存在第 6 节链接的参考证
 ## 9. 测量限制与待补强项
 
 - 当前正式 M2 已由 C-RT-F 闭合；早期 C-RT 单对失败仍原样保留，不能与正式五配对
-  拼接。当前正式 archive 已在本地生成并通过总 SHA-256 回读，但尚缺公开不可变 URL。
-- 完整历史 raw archive 仍只在本地 `results/orangepi-5-plus/`；应发布不可变下载和
-  总 SHA-256，仓库中的精简 summary 不能重算全部历史统计。
-- 三种原生 RTOS 基线和新增 RT-Thread/FreeRTOS Guest/IVC 都是等价 QEMU 平台，
-  不是同一 RK3588，无法消除硬件、时钟源和 QEMU/host scheduling 差异；新增端点
-  也尚未与实体 StarryOS controller 组合验证。
+  拼接。正式与历史 raw 已公开发布；历史 archive SHA-256 为
+  `8080f696a3100994a77165743360b14408fc3047eb6f0981f5e41e2b6f46e1f5`，Release 为
+  [`historical-raw-20260818`](https://github.com/yueneiqi/tgoskits-competition-evidence/releases/tag/historical-raw-20260818)。
+- 同板 P-NATIVE 与 P-IVC-RTOS 已补足 RK3588 外部有效性，但都是当前工作树补充 smoke，
+  不能与 clean commit 正式数据拼接。原生 Zephyr console 也不是逐样本 CSV。
+- P-VISION 只证明三张固定帧的真实 NPU 跨 Guest 闭环；未证明 Guest 内实时 UVC、
+  连续视频 FPS、长时识别准确率或视觉 soak。
+- syscall PR #2100 在实际 merge 前不是“已合入 `dev`”证据；当前账号对 upstream 只有
+  `READ` 权限，实际启用 squash auto-merge 时 GitHub 以缺少 `MergePullRequest` 权限拒绝。
+  两轮 CI 的唯一失败均为 RISC-V 全量套件在
+  不同无关用例处挂起，最终加分仍受 #2101、上游审查、必需检查和竞赛对 syscall
+  数量口径的约束。
+- 当前比赛分支 `bd126053…` 与正式实体活动提交 `c82da8464…` 是分叉历史，统一
+  `verify_delivery.py` 因 ancestry 门禁按预期拒绝；6 份 2026-08-18 实体补充证据的
+  77 个 manifest 文件已独立重算通过，两个公开 Release 也可由服务端 digest、sidecar
+  与 manifest 独立核验。恢复可追溯 ancestry 前，不把当前 checkout 描述为统一门禁通过。
 - 三客户机隔离是 QEMU 动态 capture，不是实体板；动态 spoof/unknown-unicast 流量
   尚未加入该端到端 case，但对应最低层 policy tests 已存在。
 - 五分钟视频是已归档实体串口与机器 JSON 的后验回放，不伪装成现场同步拍摄。

@@ -295,10 +295,15 @@ lease 覆盖 staging 和串口操作。仓库不保存 SSH/smart-plug 凭据。
 
 ## 10. 剩余保证边界
 
-- 当前 C-RT 只有一对 100-sample cpu-stress，机器判定 M2 未通过，也不满足正式
-  五配对+双 soak；
-- 历史 formal raw 全量约 844 MiB，compact summary 已提交，但仍需公开不可变下载；
-- 三种 native RTOS baseline 都在等价 QEMU/AArch64 平台，不是同一 RK3588 裸机；
+- 早期 C-RT 只有一对 100-sample cpu-stress 且 M2 未通过，仍作为诊断保留；正式
+  C-RT-F 已完成五配对+双 soak 并通过 M2，二者不得拼接；
+- 正式 RT 与历史 formal raw 已发布到两个不可变 GitHub Release，archive、manifest、
+  sidecar 与服务端 digest 均可复核；
+- 三种 native RTOS 仍有等价 QEMU/AArch64 baseline；另有同一 RK3588 上原生 Zephyr
+  idle/stress/soak 补充证据，但串口结果不是逐样本 CSV；
+- RT-Thread/FreeRTOS 已与 StarryOS 在 RK3588 完成各 20/20 Guest/IVC smoke，但它们
+  不是原生裸机基线，也不替代 clean-commit 长时正式活动；
+- 固定三帧视觉分拣已形成真实 RKNN/NPU 跨 Guest 闭环，不外推 Guest 实时 UVC/FPS；
 - 三客户机动态隔离已覆盖跨 segment 与无默认路由，MAC spoof/unknown-unicast
   仍只有最低层 policy tests，未做实体板动态恶意流量 capture；
 - observed maximum 不是数学/静态证明的 WCET；
