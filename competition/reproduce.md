@@ -575,7 +575,7 @@ operators 和数值容差由 [`ivc/model/README.md`](ivc/model/README.md) 与
 
 ## 9. 证据包与视频
 
-从任意交付 checkout 先验证新增 compact QEMU evidence：
+从保留正式运行源码 ancestry 的交付 checkout 先验证新增 compact QEMU evidence：
 
 ```sh
 python3 competition/evidence/verify_delivery.py
@@ -585,7 +585,10 @@ python3 competition/evidence/verify_delivery.py
 commit、3 个证据集、32 个受检文件、5 份 QEMU 日志与 113 项 archive manifest。
 若 checksum 漏列/不符、gzip 解压身份不符、业务计数或成功 marker 不成立、QEMU
 证据 commit 不一致、正式 M2/soak/回执契约不成立，或者 34 个预注册源码输入发生
-变化，命令以 2 退出。文档、证据、验证工具和 CI 变更允许晚于运行 commit。
+变化，命令以 2 退出。文档、证据、验证工具和 CI 变更允许晚于运行 commit。若分支
+通过 squash/rebase 丢失 `c82da8464…` 的祖先关系，该门禁会故意拒绝运行；此时公开
+Release 的 manifest/sidecar 仍可独立核验归档字节，但必须恢复可追溯 ancestry 后才能
+再次主张统一门禁通过，不能用放宽校验代替来源修复。
 
 从仓库根目录验证当前 compact bundle：
 
@@ -604,20 +607,36 @@ sh "$bundle/validation/verify-source-index.sh" . \
   sha256sum -c SHA256SUMS)
 ```
 
-当前正式 RT raw archive 已确定性生成。取得 archive 后与仓库 sidecar 一起校验：
+当前正式 RT raw archive 已发布。下载 archive、manifest 和 sidecar 后校验：
 
 ```sh
+release=https://github.com/yueneiqi/tgoskits-competition-evidence/releases/download/axvisor-rt-formal-20260816-c82da8464
 formal_archive=axvisor-rt-formal-20260816-c82da8464.tar.gz
-cp competition/results/axvisor-rt-formal-20260816/archive.sha256 .
+wget "$release/$formal_archive" "$release/archive.manifest.json" "$release/archive.sha256"
 sha256sum -c archive.sha256
-test "$(stat -c %s "$formal_archive")" -gt 40000000
+test "$(stat -c %s "$formal_archive")" -eq 42722019
 ```
 
 其预期总 SHA-256 为
 `68c1efb1ae0338692a84943c7056e104e2abed9e62a89dcdb0e2540ea1f9859e`；
 `archive.manifest.json` 还应逐项核验 archive 内 113 个文件。
 
-将完整本地 raw 目录制成不可覆盖、可逐文件核验的确定性归档：
+完整历史 raw 也已发布；压缩包为 87,648,734 bytes，解包约 844 MiB：
+
+```sh
+release=https://github.com/yueneiqi/tgoskits-competition-evidence/releases/download/historical-raw-20260818
+archive=tgoskits-historical-raw-20260818.tar.gz
+wget "$release/$archive" \
+  "$release/$archive.manifest.json" \
+  "$release/$archive.sha256"
+sha256sum -c "$archive.sha256"
+test "$(stat -c %s "$archive")" -eq 87648734
+```
+
+预期 SHA-256 为
+`8080f696a3100994a77165743360b14408fc3047eb6f0981f5e41e2b6f46e1f5`。
+两个 Release 都是公开、非 draft、非 prerelease；GitHub asset digest 与 sidecar
+一致。若需从本地 raw 重新生成历史归档，可运行：
 
 ```sh
 python3 competition/evidence/package.py \
@@ -629,8 +648,48 @@ sha256sum -c tgoskits-competition-full-evidence.tar.gz.sha256
 ```
 
 命令同时生成外置 manifest 和 SHA-256 sidecar，并把同一 manifest 嵌入 tar。
-脚本会拒绝链接、特殊文件、重复输出，并回读验证每个 archive member。仍需把三个
-文件上传到同一不可变 release/dataset；本地打包不能代替公开 URL 或服务端 checksum。
+脚本会拒绝链接、特殊文件、重复输出，并回读验证每个 archive member。本地重打包
+只用于复核，公开交付仍以上述不可变 Release asset 和服务端 digest 为准。
+
+复核 2026-08-18 的三组 RK3588 补充证据：
+
+```sh
+for run in idle cpu-stress soak; do
+  (cd "competition/results/orangepi-native-zephyr-20260818/$run" && \
+    sha256sum -c checksums.sha256)
+done
+
+for run in rtthread freertos; do
+  (cd "competition/results/orangepi-rtos-ivc-20260818/$run" && \
+    sha256sum -c checksums.sha256)
+done
+
+(cd competition/results/orangepi-vision-20260818/closed-loop/fixed-frame-starry-zephyr-v7 && \
+  sha256sum -c checksums.sha256)
+```
+
+这些命令验证保留文件身份；它们不会把当前工作树 smoke 提升为 clean-commit 正式活动，
+也不会把固定三帧视觉闭环扩展为 Guest 实时 UVC/FPS 结论。
+
+优先级 6 的 StarryOS syscall 修复位于 upstream
+[`rcore-os/tgoskits#2100`](https://github.com/rcore-os/tgoskits/pull/2100)。在该 PR 的
+worktree 中先用同源 C 程序对照 Linux，再运行 Starry 单个 grouped subcase：
+
+```sh
+host_build=$(mktemp -d)
+cmake \
+  -S test-suit/starryos/qemu/system/syscall-test-sync-file-range \
+  -B "$host_build"
+cmake --build "$host_build"
+"$host_build/test-sync-file-range"
+
+cargo xtask starry test qemu --arch x86_64 \
+  -c qemu/system/syscall-test-sync-file-range
+```
+
+Linux 与修复后的 StarryOS 均应显示 `16 pass, 0 fail`。修复前 StarryOS 在“非法 fd +
+非法 flags”组合上稳定得到 `EINVAL(22)`，因此同一用例为 `15/16`；修复后应为
+`EBADF(9)`。PR 未实际合入 `dev` 前，这仍不是“已合入”加分证据。
 
 五分钟成片：
 
