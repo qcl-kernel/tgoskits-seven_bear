@@ -5,8 +5,8 @@ use core::{cell::RefCell, fmt};
 
 use ax_sync::SpinLock;
 use axdevice_base::{
-    AccessWidth, BusAccess, BusKind, BusResponse, ControllerInputId, Device, DeviceAccess,
-    DeviceError, DeviceResult, DmaGrant, InterruptControllerId, InterruptSharing, InterruptTrigger,
+    AccessWidth, BusKind, ControllerInputId, Device, DeviceAccess, DeviceContext, DeviceError,
+    DeviceResult, DmaGrant, InterruptControllerId, InterruptSharing, InterruptTrigger,
     InterruptTriggerMode, IrqLine, Resource,
 };
 use axvm_types::GuestPhysAddr;
@@ -693,7 +693,7 @@ impl VirtioBlockDevice {
         })
     }
 
-    fn process_queue_notification(&self, context: &mut dyn DeviceAccess) -> DeviceResult {
+    fn process_queue_notification(&self, context: &mut dyn DeviceContext) -> DeviceResult {
         let context = RefCell::new(context);
         let read = |address, buffer: &mut [u8]| {
             context
@@ -738,40 +738,56 @@ impl Device for VirtioBlockDevice {
         &self.resources
     }
 
-    fn access(
-        &self,
-        access: &BusAccess,
-        context: &mut dyn DeviceAccess,
-    ) -> Result<BusResponse, DeviceError> {
-        if access.kind != BusKind::Mmio {
-            return Err(DeviceError::OutOfRange { addr: access.addr });
-        }
-        let address = usize::try_from(access.addr)
-            .map(GuestPhysAddr::from_usize)
-            .map_err(|_| DeviceError::OutOfRange { addr: access.addr })?;
-        if access.is_read {
-            let value = self.core.handle_read(address, access.width)?;
-            return Ok(BusResponse::Read {
-                value: value as u64,
+    fn read(&self, access: &DeviceAccess, _context: &mut dyn DeviceContext) -> DeviceResult<u64> {
+        if access.bus() != BusKind::Mmio {
+            return Err(DeviceError::OutOfRange {
+                addr: access.address(),
             });
         }
+        let address = usize::try_from(access.address())
+            .map(GuestPhysAddr::from_usize)
+            .map_err(|_| DeviceError::OutOfRange {
+                addr: access.address(),
+            })?;
+        self.core
+            .handle_read(address, access.width())
+            .map(|value| value as u64)
+    }
 
-        let value = usize::try_from(access.data).map_err(|_| DeviceError::InvalidInput {
+    fn write(
+        &self,
+        access: &DeviceAccess,
+        value: u64,
+        context: &mut dyn DeviceContext,
+    ) -> DeviceResult {
+        if access.bus() != BusKind::Mmio {
+            return Err(DeviceError::OutOfRange {
+                addr: access.address(),
+            });
+        }
+        let address = usize::try_from(access.address())
+            .map(GuestPhysAddr::from_usize)
+            .map_err(|_| DeviceError::OutOfRange {
+                addr: access.address(),
+            })?;
+        let value = usize::try_from(value).map_err(|_| DeviceError::InvalidInput {
             operation: "write virtio block register",
-            detail: format!("value {:#x} does not fit the host word", access.data),
+            detail: format!("value {value:#x} does not fit the host word"),
         })?;
-        self.core.handle_write(address, access.width, value)?;
+        self.core.handle_write(address, access.width(), value)?;
         let offset = access
-            .addr
+            .address()
             .checked_sub(self.base)
             .and_then(|offset| usize::try_from(offset).ok())
-            .ok_or(DeviceError::OutOfRange { addr: access.addr })?;
+            .ok_or(DeviceError::OutOfRange {
+                addr: access.address(),
+            })?;
         if self.core.is_queue_notify(offset, value as u32) {
             self.process_queue_notification(context)?;
         } else {
             self.sync_interrupt_line()?;
         }
-        Ok(BusResponse::Write)
+        Ok(())
     }
 }
 
