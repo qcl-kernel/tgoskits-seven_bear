@@ -31,7 +31,7 @@ cmake -S "${src_dir}" -B "${host_test_build_dir}" \
   -DTARGET_SOC=rk3588
 cmake --build "${host_test_build_dir}" \
   --target image_utils_jpeg_selftest uvc_capture_layout_selftest uvc_capture_mjpeg_selftest \
-  -j"$(nproc)"
+    detection_validation_selftest -j"$(nproc)"
 ctest --test-dir "${host_test_build_dir}" --output-on-failure
 
 cmake -S "${src_dir}" -B "${build_dir}" \
