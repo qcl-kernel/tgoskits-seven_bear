@@ -176,17 +176,49 @@ def execute_action(
 def create_device(config: PlugConfig) -> MiotDevice:
     try:
         from miio.integrations.genericmiot.genericmiot import GenericMiot
+        from miio.miot_cloud import MiotCloud
+        from miio.miot_models import DeviceModel
     except ImportError as error:
         raise ConfigError(
             "python-miio is missing; install board-power-control/requirements.txt",
         ) from error
 
-    return GenericMiot(
+    class CompatibleGenericMiot(GenericMiot):
+        """Load MIoT schemas while tolerating descriptive comment fields."""
+
+        def initialize_model(self) -> None:
+            if self._miot_model is not None:
+                return
+            schema = remove_miot_schema_comments(
+                MiotCloud().get_model_schema(self.model),
+            )
+            model_validator = getattr(DeviceModel, "model_validate", None)
+            if model_validator is None:
+                self._miot_model = DeviceModel.parse_obj(schema)
+            else:
+                self._miot_model = model_validator(schema)
+            self._create_descriptors()
+
+    return CompatibleGenericMiot(
         config.ip,
         config.token,
         model=config.model,
         timeout=config.timeout_seconds,
     )
+
+
+def remove_miot_schema_comments(value: Any) -> Any:
+    """Remove non-protocol comments rejected by python-miio's strict models."""
+
+    if isinstance(value, dict):
+        return {
+            key: remove_miot_schema_comments(nested)
+            for key, nested in value.items()
+            if key != "comment"
+        }
+    if isinstance(value, list):
+        return [remove_miot_schema_comments(nested) for nested in value]
+    return value
 
 
 def cycle_power(
