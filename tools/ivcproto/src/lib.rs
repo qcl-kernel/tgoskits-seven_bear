@@ -17,6 +17,8 @@ pub mod ort;
 pub mod reliability;
 #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
 pub mod rknn;
+pub mod vision;
+pub mod vision_records;
 pub mod wire;
 
 pub use reliability::ReliablePeer;

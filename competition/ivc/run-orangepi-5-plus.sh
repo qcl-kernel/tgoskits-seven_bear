@@ -10,7 +10,7 @@ metadata_writer=$script_dir/write_board_metadata.py
 
 usage() {
     cat <<EOF
-Usage: $0 [smoke|full|manual-smoke|manual-full|rknpu-smoke|rknpu-full|ort-smoke|ort-full|fault-ack-loss|fault-error|fault-restart] [options]
+Usage: $0 [smoke|full|rtthread-smoke|freertos-smoke|manual-smoke|manual-full|rknpu-smoke|rknpu-full|ort-smoke|ort-full|fault-ack-loss|fault-error|fault-restart] [options]
 
 Options:
   --profile <name>        Select a normal/manual run or deterministic fault campaign.
@@ -102,6 +102,10 @@ runtime_version=native
 starry_kernel_name=starryos.bin
 starry_dtb_name=starry-orangepi-5-plus.dtb
 profile_stager=
+rtos_guest_kind=zephyr
+rtos_guest_build_dir=
+rtos_guest_builder=
+rtos_guest_binary=
 case "$profile" in
     smoke)
         build_config=competition/ivc/config/axvisor-orangepi-5-plus-smoke.toml
@@ -112,6 +116,32 @@ case "$profile" in
         guest_image_name=starry-ivc-rootfs-smoke.img
         zephyr_guest_image=competition/ivc/zephyr/build-board-smoke/zephyr/zephyr.bin
         result_image_name=ivc-ns
+        ;;
+    rtthread-smoke)
+        build_config=competition/ivc/config/axvisor-orangepi-5-plus-rtthread-smoke.toml
+        board_config=competition/ivc/config/board-orangepi-5-plus-rtthread-smoke.toml
+        expected_count=20
+        model_id=thermal-4x6x1-v1
+        inference_backend=native
+        guest_image_name=starry-ivc-rootfs-smoke.img
+        result_image_name=ivc-rts
+        rtos_guest_kind=rt-thread
+        rtos_guest_build_dir=$workspace/tmp/competition/ivc/guests/rtthread/board-smoke
+        rtos_guest_builder=$script_dir/rtthread/build.sh
+        rtos_guest_binary=rtthread.bin
+        ;;
+    freertos-smoke)
+        build_config=competition/ivc/config/axvisor-orangepi-5-plus-freertos-smoke.toml
+        board_config=competition/ivc/config/board-orangepi-5-plus-freertos-smoke.toml
+        expected_count=20
+        model_id=thermal-4x6x1-v1
+        inference_backend=native
+        guest_image_name=starry-ivc-rootfs-smoke.img
+        result_image_name=ivc-fts
+        rtos_guest_kind=freertos
+        rtos_guest_build_dir=$workspace/tmp/competition/ivc/guests/freertos/board-smoke
+        rtos_guest_builder=$script_dir/freertos/build.sh
+        rtos_guest_binary=freertos.bin
         ;;
     full)
         build_config=competition/ivc/config/axvisor-orangepi-5-plus.toml
@@ -240,6 +270,21 @@ case "$profile" in
         exit 2
         ;;
 esac
+if [[ -n "$rtos_guest_build_dir" ]]; then
+    if [[ ! -e "$rtos_guest_build_dir" ]]; then
+        bash "$rtos_guest_builder" board-smoke "$rtos_guest_build_dir"
+    elif [[ ! -f "$rtos_guest_build_dir/$rtos_guest_binary" ]] \
+        || [[ ! -f "$rtos_guest_build_dir/SHA256SUMS" ]] \
+        || [[ ! -f "$rtos_guest_build_dir/source-provenance.txt" ]]; then
+        echo "Incomplete existing physical-board RTOS guest: $rtos_guest_build_dir" >&2
+        exit 2
+    fi
+    (
+        cd -- "$rtos_guest_build_dir"
+        sha256sum --check --strict SHA256SUMS
+    )
+    zephyr_guest_image=$rtos_guest_build_dir/$rtos_guest_binary
+fi
 if [[ "$inference_backend" == native ]]; then
     profile_stager=$script_dir/stage-starry-control.sh
 fi
@@ -275,7 +320,11 @@ for command_name in date grep gzip mv python3 sha256sum tee; do
         exit 1
     fi
 done
-for input_path in "$analyzer" "$metadata_writer" "$model_artifact"; do
+for input_path in \
+    "$analyzer" \
+    "$metadata_writer" \
+    "$model_artifact" \
+    "$zephyr_guest_image"; do
     if [[ ! -r "$input_path" ]]; then
         echo "Orange Pi result tool not found: $input_path" >&2
         exit 1
@@ -320,6 +369,13 @@ write_checksums() {
     fi
     if [[ -f "$run_dir/stage.log" ]]; then
         files+=(stage.log)
+    fi
+    if [[ -f "$run_dir/rtos-guest-SHA256SUMS" ]]; then
+        files+=(
+            rtos-guest-SHA256SUMS
+            rtos-guest-source-provenance.txt
+            rtos-guest-elf-layout.json
+        )
     fi
     (
         cd "$run_dir"
@@ -385,7 +441,22 @@ for ((run_number = 1; run_number <= repeat_count; run_number++)); do
         "$pre_reset_raw_csv_path" \
         "$pre_reset_raw_csv_gzip" \
         "$console_gzip" \
+        "$run_dir/rtos-guest-SHA256SUMS" \
+        "$run_dir/rtos-guest-source-provenance.txt" \
+        "$run_dir/rtos-guest-elf-layout.json" \
         "$run_dir/checksums.sha256"
+
+    if [[ -n "$rtos_guest_build_dir" ]]; then
+        install -m 0644 \
+            "$rtos_guest_build_dir/SHA256SUMS" \
+            "$run_dir/rtos-guest-SHA256SUMS"
+        install -m 0644 \
+            "$rtos_guest_build_dir/source-provenance.txt" \
+            "$run_dir/rtos-guest-source-provenance.txt"
+        install -m 0644 \
+            "$rtos_guest_build_dir/elf-layout.json" \
+            "$run_dir/rtos-guest-elf-layout.json"
+    fi
 
     if [[ -n "$profile_stager" ]]; then
         case "$inference_backend" in
@@ -485,6 +556,7 @@ for ((run_number = 1; run_number <= repeat_count; run_number++)); do
             "$console_gzip"
             --raw-csv "$raw_csv_gzip"
             --expected-count "$expected_count"
+            --expected-rtos "$rtos_guest_kind"
             --profile "$analyzer_profile"
             --drop-ack-every "$drop_ack_every"
             --output "$summary_path"
@@ -569,7 +641,8 @@ for ((run_number = 1; run_number <= repeat_count; run_number++)); do
         --starry-kernel "$starry_kernel"
         --starry-dtb "$starry_dtb"
         --rootfs "$local_rootfs"
-        --zephyr-guest "$zephyr_guest_image"
+        --rtos-guest "$zephyr_guest_image"
+        --rtos-guest-kind "$rtos_guest_kind"
         --model-id "$model_id"
         --model-artifact "$model_artifact"
         --inference-backend "$inference_backend"

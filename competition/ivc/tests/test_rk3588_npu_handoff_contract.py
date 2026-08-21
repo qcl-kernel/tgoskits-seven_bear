@@ -166,6 +166,7 @@ class Rk3588NpuHandoffContractTests(unittest.TestCase):
         )
         self.assertIn("dma-coherent;", body)
         self.assertIn('status = "okay";', body)
+        property_body = re.sub(r"/\*.*?\*/", "", body, flags=re.DOTALL)
         for forbidden in (
             "interrupts",
             "iommus",
@@ -176,7 +177,7 @@ class Rk3588NpuHandoffContractTests(unittest.TestCase):
             "supply",
         ):
             with self.subTest(forbidden=forbidden):
-                self.assertNotIn(forbidden, body)
+                self.assertNotIn(forbidden, property_body)
 
     def test_guest_dts_leaves_conventional_devices_to_the_resolved_graph(self) -> None:
         source = GUEST_DTS.read_text(encoding="utf-8")

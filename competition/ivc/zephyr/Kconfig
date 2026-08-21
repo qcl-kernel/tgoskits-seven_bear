@@ -26,6 +26,15 @@ config IVC_EXPECTED_COMMANDS
 	  deterministic ACK-loss profile additionally waits for the expected
 	  retransmitted duplicates.
 
+config IVC_EXPECTED_VISION_DECISIONS
+	int "Expected visual decisions in a finite sorting run"
+	range 0 1000000
+	default 0
+	help
+	  A positive value selects the typed visual-sorting endpoint. Each accepted
+	  VISION_DECISION produces an ACTUATOR_STATUS and ACK; legacy thermal
+	  CONTROL commands are not counted toward this finite result.
+
 config IVC_EXPECTED_PROTOCOL_ERRORS
 	int "Expected ERROR responses in a finite evidence run"
 	range 0 1000000
@@ -63,7 +72,7 @@ config IVC_EXPECTED_SAFE_FALLBACKS
 
 config IVC_EXIT_AFTER_EXPECTED_COMMANDS
 	bool "Power off after a finite evidence run"
-	depends on IVC_EXPECTED_COMMANDS > 0
+	depends on IVC_EXPECTED_COMMANDS > 0 || IVC_EXPECTED_VISION_DECISIONS > 0
 	depends on POWEROFF
 	default n
 	help

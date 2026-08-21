@@ -5,7 +5,7 @@ set -euo pipefail
 
 usage() {
     cat <<'EOF'
-usage: build.sh [normal|ack-loss] [output-directory]
+usage: build.sh [normal|ack-loss|board-smoke] [output-directory]
 
 Build the pinned RT-Thread v5.2.2 AxVisor IVC guest. The default output is
 tmp/competition/ivc/guests/rtthread/<profile>.
@@ -31,6 +31,9 @@ case "$profile" in
         ;;
     ack-loss)
         profile_macros=IVC_EXPECTED_COMMANDS=100,IVC_DROP_ACK_EVERY=5
+        ;;
+    board-smoke)
+        profile_macros=IVC_EXPECTED_COMMANDS=20,IVC_STOP_AFTER_RESULT=1
         ;;
     -h|--help)
         usage
@@ -93,7 +96,8 @@ mkdir -p -- "$stage" "$workspace/rtthread-packages"
 for source in main.c network.c network.h SConscript; do
     install -m 0644 "$script_dir/$source" "$app/$source"
 done
-for source in ivc_rtos_server.c ivc_rtos_server.h virtio_net_mmio.c virtio_net_mmio.h; do
+for source in aarch64_psci.h ivc_rtos_server.c ivc_rtos_server.h \
+    virtio_net_mmio.c virtio_net_mmio.h; do
     install -m 0644 "$script_dir/../common/$source" "$app/$source"
 done
 for source in protocol.c protocol.h endpoint.c endpoint.h; do

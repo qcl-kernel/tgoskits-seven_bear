@@ -172,6 +172,7 @@ def analyze(
     ort_path: Path | None = None,
     expected_ort_model_sha256: str | None = None,
     expected_ort_runtime_version: str | None = None,
+    expected_rtos: str = "zephyr",
 ) -> dict[str, object]:
     if expected_count <= 0:
         raise AnalysisError("expected count must be positive")
@@ -196,7 +197,13 @@ def analyze(
         console_metrics_required=raw_path is None,
     )
     rtos_expected_count = expected_count + expected_pre_reset_count
-    rtos = parse_rtos(lines, rtos_expected_count, profile, drop_ack_every)
+    rtos = parse_rtos(
+        lines,
+        rtos_expected_count,
+        profile,
+        drop_ack_every,
+        expected_rtos,
+    )
     error_evidence = None
     error_recovery = None
     if profile == "error":
@@ -318,6 +325,7 @@ def analyze(
         "network": network,
         "lifecycle": {
             "starry_done": True,
+            "rtos_terminal_result": True,
             "rtos_powered_off": True,
             "volatile_block_snapshotted": True,
             "block_snapshot": block_snapshot,
@@ -556,7 +564,14 @@ def parse_rtos(
     expected_count: int,
     profile: str,
     drop_ack_every: int,
+    expected_rtos: str,
 ) -> dict[str, object]:
+    if expected_rtos != "zephyr":
+        ready = find_record(lines, RTOS_READY_PREFIX, ("rtos",))
+        if required(ready, "rtos", RTOS_READY_PREFIX) != expected_rtos:
+            raise AnalysisError(
+                "RTOS identity does not match the selected board profile"
+            )
     outcome_fields = (
         "profile",
         "accepted",
@@ -575,6 +590,12 @@ def parse_rtos(
         RTOS_RESULT_PREFIX,
         (*outcome_fields, *message_fields),
     )
+    if (
+        combined_result is not None
+        and "rtos" in combined_result
+        and combined_result["rtos"] != expected_rtos
+    ):
+        raise AnalysisError("RTOS result identity conflicts with the board profile")
     outcome = select_rtos_record(
         find_optional_record(lines, RTOS_OUTCOME_PREFIX, outcome_fields),
         combined_result,
@@ -588,6 +609,7 @@ def parse_rtos(
         RTOS_MESSAGES_PREFIX,
     )
     result: dict[str, object] = {
+        "name": expected_rtos,
         "profile": required(outcome, "profile", RTOS_OUTCOME_PREFIX),
         "accepted": integer(outcome, "accepted", RTOS_OUTCOME_PREFIX),
         "applied": integer(outcome, "applied", RTOS_OUTCOME_PREFIX),
@@ -611,7 +633,14 @@ def parse_rtos(
     else:
         validate_restart_rtos(lines, result, expected_count)
 
-    poweroff = find_record(lines, RTOS_POWEROFF_PREFIX, ("accepted",))
+    poweroff_fields = (
+        ("accepted",) if expected_rtos == "zephyr" else ("rtos", "accepted")
+    )
+    poweroff = find_record(lines, RTOS_POWEROFF_PREFIX, poweroff_fields)
+    if expected_rtos != "zephyr" and required(
+        poweroff, "rtos", RTOS_POWEROFF_PREFIX
+    ) != expected_rtos:
+        raise AnalysisError("RTOS poweroff identity does not match the selected profile")
     if integer(poweroff, "accepted", RTOS_POWEROFF_PREFIX) != expected_count:
         raise AnalysisError("RTOS poweroff count does not match expected count")
     return result
@@ -2245,7 +2274,18 @@ def parse_block_snapshot(lines: list[str], profile: str) -> dict[str, object]:
     elif profile == "restart":
         compact_names = ("r",)
     else:
-        compact_names = ("n", "ns", "m", "ms", "rn", "rs", "on", "os")
+        compact_names = (
+            "n",
+            "ns",
+            "m",
+            "ms",
+            "rn",
+            "rs",
+            "on",
+            "os",
+            "rts",
+            "fts",
+        )
     compact_result_path = image_path in {
         f"/home/orangepi/ivc-{name}" for name in compact_names
     }
@@ -2713,6 +2753,11 @@ def main() -> int:
     parser.add_argument("--expected-ort-model-sha256")
     parser.add_argument("--expected-ort-runtime-version")
     parser.add_argument("--expected-count", type=int, required=True)
+    parser.add_argument(
+        "--expected-rtos",
+        choices=("zephyr", "rt-thread", "freertos"),
+        default="zephyr",
+    )
     parser.add_argument("--profile", choices=sorted(RUN_PROFILES), default="normal")
     parser.add_argument("--drop-ack-every", type=int, default=0)
     parser.add_argument("--pre-reset-raw-csv", type=Path)
@@ -2735,6 +2780,7 @@ def main() -> int:
             ort_path=arguments.ort_csv,
             expected_ort_model_sha256=arguments.expected_ort_model_sha256,
             expected_ort_runtime_version=arguments.expected_ort_runtime_version,
+            expected_rtos=arguments.expected_rtos,
         )
         arguments.output.write_text(
             json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"

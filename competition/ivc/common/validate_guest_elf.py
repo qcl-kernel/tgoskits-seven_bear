@@ -121,7 +121,7 @@ def validate_elf(path: Path, expected_entry: int, ram_base: int, ram_size: int) 
         raise ElfContractError("entry point is not inside an executable LOAD segment")
     return {
         "schema_version": 1,
-        "elf": str(path),
+        "elf": path.name,
         "machine": "aarch64",
         "entry_point": entry,
         "ram_base": ram_base,

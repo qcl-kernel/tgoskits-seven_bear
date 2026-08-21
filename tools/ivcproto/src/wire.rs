@@ -19,11 +19,13 @@ const CHECKSUM_OFFSET: usize = 28;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(u8)]
 pub enum MessageType {
-    Control   = 1,
-    Status    = 2,
-    Error     = 3,
-    Ack       = 4,
-    Telemetry = 5,
+    Control        = 1,
+    Status         = 2,
+    Error          = 3,
+    Ack            = 4,
+    Telemetry      = 5,
+    VisionDecision = 6,
+    ActuatorStatus = 7,
 }
 
 impl TryFrom<u8> for MessageType {
@@ -36,6 +38,8 @@ impl TryFrom<u8> for MessageType {
             3 => Ok(Self::Error),
             4 => Ok(Self::Ack),
             5 => Ok(Self::Telemetry),
+            6 => Ok(Self::VisionDecision),
+            7 => Ok(Self::ActuatorStatus),
             other => Err(ProtocolError::UnsupportedMessageType(other)),
         }
     }
@@ -56,6 +60,8 @@ pub enum ErrorCode {
     ActuatorRange      = 7,
     ControllerTimeout  = 8,
     Internal           = 9,
+    InvalidVisionDecision = 10,
+    VisionDecisionExpired = 11,
 }
 
 impl TryFrom<u16> for ErrorCode {
@@ -73,6 +79,8 @@ impl TryFrom<u16> for ErrorCode {
             7 => Ok(Self::ActuatorRange),
             8 => Ok(Self::ControllerTimeout),
             9 => Ok(Self::Internal),
+            10 => Ok(Self::InvalidVisionDecision),
+            11 => Ok(Self::VisionDecisionExpired),
             other => Err(ProtocolError::UnsupportedErrorCode(other)),
         }
     }

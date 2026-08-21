@@ -14,6 +14,7 @@ rknn = ["std"]
 onnxruntime = ["std"]
 
 [dependencies]
+libc.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
@@ -22,4 +23,9 @@ anyhow = { workspace = true, features = ["std"] }
 [[bin]]
 name = "ivcproto"
 path = "src/bin/ivcproto.rs"
+required-features = ["std"]
+
+[[bin]]
+name = "ivc-vision-controller"
+path = "src/bin/ivc_vision_controller.rs"
 required-features = ["std"]

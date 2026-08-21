@@ -46,12 +46,76 @@ static void put_le64(uint8_t *bytes, uint64_t value)
 
 static bool message_type_valid(uint8_t value)
 {
-	return value >= IVC_MESSAGE_CONTROL && value <= IVC_MESSAGE_TELEMETRY;
+	return value >= IVC_MESSAGE_CONTROL && value <= IVC_MESSAGE_ACTUATOR_STATUS;
 }
 
 static bool error_code_valid(uint16_t value)
 {
-	return value <= IVC_ERROR_INTERNAL;
+	return value <= IVC_ERROR_VISION_DECISION_EXPIRED;
+}
+
+static bool vision_action_valid(uint8_t value)
+{
+	return value <= IVC_VISION_EMERGENCY_STOP;
+}
+
+static bool safe_vision_action(enum ivc_vision_action action)
+{
+	return action == IVC_VISION_HOLD || action == IVC_VISION_EMERGENCY_STOP;
+}
+
+static bool bounding_box_empty(const struct ivc_bounding_box *box)
+{
+	return box->left == 0U && box->top == 0U && box->right == 0U &&
+	       box->bottom == 0U;
+}
+
+static bool bounding_box_ordered(const struct ivc_bounding_box *box)
+{
+	return box->left < box->right && box->top < box->bottom;
+}
+
+static bool vision_decision_valid(const struct ivc_vision_decision *decision)
+{
+	bool detected_fields_valid;
+	bool empty_fields_valid;
+
+	if (decision == NULL ||
+	    !vision_action_valid((uint8_t)decision->requested_action) ||
+	    !vision_action_valid((uint8_t)decision->safe_action) ||
+	    !safe_vision_action(decision->safe_action) || decision->frame_id == 0U ||
+	    decision->captured_at_us > decision->inference_finished_at_us ||
+	    decision->ttl_us == 0U || decision->ttl_us > IVC_MAX_VISION_TTL_US ||
+	    decision->confidence_q10000 > 10000U) {
+		return false;
+	}
+	detected_fields_valid = decision->class_id != IVC_NO_DETECTION_CLASS_ID &&
+				decision->confidence_q10000 != 0U &&
+				bounding_box_ordered(&decision->bounding_box);
+	empty_fields_valid = decision->requested_action == IVC_VISION_HOLD &&
+			     decision->class_id == IVC_NO_DETECTION_CLASS_ID &&
+			     decision->confidence_q10000 == 0U && decision->region_id == 0U &&
+			     bounding_box_empty(&decision->bounding_box);
+	return decision->detection_present ? detected_fields_valid : empty_fields_valid;
+}
+
+static bool actuator_status_valid(const struct ivc_actuator_status *status)
+{
+	if (status == NULL || status->state < IVC_ACTUATOR_APPLIED ||
+	    status->state > IVC_ACTUATOR_FAULT ||
+	    !vision_action_valid((uint8_t)status->requested_action) ||
+	    !vision_action_valid((uint8_t)status->actual_action) || status->frame_id == 0U ||
+	    status->applied_sequence == 0U || !error_code_valid((uint16_t)status->fault)) {
+		return false;
+	}
+	if (status->state == IVC_ACTUATOR_APPLIED && status->fault != IVC_ERROR_NONE) {
+		return false;
+	}
+	if (status->state == IVC_ACTUATOR_SAFE_FALLBACK &&
+	    !safe_vision_action(status->actual_action)) {
+		return false;
+	}
+	return status->state != IVC_ACTUATOR_FAULT || status->fault != IVC_ERROR_NONE;
 }
 
 static bool mode_valid(uint8_t value)
@@ -380,6 +444,117 @@ bool ivc_encode_error_payload(const struct ivc_error_payload *error,
 	payload[2] = 0U;
 	payload[3] = 0U;
 	put_le32(payload + 4, error->offending_sequence);
+	return true;
+}
+
+bool ivc_encode_vision_decision(
+	const struct ivc_vision_decision *decision,
+	uint8_t payload[IVC_VISION_DECISION_PAYLOAD_LENGTH])
+{
+	if (!vision_decision_valid(decision) || payload == NULL) {
+		return false;
+	}
+	memset(payload, 0, IVC_VISION_DECISION_PAYLOAD_LENGTH);
+	payload[0] = IVC_VISION_PAYLOAD_VERSION;
+	payload[1] = (uint8_t)decision->requested_action;
+	payload[2] = (uint8_t)decision->safe_action;
+	payload[3] = decision->detection_present ? 1U : 0U;
+	put_le32(payload + 4, decision->frame_id);
+	put_le64(payload + 8, decision->captured_at_us);
+	put_le64(payload + 16, decision->inference_finished_at_us);
+	put_le32(payload + 24, decision->ttl_us);
+	put_le16(payload + 28, decision->class_id);
+	put_le16(payload + 30, decision->confidence_q10000);
+	put_le16(payload + 32, decision->region_id);
+	put_le16(payload + 36, decision->bounding_box.left);
+	put_le16(payload + 38, decision->bounding_box.top);
+	put_le16(payload + 40, decision->bounding_box.right);
+	put_le16(payload + 42, decision->bounding_box.bottom);
+	return true;
+}
+
+bool ivc_decode_vision_decision(const uint8_t *payload, size_t payload_length,
+				struct ivc_vision_decision *decision)
+{
+	struct ivc_vision_decision decoded;
+
+	if (payload == NULL || decision == NULL ||
+	    payload_length != IVC_VISION_DECISION_PAYLOAD_LENGTH ||
+	    payload[0] != IVC_VISION_PAYLOAD_VERSION || (payload[3] & ~1U) != 0U ||
+	    get_le16(payload + 34) != 0U) {
+		return false;
+	}
+	decoded = (struct ivc_vision_decision){
+		.requested_action = (enum ivc_vision_action)payload[1],
+		.safe_action = (enum ivc_vision_action)payload[2],
+		.detection_present = payload[3] != 0U,
+		.frame_id = get_le32(payload + 4),
+		.captured_at_us = get_le64(payload + 8),
+		.inference_finished_at_us = get_le64(payload + 16),
+		.ttl_us = get_le32(payload + 24),
+		.class_id = get_le16(payload + 28),
+		.confidence_q10000 = get_le16(payload + 30),
+		.region_id = get_le16(payload + 32),
+		.bounding_box = {
+			.left = get_le16(payload + 36),
+			.top = get_le16(payload + 38),
+			.right = get_le16(payload + 40),
+			.bottom = get_le16(payload + 42),
+		},
+	};
+	if (!vision_decision_valid(&decoded)) {
+		return false;
+	}
+	*decision = decoded;
+	return true;
+}
+
+bool ivc_encode_actuator_status(
+	const struct ivc_actuator_status *status,
+	uint8_t payload[IVC_ACTUATOR_STATUS_PAYLOAD_LENGTH])
+{
+	if (!actuator_status_valid(status) || payload == NULL) {
+		return false;
+	}
+	memset(payload, 0, IVC_ACTUATOR_STATUS_PAYLOAD_LENGTH);
+	payload[0] = IVC_VISION_PAYLOAD_VERSION;
+	payload[1] = (uint8_t)status->state;
+	payload[2] = (uint8_t)status->requested_action;
+	payload[3] = (uint8_t)status->actual_action;
+	put_le32(payload + 4, status->frame_id);
+	put_le32(payload + 8, status->applied_sequence);
+	put_le32(payload + 12, status->decision_age_at_send_us);
+	put_le32(payload + 16, status->local_apply_latency_us);
+	put_le64(payload + 20, status->executed_at_us);
+	put_le16(payload + 28, (uint16_t)status->fault);
+	return true;
+}
+
+bool ivc_decode_actuator_status(const uint8_t *payload, size_t payload_length,
+				struct ivc_actuator_status *status)
+{
+	struct ivc_actuator_status decoded;
+
+	if (payload == NULL || status == NULL ||
+	    payload_length != IVC_ACTUATOR_STATUS_PAYLOAD_LENGTH ||
+	    payload[0] != IVC_VISION_PAYLOAD_VERSION || get_le16(payload + 30) != 0U) {
+		return false;
+	}
+	decoded = (struct ivc_actuator_status){
+		.state = (enum ivc_actuator_state)payload[1],
+		.requested_action = (enum ivc_vision_action)payload[2],
+		.actual_action = (enum ivc_vision_action)payload[3],
+		.frame_id = get_le32(payload + 4),
+		.applied_sequence = get_le32(payload + 8),
+		.decision_age_at_send_us = get_le32(payload + 12),
+		.local_apply_latency_us = get_le32(payload + 16),
+		.executed_at_us = get_le64(payload + 20),
+		.fault = (enum ivc_error_code)get_le16(payload + 28),
+	};
+	if (!actuator_status_valid(&decoded)) {
+		return false;
+	}
+	*status = decoded;
 	return true;
 }
 
