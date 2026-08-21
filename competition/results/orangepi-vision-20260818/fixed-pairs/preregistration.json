@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "campaign": "rk3588-fixed-image-core-mask-five-pairs",
+  "board": "Orange Pi 5 Plus",
+  "soc": "RK3588",
+  "source_commit": "bd126053b079ccf5d04c98f1bd70d5c5bedbe243",
+  "source_worktree": "dirty; this campaign validates the uncommitted competition vision changes",
+  "model_sha256": "40d62454f08c9a73ccd2349ee8ccadfa51e9a6f93c48e975b3302e29aff1a4d0",
+  "input": {
+    "images": [
+      "validation/tennis-ball-close.jpg",
+      "validation/tennis-ball-black-box.jpg",
+      "validation/tennis-ball-plant.jpg"
+    ],
+    "expected": "validation/expected.txt",
+    "min_confidence_percent": 25
+  },
+  "factors": {
+    "baseline": "core-mask=0",
+    "candidate": "core-mask=all",
+    "fixed": [
+      "same board",
+      "same rootfs payload and model hash",
+      "same three-image order",
+      "same RKNN runtime",
+      "profile enabled"
+    ]
+  },
+  "pair_order": [
+    ["core0", "all"],
+    ["all", "core0"],
+    ["core0", "all"],
+    ["all", "core0"],
+    ["core0", "all"]
+  ],
+  "accepted_run": {
+    "pairs": 5,
+    "validation_images_per_run": 3,
+    "required_markers": [
+      "VISION_FIXED_RUN_BEGIN",
+      "UVC_RKNN_VALIDATE_PASS images=3",
+      "UVC_RKNN_BENCH_PROFILE_RESULT",
+      "VISION_FIXED_RUN_END"
+    ],
+    "perf_run_query_errors": 0
+  },
+  "limitations": [
+    "The physical test setup has no enumerated UVC camera, so this campaign measures deterministic fixed-image inference rather than camera throughput.",
+    "Three inference samples per run are sufficient for a smoke comparison, not a universal worst-case bound.",
+    "The dirty source boundary prevents this campaign from being presented as immutable release-grade evidence until rerun from a clean commit."
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "board": {
+    "cpu_temp_milli_c": 43461,
+    "hostname": "orangepi5plus",
+    "id": "bf61f4d4a1d994ad",
+    "type": "OrangePi-5-Plus"
+  },
+  "inputs": {
+    "board_config": {
+      "path": "competition\\ivc\\config\\board-orangepi-5-plus-freertos-smoke.toml",
+      "sha256": "bf1e88e19b96fd8e35ad872a6ea811d291859c2839b90bb035e18f10c025c447",
+      "size_bytes": 623
+    },
+    "build_config": {
+      "path": "competition\\ivc\\config\\axvisor-orangepi-5-plus-freertos-smoke.toml",
+      "sha256": "38a3a4d7097ebe91996a9e2560d5d742f487992fb012ed2fb7826296e539d49e",
+      "size_bytes": 291
+    },
+    "rootfs": {
+      "path": "tmp\\competition\\ivc\\starry\\starry-ivc-rootfs-smoke.img",
+      "sha256": "2f6d2202d87c284395ffdb7770e7fa1440059fcb90043852ae71221c9822dc33",
+      "size_bytes": 67108864
+    },
+    "rtos_guest": {
+      "artifact": {
+        "path": "tmp\\competition\\ivc\\guests\\freertos\\board-smoke\\freertos.bin",
+        "sha256": "27ef30bde74cbf7cc25cdd677da725b8a7c6a32bc5a2acb98c4fa24ac95da5f4",
+        "size_bytes": 192512
+      },
+      "kind": "freertos"
+    },
+    "starry_dtb": {
+      "path": "tmp\\competition\\ivc\\starry\\starry-orangepi-5-plus.dtb",
+      "sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "size_bytes": 1534
+    },
+    "starry_kernel": {
+      "path": "tmp\\competition\\ivc\\starry\\starryos.bin",
+      "sha256": "97fce5daaa9103768736b9a54a690e5f4612a221ac67672c56cebaadaf4c4b05",
+      "size_bytes": 13836288
+    },
+    "zephyr_guest": null
+  },
+  "model": {
+    "artifact": {
+      "path": "tools\\ivcproto\\src\\neural.rs",
+      "sha256": "c075fb7462a0bd7e52afe1a88b9ffc7d31f7f6502ec0c25288919189348e4938",
+      "size_bytes": 14635
+    },
+    "backend": "native",
+    "id": "thermal-4x6x1-v1",
+    "runtime_version": "native"
+  },
+  "outputs": {
+    "console_log": {
+      "path": "tmp\\competition\\ivc\\orangepi-rtos-20260818\\final-psci-v2\\freertos-smoke\\run-001\\console.log.gz",
+      "sha256": "d1553b50cb7462f85c956497abb0ff216d2828aa65bb95aa4541e3858179094d",
+      "size_bytes": 18212
+    },
+    "ort_csv": null,
+    "raw_csv": {
+      "path": "tmp\\competition\\ivc\\orangepi-rtos-20260818\\final-psci-v2\\freertos-smoke\\run-001\\raw.csv.gz",
+      "sha256": "dbe6807c34f840571e2766034687e8162012636669f8e82479d97a070b7a9538",
+      "size_bytes": 746
+    },
+    "rknn_csv": null,
+    "summary": {
+      "path": "tmp\\competition\\ivc\\orangepi-rtos-20260818\\final-psci-v2\\freertos-smoke\\run-001\\summary.json",
+      "sha256": "03cbd40de1ab1f8375fcc89b0e7824759524e5dae44649c2c90712359d88ea94",
+      "size_bytes": 2996
+    }
+  },
+  "result": {
+    "controller_policy": "neural",
+    "deadline_misses": 0,
+    "dropped_samples": 0,
+    "ort_sample_count": null,
+    "rknn_sample_count": null,
+    "sample_count": 20,
+    "successful_marker": true,
+    "validated": true
+  },
+  "run": {
+    "board_type": "OrangePi-5-Plus",
+    "execution_order": 1,
+    "exit_status": 0,
+    "finished_at": "2026-08-18T08:30:21Z",
+    "profile": "freertos-smoke",
+    "repeat_count": 1,
+    "run_id": "run-001",
+    "run_number": 1,
+    "started_at": "2026-08-18T08:25:57Z"
+  },
+  "schema_version": 1,
+  "source": {
+    "branch": "feat/rt-axvisor-partition-virtio-net",
+    "commit": "bd126053b079ccf5d04c98f1bd70d5c5bedbe243",
+    "dirty": true,
+    "tracked_change_count": 58,
+    "untracked_file_count": 846
+  }
+}

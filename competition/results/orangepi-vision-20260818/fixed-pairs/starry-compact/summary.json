@@ -1,0 +1,270 @@
+{
+  "acceptance": {
+    "contract": "rk3588-fixed-image-five-pairs-v1",
+    "passed": true,
+    "perf_run_query_errors": 0,
+    "validation_images_per_run": 3
+  },
+  "contract": "rk3588-fixed-image-five-pairs-v1",
+  "evidence_type": "rk3588-fixed-image-paired-profile",
+  "metrics": {
+    "letterbox_ms_avg": {
+      "all": {
+        "best": 77.49,
+        "median": 77.55,
+        "values": [
+          77.55,
+          77.8,
+          77.49,
+          77.49,
+          79.24
+        ],
+        "worst": 79.24
+      },
+      "core0": {
+        "best": 77.51,
+        "median": 77.62,
+        "values": [
+          78.18,
+          77.54,
+          77.51,
+          77.62,
+          79.26
+        ],
+        "worst": 79.26
+      },
+      "direction": "lower_is_better",
+      "favorable_pairs": 4,
+      "non_regressed_pairs": 4,
+      "paired_improvement_percent": [
+        0.8058326937835887,
+        -0.3353108073252397,
+        0.02580312217779671,
+        0.1674826075753796,
+        0.02523340903357334
+      ],
+      "paired_improvement_percent_median": 0.02580312217779671,
+      "undefined_percentage_pairs": 0
+    },
+    "letterbox_ms_p95": {
+      "all": {
+        "best": 80.43,
+        "median": 80.56,
+        "values": [
+          80.56,
+          80.79,
+          80.56,
+          80.43,
+          81.16
+        ],
+        "worst": 81.16
+      },
+      "core0": {
+        "best": 80.54,
+        "median": 80.72,
+        "values": [
+          81.98,
+          80.63,
+          80.54,
+          80.72,
+          81.36
+        ],
+        "worst": 81.98
+      },
+      "direction": "lower_is_better",
+      "favorable_pairs": 3,
+      "non_regressed_pairs": 3,
+      "paired_improvement_percent": [
+        1.7321297877531125,
+        -0.19843730621358155,
+        -0.02483238142537375,
+        0.35926660059463833,
+        0.24582104228122276
+      ],
+      "paired_improvement_percent_median": 0.24582104228122276,
+      "undefined_percentage_pairs": 0
+    },
+    "rknn_perf_run_ms_avg": {
+      "all": {
+        "best": 17.85,
+        "median": 17.87,
+        "values": [
+          17.87,
+          17.85,
+          17.86,
+          17.95,
+          17.87
+        ],
+        "worst": 17.95
+      },
+      "core0": {
+        "best": 17.98,
+        "median": 18.22,
+        "values": [
+          17.98,
+          18.22,
+          18.26,
+          18.15,
+          18.25
+        ],
+        "worst": 18.26
+      },
+      "direction": "lower_is_better",
+      "favorable_pairs": 5,
+      "non_regressed_pairs": 5,
+      "paired_improvement_percent": [
+        0.6117908787541682,
+        2.0307354555433452,
+        2.1905805038335275,
+        1.1019283746556436,
+        2.0821917808219124
+      ],
+      "paired_improvement_percent_median": 2.0307354555433452,
+      "undefined_percentage_pairs": 0
+    },
+    "rknn_perf_run_ms_p95": {
+      "all": {
+        "best": 21.28,
+        "median": 21.31,
+        "values": [
+          21.32,
+          21.28,
+          21.31,
+          21.31,
+          21.33
+        ],
+        "worst": 21.33
+      },
+      "core0": {
+        "best": 20.6,
+        "median": 21.11,
+        "values": [
+          20.6,
+          21.12,
+          21.11,
+          21.1,
+          21.15
+        ],
+        "worst": 21.15
+      },
+      "direction": "lower_is_better",
+      "favorable_pairs": 0,
+      "non_regressed_pairs": 0,
+      "paired_improvement_percent": [
+        -3.4951456310679556,
+        -0.7575757575757582,
+        -0.9474182851729005,
+        -0.9952606635070962,
+        -0.8510638297872327
+      ],
+      "paired_improvement_percent_median": -0.9474182851729005,
+      "undefined_percentage_pairs": 0
+    },
+    "total_ms_avg": {
+      "all": {
+        "best": 110.53,
+        "median": 110.61,
+        "values": [
+          110.53,
+          111.0,
+          110.61,
+          110.59,
+          113.91
+        ],
+        "worst": 113.91
+      },
+      "core0": {
+        "best": 110.94,
+        "median": 111.15,
+        "values": [
+          112.33,
+          110.97,
+          110.94,
+          111.15,
+          114.05
+        ],
+        "worst": 114.05
+      },
+      "direction": "lower_is_better",
+      "favorable_pairs": 4,
+      "non_regressed_pairs": 4,
+      "paired_improvement_percent": [
+        1.602421436837886,
+        -0.027034333603677695,
+        0.2974580854515939,
+        0.5038236617184005,
+        0.12275317843051343
+      ],
+      "paired_improvement_percent_median": 0.2974580854515939,
+      "undefined_percentage_pairs": 0
+    },
+    "total_ms_p95": {
+      "all": {
+        "best": 133.26,
+        "median": 133.45,
+        "values": [
+          133.28,
+          133.63,
+          133.45,
+          133.26,
+          134.45
+        ],
+        "worst": 134.45
+      },
+      "core0": {
+        "best": 133.22,
+        "median": 133.5,
+        "values": [
+          136.52,
+          133.38,
+          133.22,
+          133.5,
+          134.16
+        ],
+        "worst": 136.52
+      },
+      "direction": "lower_is_better",
+      "favorable_pairs": 2,
+      "non_regressed_pairs": 2,
+      "paired_improvement_percent": [
+        2.373278640492242,
+        -0.18743439796071376,
+        -0.172646749737269,
+        0.17977528089888323,
+        -0.21615980918305908
+      ],
+      "paired_improvement_percent_median": -0.172646749737269,
+      "undefined_percentage_pairs": 0
+    }
+  },
+  "model_sha256": "40d62454f08c9a73ccd2349ee8ccadfa51e9a6f93c48e975b3302e29aff1a4d0",
+  "os": "starry",
+  "pair_order": [
+    {
+      "order": "AB",
+      "pair": 1
+    },
+    {
+      "order": "BA",
+      "pair": 2
+    },
+    {
+      "order": "AB",
+      "pair": 3
+    },
+    {
+      "order": "BA",
+      "pair": 4
+    },
+    {
+      "order": "AB",
+      "pair": 5
+    }
+  ],
+  "pairs": 5,
+  "schema_version": 1,
+  "source": {
+    "log_sha256": "27234235e94d2a929c104deaa4f24abb535a9d2a08e38f3cb7c3af7b5fabb89c",
+    "path": "competition/results/orangepi-vision-20260818/fixed-pairs/starry-compact/console.log"
+  }
+}

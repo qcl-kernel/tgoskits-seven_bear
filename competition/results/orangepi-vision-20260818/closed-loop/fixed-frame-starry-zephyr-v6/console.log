@@ -1,0 +1,1743 @@
+BOARD_HOST_LIBCLANG path=/usr/lib/llvm-14/lib source=system
+orangepi5plus
+BOARD_SERVICE_DTB_RKNPU_DMA_RESERVED base=0x80000000 size=0x10000000 no-map=true
+BOARD_SERVICE_DTB_READY path=/home/seven_wsl/.local/share/ostool-server/dtbs/orangepi-5-plus-starry.dtb root=PARTUUID=5874edd8-1582-a144-a298-b139acd7b0e6
+warning: patch `uboot-shell v0.2.6 (/home/seven_wsl/Workspace/starry/ostool/uboot-shell)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.75s
+     Running `target/debug/tg-xtask axvisor board -c competition/ivc/config/axvisor-orangepi-5-plus-vision.toml --board-config competition/ivc/config/board-orangepi-5-plus-vision.toml -b OrangePi-5-Plus`
+[2026-08-18T05:10:33Z INFO  axbuild::context] Workspace root: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc
+[2026-08-18T05:10:39Z INFO  axbuild::context] Workspace member dir for axvisor: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/axvisor
+Using build config: competition/ivc/config/axvisor-orangepi-5-plus-vision.toml
+[axbuild] board build+run package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json config=competition/ivc/config/axvisor-orangepi-5-plus-vision.toml ...
+sh -c /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/axbuild/std/prebuild/prebuild-aarch64-unknown-linux-musl-58aa9d8ec294b69b.sh
+AR_aarch64_unknown_linux_musl=aarch64-linux-musl-ar
+AXVISOR_VM_CONFIGS=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/competition/ivc/config/orangepi-5-plus-starry-smp2-vision.toml:/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/competition/ivc/config/orangepi-5-plus-zephyr-vision.toml
+AX_ARCH=aarch64
+AX_LOG=info
+AX_TARGET=aarch64-unknown-none-softfloat
+BINDGEN_EXTRA_CLANG_ARGS_aarch64_unknown_linux_musl=--target=aarch64-linux-musl --sysroot=/ -mgeneral-regs-only
+CARGO_UNSTABLE_JSON_TARGET_SPEC=true
+CC_aarch64_unknown_linux_musl=aarch64-linux-musl-cc
+CFLAGS_aarch64_unknown_linux_musl=-mgeneral-regs-only -fno-stack-protector
+CXXFLAGS_aarch64_unknown_linux_musl=-mgeneral-regs-only -fno-stack-protector
+SMP=4
+cargo build --config /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/axbuild/std/config-aarch64-unknown-linux-musl-dynamic.toml -p axvisor --target scripts/targets/std/pie/aarch64-unknown-linux-musl.json -Z unstable-options --target-dir /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target --features ax-std/fs,ax-std/smp,fs,rk3588-npu-handoff,rockchip-dwmmc,rockchip-soc,sdmmc,log/release_max_level_info -Z json-target-spec --bin axvisor --release --message-format json-render-diagnostics
+warning: associated function `after_external_interrupt` is never used
+   --> virtualization/axvm/src/architecture/ops.rs:116:8
+    |
+ 12 | pub(crate) trait ArchOps {
+    |                  ------- associated function in this trait
+...
+116 |     fn after_external_interrupt(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `host_console_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:102:15
+    |
+102 | pub(crate) fn host_console_irq() -> Option<modules::ax_hal::irq::IrqId> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `dispatch_host_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:106:15
+    |
+106 | pub(crate) fn dispatch_host_irq(vector: usize) {
+    |               ^^^^^^^^^^^^^^^^^
+
+warning: function `with_vm` is never used
+   --> virtualization/axvm/src/manager.rs:165:15
+    |
+165 | pub(crate) fn with_vm<F, R>(vm_id: VMId, f: F) -> Option<R>
+    |               ^^^^^^^
+
+warning: function `active_vcpu_mask` is never used
+   --> virtualization/axvm/src/manager.rs:195:15
+    |
+195 | pub(crate) fn active_vcpu_mask(vm_id: VMId) -> Option<usize> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `inject_interrupt` is never used
+   --> virtualization/axvm/src/manager.rs:207:15
+    |
+207 | pub(crate) fn inject_interrupt(vm_id: VMId, vcpu_id: usize, vector: usize) -> AxVmResult {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: variant `Generic` is never constructed
+  --> virtualization/axvm/src/runtime/hvc.rs:26:5
+   |
+25 | pub(crate) enum HyperCallAbi {
+   |                 ------------ variant in this enum
+26 |     Generic,
+   |     ^^^^^^^
+   |
+   = note: `HyperCallAbi` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `handle` is never used
+   --> virtualization/axvm/src/timer.rs:174:8
+    |
+129 | impl TimerWheels {
+    | ---------------- method in this implementation
+...
+174 |     fn handle(&self, token: usize) -> Option<VmTimerHandle> {
+    |        ^^^^^^
+
+warning: function `cancel_timer` is never used
+   --> virtualization/axvm/src/timer.rs:252:15
+    |
+252 | pub(crate) fn cancel_timer(token: usize) {
+    |               ^^^^^^^^^^^^
+
+warning: associated items `try_handle_port_write`, `handle_nested_page_fault`, and `debug_nested_page_fault` are never used
+    --> virtualization/axvm/src/vm/mod.rs:1737:19
+     |
+1049 | impl AxVM {
+     | --------- associated items in this implementation
+...
+1737 |     pub(crate) fn try_handle_port_write(
+     |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+1750 |     pub(crate) fn handle_nested_page_fault(
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+1765 |     fn debug_nested_page_fault(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `SimpleVmPlan` is never constructed
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:65:19
+   |
+65 | pub(crate) struct SimpleVmPlan(VmDevicePlan);
+   |                   ^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:68:25
+   |
+67 | impl SimpleVmPlan {
+   | ----------------- associated function in this implementation
+68 |     pub(crate) const fn new(devices: VmDevicePlan) -> Self {
+   |                         ^^^
+
+warning: `axvm` (lib) generated 12 warnings
+    Finished `release` profile [optimized] target(s) in 8.11s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 7`
+Allocated board session:
+  board_type: OrangePi-5-Plus
+  board_id: orangepi-5-plus-1
+  session_id: 4fa96c80-bc8c-4839-b0fd-35a481c6d713
+  lease_expires_at: 2026-08-18 13:11:09.419957390 +08:00
+  boot_mode: uboot
+Converting ELF to BIN format...
+  elf: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor
+  bin: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin
+[2026-08-18T05:10:59Z INFO  ostool::run::uboot] Starting U-Boot runner...
+[2026-08-18T05:10:59Z INFO  ostool::run::uboot] kernel from: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin
+[2026-08-18T05:10:59Z INFO  ostool::run::uboot] Using network interface hint: eth0
+Waiting for remote board to power on through ostool-server...
+BOARD_REBOOT_ARMED
+Connection to 192.168.31.33 closed by remote host.
+[2026-08-18T05:11:07Z INFO  uboot_shell] cmd: setenv autoload yes
+[2026-08-18T05:11:07Z INFO  uboot_shell] cmd: setenv netmask 255.255.255.0
+[2026-08-18T05:11:07Z INFO  uboot_shell] cmd: net list
+[2026-08-18T05:11:08Z INFO  uboot_shell] cmd: bootdev hunt ethernet
+[2026-08-18T05:11:11Z INFO  ostool::run::uboot] Board network ok
+[2026-08-18T05:11:11Z INFO  uboot_shell] cmd: setenv serverip 192.168.31.132
+[2026-08-18T05:11:11Z INFO  uboot_shell] cmd: echo $fdt_addr_r
+[2026-08-18T05:11:12Z INFO  uboot_shell] cmd: echo $ramdisk_addr_r
+[2026-08-18T05:11:12Z INFO  uboot_shell] cmd: echo $kernel_addr_r
+[2026-08-18T05:11:13Z INFO  ostool::run::uboot] Using $kernel_addr_r as kernel entry: 0x2000000
+[2026-08-18T05:11:13Z INFO  uboot_shell] cmd: echo $kernel_comp_addr_r
+[2026-08-18T05:11:13Z INFO  ostool::run::uboot] image load to kernel_comp_addr_r: 0xa000000
+[2026-08-18T05:11:13Z INFO  uboot_shell] cmd: setenv loadaddr 0xa000000
+[2026-08-18T05:11:13Z INFO  ostool::run::uboot] fitimage loadaddr: 0xa000000
+[2026-08-18T05:11:13Z INFO  ostool::run::uboot] kernel entry: 0x2000000
+[2026-08-18T05:11:13Z INFO  ostool::run::uboot] Using DTB from: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/ostool-4fa96c80-bc8c-4839-b0fd-35a481c6d713-orangepi-5-plus-starry.dtb
+[2026-08-18T05:11:13Z INFO  ostool::boot::fit] Making FIT image...
+[2026-08-18T05:11:13Z INFO  ostool::boot::fit] kernel: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin (size: 4599872)
+[2026-08-18T05:11:13Z INFO  ostool::boot::fit] 已读取 DTB 文件: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/ostool-4fa96c80-bc8c-4839-b0fd-35a481c6d713-orangepi-5-plus-starry.dtb (大小: 283158)
+[2026-08-18T05:11:13Z INFO  ostool::boot::fit] FIT image ok: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/image.fit
+[2026-08-18T05:11:13Z INFO  ostool::run::uboot] No TFTP config, using loady to upload FIT image...
+
+send file
+loady 0xa000000
+## Ready for binary (ymodem) download to 0x0A000000 at 1500000 bps...
+[2026-08-18T05:11:14Z INFO  uboot_shell::ymodem] Sending file: image.fit
+C## Total Size      = 0x004a8564 = 4883812 Bytes
+## Start Addr      = 0x0A000000
+=>
+send ok
+[2026-08-18T05:12:15Z INFO  ostool::run::uboot] Booting kernel with command: bootm
+Interacting with U-Boot shell...
+bootm
+## Loading kernel (any) from FIT Image at 0a000000 ...
+   Using 'config-ostool' configuration
+   Verifying Hash IntegriOK
+   Trying 'kernel' kernel subimage
+     Description:  This kernel
+     Type:         Kernea Size:    4599872 Bytes = 4.4 M        Linux
+     Load Address: 0x02000000
+     Entry Point:  0x02000000
+   Verifying Hash Integrity ... OK
+## Loading fdt (any) from FIT Image at 0a000000 ...
+   Using 'config-ostool' configuration
+   Verifying Hash Integrity ... OK
+   Trying 'fdt' fdt subimage
+     Description:  This fdt
+     Type:         Flat Device Tree
+     Compression:  uncompressed
+     Data Start:   0x0a463228
+     Data Size:    283158 Bytes = 276.5 KiB
+     Architecture: AArch64
+     Load Address: 0x12000000
+   Verifying Hash Integrity ... OK
+   Loading fdt from 0x0a463228 to 0x12000000
+   Booting using the fdt blob at 0x12000000
+Working FDT set to 12000000
+   Loading Kernel Image to 2000000
+   Loading Device Tree to 00000000ecb71000, end 00000000ecbb9215 ... OK
+Working FDT set to ecb71000
+
+Starting kernel ...
+
+root=PARTUUID=5874edd8-1582-a144-a298-b139acd7b0e6 rw console=ttyS2,1500000 console=tty1 splash=verbose consoleblank=0 earlycon=memory=1 cgroup_enable=memory swapaccount=1
+VM Load @PA:0x20000ffset: 0xffff000082000000
+Memory Map:
+  Rsv    0x00000000110000 - 0x000000001f0100 (896.25 KiB)
+  Free   0x00000000200000 - 0x00000002000000 (30 MiB)
+ 00000 (154 MiB)
+  Rsv    0x0000000000e000000 - 0x0000001000000000020000000 (256 MiB)
+  Free   x00000090000000 (256 MiB)
+  Free   0x00000090000000 - 0x000000f0000000 (1.5 GiB)
+  Free   0x00000100000000 - 0x000003fc000000 (11.94 GiB)
+  Free   0x000003fc500000 - 0x000003fff00000 (58 MiB)
+  Free   0x000004f0000000 - 0x00000500000000 (256 MiB)
+Initialize RAM allocator: 0x200000..0x2000000
+Reserving CPU-local areas
+CPU-local area stride: 0x45000 bytes
+Total CPU-local allocation: 0x228000 bytes (8 CPUs)
+Flushed RAM used range to memory map: 0x200000..0x246000, current: 0x246000
+Flushed RAM used range to memory map: 0x246000..0x46e000, current: 0x46e000
+CPU-local areas allocated at 0x246000 - 0x46e000
+EL: 2
+Mapping early memory regions...
+Ram                 : [0x0000000000200000, 0x00000000f0000000) -> [0x0000000000200000, 0x00000000f0000000) (3.75 GiB)
+Ram                 : [0x0000000100000000, 0x00000003fc000000) -> [0x0000000100000000, 0x00000003fc000000Ram                 : [0x00000003fc500000, 0x00000003fff00000) -> [0x00000003fc500000, 0x0000000 (58 MiB)
+Ram                 : [0x00000004f0000000, 0x0000000500000000) -> [0x00000004f0000000, 0x0000000500000000) (256 MiB)
+KImage              : [0x0000ffff80000000, 0x0000ffff80600000) -> [0x0000000002000000, 0x0000000002600000) (6 MiB)
+PerCpu              : [0x0000ff0000246000, 0x0000ff000046e000) -> [0x0000000000246000, 0x000000000046e000) (2.16 MiB)
+Debug serial        : [0x00000000feb50000, 0x00000000feb51000) -> [0x00000000feb50000, 0x00000000feb51000) (4 KiB)
+Boot page table at physical address: PA:0x46e000
+Setting up table registers...
+MMU Entry point at physical address: 0x220570c
+Trap vector at 0xffff801f9000
+Memory Map:
+  Rsv    0x00000000110000 - 0x000000001f0100 (896.25 KiB)
+  Rsv    0x00000000200000 - 0x00000000246000 (280 KiB)
+  PerCPU 0x00000000246000 - 0x0000000046e000 (2.16 MiB)
+  Rsv    0x0000000046e000 - 0x0000000047d000 (60 KiB)
+  Free   0x0000000047d000 - 0x00000002000000 (27.51 MiB)
+  KImg   0x00000002000000 - 0x00000002600000 (6 MiB)
+  Free   0x00000002600000 - 0x0000000c000000 (154 MiB)
+  Rsv    0x0000000c000000 - 0x0000000e000000 (32 MiB)
+  Free   0x0000000e000000 - 0x00000010000000 (32 MiB)
+  Rsv    0x00000010000000 - 0x00000020000000 (256 MiB)
+  Free   0x00000020000000 - 0x00000080000000 (1.5 GiB)
+  Rsv    0x00000080000000 - 0x00000090000000 (256 MiB)
+  Free   0x00000090000000 - 0x000000f0000000 (1.5 GiB)
+  MMIO   0x000000feb50000 - 0x000000feb51000 (4 KiB)
+  Free   0x00000100000000 - 0x000003fc000000 (11.94 GiB)
+  Free   0x000003fc500000 - 0x000003fff00000 (58 MiB)
+  Free   0x000004f0000000 - 0x00000500000000 (256 MiB)
+Jumping to main entry point at 0xffff801e316c with SP 0x0000ff000028b000
+
+       d8888                            .d88888b.   .d8888b.
+      d88888                           d88P" "Y88b d88P  Y88b
+     d88P888                           888     888 Y88b.
+    d88P 888 888d888  .d8888b  .d88b.  888     888  "Y888b.
+   d88P  888 888P"   d88P"    d8P  Y8b 888     888     "Y88b.
+  d88P   888 888     888      88888888 888     888       "888
+ d8888888888 888     Y88b.    Y8b.     Y88b. .d88P Y88b  d88P
+d88P     888 888      "Y8888P  "Y8888   "Y88888P"   "Y8888P"
+
+arch = aarch64
+platform = RK3588 OPi 5 Plus
+target = aarch64-unknown-none-softfloat
+build_mode = 
+log_level = info
+backtrace = false
+smp = 4
+
+[37m[ 73.322829 ax_runtime:224] [32mLogging is enabled.[m
+[m[37m[ 73.323314 ax_runtime:225] [32mPrimary CPU 0 started, arg = 0x200000.[m
+[m[37m[ 73.323944 ax_runtime:227] [32mFound physcial memory regions:[m
+[m[37m[ 73.324587 ax_runtime:229] [32m  [PA:0x110000, PA:0x1f0100) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.325477 ax_runtime:229] [32m  [PA:0x200000, PA:0x246000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.326369 ax_runtime:229] [32m  [PA:0x246000, PA:0x46e000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.327262 ax_runtime:229] [32m  [PA:0x46e000, PA:0x47d000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.328154 ax_runtime:229] [32m  [PA:0x47d000, PA:0x2000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 73.328971 ax_runtime:229] [32m  [PA:0x2000000, PA:0x2600000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.2m  [PA:0xc000000, PA:0xe000000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.331612 ax_runtime:229] [32m  [PA:0xe000000, PA:0x10000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 73.332444 ax_runtime:229] [32m  [PA:0x10000000, PA:0x20000000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.333367 ax_runtime:229] [32m  [PA:0x20000000, PA:0x80000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 73.334207 ax_runtime:229] [32m  [PA:0x80000000, PA:0x90000000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 73.335129 ax_runtime:229] [32m  [PA:0x90000000, PA:0xf0000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 73.335969 ax_runtime:229] [32m  [PA:0xfeb50000, PA:0xfeb51000) mmio (READ | WRITE | DEVICE | RESERVED)[m
+[m[37m[ 73.336854 ax_runtime:229] [32m  [PA:0x100000000, PA:0x3fc000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 73.337709 ax_runtime:229] [32m  [PA:0x3fc500000, PA:0x3fff00000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 73.338564 ax_runtime:229] [32m  [PA:0x4f0000000, PA:0x500000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 73.339419 ax_runtime:377] [32mInitialize global memory allocator...[m
+[m[37m[ 73.340042 ax_runtime:378] [32m  use buddy-slab-allocator allocator.[m
+[m[37m[ 73.340666 ax_alloc::buddy_slab:158] [32mInitialize global memory allocator, start_vaddr: 0x100000000, size: 0x2fc000000[m
+[m[37m[ 73.353191 ax_alloc::buddy_slab:424] [32mglobal allocator initialized[m
+[m[37m[ 73.353814 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x47d000, size: 0x1b83000[m
+[m[37m[ 73.354688 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x2600000, size: 0x9a00000[m
+[m[37m[ 73.355681 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0xe000000, size: 0x2000000[m
+[m[37m[ 73.356560 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x20000000, size: 0x60000000[m
+[m[37m[ 73.358870 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x90000000, size: 0x60000000[m
+[m[37m[ 73.361180 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x3fc500000, size: 0x3a00000[m
+[m[37m[ 73.362101 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x4f0000000, size: 0x10000000[m
+[m[37m[ 73.363215 ax_runtime:264] [32mkernel aspace: [VA:0x0, VA:0xffffffffffffffff)[m
+[m[37m[ 73.363899 ax_mm:107] [32mInitialize virtual memory management...[m
+[m[37m[ 75.959747 ax_runtime:276] [32mInitialize platform devices...[m
+[m[37m[ 76.038186 someboot::arch::power:23] [32mPower management method : SMC[m
+[m[37m[ 76.038828 somehal::driver:5] [32mInve with FDT at 0x200000[m
+[m[37m[ 76.245985 ax_driver::soc::rockchip::pinctrl:301] [32mRockchip RK3588 pinctrl registered successfully[m
+[m[37m[ 76.367493 somehal::arch::gic::v3:274] [32mGICv3 CPU 0 EOI mode: two_step=true[m
+[m[37m[ 76.517695 ax_task::api:150] [32mInitialize scheduling...[m
+[m[37m[ 76.518286 ax_task::api:158] [32m  use FIFO sched [32mInitialize interrupt handlers...[m
+[m[37m[ 76.519432 a[37m[ 76.663689 ax_driver::soc::scmi:54] [33m[scmi] SCMI shmem phandle 72 cannot be resolved by rdrive; using RK3588 shmem fallback 0x10f000+0x100[m
+[m[37m[ 76.664997 ax_driver::soc::scmi:84] [32mSCMI clock protocol registered: path=/firmware/scmi/priver::soc::scmi:93] [32mSCMI SMC registered: smc_id=0x82000010m
+[m[37m[ 76.668231 ax_driver::soc::rockchip::cru::rk3588:60] [32mRK3588 CRU reg: addr=0xfd7c0000, size=0x5c000, rockchip,grf=<0x77>[m
+[m[37m[ 76.669346 rockchip_soc::variants::rk3588::cru:123] [32mCRU@fd7c0000: Initializing and verifying clock configuration...[m
+[m[37m[ 76.ckchip_soc::variants::rk3588::cru:174] [33m⚠ CRU@fd7c0000: ACK_BUS_ROOT div mismatch! u-boot: 3, current: 4[m
+[m[37m[ 76.671399 rockchip_soc::variants::rk3588::cru:248] [32m✓ CRU@fd7c0000: Clock configuration verified[m
+[m[37m[ 76.672284 ax_driver::soc::rockchip::cru::rk3588:79] [32mRK3588 CRU clock/reset registered successfully[m
+[m[37m[ 76.674948 ax_driver::soc::rockchip::pm:78] [32mRockchip power-domain provider registered successfully[m
+[m[37m[ 77.403970 ax_driver::soc::fixed_regulator:70] [32mFixed regulator vcc5v0_host enabled via pinctrl[m
+[m[37m[ 77.530506 ax_driver::soc::fixed_regulator:70] [32mFixed regulator vcc3v3_pcie_eth enabled via pinctrl[m
+[m[37m[ 77.609104 ax_driver::soc::fixed_regulator:70] [32mFixed regulator wifi_disable enabled via pinctrl[m
+[m[37m[ 77.647941 ax_driver::soc::rockchip::npu_handoff:130] [32mAXVISOR_RK3588_NPU_HANDOFF_READY cores=3 power_domains=3 clocks=8 resets=6 scmi_clock_id=6 scmi_rate_hz=200000000 host_submit=false[m
+[m[37m[ 77.650710 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2c0000] enabled SDMMC clock Some("biu") (0x17)[m
+[m[37m[ 77.651638 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2c0000] enabled SDMMC clock Some("ciu") (0x9)[m
+[m[37m[ 77.652542 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2c0000] enabled SDMMC clock Some("ciu-drive") (0x2c2)[m
+[m[37m[ 77.653506 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2c0000] enabled SDMMC clock Some("ciu-sample") (0x2c3)[m
+[m[37m[ 77.727930 ax_driver::block::rockchip::sd:192] [32m[mmc@fe2c0000] vqmmc-supply phandle Phandle(283) is not a fixed GPIO regulator; skip pinctrl enable[m
+[m[37m[ 77.729203 ax_driver::block::rockchip::sd:121] [32mrockchip-dwmmc probe: node=mmc@fe2c0000, addr=0xfe2c0000, size=0x4000[m
+[m[37m[ 77.730333 ax_driver::block::rockchip::sd:133] [32mrockchip-dwmmc: using ciu reference clock 49500000 Hz[m
+[m[37m[ 77.731411 ax_driver::block::rockchip::sd::phase:41] [32mrockchip-dwmmc: RK3588 SDMMC phase configured: drive=90deg sample=0deg parent=49500000Hz[m
+[m[37m[ 77.732660 ax_driver::block::rockchip::sd:160] [32mrockchip-dwmmc: defer protocol initialization controller=rockchip-dwmmc:/mmc@fe2c0000 media=SD preference=SdOnly[m
+[m[37m[ 77.734218 ax_driver::block::rockchip::sd:171] [32mrockchip-dwmmc block device registered irq=None[m
+[m[37m[ 77.736318 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("core") (0x13a)[m
+[m[37m[ 77.737253 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("bus") (0x138)[m
+[m[37mxi") (0x139)[m
+[m[37m[ 77.73::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("block") (0x13b)[m
+[m[37m[ 77.740039 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("timer") (0x13c)[m
+[m[37m[ 77.740990 ax_driver::block::rockchip::sdhci_rk3588:176] [32mrockchip-sdhci probe: node=mmc@fe2e0000, addr=0xfe2e0000, size=0x10000[m
+[m[37m[ 77.742230 ax_driver::block::rockchip::sdhci_rk3588:191] [32mrockchip-sdhci: using external CRU clock[m
+[m[37m[ 77.743126 ax_driver::block::rockchip::sdhci_rk3588:208] [32mrockchip-sdhci: defer protocol initialization controller=rockchip-sdhci:/mmc@fe2e0000 media=MMC preference=MmcFirst[m
+[m[37m[ 77.744771 ax_driver::block::rockchip::sdhci_rk3588:218] [32mrockchip-sdhci block device registered irq=None[m
+[m[37m[ 77.745950 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op ResetAll[m
+[m[37m[ 77.746839 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 0 bound to CPU 0 with hardware depth 1[m
+[m[37m[ 77.747746 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device rockchip-dwmmc:/mmc@fe2c0000 IRQ source 0 (IrqId { domain: IrqDomainId(7), hwirq: HwIrq(235) }) fixed to CPU 0 for queue mask 0x1[m
+[m[37m[ 77.749924 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op PowerOn[m
+[m[37m[ 77.760962 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op SwitchVoltage(V330)[m
+[m[37m[ 77.761857 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetBusWidth(Bit1)[m
+[m[37m[ 77.762727 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetClock(Identification)[m
+[m[37m[ 77.763778 ax_driver::block::rockchip::sd:72] [32mrockchip-dwmmc: ciu clock set target=400000 Hz cclkin=800000 Hz bus=400000 Hz[m
+[m[37m[ 77.787330 sdmmc_protocol::sdio::init::state_machine::identify:175] [32msdio: detected Sd ocr=0xc0ff8000[m
+[m[37m[ 77.789620 sdmmc_protocol::sdio::init::state_machine::identify:340] [32msdio: CSD capacity_blocks=Some(62333952)[m
+[m[37m[ 77.790900 sdmmc_protocol::sdio::init::state_machine::identify:354] [32msdio: switch SD bus width to 4-bit[m
+[m[37m[ 77.792440 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetBusWidth(Bit4)[m
+[m[37m[ 77.793531 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetClock(Default)[m
+[m[37m[ 77.794526 ax_driver::block::rockchip::sd:72] [32mrockchip-dwmmc: ciu clock set target=25000000 Hz cclkin=49500000 Hz bus=24750000 Hz[m
+[m[37m[ 77.799154 ax_driver::block::rockchip::sd:72] [32mrockchip-dwmmc: ciu clock set target=50000000 Hz cclkin=99000000 Hz bus=49500000 Hz[m
+[m[37m[ 77.800780 sdmmc_protocol::sdio::init::state_machine::sd:185] [32msdio: SD speed selected HighSpeed[m
+[m[37m[ 77.801768 sdmmc_protocol::sdio::init::state_machine:237] [32msdio: init done kind=Sd sd_v2=true high_capacity=true rca=0xaaaa ocr=0xc0ff8000 host_bus_width=Bit4 ext_csd_bus_width=None ext_csd_timing=None[m
+[m[37m[ 77.803413 sdmmc_protocol::rdif::queue:172] [32msdmmc block init complete: kind=Sd high_capacity=true rca=43690 capacity_blocks=62333952 cache_enabled=false[m
+[m[37m[ 77.804794 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op ResetAll[m
+[m[37m[ 77.805666 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 0 bound to CPU 0 with hardware depth 1[m
+[m[37m[ 77.806560 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device rockchip-sdhci:/mmc@fe2e0000 IRQ source 0 (IrqId { domain: IrqDomainId(7), hwirq: HwIrq(237) }) fixed to CPU 0 for queue mask 0x1[m
+[m[37m[ 77.808397 ax_driver::block::rockchip::sdhci_rk3588:262] [32mrockchip-sdhci: RK3588 DWCMSHC vendor reset area1=0x500[m
+[m[37m[ 77.809405 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op PowerOn[m
+[m[37m[ 77.820223 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op SwitchVoltage(V330)[m
+[m[37m[ 77.826306 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetBusWidth(Bit1)[m
+[m[37m[ 77.827179 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetClock(Identification)[m
+[m[37m[ 77.828224 ax_driver::block::rockchip::sdhci_rk3588:121] [32mrockchip-sdhci: core clock set to 375000 Hz[m
+[m[37m[ 77.871352 sdmmc_protocol::sdio::init::state_machine::identify:264] [32msdio: detected Mmc ocr=0xc0ff8080[m
+[m[37m[ 77.873726 sdmmc_protocol::sdio::init::state_machine::identify:340] [32msdio: CSD capacity_blocks=None[m
+[m[37m[ 77.886461 sdmmc_protocol::sdio::init::state_machine::mmc:38] [32msdio: EXT_CSD sector_count=122224640[m
+[m[37m[ 77.889189 ax_driver::block::rockchip::sdhci_rk3588:121] [32mrockchip-sdhci: core clock set to 50000000 Hz[m
+[m[37m[ 77.890349 sdmmc_protocol::sdio::init::state_machine::mmc:314] [32msdio: MMC speed selected HighSpeed bus_width=Bit8[m
+[m[37m[ 77.891413 sdmmc_protocol::sdio::init::state_machine::mmc:340] [32msdio: enabled 65536 KiB volatile write cache[m
+[m[37m[ 77.892490 sdmmc_protocol::sdio::init::state_machine:237] [32msdio: init done kind=Mmc sd_v2=false high_cah=Bit8 ext_csd_bus_width=Some(Sdr1) ext_csd_timing=Some(Compat)[m
+[m[37m[ 77.894234 sdmmc_protocol::rdif::queue:172] [32msdmmc block init complete: kind=Mmc high_capacity=true rca=1 capacity_blocks=122224640 cache_enabled=true[m
+[m[37m[ 77.936106 ax_fs_ng::root:348] [32m    partition 1 name=Some("bootfs") fs=Some(Fat) lba 61440..2158592[m
+[m[37m[ 77.937287 ax_fs_ng::root:348] [32m    partition 2 name=None fs=Some(Ext4) lba 2158592..61702144[m
+[m[37m[ 77.938119 ax_fs_ng::root:364] [32m  block device 0 (rockchip-dwmmc:/mmc@fe2c0000) has Gpt partition table with 2 partitions[m
+[m[37m[ 77.971037 ax_fs_ng::root:348] [32m    partition 1 name=Some("uboot") fs=None lba 8192..16384[m
+[m[37m[ 77.972182 ax_fs_ng::root:348] [32m    partition 2 name=Some("misc") fs=None lba 16384..24576[m
+[m[37m[ 77.973284 ax_fs_ng::root:348] [32m    partition 3 name=Some("bootctrl") fs=None lba 24576..28672[m
+[m[37m[ 77.974433 ax_fs_ng::root:348] [32m    partition 4 name=Some("resource") fs=None lba 28672..40960[m
+[m[37m[ 77.975472 ax_fs_ng::root:348] [32m    partition 5 name=Some("boot_linux") fs=Some(Ext4) lba 40960..237568[m
+[m[37m[ 77.976717 ax_fs_ng::root:348] [32m    partition 6 name=Some("ramdisk") fs=None lba 237568..245760[m
+[m[37m[ 77.977763 ax_fs_ng::root:348] [32m    partition 7 name=Some("system") fs=Some(Ext4) lba 245760..4440064[m
+[m[37m[ 77.978830 ax_fs_ng::root:348] [32m    partition 8 name=Some("vendor") fs=Some(Ext4) lba 4440064..6537216[m
+[m[37m[ 77.979938 ax_fs_ng::root:348] [32m    partition 9 name=Some("sys-prod") fs=Some(Ext4) lba 6537216..6639616[m
+[m[37m[ 77.981033 ax_fs_ng::root:348] [32m    partition 10 name=Some("chip-prod") fs=Some(Ext4) lba 6639616..6742016[m
+[m[37m[ 77.982255 ax_fs_ng::root:348] [32m    partition 11 name=Some("updater") fs=None lba 6742016..6807552[m
+[m[37m[ 77.983373 ax_fs_ng::root:348] [32m    partition 12 name=Some("eng_system") fs=None lba 6807552..6840320[m
+[m[37m[ 77.984513 ax_fs_ng::root:348] [32m    partition 13 name=Some("eng_chipset") fs=None lba 6840320..6873088[m
+[m[37m[ 77.985660 ax_fs_ng::root:348] [32m    partition 14 name=Some("chip_ckm") fs=None lba 6938624..7069696[m
+[m[37m[ 77.986913 ax_fs_ng::root:348] [32m    partition 15 name=Some("userdata") fs=None lba 19955712..122224576[m
+[m[37m[ 77.987812 ax_fs_ng::root:364] [32m  block device 1 (rockchip-sdhci:/mmc@fe2e0000) has Gpt partition table with 15 partitions[m
+[m[37m[ 77.988917 ax_fs_ng::root:455] [32m  matched root by PARTUUID on disk0 partition 2 (<unnamed>, fs=ext4, lba 2158592..61702144)[m
+[m[37m[ 77.989989 ax_fs_ng:93] [32mInitialize filesystem subsystem...[m
+[m[37m[ 77.990560 ax_fs_ng:94] [32m  selected root device: disk0 partition 2 (<unnamed>, fs=ext4, lba 2158592..61702144)[m
+[m[37m[ 78.020184 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 78.021991 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 78.022572 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 78.023178 rsext4::ext4::mount:468] [32m  - total blocks: 7442944[m
+[m[37m[ 78.023778 rsext4::ext4::mount:469] [32m  - free blocks: 5818784[m
+[m[37m[ 78.024371 rsext4::ext4::mount:470] [32m  - total inodes: 1845888[m
+[m[37m[ 78.024970 rsext4::ext4::mount:471] [32m  - free inodes: 1796787[m
+[m[37m[ 78.025563 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 78.090268 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 78.090881 ax_fs_ng:106] [32m  filesystem t[37m[ 78.103348 ax_fs_ng::root:610] [32m  mounting partition disk0 partition 1 (bootfs, fs=fat, lba 61440..2158592) at /boot[m
+[m[37m[ 78.107712 rsext4::hashtree::lookup:241] [31mFS DOES NOT SUPPORT NORMAL MULTIPLE POINTERS, PLEASE TURN ON EXTENT FEATURE![m
+[m[37m[ 78.108731 rsext4::ext4::mount:354] [32m/lost+found not found by path scan;will create![m
+[m[37m[ 78.109506 rsext4::hashtree::lookup:241] [31mFS DOES NOT SUPPORT NORMAL MULTIPLE POINTERS, PLEASE TURN ON EXTENT FEATURE![m
+[m[37m[ 78.111934 rsext4::file::blocks:66] [31mnot support traditional block pointer[m
+[m[37m[ 78.112620 rsext4::ext4::mount:356] [33m/lost+found missing and create failed[m
+[m[37m[ 78.113360 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 78.113938 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 78.114545 rsext4::ext4::mount:468] [32m  - total blocks: 16384[m
+[m[37m[ 78.115130 rsext4::ext4::mount:469] [32m  - free blocks: 5073[m
+[m[37m[ 78.115700 rsext4::ext4::mount:470] [32m  - total inodes: 8192[m
+[m[37m[ 78.116278 rsext4::ext4::mount:471] [32m  - free inodes: 8059[m
+[m[37m[ 78.116847 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 78.121215 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 78.121823 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 5 (boot_linux, fs=ext4, lba 40960..237568) at /boot[m
+[m[37m[ 78.123283 rsext4::crc32c::arm64:54] [33mID_AA64ISAR0_EL1[19:16]: 0x1[m
+[m[37m[ 78.123910 rsext4::crc32c::arm64:57] [33mHardware CRC32C support detected.[m
+[m[37m[ 78.125708 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 78.127302 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 78.127882 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 78.128489 rsext4::ext4::mount:468] [32m  - total blocks: 393215[m
+[m[37m[ 78.129082 rsext4::ext4::mount:469] [32m  - free blocks: 61635[m
+[m[37m[ 78.129668 rsext4::ext4::mount:470] [32m  - total inodes: 98304[m
+[m[37m[ 78.130245 rsext4::ext4::mount:471] [32m  - free inodes: 94293[m
+[m[37m[ 78.130823 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 78.132105 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 78.132784 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 7 (system, fs=ext4, lba 245760..4440064) at /system[m
+[m[37m[ 78.136308 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 78.138053 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 78.138632 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 78.139240 rsext4::ext4::mount:468] [32m  - total blocks: 65535[m
+[m[37m[ 78.139833 rsext4::ext4::mount:469] [32m  - free blocks: 24032[m
+[m[37m[ 78.140403 rsext4::ext4::mount:470] [32m  - total inodes: 65536[m
+[m[37m[ 78.140988 rset:471] [32m  - free inodes: 651m[ 78.141565 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 78.142839 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 78.143446 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 8 (vendor, fs=ext4, lba 4440064..6537216) at /vendor[m
+[m[37m[ 78.146781 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 78.148353 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 78.148933 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 78.149549 rsext4::ext4::mount:468] [32m  - total blocks: 12800[m
+[m[37m[ 78.150126 rsext4::ext4::mount:469] [32m  - free blocks: 11981[m
+[m[37m[ 78.150704 rsext4::ext4::mount:470] [32m  - total inodes: 12800[m
+[m[37m[ 78.151289 rsext4::ext4::mount:471] [32m  - free inodes: 12786[m
+[m[37m[ 78.151866 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 78.153138 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 78.153745 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 9 (sys-prod, fs=ext4, lba 6537216..6639616) at /sys-prod[m
+[m[37m[ 78.157114 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 78.158690 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 78.159270 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 78.159886 rsext4::ext4::mount:468] [32m  - total blocks: 12800[m
+[m[37m[ 78.160463 rsext4::ext4::mount:469] [32m  - free blocks: 11981[m
+[m[37m[ 78.161041 rsext4::ext4::mount:470] [32m  - total inodes: 12800[m
+[m[37m[ 78.161626 rsext4::ext4::mount:471] [32m  - free inodes: 12786[m
+[m[37m[ 78.162203 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 78.163477 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 78.164084 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 10 (chip-prod, fs=ext4, lba 6639616..6742016) at /chip-prod[m
+[m[37m[ 78.166565 somehal::arch::gic::v3:274] [32mGICv3 CPU 1 EOI mode: two_step=true[m
+[m[37m[ 78.167274 ax_runtime::mp:79] [32mSecondary CPU 1 started.[m
+[m[37m[ 78.167850 somehal::arch::gic::v3:274] [32mGICv3 CPU 2 EOI mode: two_step=true[m
+[m[37m[ 78.167879 ax_runtime::mp:110] [32mSecondary CPU 1 init OK.[m
+[m[37m[ 78.168554 ax_runtime::mp:79] [32mSecondary CPU 2 started.[m
+[m[37m[ 78.169128 somehal::arch::gic::v3:274] [32mGICv3 CPU 3 EOI mode: two_step=true[m
+[m[37m[ 78.169705 ax_runtime::mp:110] [32mSecondary CPU 2 init OK.[m
+[m[37m[ 78.170353 ax_runtime::mp:79] [32mSecondary CPU 3 started.[m
+[m[37m[ 78.170354 ax_runtime:350] [32mPrimary CPU 0 init OK.[m
+[m[37m[ 78.171503 ax_runtime::mp:110] [32mSecondary CPU 3 init OK.[m
+[m[37m[ 78.172543 0:2 ax_fs_ng::block::runtime::lifecycle::device:369] [32mblock device rockchip-dwmmc:/mmc@fe2c0000 online with 1 hctxs across 4 CPUs[m
+[m[37m[ 78.173739 0:2 ax_fs_ng::block::runtime::lifecycle::device:369] [32mblock device rockchip-sdhci:/mmc@fe2e0000 online with 1 hctxs across 4 CPUs[m
+[m
+
+       d8888            888     888  d8b
+      d88888            888     888  Y8P
+     d88P888            888     888
+    d88P 888  888  888  Y88b   d88P  888  .d8888b    .d88b.   888d888
+   d88P  888  `Y8bd8P'   Y88b d88P   888  88K       d88""88b  888P"
+  d88P   888    X88K      Y88o88P    888  "Y8888b.  888  888  888
+ d8888888888  .d8""8b.     Y888P     888       X88  Y88..88P  888
+d88P     888  888  888      Y8P      888   88888P'   "Y88P"   888
+
+
+by AxVisor Team
+
+[37m[ 78.178613 0:2 axvisor:82] [32mStarting virtualization...[m
+[m[37m[ 78.179153 0:2 ax_driver::soc::rockchip::npu_handoff:63] [32mAXVISOR_RK3588_NPU_HANDOFF_REQUIRED ready=true[m
+[m[37m[ 78.180077 0:2 ax_driver::soc::rockchip::npu_handoff:72] [32mAXVISOR_RK3588_NPU_HANDOFF_READY[m
+[m[37m[ 78.180881 0:2 ax_driver::soc::rockchip::npu_handoff:73] [32mAXVISOR_RK3588_NPU_RESOURCES cores=3 power_domains=3 clocks=8 resets=6[m
+[m[37m[ 78.181975 0:2 ax_driver::soc::rockchip::npu_handoff:80] [32mAXVISOR_RK3588_NPU_SCMI clock_id=6 rate_hz=200000000[m
+[m[37m[ 78.182935 0:2 ax_driver::soc::rockchip::npu_handoff:84] [32mAXVISOR_RK3588_NPU_OWNERSHIP host_submit=false[m
+[m[37m[ 78.283862 0:2 ax_driver::soc::rockchip::npu_handoff:72] [32mAXVISOR_RK3588_NPU_HANDOFF_READY[m
+[m[37m[ 78.284666 0:2 ax_driver::soc::rockchip::npu_handoff:73] [32mAXVISOR_RK3588_NPU_RESOURCES cores=3 power_domains=3 clocks=8 resets=6[m
+[m[37m[ 78.285761 0:2 ax_driver::soc::rockchip::npu_handoff:80] [32mAXVISOR_RK3588_NPU_SCMI clock_id=6 rate_hz=200000000[m
+[m[37m[ 78.286721 0:2 ax_driver::soc::rockchip::npu_handoff:84] [32mAXVISOR_RK3588_NPU_OWNERSHIP host_submit=false[m
+[m[37m[ 78.387645 0:2 ax_driver::soc::rockchip::npu_handoff:72] [32mAXVISOR_RK3588_NPU_HANDOFF_READY[m
+[m[37m[ 78.388449 0:2 ax_driver::soc::rockchip::npu_handoff:73] [32mAXVISOR_RK3588_NPU_RESOURCES cores=3 power_domains=3 clocks=8 resets=6[m
+[m[37m[ 78.389550 0:2 ax_driver::soc::rockchip::npu_handoff:80] [32mAXVISOR_RK3588_NPU_SCMI clock_iver::soc::rockchip::npu_handoff:84] [32mAXVISOR_RK3588_NPU_OWNERSHIP host_submit=false[m
+[m[37m[ 78.491428 0:2 ax_driver::soc::rockchip::npu_handoff:72] [32mAXVISOR_RK3588_NPU_HANDOFF_READY[m
+[m[37m[ 78.492231 0:2river::soc::rockchip::npu_handoff:73] [32mAXVISOR_RK3588_NPU_RECES cores=3 power_domains=3 clocks=8 resets=6[m
+[m[37m[ 78.493326 0:2 ax_driver::soc::rockchip::npu_handoff:80] [32mAXVISOR_RK3588_NPU_SCMI clock_id=6 rate_hz=200000000[m
+[m[37m[ 78.494286 0:2 ax_driver::soc::rockchip::npu_handoff:84] [32mAXVISOR_RK3588_NPU_OWNERSHIP host_submit=false[m
+[m[37m[ 78.595211 0:2 ax_driver::soc::rockchip::npu_handoff:72] [32mAXVISOR_RK3588_NPU_HANDOFF_READY[m
+[m[37m[ 78.596014 0:2r::soc::rockchip::npu_handoff:73] [32mAXVISOR_RK3588_NPU_RESOURCES cores=3 power_domains=3 clocks=8 resets=6[m
+[m[37m[ 78.597109 0:2 ax_driver::soc::rockchip::npu_handoff:80] [32mAXVISOR_RK3588_NPU_SCMI clock_id=6 rate_hz=200000000[m
+[m[37m[ 78.598069 0:2 ax_driver::soc::rockchip::npu_handoff:84] [32mAXVISOR_RK3588_NPU_OWNERSHIP host_submit=false[m
+[m[37m[ 78.598984 0:2 axvm::host::arceos:390] [32mEnabling hardware virtualization support on all cores...[m
+[m[37m[ 78.599846 0:2 axvm::host::arceos:396] [32mCore 0 is initializing hardware virtualization support...[m
+[m[37m[ 78.60
+[m[37m[ 78.722339 0:2 axvm::host::arceos:398] [32mHardware virtualization support enabled on core 0[m
+[m[37m[ 78.723181 1:15 axvm::host::arceos:408] [32mCore 1 is initializing hardware virtualization support...[m
+[m[37m[ 78.723202 2:16 axvm::host::arceos:408] [32mCore 2 is initializing hardware virtualization support...[m
+[m[37m[ 78.724047 1:15 axvm::timer:334] [32mInitializing AxVM timer wheel...[m
+[m[37m[ 78.723214 0:2 axvm::host::arceos:424] [32mWaiting for all cores to enable hardware virtualization...[m
+[m[37m[ 78.723221 3:17 axvm::host::arceos:408] [32mCore 3 is initializing hardware virtualization support...[m
+[m[37m[ 78.725591 1:15 axvm::host::arceos:411] [32mHardware virtualization support enabled on core 1[m
+[m[37m[ 78.724917 2:16 axvm::timer:334] [32mInitializing AxVM timer wheel...[m
+[m[37m[ 78.727290 3:17 axvm::timer:334] [32mInitializing AxVM timer wheel...[m
+[m[37m[ 78.728771 2:16 axvm::host::arceos:411] [32mHardware virtualization support enabled on core 2[m
+[m[37m[ 78.729398 3:17 axvm::host::arceos:411] [32mHardware virtualization support enabled on core 3[m
+[m[37m[ 78.730981 0:2 axvm::host::arceos:440] [32mAll cores have enabled hardware virtualization support.[m
+[m[37m[ 78.733516 0:2 axvisor::manager:151] [32mNOT find dir: /guest/vm_default in filesystem[m
+[m[37m[ 78.734273 0:2 axvisor::config:90] [32mUsing static VM configs.[m
+[m[37m[ 78.835379 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@0, node_id: 0x0, hardware_cpu_id: 0x0[m
+[m[37m[ 78.836417 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@100, node_id: 0x100, hardware_cpu_id: 0x100[m
+[m[37m[ 78.837493 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@200, node_id: 0x200, hardware_cpu_id: 0x200[m
+[m[37m[ 78.838567 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@300, node_id: 0x300, hardware_cpu_id: 0x300[m
+[m[37m[ 78.839654 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@400, node_id: 0x400, harcpu_id: 0x400[m
+[m[37m[ 78.80, hardware_cpu_id: 0x500[m
+[m[37m[ 78.841808 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@600, node_id: 0x600, hardware_cpu_id: 0x600[m
+[m[37m[ 78.842882 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@700, node_id: 0x700, hardware_cpu_id: 0x700[m
+[m[37m[ 78.857547 0:2 axvm::arch::aarch64::fdt::core::parser:469] [32mFound 8 host CPU nodes[m
+[m[37m[ 78.858304 0:2 axvm::arch::aarch64::fdt::core:142] [32mVM[1] found DTB, parsing...[m
+[m[37m[ 79.033139 0:2 axvm::arch::aarch64::fdt::core::device:96] [32mFound excluded devices: ["/interrupt-controller@8000000", "/serial@9000000", "/timer"][m
+[m[37m[ 79.037348 0:2 axvm::arch::aarch64::fdt::core::device:96] [32mFound excluded devices: ["/interrupt-controller@8000000", "/serial@9000000", "/timer"][m
+[m[37m[ 79.039749 0:2 axvisor::config:137] [32mCreating VM[1] "starry-vision-ivc-orangepi"[m
+[m[37m[ 98.242085 0:2 axvm::vm:1073] [32mVM created: id=1[m
+[m[37m[ 98.242644 0:2 axvisor::config:149] [32mVM[1] created success, loading images...[m
+[m[37m[ 99.329612 0:2 axdevice::device:1229] [32mDeviceRuntime: registered device id=0[m
+[m[37m[ 99.330320 0:2 axdevice::device:1229] [32mDeviceRuntime: re 99.333559 0:2 axvm::vm::prepare:86] [32mVM setup: id=1[m
+[m[37m[ 99.426489 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@0, node_id: 0x0, hardware_cpu_id: 0x0_id: 0x100, hardware_cpu_id: 0x100[m
+[m[37m[ 99.428606 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@200, node_id: 0x200, hardwararch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@300, node_id: 0x300, hardware_cpu_id: 0x300[m
+[m[37m[ 99.430772 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@400, node_id: 0x400, hardware_cpu_id: 0x400[m
+[m[37m[ 99.431850 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@500, node_id: 0x500, hardware_cpu_id: 0x500[m
+[m[37m[ 99.432927 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@600, node_id: 0x600, hardware_cpu_id: 0x600[m
+[m[37m[ 99.434003 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@700, node_id: 0x700, hardware_cpu_id: 0x700[m
+[m[37m[ 99.448774 0:2 axvm::arch::aarch64::fdt::core::parser:469] [32mFound 8 host CPU nodes[m
+[m[37m[ 99.449541 0:2 axvm::arch::aarch64::fdt::core:151] [32mVM[2] DTB not found, generating from the VM configuration[m
+[m[37m[ 99.783191 0:2 axvm::arch::aarch64::fdt::core::device:96] [32mFound excluded devices: ["/interrupt-controller@fe600000", "/serial@fd890000", "/serial@feb40000", "/serial@feb50000", "/serial@feb60000", "/serial@feb70000", "/serial@feb80000", "/serialerial@febb0000", "/serial@febc00timer@feae0000", "/interrupt-controller@fe600000/msi-controller@controller@fe660000"][m
+[m[37m[ 99.871960 0:2 axvm::arch::aarch64::fdt::core::device:96] [32mFound excluded devices: ["/interrupt-controller@fe600000", , "/serial@feba0000", "/serial@febb0000", "/serial@febc0000", "/imer", "/timer@feae0000", "/interrupt-controller@fe600000/msi-co"][m
+[m[37m[ 99.876248 0:2 axvisor::config:137] [32mCreating VM[2] "zephyr-vision-ivc-orangepi"[m
+[m[37m[ 99.877883 0:2 axvm::vm:1073] [32mVM created: id=2[m
+[m[37m[100.044427 0:2 axvisor::config:149] [32mVM[2] created success, loading images...[m
+[m[37m[100.052354 0:2 axdevice::device:1229] [32mDeviceRuntime: registered device id=0[m
+[m[37m[100.053060 0:2 axdevice::dev0.060179 0:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cl[37m[100.062107 0:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[m[37m[100.0ounted cleanly[m
+[m[37m[100.064663 0:2 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[100.065953 0:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[m[37m[100.066588 0:2 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[100.067868 0:2 rsext4::ext4::sync:43] [32mFilesyst[37m[100.152920 0:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[m[37m[100.153944 0:2 axvm::host::arceos:254] [32mReleased 2 host filesystem block IRQ registration(s) during shutdown[m
+[m[37m[100.154886 0:2 axvisor::manager:125] [32mHost filesystem cleanly unmounted before guest passthrough devices start[m
+[m[37m[100.155893 3:2 axvm::runtime:53] [32mVMM starting, booting VMs...[m
+[m[37m[100.156492 3:2 axvm::vm:1294] [32mStarting VM[1][m
+[m[37m[100.156965 3:2 axvm::runtime::vcpus:362] [32mSpawning task for VM[1] VCpu[0][m
+[m[37m[100.157664 3:2 axvm::runtime::vcpus:400] [32mVCpu task Task(22, "VM[1]-VCpu[0]") created cpumask: [1, ], initial CPU 1[m
+[m[37m[100.158846 3:2 axvm::runtime:63] [32mVM[1] boot success[m
+[m[37m[100.158850 1:22 axvm::runtime::vcpus:461] [32mVM[1] VCpu[0] waiting for running[m
+[m[37m[100.159366 3:2 axvm::vm:1294] [32mStarting VM[2][m
+[m[37m[100.160074 1:22 axvm::runtime::vcpus:501] [32mVM[1] VCpu[0] running...[m
+[m[37m[100.160546 3:2 axvm::runtime::vcpus:362] [32mSpawning task for VM[2] VCpu[0][m
+[m[37m[100.161889 3:2 axvm::runtime::vcpus:400] [32mVCpu task Task(24, "VM[2]-VCpu[0]") created cpumask: [0, ], initial CPU 0[m
+[m[37m[100.162930 3:2 axvm::runtime:63] [32mVM[2] boot success[m
+[m[37m[100.162937 0:24 axvm::runtime::vcpus:461] [32mVM[2] VCpu[0] waiting for running[m
+[m[37m[100.163500 3:2 axvisor:123] [32m[OK] Default guest initialized[m
+[m[37m[100.164156 0:24 axvm::runtime::vcpus:501] [32mVM[2] VCpu[0] running...[m
+[m[VM 1] console=ttyAMA0,115200 earlycon=pl011,0x09000000 root=/dev/vda rw fsck.repair=yes
+[VM 2] *** Booting Zephyr OS build v4.3.0 ***
+[VM 1] VM Load @PA:0x80000000
+[VM 2] IVC-RTOS-SELFTEST PASS vector=rust-wire-v1
+[VM 1] VM Load Offset: 0x100000000
+[VM 1] Memory Map:
+[VM 1]   KImg   0x00000080000000 - 0x00000080e00000 (14 MiB)
+[VM 1]   Free   0x00000080e00000 - 0x00000090000000 (242 MiB)
+[VM 1] Initialize RAM allocator: 0x80e00000..0x90000000
+[VM 1] Reserving CPU-local areas
+[VM 1] CPU-local area stride: 0x41000 bytes
+[VM 1] Total CPU-local allocation: 0x82000 bytes (2 CPUs)
+[VM 1] Flushed RAM used range to memory map: 0x80e00000..0x80e02000, current: 0x80e02000
+[VM 1] Flushed RAM used range to memory map: 0x80e02000..0x80e84000, current: 0x80e84000
+[VM 1] CPU-local areas allocated at 0x80e02000 - 0x80e84000
+[VM 1] EL: 1
+[VM 1] Mapping early memory regions...
+[VM 1] Ram                 : [0xffff000080000000, 0xffff000090000000) -> [0x0000000080000000, 0x0000000090000000) (256 MiB)
+[VM 1] KImage              : [0xffffffff80000000, 0xffffffff80e00000) -> [0x0000000080000000, 0x0000000080e00000) (14 MiB)
+[VM 1] PerCpu              : [0xffffff0080e02000, 0xffffff0080e84000) -> [0x0000000080e02000, 0x0000000080e84000) (520 KiB)
+[VM 1] Debug serial        : [0xffff000009000000, 0xffff000009001000) -> [0x0000000009000000, 0x0000000009001000) (4 KiB)
+[VM 1] Boot page table at physical address: PA:0x80e84000
+[VM 1] Setting up table registers...
+[VM 1] MMU Entry point at physical address: 0x8033a13c
+[VM 1] Trap vector at 0xffffffff80342000
+[VM 1] Memory Map:
+[VM 1]   MMIO   0x00000009000000 - 0x00000009001000 (4 KiB)
+[VM 1]   KImg   0x00000080000000 - 0x00000080e00000 (14 MiB)
+[VM 1]   Rsv    0x00000080e00000 - 0x00000080e02000 (8 KiB)
+[VM 1]   PerCPU 0x00000080e02000 - 0x00000080e84000 (520 KiB)
+[VM 1]   Rsv    0x00000080e84000 - 0x00000080e8e000 (40 KiB)
+[VM 1]   Free   0x00000080e8e000 - 0x00000090000000 (241.45 MiB)
+[VM 1] Jumping to main entry point at 0xffffffff80326258 with SP 0xffffff0080e43000
+[VM 1] 
+[VM 1]        d8888                            .d88888b.   .d8888b.
+[VM 1]       d88888                           d88P" "Y88b d88P  Y88b
+[VM 1]      d88P888                           888     888 Y88b.
+[VM 2] IVC-RTOS-NET mac=52:54:00:00:00:02 expected=52:54:00:00:00:02
+[VM 1]     d88P 888 888d888  .d8888b  .d88b.  888     888  "Y888b.
+[VM 1]    d88P  888 888P"   d88P"    d8P  Y8b 888     888     "Y88b.
+[VM 2] IVC-RTOS-READY bind=10.0.0.2:5500 mac=52:54:00:00:00:02 window_bits=64 ack_loss_drop_every=0 expected_commands=0 expected_protocol_errors=0 expected_vision_decisions=3 exit_after_expected=1
+[VM 1]   d88P   888 888     888      88888888 888     888       "888
+[VM 1]  d8888888888 888     Y88b.    Y8b.     Y88b. .d88P Y88b  d88P
+[VM 1] d88P     888 888      "Y8888P  "Y8888   "Y88888P"   "Y8888P"
+[VM 1] 
+[VM 1] arch = aarch64
+[VM 1] platform = AxVisor Orange Pi 5 Plus StarryOS RKNPU guest
+[VM 1] target = aarch64-unknown-none-softfloat
+[VM 1] build_mode = 
+[VM 1] log_level = info
+[VM 1] backtrace = false
+[VM 1] smp = 2
+[VM 1] 
+[VM 1] [37m[  1.203804 ax_runtime:224] [32mLogging is enabled.[m
+[VM 1] [m[37m[  1.211644 ax_runtime:225] [32mPrimary CPU 0 started, arg = 0x80e00000.[m
+[VM 1] [m[37m[  1.221971 ax_runtime:227] [32mFound physcial memory regions:[m
+[VM 1] [m[37m[  1.231230 ax_runtime:229] [32m  [PA:0x9000000, PA:0x9001000) mmio (READ | WRITE | DEVICE | RESERVED)[m
+[VM 1] [m[37m[  1.245120 ax_runtime:229] [32m  [PA:0x80000000, PA:0x80e00000) reserved (READ | WRITE | EXECUTE | RESERVED)[m[VM 1] [m[37m[  1.259873 ax_runtime:229] [32m  [PA:0x80e00000, PA:0x80e02000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[VM 1] [m[37m[  1.274611 ax_runtime:229] [32m  [PA:0x80e02000, PA:0x80e84000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[VM 1] [m[37m[  1.289349 ax_runtime:229] [32m  [PA:0x80e84000, PA:0x80e8e000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[VM 1] [m[37m[  1.304078 ax_runtime:229] [32m  [PA:0x80e8e000, PA:0x90000000) free memory (READ | WRITE | FREE)[m
+[VM 1] [m[37m[  1.317485 ax_runtime:377] [32mInitialize global memory allocator...[m
+[VM 1] [m[37m[  1.327439 ax_runtime:378] [32m  use buddy-slab-allocator allocator.[m
+[VM 1] [m[37m[  1.337411 ax_alloc::buddy_slab:158] [32mInitialize global memory allocator, start_vaddr: 0xffff000080e8e000, size: 0xf172000[m
+[VM 1] [m[37m[  1.354522 ax_alloc::buddy_slab:424] [32mglobal allocator initialized[m
+[VM 1] [m[37m[  1.364535 ax_runtime:264] [32mkernel aspace: [VA:0xffff000000000000, VA:0xffffffffffffffff)[m
+[VM 1] [m[37m[  1.377266 ax_mm:107] [32mInitialize virtual memory management...[m
+[VM 1] [m[37m[  1.428687 ax_runtime:276] [32mInitialize platform devices...[m
+[VM 1] [m[37m[  1.439027 someboot::arch::power:23] [32mPower management method : HVC[m
+[VM 1] [m[37m[  1.449196 somehal::driver:5] [32mInitializing rdrive with FDT at 0xffff000080e00000[m
+[VM 1] [m[37m[  1.507834 ax_task::api:150] [32mInitialize scheduling...[m
+[VM 1] [m[37m[  1.516504 ax_task::api:158] [32m  use Round-robin scheduler.[m
+[VM 1] [m[37m[  1.525645 ax_runtime:302] [32mInitialize interrupt handlers...[m
+[VM 1] [m[37m[  1.535345 ax_runtime::devices:2] [32mProbe platform devices...[m
+[VM 1] [m[37m[  1.545720 ax_driver::serial::pl011:22] [32mProbing PL011 serial device: pl011@9000000[m
+[VM 1] [m[37m[  1.558288 ax_driver::serial::pl011:38] [32mPL011 serial@0xffff000009000000 registered successfully[m
+[VM 1] [m[37m[  1.573354 ax_driver::rknpu:85] [32mRK3588 NPU clock programming skipped: resources were prepared by the host[m
+[VM 1] [m[37m[  1.589866 ax_driver::rknpu:77] [32mNPU registered successfully[m
+[VM 1] [m[37m[  1.599899 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b000000 at PA 0xb000000, size 0x1000[m
+[VM 1] [m[37m[  1.616167 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b000000[m
+[VM 1] [m[37m[  1.628170 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b000000 at PA 0xb000000, size 0x1000[m
+[VM 1] [m[37m[  1.644241 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b000000[m
+[VM 1] [m[37m[  1.657289 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b000000 at PA 0xb000000, size 0x1000[VM 1] [m[37m[  1.673240 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b000000[m
+[VM 1] [m[37m[  1.686043 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b000000 at PA 0xb000000, size 0x1000[VM 1] [m[37m[  1.701936 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b000000[m
+[VM 1] [m[37m[  1.715192 ax_driver::virtio::block:658] [32mfound a block device of size 262144KB[m
+[VM 1] [m[37m[  1.728851 ax_driver::virtio::block:106] [32mregistered IRQ-driven VirtIO MMIO block device[m
+[VM 1] [m[37m[  1.742392 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b001000 at PA 0xb001000, size 0x1000[m
+[VM 1] [m[37m[  1.758966 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b001000[m
+[VM 1] [m[37m[  1.771698 virtio_drivers::device::net::dev_raw:33] [32mnegotiated_features Features(MAC | VERSION_1)[m
+[VM 1] [m[37m[  1.788121 ax_driver::virtio::net:407] [32mregistered virtio network device irq=None[m
+[VM 1] [m[37m[  1.801161 ax_runtime::serial:493] [32mserial runtime PL011 UART ready: cpu=0, irq=Some(Source(FdtInterrupt(FdtIrqSpec { controller: 4, cells: [0, 1, 4] }))), polling=false[m
+[VM 1] [mBoot at 1970-01-01 00:00:01.825678458 UTC
+[VM 1] 
+[VM 1] [37m[  1.831428 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 0 bound to CPU 0 with hardware depth 1[m
+[VM 1] [m[37m[  1.846597 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device virtio-blk IRQ source 0 (IrqId { domain: IrqDomainId(7), hwirq: HwIrq(32) }) fixed to CPU 0 for queue mask 0x1[m
+[VM 1] [m[37m[  1.874126 ax_fs_ng::root:341] [32m    raw device fs=Some(Ext4)[m
+[VM 1] [m[37m[  1.884543 ax_fs_ng::root:372] [32m  block device 0 (virtio-blk) has no usable partition table; treating the wh disk as a candidate[m
+[VM 1] [m[37m[  1.904518 ax_fs_ng::root:553] [32m  only one raw block device is available; using it as root[m
+[VM 1] [m[37m[  1.918963 ax_fs_ng:93] [32mInitialize filesystem subsystem...[m
+[VM 1] [m[37m[  1.928659 ax_fs_ng:94] [32m  selected root device: disk0 raw device[m
+[VM 1] [m[37m[  1.939559 rsext4::crc32c::arm64:54] [33mID_AA64ISAR0_EL1[19:16]: 0x1[m
+[VM 1] [m[37m[  1.950215 rsext4::crc32c::arm64:57] [33mHardware CRC32C support detected.[m
+[VM 1] [m[37m[  1.965805 rsext4::ext4::mount:344] [32m/lost+found exists (path resolution, repaired hint inode=11)[m
+[VM 1] [m[37m[  1.981689 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[VM 1] [m[37m[  1.991808 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[VM 1] [m[37m[  2.002355 rsext4::ext4::mount:468] [32m  - total blocks: 65536[m
+[VM 1] [m[37m[  2.012547 rsext4::ext4::mount:469] [32m  - free blocks: 52270[m
+[VM 1] [m[37m[  2.022621 rsext4::ext4::mount:470] [32m  - total inodes: 16384[m
+[VM 1] [m[37m[  2.032833 rsext4::ext4::mount:471] [32m  - free inodes: 16310[m
+[VM 1] [m[37m[  2.043003 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[VM 1] [m[37m[  2.059268 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[VM 1] [m[37m[  2.069088 ax_fs_ng:106] [32m  filesystem type: "ext4"[m
+[VM 1] [m[37m[  2.081325 ax_net:193] [32mInitialize network subsystem...[m
+[VM 1] [m[37m[  2.090993 ax_net:213] [32m  use NIC 0: "virtio-net"[m
+[VM 1] [m[37m[  2.100013 ax_runtime::irq:120] [32mregistered eth0 irq IrqId { domain: IrqDomainId(7), hwirq: HwIrq(34) }[m
+[VM 1] [m[37m[  2.115641 ax_net:239] [32meth0:[m
+[VM 1] [m[37m[  2.121296 ax_net:240] [32m  id:   2[m
+[VM 1] [m[37m[  2.127752 ax_net:241] [32m  mac:  52-54-00-00-00-01[m
+[VM 1] [m[37m[  2.135963 ax_net:258] [32m  mode: dhcp[m
+[VM 1] [m[37m[  2.142499 ax_net:296] [32mDevice: lo[m
+[VM 1] [m[37m[  2.149245 ax_net:296] [32mDevice: eth0[m
+[VM 1] [m[37m[  2.155929 ax_net::service:595] [32meth0: DHCP enabled[m
+[VM 1] [m[37m[  4.211950 ax_net:982] [33mDHCP bootstrap timed out[m
+[37m[103.551714 1:22 axvm::runtime::hvc:272] [32mVM[1] PSCI_CPU_ON target=0x200 entry=0x8033981c context=0x80e43e00[m
+[m[37m[103.552666 1:22 axvm::runtime::vcpus:362] [32mSpawning task for VM[1] VCpu[1][m
+[m[37m[103.553376 1:22 axvm::runtime::vcpus:400] [32mVCpu task") created cpumask: [2, ], initial CPU 2[m
+[m[37m[103.554411[VM 1] [m[37m[  4.228167 ax_runtime:350] [32mPrimary CPU 0 init OK.[m
+[VM 1] [m[37m[  4.228167 ax_runtime::mp:79] [32mSecondary CPU 1 started.[m
+[VM 1] [m[37m[  4.247250 ax_runtime::mp:110] [32mSecondary CPU 1 init OK.[m
+[VM 1] [m[37m[  4.256295 0:2 ax_fs_ng::block::runtime::lifecycle::device:369] [32mblock device virtio-blk online with 1 hctxs CPUs[m
+[VM 1] [m[37m[  4.274744 0:2 ktracepoint:282] [32mtracepoint_data_start: 0xffffffff80543b88, tracepoint_data_end: 0xffffffff8[VM 1] [m[37m[  4.292768 0:2 ktracepoint:297] [32mtracepoint_data_len: 6[m
+[VM 1] [m[37m[  4.302789 0:2 ktracepoint:314] [32mtracepoint registered: sched:sched_process_exit[m
+[VM 1] [m[37m[  4.316125 0:2 ktracepoint:314] [32mtracepoint registered: sched:sched_process_fork[m
+[VM 1] [m[37m[  4.328342 0:2 ktracepoint:314] [32mtracepoint registered: sched:sched_switch[m
+[VM 1] [m[37m[  4.340053 0:2 ktracepoint:314] [32mtracepoint registered: syscalls:sys_clone[m
+[VM 1] [m[37m[  4.351919 0:2 ktracepoint:314] [32mtracepoint registered: syscalls:sys_enter_openat[m
+[VM 1] [m[37m[  4.365067 0:2 ktracepoint:314] [32mtracepoint registered: syscalls:sys_mkdirat[m
+[VM 1] [mInitialized 6 tracepoints
+[VM 1] kmod subsystem initialized
+[VM 1] [37m[  4.384629 0:2 starry_kernel::pseudofs:86] [32mInitialize pseudofs...[m
+[VM 1] [m[37m[  4.396238 0:2 starry_kernel::pseudofs::dev::tty::serial:258] [32mttyS0 registered: path=/pl011@9000000, alias=Some(0), paddr=0x9000000, irq=Some(Source(FdtInterrupt(FdtIrqSpec { controller: 4, cells: [0, 1, 4] })))[m
+[VM 1] [m[37m[  4.426297 0:2 starry_kernel::pseudofs::dev::tty::serial:201] [32m/dev/console bound to ttyS0[m
+[VM 1] [m[37m[  4.441710 0:2 starry_kernel::pseudofs:80] [32mMounted devfs at /dev[m
+[VM 1] [m[37m[  4.452659 0:2 starry_kernel::pseudofs::usbfs:55] [32musbfs: initializing manager[m
+[VM 1] [m[37m[  4.465461 0:2 starry_kernel::pseudofs::usbfs::manager:1486] [32musbfs: discovered 0 USB host(s)[m
+[VM 1] [m[37m[  4.479377 0:2 starry_kernel::pseudofs::usbfs:58] [32musbfs: no USB host found, skip mounting usbfs[m
+[VM 1] [m[37m[  4.494118 0:2 starry_kernel::pseudofs:80] [32mMounted tmpfs at /dev/shm[m
+[VM 1] [m[37m[  4.521682 0:2 starry_kernel::pseudofs:80] [32mMounted tmpfs at /tmp[m
+[VM 1] [m[37m[  4.532685 0:2 starry_kernel::pseudofs:80] [32mMounted mqueue at /dev/mqueue[m
+[VM 1] [m[37m[  4.545058 0:2 starry_kernel::dyn_debug:65] [32mdebug_init: initializing dynamic debug sites[m
+[VM 1] [m[37m[  4.560600 0:2 starry_kernel::dyn_debug:68] [32mdebug_init: found 191 dynamic debug sites[m
+[VM 1] [m[37m[  4.574204 0:2 starry_kernel::pseudofs::proc:74] [32mRead kallsyms, size: 1441KB[m
+[VM 1] [m[37m[  4.611418 0:2 starry_kernel::pseudofs:80] [32mMounted proc at /proc[m
+[VM 1] [m[37m[  4.623027 0:2 starry_kernel::pseudofs:80] [32mMounted sysfs at /sys[m
+[VM 1] [m[37m[  4.634415 0:2 starry_kernel::pseudofs:80] [32mMounted debug at /sys/kernel/debug[m
+[VM 1] [m[37m[  4.647444 0:2 starry_kernel::task::timer:394] [32mInitialize alarm...[m
+[VM 1] [m[37m[  4.663222 0:16 starry_kernel::task::user:71] [32mEnter user space: ip=0x400640, sp=0x3fffffff630[m
+[VM 1] [mWelcome to [96m[1mStarry OS[0m!
+[VM 1] /bin/sh: env: not found
+[VM 1] 
+[VM 1] Use [1m[3mapk[0m to install packages.
+[VM 1] 
+[VM 1] STARRY_GROUPED_AUTORUN_INIT
+[VM 1] [37m[  4.767896 0:16 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  4.768042 0:17 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe920[m
+[VM 1] [m[37m[  4.811235 0:18 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c[VM 1] [m[37m[  4.903404 0:18 starry_kernel::task::ops:348] [32mTask(18, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  4.914678 0:18 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  4.914903 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  4.915006 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  4.951536 0:19 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe750[m
+[VM 1] [m[37m[  5.263378 0:19 starry_kernel::task::ops:348] [32mTask(19, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  5.274870 0:19 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  5.275078 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.275183 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  5.310469 0:20 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe750[m
+[VM 1] [m[37m[  5.365837 0:20 starry_kernel::task::ops:348] [32mTask(20, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  5.377062 0:20 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  5.377261 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.377363 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  5.379950 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.424469 0:21 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffedb0[m
+[VM 1] [m[37m[  5.453331 0:21 starry_kernel::task::ops:348] [32mTask(21, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  5.465092 0:21 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  5.474581 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.474683 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  5.477404 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.512101 0:22 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[VM 1] [m[37m[  5.519029 0:22 starry_kernel::task::ops:348] [32mTask(22, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  5.540615 0:22 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  5.550039 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.550137 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  5.552780 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.588349 0:23 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[VM 1] [m[37m[  5.595135 0:23 starry_kernel::task::ops:348] [32mTask(23, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  5.616767 0:23 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  5.626218 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.626311 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNO[VM 1] [mIVC-STARRY-VISION-BOOT source=fixed-images backend=rknn-npu frames=3 target_class=32 calibration_x=625
+[VM 1] IVC-STARRY-VISION-NET ip=10.0.0.1/24 peer=10.0.0.2:5500 segment=1
+[VM 1] [37m[  5.628891 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[
+[VM 1] [m[37m[  5.679255 0:24 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff460[m
+[VM 1] [m[37m[  7.697392 0:24 starry_kernel::task::ops:348] [32mTask(24, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  7.708252 0:24 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  7.717397 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  7.717489 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOm
+[VM 1] [m[37m[  7.719812 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0[VM 1] [m[37m[  7.755063 0:25 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff460[m
+[VM 1] [m[37m[  7.774902 0:25 starry_kernel::task::ops:348] [32mTask(25, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  7.786738 0:25 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[  7.795801 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0[VM 1] [m[37m[  7.795890 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  7.798276 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  7.833300 0:26 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff200[m
+[VM 1] [m[37m[  8.299061 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0406400, nr 0x0, arg 0x4003f3d0[m
+[VM 1] [m[37m[  8.299091 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = false[m
+[VM 1] [m[37m[  8.299104 0:26 starry_kernel::pseudofs::dev::card1:188] [32mdrm get version[m
+[VM 1] [m[37m[  8.299115 0:26 starry_kernel::pseudofs::dev::card1:811] [32mdrm_version called: DrmVersion { version_major: 0, version_minor: 0, version_patchlevel: 0, name_len: 0, name: 0, date_len: 0, date: 0, desc_len: 0, desc: 0 }[m
+[VM 1] [m[37m[  8.299137 0:26 starry_kernel::pseudofs::dev::card1:854] [32m[drm_version] Set driver info: name_len=5, date_len=8, desc_len=12[m
+[VM 1] [m[37m[  8.299157 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0406400, nr 0x0, arg 0x4003f3d0[m
+[VM 1] [m[37m[  8.299169 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = false[m
+[VM 1] [m[37m[  8.299180 0:26 starry_kernel::pseudofs::dev::card1:188] [32mdrm get version[m
+[VM 1] [m[37m[  8.299190 0:26 starry_kernel::pseudofs::dev::card1:811] [32mdrm_version called: DrmVersion { version_major: 0, version_minor: 9, version_patchlevel: 8, name_len: 5, name: 1074000928, date_len: 8, date: 1074000960, desc_len: 12, desc: 1074000992 }[m
+[VM 1] [m[37m[  8.299210 0:26 starry_kernel::pseudofs::dev::card1:854] [32m[drm_version] Set driver info: name_len=5, date_len=8, desc_len=12[m
+[VM 1] [m[37m[  8.299229 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106401, nr 0x1, arg 0x3ffffffd730[m
+[VM 1] [m[37m[  8.299241 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = false[m
+[VM 1] [m[37m[  8.299252 0:26 starry_kernel::pseudofs::dev::card1:192] [32mdrm get unique[m
+[VM 1] [m[37m[  8.299263 0:26 starry_kernel::pseudofs::dev::card1:868] [32mdrm_get_unique called: DrmUnique { unique_len: 0, unique: 0 }[m
+[VM 1] [m[37m[  8.299281 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106401, nr 0x1, arg 0x3ffffffd730[m
+[VM 1] [m[37m[  8.399509 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffd6c0[m
+[VM 1] [m[37m[  8.399529 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.399541 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  8.399553 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  8.399564 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = GetHwVersion, value = 4294967295[m
+[VM 1] [m[37m[  8.399591 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[0]: flags=GetHwVersion value_in=4294967295 result=Ok(1179210309) value_out=1179210309[m
+[VM 1] [m[37m[  8.399612 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffd6c0[m
+[VM 1] [m[37m[  8.399623 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.399633 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl[VM 1] [m[37m[  8.583215 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffdc70[m
+[VM 1] [m[37m[  8.583237 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.583248 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  8.583260 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  8.583271 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = PowerOn, value = 0[m
+[VM 1] [m[37m[  8.583291 0:26 rockchip_npu:281] [33mPowerOn operation not yet implemented[m
+[VM 1] [m[37m[  8.583302 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[2]: flags=PowerOn value_in=0 result=Ok(0) value_out=0[m
+[VM 1] [m[37m[  8.662878 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffdc80[m
+[VM 1] [m[37m[  8.662899 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.662910 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  8.662921 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  8.662931 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = SetProcNice, value = 4294967277[m
+[VM 1] [m[37m[  8.662951 0:26 rockchip_npu:276] [33mSetProcNice operation not applicable in bare metal context[m
+[VM 1] [m[37m[  8.662963 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[3]: flags=SetProcNice value_in=4294967277 result=Ok(0) value_out=0[m
+[VM 1] [m[37m[  8.742603 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffd860[m
+[VM 1] [m[37m[  8.742624 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.742635 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  8.742646 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  8.742656 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = GetDrvVersion, value = 0[m
+[VM 1] [m[37m[  8.742675 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[4]: flags=GetDrvVersion value_in=0 result=Ok(908) value_out=908[m
+[VM 1] [m[37m[  8.834890 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffc960[m
+[VM 1] [m[37m[  8.834911 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.834922 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  8.834933 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  8.834944 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = GetIommuEn, value = 0[m
+[VM 1] [m[37m[  8.834962 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[5]: flags=GetIommuEn value_in=0 result=Ok(0) value_out=0[m
+[VM 1] [m[37m[  8.834982 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0306442, nr 0x42, arg 0x3ffffffa6e0[m
+[VM 1] [m[37m[  8.834994 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.835005 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemCreate[m
+[VM 1] [m[37m[  8.835016 0:26 starry_kernel::pseudofs::dev::card1:431] [32mrknpu mem_create ioctl[m
+[VM 1] [m[37m[  8.835026 0:26 starry_kernel::pseudofs::dev::card1:442] [33mrknpu mem_create ioctl[0]: flags=0x40a size=42840 core_mask=0x1[m
+[VM 1] [m[37m[  8.835107 0:26 starry_kernel::pseudofs::dev::card1:453] [33mrknpu mem_create ioctl[0] done: handle=1 flags=0x40a size=42840 sram_size=42840 obj_addr=0xffff00008dae0000 dma_addr=0x8dae0000 iommu_domain_id=0 core_mask=0x1 elapsed_us=68[m
+[VM 1] [m[37m[  8.835154 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc008640a, nr 0xa, arg 0x3ffffffb9d0[m
+[VM 1] [m[37m[  8.835166 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = false[m
+[VM 1] [m[37m[  8.835177 0:26 starry_kernel::pseudofs::dev::card1:648] [32mdrm_gem_flink_ioctl called: DrmGemFlink {
+[VM 1]     handle: 1,
+[VM 1]     name: 0,
+[VM 1] }[m
+[VM 1] [m[37m[  8.835204 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc00c642d, nr 0x2d, arg 0x3ffffffc010[m
+[VM 1] [m[37m[  8.940427 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106443, nr 0x43, arg 0x3ffffffc330[m
+[VM 1] [m[37m[  8.940444 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.940454 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemMap[m
+[VM 1] [m[37m[  8.940466 0:26 starry_kernel::pseudofs::dev::card1:492] [32mrknpu mem_map ioctl[m
+[VM 1] [m[37m[  8.940485 0:26 starry_kernel::pseudofs::dev::card1:503] [32mmem_map: handle=1 -> offset=0x1000[m
+[VM 1] [m[37m[  8.940670 0:26 starry_kernel::pseudofs::dev::ca[VM 1] [m[37m[  8.940684 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  8.940695 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[  8.940706 0:26 starry_kernel::pseudofs::dev::card1:540] [33mrknpu mem_sync ioctl[0]: flags=0x3 obj_addr=0xffff00008dae0000 offset=0 size=42840[m
+[VM 1] [m[37m[  8.940719 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x3,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008dae0000,
+[VM 1]     offset: 0x0,
+[VM 1]     size: 0xa758,
+[VM 1] }[m
+[VM 1] [m[37m[  8.940759 0:26 starry_kernel::pseudofs::dev::card1:553] [33mrknpu mem_sync ioctl[0] done: flags=0x3 offset=0 size=42840 elapsed_us=17[m
+[VM 1] [m[37m[  9.139860 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffc9e0[m
+[VM 1] [m[37m[  9.139877 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  9.139888 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  9.139899 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  9.139909 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = GetIommuEn, value = 0[m
+[VM 1] [m[37m[  9.139928 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[6]: flags=GetIommuEn value_in=0 result=Ok(0) value_out=0[m
+[VM 1] [m[37m[  9.139948 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0306442, nr 0x42, arg 0x3ffffffa760[m
+[VM 1] [m[37m[  9.139960 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  9.139970 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemCreate[m
+[VM 1] [m[37m[  9.139981 0:26 starry_kernel::pseudofs::dev::card1:431] [32mrknpu mem_create ioctl[m
+[VM 1] [m[37m[  9.139991 0:26 starry_kernel::pseudofs::dev::card1:442] [33mrknpu mem_create ioctl[1]: flags=0x402 size=4160640 core_mask=0x1[m
+[VM 1] [m[37m[  9.145246 0:26 starry_kernel::pseudofs::dev::card1:453] [33mrknpu mem_create ioctl[1] done: handle=2 flags=0x402 size=4160640 sram_size=4160640 obj_addr=0xffff00008dc00000 dma_addr=0x8dc00000 iommu_domain_id=0 core_mask=0x1 elapsed_us=5242[m
+[VM 1] [m[37m[  9.145416 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc008640a, nr 0xa, arg 0x3ffffffba50[m
+[VM 1] [m[37m[  9.145428 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = false[m
+[VM 1] [m[37m[  9.145440 0:26 starry_kernel::pseudofs::dev::card1:648] [32mdrm_gem_flink_ioctl called: DrmGemFlink {
+[VM 1]     handle: 2,
+[VM 1]     name: 0,
+[VM 1] }[m
+[VM 1] [m[37m[  9.145462 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc00c642d, nr 0x2d, arg 0x3ffffffc090[m
+[VM 1] [m[37m[  9.346176 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffffcd80[m
+[VM 1] [m[37m[  9.346199 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  9.346211 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[  9.346222 0:26 starry_kernel::pseudofs::dev::card1:540] [33mrknpu mem_sync ioctl[2]: flags=0x1 obj_addr=0xffff00008dc00000 offset=0 size=41606[VM 1] [m[37m[  9.346235 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     fls: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008dc00000,
+[VM 1]     offset: 0x0,
+[VM 1]     size: 0x3f7c80,
+[VM 1] }[m
+[VM 1] [m[37m[  9.346619 0:26 starry_kernel::pseudofs::dev::card1:553] [33mrknpu mem_sync ioctl[2] done: flags=0x1 offset=0 size=4160640 elapsed_us=363[m
+[VM 1] [m[37m[  9.446753 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffd3e0[m
+[VM 1] [m[37m[  9.446927 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  9.446941 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  9.446952 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  9.446963 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = GetDrvVersion, value = 0[m
+[VM 1] [m[37m[  9.446983 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[7]: flags=GetDrvVersion value_in=0 result=Ok(908) value_out=908[m
+[VM 1] [m[37m[  9.518608 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffffd540[m
+[VM 1] [m[37m[  9.518628 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  9.518639 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[  9.518651 0:26 starry_kernel::pseudofs::dev::card1:540] [33mrknpu mem_sync ioctl[3]: flags=0x1 obj_addr=0xffff00008dae0000 offset=0 size=42840[m
+[VM 1] [m[37m[  9.518663 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008dae0000,
+[VM 1]     offset: 0x0,
+[VM 1]     size: 0xa758,
+[VM 1] }[m
+[VM 1] [m[37m[  9.518698 0:26 starry_kernel::pseudofs::dev::card1:553] [33mrknpu mem_sync ioctl[3] done: flags=0x1 offset=0 size=42840 elapsed_us=13[m
+[VM 1] [m[37m[  9.603514 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffd440[m
+[VM 1] [m[37m[  9.603535 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  9.603546 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[  9.603558 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[  9.603568 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = GetIommuEn, value = 0[m
+[VM 1] [m[37m[  9.603587 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[8]: flags=GetIommuEn value_in=0 result=Ok(0) value_out=0[m
+[VM 1] [m[37m[  9.603608 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0306442, nr 0x42, arg 0x3ffffffb1c0[m
+[VM 1] [m[37m[  9.603620 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[  9.603630 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemCreate[m
+[VM 1] [m[37m[  9.603640 0:26 starry_kernel::pseudofs::dev::card1:431] [32mrknpu mem_create ioctl[m
+[VM 1] [m[37m[  9.603651 0:26 starry_kernel::pseudofs::dev::card1:442] [33mrknpu mem_create ioctl[2]: flags=0x402 size=4505600 core_mask=0x1[m
+[VM 1] [m[37m[  9.609603 0:26 starry_kernel::pseudofs::dev::card1:453] [33mrknpu mem_create ioctl[2] done: handle=3 flags=0x402 size=4505600 sram_size=4505600 obj_addr=0xffff00008e000000 dma_addr=0x8e000000 iommu_domain_id=0 core_mask=0x1 elapsed_us=5938[m
+[VM 1] [m[37m[  9.609637 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc008640a, nr 0xa, arg 0x3ffffffc4b0[[VM 1] [m[37m[  9.609649 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = false[m
+[VM 1] [m[37m[  9.609660 0:26 starry_kernel::pseudofs::dev::card1:648] [32mdrm_gem_flink_ioctl called: DrmGemFlink {
+[VM 1]     handle: 3,
+[VM 1]     name: 0,
+[VM 1] }[m
+[VM 1] [m[37m[  9.609684 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc00c642d, nr 0x2d, arg 0x3ffffffcaf0[m
+[VM 1] [m[37m[ 10.059982 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffbad0[VM 1] [m[37m[ 10.060008 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 10.060021 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[ 10.060033 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[ 10.060044 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = GetIommuEn, value = 0[m
+[VM 1] [m[37m[ 10.060067 0:26 starry_kernel::pseudofs::dev::card1:606] [33mrknpu action ioctl[9]: flags=GetIommuEn value_in=0[VM 1] [m[37m[ 10.060089 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0306442, nr 0x42, arg 0x3ffffff9850[m
+[VM 1] [m[37m[ 10.060101 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 10.060112 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemCreate[m
+[VM 1] [m[37m[ 10.060122 0:26 starry_kernel::pseudofs::dev::card1:431] [32mrknpu mem_create ioctl[m
+[VM 1] [m[37m[ 10.060134 0:26 starry_kernel::pseudofs::dev::card1:442] [33mrknpu mem_create ioctl[3]: flags=0x402 size=1228800 core_mask=0x1[m
+[VM 1] [m[37m[ 10.061681 0:26 starry_kernel::pseudofs::dev::card1:453] [33mrknpu mem_create ioctl[3] done: handle=4 flags=0x402 size=1228800 sram_size=1228800 obj_addr=0xffff00008ee00000 dmee00000 iommu_domain_id=0 core_mask=0x1 elapsed_us=1534[m
+[VM 1] [m[37m[ 10.061705 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc008640a, nr 0xa, arg 0x3ffffffab40[m
+[VM 1] [m[37m[ 10.061716 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = false[m
+[VM 1] [m[37m[ 10.061728 0:26 starry_kernel::pseudofs::dev::card1:648] [32mdrm_gem_flink_ioctl called: DrmGemFlink {
+[VM 1]     handle: 4,
+[VM 1]     name: 0,
+[VM 1] }[m
+[VM 1] [m[37m[ 10.061753 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc00c642d, nr 0x2d, arg 0x3ffffffb180[m
+[VM 1] [m[37m[ 10.264753 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffffbfb0[m
+[VM 1] [m[37m[ 10.264775 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 10.264787 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[ 10.264798 0:26 starry_kernel::pseudofs::dev::card1:540] [33mrknpu mem_sync ioctl[15]: flags=0x1 obj_addr=0xffff00008dc00000 offset=3216704 size=901056[m
+[VM 1] [m[37m[ 10.264811 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008dc00000,
+[VM 1]     offset: 0x311540,
+[VM 1]     size: 0xdbfc0,
+[VM 1] }[m
+[VM 1] [m[37m[ 10.264919 0:26 starry_kernel::pseudofs::dev::card1:553] [33mrknpu mem_sync ioctl[15] done: flags=0x1 offset=3216704 size=901056 elapsed_us=88[m
+[VM 1] [m[37m[ 10.265111 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffff9540[m
+[VM 1] [m[37m[ 10.265124 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 10.265134 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[ 10.265145 0:26 starry_kernel::pseudofs::dev::card1:540] [33mrknpu mem_sync ioctl[16]: flags=0x1 obj_addr=0xffff00008ee00000 offset=0 size=1228800[m
+[VM 1] [m[37m[ 10.265157 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008ee00000,
+[VM 1]     offset: 0x0,
+[VM 1]     size: 0x12c000,
+[VM 1] }[m
+[VM 1] [m[37m[ 10.265428 0:26 starry_kernel::pseudofs::dev::card1:553] [33mrknpu mem_sync ioctl[16] done: flags=0x1 offset=0 [VM 1] [m[37m[ 10.429283 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffff8fe0[m
+[VM 1] [m[37m[ 10.429304 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 10.429315 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[ 10.429327 0:26 starry_kernel::pseudofs::dev::card1:540] [33mrknpu mem_sync ioctl[17]: flags=0x1 obj_addr=0xffff00008dc00000 offset=3216704 size=901056[m
+[VM 1] [m[37m[ 10.429340 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008dc00000,
+[VM 1]     offset: 0x311540,
+[VM 1]     size: 0xdbfc0,
+[VM 1] }[m
+[VM 1] [m[37m[ 10.429445 0:26 starry_kernel::pseudofs::dev::card1:553] [33mrknpu mem_sync ioctl[17] done: flags=0x1 offset=3216704 size=901056 elapsed_us=85[m
+[VM 1] [m[37m[ 10.429466 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 10.429478 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 10.429489 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Submit[m
+[VM 1] [m[37m[ 10.429499 0:26 starry_kernel::pseudofs::dev::card1:375] [33mrknpu submit ioctl[0]: flags=0x1 timeout=6000 taskcounter=0 core_mask=0x1 task_obj_addr=0xffff00008dae0000 task_base_addr=0x0 subcore_task=[RknpuSubcoreTask { task_start: 632, task_number: 30 }, RknpuSubcoreTask { task_start: 921, task_number: 0 }, RknpuSubcoreTask { task_start: 996, task_number: 0 }, RknpuSubcoreTask { task_start: 0, task_number: 0 }, RknpuSubcoreTask { task_start: 0, task_number: 0 }][m
+[VM 1] [m[37m[ 10.429531 0:26 starry_kernel::pseudofs::dev::card1:390] [32mrknpu submit ioctl RknpuSubmit {
+[VM 1]     flags: 0x1,
+[VM 1]     timeout: 0x1770,
+[VM 1]     task_start: 0x278,
+[VM 1]     task_number: 0x1e,
+[VM 1]     task_counter: 0x0,
+[VM 1]     priority: 0x0,
+[VM 1]     task_obj_addr: 0xffff00008dae0000,
+[VM 1]     iommu_domain_id: 0x0,
+[VM 1]     reserved: 0x0,
+[VM 1]     task_base_addr: 0x0,
+[VM 1]     hw_elapse_time: 0x0,
+[VM 1]     core_mask: 0x1,
+[VM 1]     fence_fd: 0xffffffff,
+[VM 1]     subcore_task: [
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x278,
+[VM 1]             task_number: 0x1e,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x399,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x3e4,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x0,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x0,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]     ],
+[VM 1] }[m
+[VM 1] [m[37m[ 10.570561 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 10.570577 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 10.570588 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Submit[m
+[VM 1] [m[37m[ 10.570599 0:26 starry_kernel::pseudofs::dev::card1:390] [32mrknpu submit ioctl RknpuSubmit {
+[VM 1]     flags: 0x5,
+[VM 1]     timeout: 0x1770,
+[VM 1]     task_start: 0x35a,
+[VM 1]     task_number: 0x9,
+[VM 1]     task_counter: 0x0,
+[VM 1]     priority: 0x0,
+[VM 1]     task_obj_addr: 0xffff00008dae0000,
+[VM 1]     iommu_domain_id: 0x0,
+[VM 1]     reserved: 0x0,
+[VM 1]     task_base_addr: 0x0,
+[VM 1]     hw_elapse_time: 0x0,
+[VM 1]     core_mask: 0x7,
+[VM 1]     fence_fd: 0xffffffff,
+[VM 1]     subcore_task: [
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x314,
+[VM 1]             task_number: 0x3,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x3bc,
+[VM 1]             task_number: 0x3,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x314,
+[VM 1]             task_number: 0x3,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x3bc,
+[VM 1]             task_number: 0x3,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x407,
+[VM 1]             task_number: 0x3,
+[VM 1]         },
+[VM 1]     ],
+[VM 1] }[m
+[VM 1] [m[37m[ 10.570858 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 10.570872 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.079287 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffff9540[m
+[VM 1] [m[37m[ 11.079320 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.079333 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[ 11.079346 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008ee00000,
+[VM 1]     offset: 0x0,
+[VM 1]     size: 0x12c000,
+[VM 1] }[m
+[VM 1] [m[37m[ 11.079568 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffff8fe0[VM 1] [m[37m[ 11.079582 0:26 starry_kernel::pseudofs::dev::ca[VM 1] [m[37m[ 11.079593 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[ 11.079604 0:26 starry_kernel::pseudofs::dev::ca[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008dc00000,
+[VM 1]     offset: 0x311540,
+[VM 1]     size: 0xdbfc0,
+[VM 1] }[m
+[VM 1] [m[37m[ 11.079716 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 11.079728 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.079739 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Submit[m
+[VM 1] [m[37m[ 11.079751 0:26 starry_kernel::pseudofs::dev::card1:390] [32mrknpu submit ioctl RknpuSubmit {
+[VM 1]     flags: 0x1,
+[VM 1]     timeout: 0x1770,
+[VM 1]     task_start: 0x278,
+[VM 1]     task_number: 0x1e,
+[VM 1]     task_counter: 0x0,
+[VM 1]     priority: 0x0,
+[VM 1]     task_obj_addr: 0xffff00008dae0000,
+[VM 1]     iommu_domain_id: 0x0,
+[VM 1]     reserved: 0x0,
+[VM 1]     task_base_addr: 0x0,
+[VM 1]     hw_elapse_time: 0x0,
+[VM 1]     core_mask: 0x1,
+[VM 1]     fence_fd: 0xffffffff,
+[VM 1]     subcore_task: [
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x278,
+[VM 1]             task_number: 0x1e,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x399,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x3e4,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x0,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x0,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]     ],
+[VM 1] }[m
+[VM 1] [m[37m[ 11.093182 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 11.167217 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 11.167235 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.167246 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Submit[m
+[VM 1] [m[37m[ 11.167257 0:26 starry_kernel::pseudofs::dev::card1:390] [32mrknpu submit ioctl RknpuSubmit {
+[VM 1]     flags: 0x5,
+[VM 1]     timeout: 0x1770,
+[VM 1]     task_start: 0x339,
+[VM 1]     task_number: 0xf,
+[VM 1]     task_counter: 0x0,
+[VM 1]     priority: 0x0,
+[VM 1]     task_obj_addr: 0xffff00008dae0000,
+[VM 1]     iommu_domain_id: 0x0,
+[VM 1]     reserved: 0x0,
+[VM 1]     task_base_addr: 0x0,
+[VM 1]     hw_elapse_time: 0x0,
+[VM 1]     core_mask: 0x7,
+[VM 1]     fence_fd: 0xffffffff,
+[VM 1]     subcore_task: [
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x2fd,
+[VM 1]             [37m[ 11.597115 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffff9540[m
+[VM 1] [m[37m[ 11.597145 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.597157 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[ 11.597170 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008ee00000,
+[VM 1]     offset: 0x0,
+[VM 1]     size: 0x12c000,
+[VM 1] }[m
+[VM 1] [m[37m[ 11.597387 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0206445, nr 0x45, arg 0x3ffffff8fe0[m
+[VM 1] [m[37m[ 11.597401 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.597412 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemSync[m
+[VM 1] [m[37m[ 11.597422 0:26 starry_kernel::pseudofs::dev::card1:546] [32mrknpu mem_sync ioctl RknpuMemSync {
+[VM 1]     flags: 0x1,
+[VM 1]     reserved: 0x0,
+[VM 1]     obj_addr: 0xffff00008dc00000,
+[VM 1]     offset: 0x311540,
+[VM 1]     size: 0xdbfc0,
+[VM 1] }[m
+[VM 1] [m[37m[ 11.597536 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 11.597548 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.597559 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Submit[m
+[VM 1] [m[37m[ 11.597570 0:26 starry_kernel::pseudofs::dev::card1:390] [32mrknpu submit ioctl RknpuSubmit {
+[VM 1]     flags: 0x1,
+[VM 1]     timeout: 0x1770,
+[VM 1]     task_start: 0x278,
+[VM 1]     task_number: 0x1e,
+[VM 1]     task_counter: 0x0,
+[VM 1]     priority: 0x0,
+[VM 1]     task_obj_addr: 0xffff00008dae0000,
+[VM 1]     iommu_domain_id: 0x0,
+[VM 1]     reserved: 0x0,
+[VM 1]     task_base_addr: 0x0,
+[VM 1]     hw_elapse_time: 0x0,
+[VM 1]     core_mask: 0x1,
+[VM 1]     fence_fd: 0xffffffff,
+[VM 1]     subcore_task: [
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x278,
+[VM 1]             task_number: 0x1e,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x399,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x3e4,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x0,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x0,
+[VM 1]             task_number: 0x0,
+[VM 1]         },
+[VM 1]     ],
+[VM 1] }[m
+[VM 1] [m[37m[ 11.611002 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 11.667205 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0686441, nr 0x41, arg 0x3ffffff93c0[m
+[VM 1] [m[37m[ 11.667222 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.667233 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Submit[m
+[VM 1] [m[37m[ 11.667244 0:26 starry_kernel::pseudofs::dev::card1:390] [32mrknpu submit ioctl RknpuSubmit {
+[VM 1]     flags: 0x5,
+[VM 1]     timeout: 0x1770,
+[VM 1]     task_start: 0x29e,
+[VM 1]     task_number: 0x6,
+[VM 1]     task_counter: 0x0,
+[VM 1]     priority: 0x0,
+[VM 1]     task_obj_addr: 0xffff00008dae0000,
+[VM 1]     iommu_domain_id: 0x0,
+[VM 1]     reserved: 0x0,
+[VM 1]     task_base_addr: 0x0,
+[VM 1]     hw_elapse_time: 0x0,
+[VM 1]     core_mask: 0x7,
+[VM 1]     fence_fd: 0xffffffff,
+[VM 1]     subcore_task: [
+[VM 1]         RknpuSubcoreTask {
+[VM 1]             task_start: 0x29e,
+[VM 1]             [37m[ 11.967065 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0086440, nr 0x40, arg 0x3ffffffe4b0[m
+[VM 1] [m[37m[ 11.967083 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 11.967095 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = Action[m
+[VM 1] [m[37m[ 11.967106 0:26 starry_kernel::pseudofs::dev::card1:587] [32mrknpu action ioctl[m
+[VM 1] [m[37m[ 11.967117 0:26 starry_kernel::pseudofs::dev::card1:597] [32mrknpu action ioctl: flags = PowerOff, value = 0[m
+[VM 1] [m[37m[ 11.967137 0:26 rockchip_npu:286] [33mPowerOff operation not yet implemented[m
+[VM 1] [m[37m[ 12.044073 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106444, nr 0x44, arg 0x3ffffffe470[VM 1] [m[37m[ 12.044095 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 12.044106 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemDestroy[m
+[VM 1] [m[37m[ 12.044118 0:26 starry_kernel::pseudofs::dev::card1:528] [32mrknpu mem_destroy ioctl: handle=3[m
+[VM 1] [m[37m[ 12.047284 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106444, nr 0x44, arg 0x3ffffffe410[m
+[VM 1] [m[37m[ 12.047300 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 12.047311 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemDestroy[m
+[VM 1] [m[37m[ 12.047322 0:26 starry_kernel::pseudofs::dev::card1:528] [32mrknpu mem_destroy ioctl: handle=2[m
+[VM 1] [m[37m[ 12.047441 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106444, nr 0x44, arg 0x3ffffffe3d0[VM 1] [m[37m[ 12.047455 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 12.047465 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemDestroy[m
+[VM 1] [m[37m[ 12.047476 0:26 starry_kernel::pseudofs::dev::card1:528] [32mrknpu mem_destroy ioctl: handle=1[m
+[VM 1] [m[37m[ 12.147677 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106444, nr 0x44, arg 0x3ffffffe400[m
+[VM 1] [m[37m[ 12.147695 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 12.147706 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemDestroy[m
+[VM 1] [m[37m[ 12.147717 0:26 starry_kernel::pseudofs::dev::card1:528] [32mrknpu mem_destroy ioctl: handle=4[m
+[VM 1] [m[37m[ 12.148284 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106444, nr 0x44, arg 0x3ffffffe400[m
+[VM 1] [m[37m[ 12.148299 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 12.148309 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemDestroy[m
+[VM 1] [m[37m[ 12.148320 0:26 starry_kernel::pseudofs::dev::card1:528] [32mrknpu mem_destroy ioctl: handle=5[m
+[VM 1] [m[37m[ 12.148971 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106444, nr 0x44, arg 0x3ffffffe400[m
+[VM 1] [m[37m[ 12.148986 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 12.148997 0:26 starry_kernel::pseudofs::dev::card1:364] [32mrknpu_driver_ioctl: op = MemDestroy[m
+[VM 1] [m[37m[ 12.149008 0:26 starry_kernel::pseudofs::dev::card1:528] [32mrknpu mem_destroy ioctl: handle=6[m
+[VM 1] [m[37m[ 12.149298 0:26 starry_kernel::pseudofs::dev::card1:166] [32mcard1: cmd 0xc0106444, nr 0x44, arg 0x3ffffffe400[VM 1] [m[37m[ 12.149313 0:26 starry_kernel::pseudofs::dev::card1:169] [32mcard1: is_driver_ioctl = true[m
+[VM 1] [m[37m[ 12.427323 0:26 starry_kernel::task::ops:348] [32mTask(26, "rknn_yolov8_bench") exit with code: 0[m
+[VM 1] [m[37m[ 12.466363 0:26 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 12.475858 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.475979 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 12.502045 0:27 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff090[m
+[VM 1] [m[37m[ 12.528296 0:27 starry_kernel::task::ops:348] [32mTask(27, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 12.540143 0:27 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 12.540335 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.540433 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 12.542603 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.587962 0:28 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[VM 1] [m[37m[ 12.595677 0:28 starry_kernel::task::ops:348] [32mTask(28, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 12.617271 0:28 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 12.626690 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.626787 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 12.670819 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.670931 0:29 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff120[m
+[VM 1] [m[37m[ 12.715998 0:29 ax_net::udp:287] [32mUDP socket #0: bound on *:49152[m
+[VM 1] [m[37m[ 12.724846 0:8 ax_net::device::ethernet:410] [32meth0: requesting ARP for 10.0.0.2[m
+[VM 1] [m[37m[ 12.735094 0:7 ax_net::device::ethernet:490] [32meth0: ARP 10.0.0.2 -> 52-54-00-00-00-02[m
+[VM 2] IVC-RTOS-READY bind=10.0.0.2:5500 mac=52:54:00:00:00:02 window_bits=64 ack_loss_drop_every=0 expected_commands=0 expected_protocol_errors=0 expected_vision_decisions=3 exit_after_expected=1
+[VM 1] [m[37m[ 12.735132 0:7 ax_net::device::ethernet:565] [32meth0: sending pending IPv4 packet to 10.0.0.2 via 52-54-00-00-[VM 2] IVC-RTOS-READY bind=10.0.0.2:5500 mac=52:54:00:00:00:02 window_bits=64 ack_loss_drop_every=0 expected_commands=0 expectedrors=0 expected_vision_decisions=3 exit_after_expected=1
+[VM 2] IVC-RTOS-VISION frame=1 seq=1 requested=right actual=right state=applied age_at_send_us=2741995 local_apply_us=0
+[VM 2] IVC-RTOS-VISION frame=2 seq=2 requested=left actual=left state=applied age_at_send_us=1868789 local_apply_us=0
+[VM 2] IVC-RTOS-VISION frame=3 seq=3 requested=hold actual=hold state=applied age_at_send_us=1363193 local_apply_us=0
+[VM 2] IVC-RTOS-VISION-RESULT accepted=3 applied=3 duplicates=0 actuator_status_sent=3 acks_sent=3 errors_sent=0 protocol_errors=0
+[VM 1] [m[37m[ 12.893637 0:29 starry_kernel::task::ops:348] [32mTask(29, "ivc-vision-controller") exit with code: 0[m
+[VM 1] [m[37m[ 12.909642 0:29 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 12.919313 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.919413 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 12.921848 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.957414 0:30 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[VM 1] [m[37m[ 12.965416 0:30 starry_kernel::task::ops:348] [32mTask(30, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 12.987256 0:30 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 12.996516 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 12.996612 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 13.022365 0:31 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff090[m
+[VM 1] [m[37m[ 13.029536 0:31 starry_kernel::task::ops:348] [32mTask(31, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 13.051225 0:31 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 13.051406 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 13.051491 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 13.086963 0:32 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff090[m
+[VM 1] [m[37m[ 13.093747 0:32 starry_kernel::task::ops:348] [32mTask(32, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 13.115022 0:32 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 13.115221 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 13.115468 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 13.117545 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 13.161764 0:33 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[VM 1] [m[37m[ 13.193157 0:33 starry_kernel::task::ops:348] [32mTask(33, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 13.204217 0:33 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 13.213620 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 13.213711 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 13.216274 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 13.251193 0:34 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff460[m
+[VM 2] IVC-RTOS-VISION-RESULT accepted=3 applied=3 duplicates=0 actuator_status_sent=3 acks_sent=3 errors_sent=0 protocol_errors=0
+[VM 2] IVC-RTOS-VISION-POWEROFF accepted=3
+[VM 2] IVC-RTOS-VISION-RESULT accepted=3 applied=3 duplicates=0 actuator_status_sent=3 acks_sent=3 errors_sent=0 protocol_errors[VM 2] IVC-RTOS-VISION-POWEROFF accepted=3
+[VM 2] IVC-RTOS-VISION-RESULT accepted=3 applied=3 duplicates=0 actuator_status_sent=3 acks_sent=3 errors_sent=0 protocol_errors=0
+[VM 2] IVC-RTOS-VISION-POWEROFF accepted=3
+[VM 2] IVC-RTOS-VISION-RESULT accepted=3 applied=3 duplicates=0 actuator_status_sent=3 acks_sent=3 errors_sent=0 protocol_errors=0
+[VM 2] IVC-RTOS-VISION-POWEROFF accepted=3
+[VM 1] [m[37m[ 15.257351 0:34 starry_kernel::task::ops:348] [32mTask(34, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 15.268697 0:34 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 15.277817 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 15.277907 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [mIVC-STARRY-VISION-BOOT source=fixed-images backend=rknn-npu frames=3 target_class=32 calibration_x=625
+[VM 1] [37m[ 15.280498 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 15.325438 0:35 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdd70[m
+[VM 2] IVC-RTOS-VISION-RESULT accepted=3 applied=3 duplicates=0 actuator_status_sent=3 acks_sent=3 errors_sent=0 protocol_errors=0
+[VM 2] IVC-RTOS-VISION-POWEROFF accepted=3
+[VM 1] [m[37m[ 15.594214 0:35 starry_kernel::task::ops:348] [32mTask(35, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 15.605635 0:35 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[VM 1] [m[37m[ 15.614535 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 15.614622 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[37m[114.974298 0:24 axvm::runtime::hvc:352] [33mVM[2] PSCI_SYSTEM_OFF[m
+[m[37m[114.974902 0:24 axvm::vm:1416] [32mStopping VM[2]: Syst[emDoVwnM[m
+[m 1[37]m[ [m114.IVC-9755STAR02 0RY-:24 aVISIxvm:ON-:runtNETi ipme::=10.0.0v.1/24 cpups:6eer=25] 10.0.[330.2mVM[:5502] V0 seCpu[gmen0]t stopping =1beca
+use of VM stopping[m
+[m[37m[114.976841 [0:24 axvm::r3untime::vcp7us:337] [3m2mVM[2] las[t vCPU task  exiting, d1ecreasing ru5nning VM co.unt[m
+[m6[37m[114.9778134 0:24 axv7m::runtime::vcp1us:347] [332mVM[2] state2 changed to  Stopped[m
+[m0[37m[114.9785:58 0:24 axvm::r1untime::vcpu7s:645] [32mVM[ 2] VCpu[0] exsiting...[m
+t[marry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 15.658955 0:36 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe0b0[m
+[m[37m[ 15.915171 0:36 starry_kernel::task::ops:348] [32mTask(36, "busybox") exit with code: 0[m
+[m[37m[ 15.925962 0:36 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 15.934748 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 15.934843 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 15.939298 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 15.971792 0:37 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe2e0[m
+[m[37m[ 15.979465 0:38 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe2e0[m
+[m[37m[ 16.000096 0:37 starry_kernel::task::ops:348] [32mTask(37, "busybox") exit with code: 0[m
+[m[37m[ 16.011053 0:37 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 16.019886 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.019981 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[mVISION_DECISION_RECORD version=1 frame_id=1 captured_at_us=9889254 inference_finished_at_us=9974758 ttl_us=5000000 requested_action=right safe_action=hold detection_present=1 class_id=32 confidence_q10000=7081 region_id=2 left=479 top=706 right=773 bottom=1010
+[37m[ 16.033930 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.076652 0:39 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 16.333054 0:39 starry_kernel::task::ops:348] [32mTask(39, "busybox") exit with code: 0[m
+[m[37m[ 16.343480 0:39 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 16.352204 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.352293 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_DECISION_RECORD version=1 frame_id=2 captured_at_us=10912612 inference_finished_at_us=11000782 ttl_us=5000000 requested_action=left safe_action=hold detection_present=1 class_id=32 confidence_q10000=8591 region_id=1 left=517 top=932 right=730 bottom=1151
+[37m[ 16.366169 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.420666 0:40 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 16.677148 0:40 starry_kernel::task::ops:348] [32mTask(40, "busybox") exit with code: 0[m
+[m[37m[ 16.687682 0:40 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 16.696469 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.696556 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_DECISION_RECORD version=1 frame_id=3 captured_at_us=11203000 inference_finished_at_us=11518241 ttl_us=5000000 requested_action=hold safe_action=hold detection_present=0 class_id=65535 confidence_q10000=0 region_id=0 left=0 top=0 right=0 bottom=0
+[37m[ 16.709949 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.759132 0:41 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 17.015548 0:41 starry_kernel::task::ops:348] [32mTask(41, "busybox") exit with code: 0[m
+[m[37m[ 17.025820 0:41 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 17.034160 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.034248 0:38 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 17.057155 0:38 starry_kernel::task::ops:348] [32mTask(38, "busybox") exit with code: 0[m
+[m[37m[ 17.067330 0:38 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 17.075634 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.075720 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 17.077856 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.110936 0:42 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe3f0[m
+[mUVC_RKNN_VALIDATE_PASS images=3
+[37m[ 17.118898 0:42 starry_kernel::task::ops:348] [32mTask(42, "busybox") exit with code: 0[m
+[m[37m[ 17.141858 0:42 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 17.150336 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.150423 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 17.152566 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.184919 0:43 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe590[m
+[m[37m[ 17.441386 0:43 starry_kernel::task::ops:348] [32mTask(43, "busybox") exit with code: 0[m
+[m[37m[ 17.451825 0:43 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 17.460595 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.460680 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_BEGIN peer=10.0.0.2:5500 frames=3 session_id=1447646030
+[37m[ 17.466848 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.506025 0:44 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 17.762348 0:44 starry_kernel::task::ops:348] [32mTask(44, "busybox") exit with code: 0[m
+[m[37m[ 17.772765 0:44 star[37m[ 17.781583 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.781675 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=1 detection=1 class_id=32 confidence_q10000=7081 bbox=479,706,773,1010 requested=right actual=right state=applied inference_to_send_us=2741995 transport_us=152695 end_to_end_us=2980194 retries=0
+[37m[ 17.794375 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.836581 0:45 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 18.092887 0:45 starry_kernel::task::ops:348] [32mTask(45, "busybox") exit with code: 0[m
+[m[37m[ 18.103647 0:45 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 18.112441 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.112527 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=2 detection=1 class_id=32 confidence_q10000=8591 bbox=517,932,730,1151 requested=left actual=left state=applied inference_to_send_us=1868789 transport_us=11746 end_to_end_us=1968705 retries=0
+[37m[ 18.125227 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.175714 0:46 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 18.432019 0:46 starry_kernel::task::ops:348] [32mTask(46, "busybox") exit with code: 0[m
+[m[37m[ 18.442429 0:46 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 18.451147 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.451233 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=3 detection=0 class_id=65535 confidence_q10000=0 bbox=0,0,0,0 requested=hold actual=hold state=applied inference_to_send_us=1363193 transport_us=11619 end_to_end_us=1690053 retries=0
+[37m[ 18.463402 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.506201 0:47 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 18.762509 0:47 starry_kernel::task::ops:348] [32mTask(47, "busybox") exit with code: 0[m
+[m[37m[ 18.773177 0:47 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 18.782019 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.782112 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_DONE frames=3 applied=3 errors=0
+[37m[ 18.787027 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.824774 0:48 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 19.081262 0:48 starry_kernel::task::ops:348] [32mTask(48, "busybox") exit with code: 0[m
+[m[37m[ 19.091681 0:48 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 19.100399 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.100485 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-RUNNER-SHA256 sha256=931b8328b0670af3154b8e633d8a7bb56a212249c17ae1613e0ab57bf5443886
+[37m[ 19.102900 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.144260 0:49 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffea70[m
+[m[37m[ 19.400842 0:49 starry_kernel::task::ops:348] [32mTask(49, "busybox") exit with code: 0[m
+[m[37m[ 19.411309 0:49 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 19.420139 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.420233 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-CONTROLLER-SHA256 sha256=51bd696b587eec03e35cd10f5208c05230c07d9b0209c16269394b24ce473524
+[37m[ 19.422495 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.464686 0:50 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffedb0[m
+[m[37m[ 19.721131 0:50 starry_kernel::task::ops:348] [32mTask(50, "busybox") exit with code: 0[m
+[m[37m[ 19.731546 0:50 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 19.740257 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.740342 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 19.742734 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.776463 0:51 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff0f0[m
+[m[37m[ 20.782532 0:51 starry_kernel::task::ops:348] [32mTask(51, "busybox") exit with code: 0[m
+[m[37m[ 20.793278 0:51 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 20.802328 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 20.802413 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-BOOT source=fixed-images backend=rknn-npu frames=3 target_class=32 calibration_x=625
+[37m[ 20.804716 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 20.846007 0:52 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdd70[m
+[m[37m[ 21.102462 0:52 starry_kernel::task::ops:348] [32mTask(52, "busybox") exit with code: 0[m
+[m[37m[ 21.112883 0:52 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 21.121675 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.121768 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-NET ip=10.0.0.1/24 peer=10.0.0.2:5500 segment=1
+[37m[ 21.124049 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.161848 0:53 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe0b0[m
+[m[37m[ 21.418409 0:53 starry_kernel::task::ops:348] [32mTask(53, "busybox") exit with code: 0[m
+[m[37m[ 21.429247 0:53 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 21.438405 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.438568 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 21.442821 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.476356 0:54 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe2e0[m
+[m[37m[ 21.484212 0:54 starry_kernel::task::ops:348] [32mTask(54, "busybox") exit with code: 0[m
+[m[37m[ 21.484282 0:55 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe2e0[m
+[mVISION_DECISION_RECORD version=1 frame_id=1 captured_at_us=9889254 inference_finished_at_us=9974758 ttl_us=5000000 requested_action=right safe_action=hold detection_present=1 class_id=32 confidence_q10000=7081 region_id=2 left=479 top=706 right=773 bottom=1010
+[37m[ 21.498419 0:55 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.549288 0:54 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 21.549395 0:56 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 21.584157 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.584272 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.805577 0:56 starry_kernel::task::ops:348] [32mTask(56, "busybox") exit with code: 0[m
+[m[37m[ 21.816111 0:56 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 21.824724 0:55 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.824812 0:55 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_DECISION_RECORD version=1 frame_id=2 captured_at_us=10912612 inference_finished_at_us=11000782 ttl_us=5000000 requested_action=left safe_action=hold detection_present=1 class_id=32 confidence_q10000=8591 region_id=1 left=517 top=932 right=730 bottom=1151
+[37m[ 21.838746 0:55 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 21.888682 0:57 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 22.145168 0:57 starry_kernel::task::ops:348] [32mTask(57, "busybox") exit with code: 0[m
+[m[37m[ 22.156278 0:57 starsignal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 22.164681 0:55 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.164768 0:55 starry_kernel::syscall::task::wait:360] [3esent=0 class_id=65535 confidence_q10000=0 region_id=0 left=0 top=0 right=0 bottom=0
+[37m[ 22.178256 0:55 starry_kernel::syscaait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.226795 0:58 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 22.483069 0:58 starry_kernel::task::ops:348] [32mTask(58, "busybox") exit with code: 0[m
+[m[37m[ 22.493840 0:58 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 22.502998 0:55 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.503085 0:55 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 22.503377 0:55 starry_kernel::task::ops:348] [32mTask(55, "busybox") exit with code: 0[m
+[m[37m[ 22.536694 0:55 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 22.544970 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.545056 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 22.547366 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.580846 0:59 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe3f0[m
+[mUVC_RKNN_VALIDATE_PASS images=3
+[37m[ 22.588811 0:59 starry_kernel::task::ops:348] [32mTask(59, "busybox") exit with code: 0[m
+[m[37m[ 22.611978 0:59 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 22.620524 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.620611 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 22.622848 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.655506 0:60 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe590[m
+[m[37m[ 22.911821 0:60 starry_kernel::task::ops:348] [32mTask(60, "busybox") exit with code: 0[m
+[m[37m[ 22.922378 0:60 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 22.931230 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.931316 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_BEGIN peer=10.0.0.2:5500 frames=3 session_id=1447646030
+[37m[ 22.937448 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 22.976560 0:61 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 23.232896 0:61 starry_kernel::task::ops:348] [32mTask(61, "busybox") exit with code: 0[m
+[m[37m[ 23.243339 0:61 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 23.252144 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 23.252237 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=1 detection=1 class_id=32 confidence_q10000=7081 bbox=479,706,773,1010 requested=right actual=right state=applied inference_to_send_us=2741995 transport_us=152695 end_to_end_us=2980194 retries=0
+[37m[ 23.264937 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 23.307681 0:62 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 23.564007 0:62 starry_kernel::task::ops:348] [32mTask(62, "busybox") exit with code: 0[m
+[m[37m[ 23.574592 0:62 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 23.583504 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 23.583590 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=2 detection=1 class_id=32 confidence_q10000=8591 bbox=517,932,730,1151 requested=left actual=left state=applied inference_to_send_us=1868789 transport_us=11746 end_to_end_us=1968705 retries=0
+[37m[ 23.596338 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 23.646797 0:63 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 23.903261 0:63 starry_kernel::task::ops:348] [32mTask(63, "busybox") exit with code: 0[m
+[m[37m[ 23.913682 0:63 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 23.922449 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 23.922534 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=3 detection=0 class_id=65535 confidence_q10000=0 bbox=0,0,0,0 requested=hold actual=hold state=applied inference_to_send_us=1363193 transport_us=11619 end_to_end_us=1690053 retries=0
+[37m[ 23.934724 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 23.978311 0:64 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 24.234776 0:64 starry_kernel::task::ops:348] [32mTask(64, "busybox") exit with code: 0[m
+[m[37m[ 24.245664 0:64 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 24.253885 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 24.253978 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_DONE frames=3 applied=3 errors=0
+[37m[ 24.258997 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 24.295514 0:65 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 24.552006 0:65 starry_kernel::task::ops:348] [32mTask(65, "busybox") exit with code: 0[m
+[m[37m[ 24.562485 0:65 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 24.571227 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 24.571313 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-RUNNER-SHA256 sha256=931b8328b0670af3154b8e633d8a7bb56a212249c17ae1613e0ab57bf5443886
+[37m[ 24.573731 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 24.615234 0:66 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffea70[m
+[m[37m[ 24.871678 0:66 starry_kernel::task::ops:348] [32mTask(66, "busybox") exit with code: 0[m
+[m[37m[ 24.882080 0:66 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 24.890911 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 24.891005 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-CONTROLLER-SHA256 sha256=51bd696b587eec03e35cd10f5208c05230c07d9b0209c16269394b24ce473524
+[37m[ 24.893290 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 24.934753 0:67 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffedb0[m
+[m[37m[ 25.191371 0:67 starry_kernel::task::ops:348] [32mTask(67, "busybox") exit with code: 0[m
+[m[37m[ 25.201873 0:67 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 25.210641 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 25.210726 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 25.212944 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 25.246009 0:68 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff0f0[m
+[m[37m[ 26.252084 0:68 starry_kernel::task::ops:348] [32mTask(68, "busybox") exit with code: 0[m
+[m[37m[ 26.262719 0:68 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 26.271670 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 26.271756 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-BOOT source=fixed-images backend=rknn-npu frames=3 target_class=32 calibration_x=625
+[37m[ 26.274083 0:17 starry_kernel::syscall::task::wa[37m[ 26.572199 0:69 starry_kernel::task::ops:348] [32mTask(69, "busybox") exit with code: 0[m
+[m[37m[ 26.582609 0:69 star[37m[ 26.591450 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 26.591543 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-NET ip=10.0.0.1/24 peer=10.0.0.2:5500 segment=1
+[37m[ 26.593826 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 26.631733 0:70 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe0b0[m
+[m[37m[ 26.888305 0:70 starry_kernel::task::ops:348] [32mTask(70, "busybox") exit with code: 0[m
+[m[37m[ 26.899048 0:70 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 26.908275 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 26.908360 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 26.912693 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 26.947020 0:71 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe2e0[m
+[m[37m[ 26.954874 0:71 starry_kernel::task::ops:348] [32mTask(71, "busybox") exit with code: 0[m
+[m[37m[ 26.954942 0:72 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe2e0[m
+[mVISION_DECISION_RECORD version=1 frame_id=1 captured_at_us=9889254 inference_finished_at_us=9974758 ttl_us=5000000 requested_action=right safe_action=hold detection_present=1 class_id=32 confidence_q10000=7081 region_id=2 left=479 top=706 right=773 bottom=1010
+[37m[ 26.969219 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.019710 0:71 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 27.019819 0:73 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 27.054792 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.054909 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.276181 0:73 starry_kernel::task::ops:348] [32mTask(73, "busybox") exit with code: 0[m
+[m[37m[ 27.286622 0:73 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 27.295212 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.295452 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_DECISION_RECORD version=1 frame_id=2 captured_at_us=10912612 inference_finished_at_us=11000782 ttl_us=5000000 requested_action=left safe_action=hold detection_present=1 class_id=32 confidence_q10000=8591 region_id=1 left=517 top=932 right=730 bottom=1151
+[37m[ 27.309285 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.359259 0:74 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 27.615598 0:74 starry_kernel::task::ops:348] [32mTask(74, "busybox") exit with code: 0[m
+[m[37m[ 27.626561 0:74 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 27.634845 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.634932 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_DECISION_RECORD version=1 frame_id=3 captured_at_us=11203000 inference_finished_at_us=11518241 ttl_us=5000000 requested_action=hold safe_action=hold detection_present=0 class_id=65535 confidence_q10000=0 region_id=0 left=0 top=0 right=0 bottom=0
+[37m[ 27.648602 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.696287 0:75 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdcc0[m
+[m[37m[ 27.952425 0:75 starry_kernel::task::ops:348] [32mTask(75, "busybox") exit with code: 0[m
+[m[37m[ 27.963105 0:75 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 4[m
+[m[37m[ 27.972021 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 27.972109 0:72 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 27.972403 0:72 starry_kernel::task::ops:348] [32mTask(72, "busybox") exit with code: 0[m
+[m[37m[ 28.006583 0:72 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 28.014926 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.015014 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 28.017315 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.050753 0:76 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe3f0[m
+[mUVC_RKNN_VALIDATE_PASS images=3
+[37m[ 28.058754 0:76 starry_kernel::task::ops:348] [32mTask(76, "busybox") exit with code: 0[m
+[m[37m[ 28.082013 0:76 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 28.090524 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.090611 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 28.092773 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.125455 0:77 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe590[m
+[m[37m[ 28.381774 0:77 starry_kernel::task::ops:348] [32mTask(77, "busybox") exit with code: 0[m
+[m[37m[ 28.392219 0:77 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 28.401002 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.401088 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_BEGIN peer=10.0.0.2:5500 frames=3 session_id=1447646030
+[37m[ 28.407217 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.446128 0:78 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 28.702477 0:78 starry_kernel::task::ops:348] [32mTask(78, "busybox") exit with code: 0[m
+[m[37m[ 28.713032 0:78 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 28.721941 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.722033 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=1 detection=1 class_id=32 confidence_q10000=7081 bbox=479,706,773,1010 requested=right actual=right state=applied inference_to_send_us=2741995 transport_us=152695 end_to_end_us=2980194 retries=0
+[37m[ 28.734744 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 28.777267 0:79 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 29.033598 0:79 starry_kernel::task::ops:348] [32mTask(79, "busybox") exit with code: 0[m
+[m[37m[ 29.044200 0:79 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 29.053238 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 29.053324 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=2 detection=1 class_id=32 confidence_q10000=8591 bbox=517,932,730,1151 requested=left actual=left state=applied inference_to_send_us=1868789 transport_us=11746 end_to_end_us=1968705 retries=0
+[37m[ 29.066047 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 29.116495 0:80 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 29.372832 0:80 starry_kernel::task::ops:348] [32mTask(80, "busybox") exit with code: 0[m
+[m[37m[ 29.383243 0:80 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 29.391943 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 29.392028 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_EVENT frame=3 detection=0 class_id=65535 confidence_q10000=0 bbox=0,0,0,0 requested=hold actual=hold state=applied inference_to_send_us=1363193 transport_us=11619 end_to_end_us=1690053 retries=0
+[37m[ 29.404044 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 29.447040 0:81 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 29.703311 0:81 starry_kernel::task::ops:348] [32mTask(81, "busybox") exit with code: 0[m
+[m[37m[ 29.714082 0:81 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 29.722977 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 29.723070 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mVISION_CLOSED_LOOP_DONE frames=3 applied=3 errors=0
+[37m[ 29.727986 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 29.765002 0:82 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe220[m
+[m[37m[ 30.021501 0:82 starry_kernel::task::ops:348] [32mTask(82, "busybox") exit with code: 0[m
+[m[37m[ 30.031895 0:82 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 30.040606 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 30.040692 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-RUNNER-SHA256 sha256=931b8328b0670af3154b8e633d8a7bb56a212249c17ae1613e0ab57bf5443886
+[37m[ 30.043106 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 30.084166 0:83 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffea70[m
+[m[37m[ 30.340782 0:83 starry_kernel::task::ops:348] [32mTask(83, "busybox") exit with code: 0[m
+[m[37m[ 30.351193 0:83 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 30.360044 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 30.360138 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-CONTROLLER-SHA256 sha256=51bd696b587eec03e35cd10f5208c05230c07d9b0209c16269394b24ce473524
+[37m[ 30.362414 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 30.404414 0:84 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3ffffffedb0[m
+[m[37m[ 30.660875 0:84 starry_kernel::task::ops:348] [32mTask(84, "busybox") exit with code: 0[m
+[m[37m[ 30.671309 0:84 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 30.680023 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 30.680108 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 30.682345 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 30.715966 0:85 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff0f0[m
+[m[37m[ 31.722060 0:85 starry_kernel::task::ops:348] [32mTask(85, "busybox") exit with code: 0[m
+[m[37m[ 31.732666 0:85 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 31.741546 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 31.741631 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-DONE exit=0
+[37m[ 31.744081 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 31.779529 0:86 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff0f0[m
+[m[37m[ 32.036227 0:86 starry_kernel::task::ops:348] [32mTask(86, "busybox") exit with code: 0[m
+[m[37m[ 32.046971 0:86 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 32.056096 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 32.056189 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-DONE exit=0
+[37m[ 32.058715 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 32.093436 0:87 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff0f0[m
+[m[37m[ 32.350038 0:87 starry_kernel::task::ops:348] [32mTask(87, "busybox") exit with code: 0[m
+[m[37m[ 32.360368 0:87 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 32.369046 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 32.369131 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-VISION-DONE exit=0
+[37m[ 32.371440 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 32.407214 0:88 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff0f0[m
+[m[37m[ 32.663509 0:88 starry_kernel::task::ops:348] [32mTask(88, "busybox") exit with code: 0[m
+[m[37m[ 32.674181 0:88 starry_kernel::task::signal:647] [32mSend signal SIGCHLD to process 2[m
+[m[37m[ 32.683153 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 32.683247 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 32.685626 0:17 starry_kernel::syscall::task::wait:360] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 32.718216 0:89 starry_kernel::task::user:71] [32mEnter user space: ip=0x48653c, sp=0x3fffffff460[m
+[m[37m[ 32.747028 0:89 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[132.091560 1:22 axvm::runtime::hvc:352] [33mVM[1] PSCI_SYSTEM_OFF[m
+[m[37m[132.092165 1:22 axvm::vm:1416] [32mStopping VM[1]: SystemDown[m
+[m
+
+[37m[[132.A092x76v0 1i:22s aor] xvm:VM[1:ru] sntimtoppee::vd; cpusr:625] etur[33mningVM[ to 1] tVCpuhe m[0] anastopgempinge bnecaut shese llof
+We VM lcomstoe toppi AxnVisg[m
+[or Sm[h37ellm!
+[1Type32.0 'he9276lp'7 2: to 27 axvm:see :ruavaintimlable::ve cocpusmman:62ds
+Use 5] UP/D[33OWN mVMarro[1] ws VCputo na[1] vigstoppateing  combecamanduse  hisotory
+f VConM stsoloeppi shong[rtcumt
+[m[3s:
+  Ctr7m[1l+X32.0, th941e64 n h 1:22 ret axvmurn::run totime the::vc Axvpll
+ [3 Ctrl2mVM+X, [1t] VChen pu[[  a0] exttach titinghe ...p9est
+  5784Ctrl 2:+X, 27 athexvmn ]::ru  atntitachme:: thvcpue nes:3xt r37] unn[32imVM[1] ng lastgues vCPtU
+ tas
+k ex[2itinKaxg, dvisecreor:/asin$ g running VM count[m
+[m[37m[132.098626 2:19 axvm::arch::aarch64::vtimer::state:225] [33mfailed to wake VM[1] vCPU 1 for architectural timer: InvalidState { operation: "axvm::runtime::vcpus", detail: "VM[1] is not accepting interrupts" }[m
+[m[37m[132.100333 2:27 axvm::runtime::vcpus:347] [32mVM[1] state changed to Stopped[m
+[m[37m[132.101012 2:27 axvm::runtime::vcpus:645] [32mVM[1] VCpu[1] exiting...[m
+[mAXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+[2Kaxvisor:/$ s[2Kaxvisor:/$ sy[2Kaxvisor:/$ syn[2Kaxvisor:/$ sync[2Kaxvisor:/$ sync-[2Kaxvisor:/$ sync-h[2Kaxvisor:/$ sync-ho[2Kaxvisor:/$ sync-hos[2Kaxvisor:/$ sync-host
+AXVISOR_HOST_FILESYSTEM_SYNCED
+
+=== SUCCESS PATTERN MATCHED: (?m)^AXVISOR_HOST_FILESYSTEM_SYNCED\r?$ ===
+AXVISOR_HOST_FILESYSTEM_SYNCED
+AXVISOR_HOST_FILESYSTEM_SYNCED
+AXVISOR_HOST_FILESYSTEM_SYNCED
+AXVISOR_HOST_FILESYSTEM_SYNCED
+axvisor:/$ [axbuild] board build+run package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json config=competition/ivc/config/axvisor-orangepi-5-plus-vision.toml ... done (153.97s)
+ssh: connect to host 192.168.31.33 port 22: Connection timed out
+Axvisor filesystem sync marker was confirmed by the board test
+RESULT action=status board=orangepi-5-plus-rk3588 power=on watts=2 temperature_celsius=51 fault_code=0
+RESULT action=cycle board=orangepi-5-plus-rk3588 power=on watts=0 temperature_celsius=50 fault_code=0
+
+=> setenv devtype mmc; setenv devnum 1; setenv mmc_bootdev 1; setenv distro_bootpart 1; setenv prefix /; echo UBOOT_LINUX_BOOT_BEGIN; fatload mmc 1:1 0x00c00000 boot.scr; source 0x00c00000
+UBOOT_LINUX_BOOT_BEGIN
+3413 bytes read in 3 ms (1.1 MiB/s)
+## Executing script at 00c00000
+Boot script loaded from mmc 1
+178 bytes read in 2 ms (86.9 KiB/s)
+15301327 bytes read in 1289 ms (11.3 MiB/s)
+ssh: connect to host 192.168.31.33 port 22: No route to host
+ssh: connect to host 192.168.31.33 port 22: No route to host
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+BOARD_LINUX_RESTORED

@@ -1,0 +1,20 @@
+ssh: connect to host 192.168.31.33 port 22: Connection timed out
+Axvisor was built without host filesystem support; no filesystem sync is required
+/home/seven_wsl/.local/share/tgos-board-power-venv/lib/python3.13/site-packages/miio/miot_device.py:23: FutureWarning: functools.partial will be a method descriptor in future Python versions; wrap it in enum.member() if you want to preserve the old behavior
+  Bool = partial(_str2bool)
+RESULT action=status board=orangepi-5-plus-rk3588 power=on watts=1 temperature_celsius=51 fault_code=0
+/home/seven_wsl/.local/share/tgos-board-power-venv/lib/python3.13/site-packages/miio/miot_device.py:23: FutureWarning: functools.partial will be a method descriptor in future Python versions; wrap it in enum.member() if you want to preserve the old behavior
+  Bool = partial(_str2bool)
+RESULT action=cycle board=orangepi-5-plus-rk3588 power=on watts=0 temperature_celsius=50 fault_code=0
+
+=> setenv devtype mmc; setenv devnum 1; setenv mmc_bootdev 1; setenv distro_bootpart 1; setenv prefix /; echo UBOOT_LINUX_BOOT_BEGIN; fatload mmc 1:1 0x00c00000 boot.scr; source 0x00c00000
+UBOOT_LINUX_BOOT_BEGIN
+3413 bytes read in 3 ms (1.1 MiB/s)
+## Executing script at 00c00000
+Boot script loaded from mmc 1
+178 bytes read in 2 ms (86.9 KiB/s)
+15301327 bytes read in 1289 ms (11.3 MiB/s)
+ssh: connect to host 192.168.31.33 port 22: No route to host
+ssh: connect to host 192.168.31.33 port 22: No route to host
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+BOARD_LINUX_RESTORED

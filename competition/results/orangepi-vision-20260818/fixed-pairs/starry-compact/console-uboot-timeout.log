@@ -1,0 +1,53 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.09s
+     Running `target/debug/tg-xtask starry board -c apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml -t aarch64-unknown-none-softfloat --board-config apps/starry/orangepi-5-plus-uvc-rknn/configs/board-orangepi-5-plus-fixed-pairs.toml -b OrangePi-5-Plus`
+[2026-08-18T02:17:42Z INFO  axbuild::context] Workspace root: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc
+Using build config: apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml
+[2026-08-18T02:17:55Z INFO  axbuild::build::config_file] Found build config at apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ...
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml ...
+AX_ARCH=aarch64
+AX_LOG=error
+AX_TARGET=aarch64-unknown-none-softfloat
+SMP=1
+cargo build -p starryos --target aarch64-unknown-none-softfloat -Z unstable-options --target-dir /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target --features ax-driver/irq,ax-driver/list-pci-devices,ax-driver/realtek-rtl8125,ax-driver/rk3588-pcie,ax-driver/rockchip-dwc-xhci,ax-driver/rockchip-dwmmc,ax-driver/rockchip-sdhci,ax-driver/rockchip-soc,rknpu,smp -Z build-std=core,alloc --config target.aarch64-unknown-none-softfloat.rustflags=["-Crelocation-model=pic", "-Clink-args=-pie", "-Clink-args=--gc-sections", "-Clink-args=-znorelro", "-Clink-args=-znostart-stop-gc", "-Clink-args=-Tlinker.x", "-Clink-args=-u _head"] --bin starryos --release --message-format json-render-diagnostics
+    Finished `release` profile [optimized] target(s) in 22.36s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 7`
+Converting ELF to BIN format...
+  elf: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+  bin: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml ... done (42.09s)
+[axbuild] cargo build elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] cargo build artifact_dir=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ... done (42.09s)
+[axbuild] starry artifact elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos ...
+[axbuild] starry kallsyms symbols=14527
+rust-objcopy --update-section .kallsyms=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/.starryos.kallsyms.974574.tmp /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos ... done (2.04s)
+[axbuild] starry bin refresh /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin ...
+rust-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] starry bin refresh /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin ... done (502.30ms)
+[axbuild] prepare runtime artifact elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos to_bin=true ...
+Converting ELF to BIN format...
+  elf: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+  bin: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] prepare runtime artifact elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos to_bin=true ... done (686.11ms)
+[axbuild] board run prepared artifact ...
+Allocated board session:
+  board_type: OrangePi-5-Plus
+  board_id: orangepi-5-plus-1
+  session_id: e8835c45-f900-4bf3-a15f-d6bf0c8b3e48
+  lease_expires_at: 2026-08-18 10:18:57.567727844 +08:00
+  boot_mode: uboot
+[2026-08-18T02:18:47Z INFO  ostool::run::uboot] Starting U-Boot runner...
+[2026-08-18T02:18:47Z INFO  ostool::run::uboot] kernel from: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[2026-08-18T02:18:47Z INFO  ostool::run::uboot] Using network interface hint: eth0
+Waiting for remote board to power on through ostool-server...
+[2026-08-18T02:18:48Z INFO  uboot_shell] cmd: setenv autoload yes
+[2026-08-18T02:18:53Z WARN  uboot_shell] cmd `setenv autoload yes` failed: Timeout, retrying...
+[2026-08-18T02:18:59Z WARN  uboot_shell] cmd `setenv autoload yes` failed: Timeout, retrying...
+[2026-08-18T02:19:04Z WARN  uboot_shell] cmd `setenv autoload yes` failed: Timeout, retrying...
+Error: command `setenv autoload yes` failed after retries

@@ -1,0 +1,310 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.42s
+     Running `target/debug/tg-xtask starry board -c apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml -t aarch64-unknown-none-softfloat --board-config apps/starry/orangepi-5-plus-uvc-rknn/configs/board-orangepi-5-plus-fixed-pairs.toml -b OrangePi-5-Plus`
+[2026-08-18T02:21:29Z INFO  axbuild::context] Workspace root: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc
+Using build config: apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml
+[2026-08-18T02:21:34Z INFO  axbuild::build::config_file] Found build config at apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ...
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml ...
+AX_ARCH=aarch64
+AX_LOG=error
+AX_TARGET=aarch64-unknown-none-softfloat
+SMP=1
+cargo build -p starryos --target aarch64-unknown-none-softfloat -Z unstable-options --target-dir /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target --features ax-driver/irq,ax-driver/list-pci-devices,ax-driver/realtek-rtl8125,ax-driver/rk3588-pcie,ax-driver/rockchip-dwc-xhci,ax-driver/rockchip-dwmmc,ax-driver/rockchip-sdhci,ax-driver/rockchip-soc,rknpu,smp -Z build-std=core,alloc --config target.aarch64-unknown-none-softfloat.rustflags=["-Crelocation-model=pic", "-Clink-args=-pie", "-Clink-args=--gc-sections", "-Clink-args=-znorelro", "-Clink-args=-znostart-stop-gc", "-Clink-args=-Tlinker.x", "-Clink-args=-u _head"] --bin starryos --release --message-format json-render-diagnostics
+    Finished `release` profile [optimized] target(s) in 7.70s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 7`
+Converting ELF to BIN format...
+  elf: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+  bin: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] cargo build package=starryos target=aarch64-unknown-none-softfloat config=apps/starry/orangepi-5-plus-uvc-rknn/build-aarch64-unknown-none-softfloat.toml ... done (14.55s)
+[axbuild] cargo build elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] cargo build artifact_dir=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release
+[axbuild] starry build package=starryos target=aarch64-unknown-none-softfloat arch=aarch64 ... done (14.56s)
+[axbuild] starry artifact elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos ...
+[axbuild] starry kallsyms symbols=14527
+rust-objcopy --update-section .kallsyms=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/.starryos.kallsyms.975014.tmp /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+[axbuild] starry kallsyms elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos ... done (686.66ms)
+[axbuild] starry bin refresh /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin ...
+rust-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] starry bin refresh /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin ... done (256.04ms)
+[axbuild] prepare runtime artifact elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos to_bin=true ...
+Converting ELF to BIN format...
+  elf: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos
+  bin: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[axbuild] prepare runtime artifact elf=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos to_bin=true ... done (302.27ms)
+[axbuild] board run prepared artifact ...
+Allocated board session:
+  board_type: OrangePi-5-Plus
+  board_id: orangepi-5-plus-1
+  session_id: f745d482-bfdb-4991-8730-a6432c55a282
+  lease_expires_at: 2026-08-18 10:22:01.828555784 +08:00
+  boot_mode: uboot
+[2026-08-18T02:21:51Z INFO  ostool::run::uboot] Starting U-Boot runner...
+[2026-08-18T02:21:51Z INFO  ostool::run::uboot] kernel from: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin
+[2026-08-18T02:21:51Z INFO  ostool::run::uboot] Using network interface hint: eth0
+Waiting for remote board to power on through ostool-server...
+[2026-08-18T02:21:52Z INFO  uboot_shell] cmd: setenv autoload yes
+[2026-08-18T02:21:52Z INFO  uboot_shell] cmd: setenv netmask 255.255.255.0
+[2026-08-18T02:21:53Z INFO  uboot_shell] cmd: net list
+[2026-08-18T02:21:53Z INFO  uboot_shell] cmd: bootdev hunt ethernet
+[2026-08-18T02:21:56Z INFO  ostool::run::uboot] Board network ok
+[2026-08-18T02:21:56Z INFO  uboot_shell] cmd: setenv serverip 192.168.31.132
+[2026-08-18T02:21:57Z INFO  uboot_shell] cmd: echo $fdt_addr_r
+[2026-08-18T02:21:57Z INFO  uboot_shell] cmd: echo $ramdisk_addr_r
+[2026-08-18T02:21:57Z INFO  uboot_shell] cmd: echo $kernel_addr_r
+[2026-08-18T02:21:58Z INFO  ostool::run::uboot] Using $kernel_addr_r as kernel entry: 0x2000000
+[2026-08-18T02:21:58Z INFO  uboot_shell] cmd: echo $kernel_comp_addr_r
+[2026-08-18T02:21:58Z INFO  ostool::run::uboot] image load to kernel_comp_addr_r: 0xa000000
+[2026-08-18T02:21:58Z INFO  uboot_shell] cmd: setenv loadaddr 0xa000000
+[2026-08-18T02:21:59Z INFO  ostool::run::uboot] fitimage loadaddr: 0xa000000
+[2026-08-18T02:21:59Z INFO  ostool::run::uboot] kernel entry: 0x2000000
+[2026-08-18T02:21:59Z INFO  ostool::run::uboot] Using DTB from: tmp/competition/vision/orangepi-5-plus-starry.dtb
+[2026-08-18T02:21:59Z INFO  ostool::boot::fit] Making FIT image...
+[2026-08-18T02:21:59Z INFO  ostool::boot::fit] kernel: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/starryos.bin (size: 14852096)
+[2026-08-18T02:21:59Z INFO  ostool::boot::fit] 已读取 DTB 文件: tmp/competition/vision/orangepi-5-plus-starry.dtb (大小: 283082)
+[2026-08-18T02:21:59Z INFO  ostool::boot::fit] FIT image ok: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-none-softfloat/release/image.fit
+[2026-08-18T02:21:59Z INFO  ostool::run::uboot] No TFTP config, using loady to upload FIT image...
+
+send file
+loady 0xa000000
+## Ready for binary (ymodem) download to 0x0A000000 at 1500000 bps...
+[2026-08-18T02:21:59Z INFO  uboot_shell::ymodem] Sending file: image.fit
+C## Total Size      = 0x00e6f4d8 = 15135960 Bytes
+## Start Addr      = 0x0A000000
+=>
+send ok
+[2026-08-18T02:25:06Z INFO  ostool::run::uboot] Booting kernel with command: bootm
+Interacting with U-Boot shell...
+bootm
+## Loading kernel (any) from FIT Image at 0a000000 ...
+   Using 'config-ostool' configuration
+   Verifying Hash IntegriOK
+   Trying 'kernel' kernel subimage
+     Description:  This kernel
+     Type:         Kernel Image
+     Compression:  uncompressed
+     Data Start:   0x0a000168
+     Data Size:    14852096 Bytes = 14.2 MiB
+     Architecture: AArch64
+     OS:           Linux
+     Load Address: 0x02000000
+     Entry Point:  0x02000000
+   Verifying Hash Integrity ... OK
+## Loading fdt (any) from FIT Image at 0a000000 ...
+   Using 'config-ostool' configuration
+   Verifying Hash Integrity ... OK
+   Trying 'fdt' fdt subimage
+     Description:  This fdt
+     Type:         Flat Device Tree
+     Compression:  uncompressed
+     Data Start:   0x0ae2a1e8
+     Data Size:    283082 Bytes = 276.4 KiB
+     Architecture: AArch64
+     Load Address: 0x12000000
+   Verifying Hash Integrity ... OK
+   Loading fdt from 0x0ae2a1e8 to 0x12000000
+   Booting using the fdt blob at 0x12000000
+Working FDT set to 12000000
+   Loading Kernel Image to 2000000
+   Loading Device Tree to 00000000ecb71000, end 00000000ecbb91c9 ... OK
+Working FDT set to ecb71000
+
+Starting kernel ...
+
+root=PARTUUID=5874edd8-1582-a144-a298-b139acd7b0e6 rw console=ttyS2,1500000 console=tty1 splash=verbose consoleblank=0 earlycon=uart8250,mmio32,0xfeb50000 cpuidle.off=1 rodata=off rootwait rootfstype=ext4 loglevel=8 ubootpart=4cda819a-b7aa-46f4-bfa2-3a8b1825d142 usb-storage.quirks= cma=128M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1
+VM Load @PA:0x2000000
+VM Load Offset: 0x82000000
+Memory Map:
+  Rsv    0x00000000110000 - 0x000000001f0100 (896.25 KiB)
+  Free   0x00000000200000 - 0x00000002000000 (30 MiB)
+  KImg   0x00000002000000 - 0x00000003000000 (16 MiB)
+  Free   0x00000003000000 - 0x0000000c000000 (144 MiB)
+  Rsv    0x0000000c000000 - 0x0000000e000000 (32 MiB)
+  Free   0x0000000e000000 - 0x00000010000000 (32 MiB)
+  Rsv    0x00000010000000 - 0x00000020000000 (256 MiB)
+  Free   0x00000020000000 - 0x000000f0000000 (3.25 GiB)
+  Free   0x00000100000000 - 0x000003fc000000 (11.94 GiB)
+  Free   0x000003fc500000 - 0x000003fff00000 (58 MiB)
+  Free   0x000004f0000000 - 0x00000500000000 (256 MiB)
+Initialize RAM allocator: 0x200000..0x2000000
+Reserving CPU-local areas
+CPU-local area stride: 0x41000 bytes
+Total CPU-local allocation: 0x208000 bytes (8 CPUs)
+Flushed RAM used range to memory map: 0x200000..0x246000, current: 0x246000
+Flushed RAM used range to memory map: 0x246000..0x44e000, current: 0x44e000
+CPU-local areas allocated at 0x246000 - 0x44e000
+EL: 1
+Mapping early memory regions...
+Ram                 : [0xffff000000200000, 0xffff0000f0000000) -> [0x0000000000200000, 0x00000000f0000000) (3.75 GiB)
+Ram                 : [0xffff000100000000, 0xffff0003fc000000) -> [0x0000000100000000, 0x00000003fc000000) (11.94 GiB)
+Ram                 : [0xffff0003fc500000, 0xffff0003fff00000) -> [0x00000003fc500000, 0x00000003fff00000) (58 MiB)
+Ram                 : [0xffff0004f0000000, 0xffff000500000000) -> [0x00000004f0000000, 0x0000000500000000) (256 MiB)
+KImage              : [0xffffffff80000000, 0xffffffff81000000) -> [0x0000000002000000, 0x0000000003000000) (16 MiB)
+PerCpu              : [0xffffff0000246000, 0xffffff000044e000) -> [0x0000000000246000, 0x000000000044e000) (2.03 MiB)
+Debug serial        : [0xffff0000feb50000, 0xffff0000feb51000) -> [0x00000000feb50000, 0x00000000feb51000) (4 KiB)
+Boot page table at physical address: PTrap vector at 0xffffffff80340800
+Memory Map:
+  Rsv    0x00000000110000 - 0x000000001f0100 (896.25 KiB)
+  Rsv    0x00000000200000 - 0x00000000246000 (280 KiB)
+  PerCPU 0x00000000246000 - 0x0000000044e000 (2.03 MiB)
+  Rsv    0x0000000044e000 - 0x0000000045d000 (60 KiB)
+  Free   0x0000000045d000 - 0x00000002000000 (27.64 MiB)
+  KImg   0x00000002000000 - 0x00000003000000 (16 MiB)
+  Free   0x00000003000000 - 0x0000000c000000 (144 MiB)
+  Rsv    0x0000000c000000 - 0x0000000e000000 (32 MiB)
+  Free   0x0000000e000000 - 0x00000010000000 (32 MiB)
+  Rsv    0x00000010000000 - 0x00000020000000 (256 MiB)
+  Free   0x00000020000000 - 0x000000f0000000 (3.25 GiB)
+  MMIO   0x000000feb50000 - 0x000000feb51000 (4 KiB)
+  Free   0x00000100000000 - 0x000003fc000000 (11.94 GiB)
+  Free   0x000003fc500000 - 0x000003fff00000 (58 MiB)
+  Free   0x000004f0000000 - 0x00000500000000 (256 MiB)
+Jumping to main entry point at 0xffffffff803258d0 with SP 0xffffff0000287000
+
+       d8888                            .d88888b.   .d8888b.
+      d88888                           d88P" "Y88b d88P  Y88b
+     d88P888                           888     888 Y88b.
+    d88P 888 888d888  .d8888b  .d88b.  888     888  "Y888b.
+   d88P  888 888P"   d88P"    d8P  Y8b 888     888     "Y88b.
+  d88P   888 888     888      88888888 888     888       "888
+ d8888888888 888     Y88b.    Y8b.     Y88b. .d88P Y88b  d88P
+d88P     888 888      "Y8888P  "Y8888   "Y88888P"   "Y8888P"
+
+arch = aarch64
+platform = RK3588 OPi 5 Plus
+target = aarch64-unknown-none-softfloat
+build_mode = 
+log_level = error
+backtrace = false
+smp = 1
+
+Boot at 1970-01-01 00:04:45.412787958 UTC
+
+[37m[286.009860 rsext4::hashtree::lookup:241] [31mFS DOES NOT SUPPORT NORMAL MULTIPLE POINTERS, PLEASE TURN ON EXTENT FEATURE![37m[286.010892 rsext4::hashtreup:241] [31mFS DOES NOT SUPPORT[37m[286.013138 rsext4::file::blocks:66] [31mnot support traditional block pointer[m
+[mInitialized 6 tracepoints
+kmod subsystem initialized
+Welcome to [96m[1mStarry OS[0m!
+USER=root
+HOSTNAME=starry
+HOME=/root
+TERM=xterm-256color
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+
+Use [1m[3mapk[0m to install packages.
+
+root@starry:/root # set -eu
+cd /home/orangepi/rknn_yolovroot@starry:/root # 8_image
+echo VISION_FIXED_CAMPAIGN_BEGIN os=starry pairs=5
+model_digest=$(sha256sum model/yoroot@starry:/home/orangepi/rknn_yolov8_image # VISION_FIXED_CAMPAIGN_BEGIN os=starry pairs=5
+root@starry:/home/orangepi/rknn_yolov8_image # lov8.rknn)
+model_digest=${model_digest%% *}
+echo VISION_FIXED_MODEL_SHA256 "$model_digest"
+metric_value() {
+  metric_key=$1
+  for metric_field in $profile_line; do
+    case "$metric_field" in
+      "$metric_key"=*)
+        printf '%s\n' "${metric_field#*=}"
+        return 0
+        ;;
+    esac
+  done
+  return 1
+}
+for pair in 1 2 3 4 5; do
+  if [ $((pair % 2)) -eq 1 ]; then
+    order=AB
+    first=0
+    second=all
+  else
+    order=BA
+    first=all
+    second=0
+  fi
+  for core_mask in "$first" "$second"; do
+    echo VISION_FIXED_RUN_BEGIN pair=$pair order=$order core_mask=$core_mask
+    run_log=/tmp/vision-fixed-$pair-$core_mask.log
+    if ./rknn_yolov8_bench \
+        --validate-list validation/images.txt \
+        --expected validation/expected.txt \
+        --min-confidence 25 \
+        --profile \
+        --core-mask "$core_mask" >"$run_log" 2>&1; then
+      profile_line=$(grep '^UVC_RKNN_BENCH_PROFILE_RESULT ' "$run_log")
+      grep -q '^UVC_RKNN_VALIDATE_PASS images=3$' "$run_log"
+      profile_samples=$(metric_value profile_samples)
+      perf_run_query_errors=$(metric_value perf_run_query_errors)
+      total_ms_avg=$(metric_value total_ms_avg)
+      total_ms_p95=$(metric_value total_ms_p95)
+      letterbox_ms_avg=$(metric_value letterbox_ms_avg)
+      letterbox_ms_p95=$(metric_value letterbox_ms_p95)
+      rknn_perf_run_ms_avg=$(metric_value rknn_perf_run_ms_avg)
+      rknn_perf_run_ms_p95=$(metric_value rknn_perf_run_ms_p95)
+      [ "$profile_samples" = 3 ]
+      [ "$perf_run_query_errors" = 0 ]
+      echo VISION_FIXED_METRIC pair=$pair core_mask=$core_mask \
+        profile_samples=3 perf_run_query_errors=0
+      echo VISION_FIXED_METRIC_TOTAL pair=$pair core_mask=$core_mask \
+        total_ms_avg=$total_ms_avg total_ms_p95=$total_ms_p95
+      echo VISION_FIXED_METRIC_STAGE pair=$pair core_mask=$core_mask \
+        letterbox_ms_avg=$letterbox_ms_avg \
+        letterbox_ms_p95=$letterbox_ms_p95 \
+        rknn_perf_run_ms_avg=$rknn_perf_run_ms_avg \
+        rknn_perf_run_ms_p95=$rknn_perf_run_ms_p95
+      echo UVC_RKNN_VALIDATE_PASS images=3
+    else
+      cat "$run_log"
+      echo VISION_FIXED_RUN_FAIL pair=$pair core_mask=$core_mask
+      exit 1
+    fi
+    echo VISION_FIXED_RUN_END pair=$pair core_mask=$core_mask
+    sleep 1
+  done
+done
+echo VISION_FIXED_CAMPAIGN_DONE os=starry pairs=5
+root@starry:/home/orangepi/rknn_yolov8_image # root@starry:/home/orangepi/rknn_yolov8_image # VISION_FIXED_MODEL_SHA256 40d62454f08c9a73ccd2349ee8ccadfa51e9a6f93c48e975b3302e29aff1a4d0
+root@starry:/home/orangepi/rknn_yolov8_image # > > > > > > > > > > > root@starry:/home/orangepi/rknn_yolov8_image # > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > VISION_FIXED_RUN_BEGIN pair=1 order=AB core_mask=0
+VISION_FIXED_METRIC pair=1 core_mask=0 profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=1 core_mask=0 total_ms_avg=112.26 total_ms_p95=136.26
+VISION_FIXED_METRIC_STAGE pair=1 core_mask=0 letterbox_ms_avg=78.20 letterbox_ms_p95=81.=1 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=1 order=AB core_mask=all
+VISION_FIXED_METRIC pair=1 core_mask=all profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=1 core_mask=all total_ms_avg=110.79 total_ms_p95=133.45
+VISION_FIXED_METRIC_STAGE pair=ox_ms_avg=77.59 letterbox_ms_p95=80.73 rknn_perf_run_ms_avg=18.1n_ms_p95=21.36
+UVC_RKNN_VALIDATes=3
+VISION_FIXED_RUN_END pair=VISION_FIXED_RUN_BEGIN pair=2 order=BA core_mask=all
+VISION_FIXED_METRIC pair=2 core_mask=all profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=2 core_mask=all total_ms_avg=110.79 total_ms_p95=133.83METRIC_STAGE pair=2 core_mask=alVISION_FIXED_RUN_BEGIN pair=2 order=BA core_mask=0
+VISION_FIXED_METRIC pair=2 core_mask=0 profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=2 core_mask=0 total_ms_avg=110.92 total_ms_p95=133.14
+VISION_FIXED_METRIC_STAGE pair=2 core_mask=0 letterbox_ms_avg=77.55 letterbox_ms_p95=80.57 rknn_per=18.24 rknn_perf_run_ms_p95=21.1N_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=2 core_mask=VISION_FIXED_RUN_BEGIN pair=3 order=AB core_mask=0
+VISION_FIXED_METRIC pair=3 core_mask=0 profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=3 core_mask=0 total_ms_avg=111.07 total_ms_p95=133.60
+VISION_FIXED_METRIC_STAGE pair=3 core_mask=0 letterbox_ms_avg=77.53 letterbox_ms_p95=80.46 rknn_perf_run_ms_avg=18.26 rknn_perf_run_ms_p95=21.24
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=3 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=3 order=AB core_mask=all
+VISION_FIXED_METRIC pair=3 core_mask=all profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=3 core_mask=all total_ms_avg=110.69 total_ms_p95=133.31VISION_FIXED_RUN_BEGIN pair=4 order=BA core_mask=all
+VISION_FIXED_METRIC pair=4 core_mask=all profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=4 core_mask=all total_ms_avg=110.85 total_ms_p95=133.97END pair=4 core_mask=all
+VISION_FIXED_RUN_BEGIN pair=4 order=BA core_mask=0
+VISION_FIXED_METRIC pair=4 core_mask=0 profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=4 core_mask=0 total_ms_avg=110.90 total_ms_p95=133.19
+VISION_FIXED_METRIC_STAGE pair=4 core_mask=0 letterbox_ms_avg=77.56 letterbox_ms_p95=80.59 rknn_perf_run_ms_avg=18.18 rknn_perf_run_ms_p95=21.09
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=4 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=5 order=AB core_mask=0
+VISION_FIXED_METRIC pair=5 core_mask=0 profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=5 core_mask=0 total_ms_avg=113.94 total_ms_p95=134.07
+VISION_FIXED_METRIC_STAGE pair=5 core_mask=0 letterbox_ms_avg=79.17tterbox_ms_p95=81.16 rknn_perf_run_ms_avg=18.19 rknn_perf_run_msVISION_FIXED_RUN_BEGIN pair=5 order=AB core_mask=all
+VISION_FIXED_METRIC pair=5 core_mask=all profile_samples=3 perf_run_query_errors=0
+VISION_FIXED_METRIC_TOTAL pair=5 core_mask=all total_ms_avg=113.60 total_ms_p95=133.99
+VISION_FIXED_METRIC_STAGE pair=XED_RUN_END pair=5 core_mask=all
+root@starry:/home/orangepi/rknn_yolov8_image # VISION_FIXED_CAMPAIGN_DONE os=starry pairs=5
+root@starry:/home/orangepi/rknn_yolov8_image # 

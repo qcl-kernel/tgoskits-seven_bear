@@ -1,0 +1,98 @@
+{
+  "board": {
+    "board_id": "bf61f4d4a1d994ad",
+    "cpu_temp_milli_c": 44384,
+    "hostname": "orangepi5plus"
+  },
+  "controller": {
+    "acknowledged": 20,
+    "deadline_misses": 0,
+    "errors": 0,
+    "full_loop_max_us": 50406,
+    "full_loop_p50_us": 2285,
+    "full_loop_p95_us": 16693,
+    "full_loop_p99_us": 16693,
+    "iae_milli_c_s": 61355.8,
+    "max_overshoot_milli_c": 0,
+    "policy": "neural",
+    "pre_send_max_us": 13482,
+    "pre_send_p50_us": 20,
+    "pre_send_p95_us": 21,
+    "pre_send_p99_us": 21,
+    "recoveries": 0,
+    "retransmissions": 0,
+    "rmse_milli_c": 31799.08887059502,
+    "sent": 20,
+    "success_percent": 100.0,
+    "throughput_msg_s": 9.973936529017594,
+    "timeouts": 0,
+    "transport_max_us": 36924,
+    "transport_p50_us": 2265,
+    "transport_p95_us": 16672,
+    "transport_p99_us": 16672
+  },
+  "guest": "starryos",
+  "lifecycle": {
+    "block_snapshot": {
+      "backing_index": 0,
+      "filesystem_check": "clean",
+      "image_bytes": 67108864,
+      "image_path": "/home/orangepi/ivc-rts",
+      "image_sha256": "042b80f38176a0b67c676b657f7c22866b191e150e5f0b1404996fae372869e8",
+      "vm_id": 1
+    },
+    "board_linux_restored": true,
+    "host_filesystem_synced": true,
+    "rtos_powered_off": true,
+    "rtos_terminal_result": true,
+    "starry_done": true,
+    "volatile_block_snapshotted": true
+  },
+  "network": {
+    "iface": "eth0",
+    "ip": "10.0.0.1/24",
+    "mac": "unknown",
+    "peer": "10.0.0.2",
+    "segment": 1,
+    "udp_port": 5500
+  },
+  "platform": "orangepi-5-plus",
+  "profile": "normal",
+  "raw_samples": {
+    "artifact_sha256": "8b02490ac5531721321be2439a593235dde541a363f761c17853697504906200",
+    "deadline_misses": 0,
+    "dropped_samples": 0,
+    "guest_manifest_sha256": "652f6cac86312dc84eb231a14be9358874974c4ff32a8668b1988aa3a43dec44",
+    "path": "tmp/competition/ivc/orangepi-rtos-20260818/final-psci-v2/rtthread-smoke/run-001/raw.csv.gz",
+    "sample_count": 20,
+    "sha256": "652f6cac86312dc84eb231a14be9358874974c4ff32a8668b1988aa3a43dec44",
+    "uart_sha256": "652f6cac86312dc84eb231a14be9358874974c4ff32a8668b1988aa3a43dec44",
+    "uart_sha256_complete": true
+  },
+  "rtos": {
+    "accepted": 20,
+    "acks_dropped": 0,
+    "acks_sent": 20,
+    "applied": 20,
+    "duplicates": 0,
+    "errors_sent": 0,
+    "name": "rt-thread",
+    "profile": "normal",
+    "protocol_errors": 0,
+    "status_sent": 20
+  },
+  "schema_version": 2,
+  "source_log": {
+    "content_sha256": "e0aeddf8cf68545f9f6e5a72d6912900c76c71614881bd54ad82475e9d7541d0",
+    "path": "tmp/competition/ivc/orangepi-rtos-20260818/final-psci-v2/rtthread-smoke/run-001/console.log.gz",
+    "sha256": "31a6dc3e63738e63f66d3a4a7613235e68bf3f8579442ad5d710f9654cc40173"
+  },
+  "starry": {
+    "backend": "native",
+    "count": 20,
+    "fault_profile": "none",
+    "mode": "neural",
+    "period_ms": 100,
+    "vcpus": 2
+  }
+}

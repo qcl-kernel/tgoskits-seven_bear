@@ -1,0 +1,10 @@
+rtos=freertos
+profile=board-smoke
+source_commit=cb9112f982c2768872536b811e013254d0184811
+kernel_commit=f1043c49d59944353291654c175852bd17b34f99
+runtime_commit=c50068084212ef33115a4c05f9f714cc637f30bc
+plus_tcp_commit=c12361095aca68aeed858f45d14395fbffa92c0d
+compiler=aarch64-none-elf-gcc (Arm GNU Toolchain 13.2.rel1 (Build arm-13.7)) 13.2.1 20231009
+expected_commands=20
+drop_ack_every=0
+stop_after_result=1

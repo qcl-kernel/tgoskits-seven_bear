@@ -1,0 +1,20 @@
+{
+  "elf": "freertos.elf",
+  "entry_point": 1342177280,
+  "load_segments": [
+    {
+      "alignment": 65536,
+      "file_offset": 65536,
+      "file_size": 192512,
+      "flags": 7,
+      "index": 0,
+      "memory_size": 498648,
+      "physical_address": 1342177280,
+      "virtual_address": 1342177280
+    }
+  ],
+  "machine": "aarch64",
+  "ram_base": 1342177280,
+  "ram_size": 134217728,
+  "schema_version": 1
+}

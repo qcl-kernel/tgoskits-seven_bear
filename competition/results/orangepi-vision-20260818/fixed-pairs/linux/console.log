@@ -1,0 +1,392 @@
+VISION_FIXED_CAMPAIGN_BEGIN os=linux pairs=5
+VISION_FIXED_BOARD_KERNEL Linux orangepi5plus 6.1.43-rockchip-rk3588 #1.2.0 SMP Thu Nov 21 12:08:24 CST 2024 aarch64 aarch64 aarch64 GNU/Linux
+VISION_FIXED_ROOT /dev/mmcblk1p2 ext4   opi_root 4694b5ee-9f59-4564-8f67-d51ccf671fe4
+VISION_FIXED_MODEL_SHA256 40d62454f08c9a73ccd2349ee8ccadfa51e9a6f93c48e975b3302e29aff1a4d0
+VISION_FIXED_THERMAL path=/sys/class/thermal/thermal_zone0/temp millidegrees_c=40692
+VISION_FIXED_THERMAL path=/sys/class/thermal/thermal_zone1/temp millidegrees_c=40692
+VISION_FIXED_THERMAL path=/sys/class/thermal/thermal_zone2/temp millidegrees_c=41615
+VISION_FIXED_THERMAL path=/sys/class/thermal/thermal_zone3/temp millidegrees_c=41615
+VISION_FIXED_THERMAL path=/sys/class/thermal/thermal_zone4/temp millidegrees_c=40692
+VISION_FIXED_THERMAL path=/sys/class/thermal/thermal_zone5/temp millidegrees_c=40692
+VISION_FIXED_THERMAL path=/sys/class/thermal/thermal_zone6/temp millidegrees_c=40692
+VISION_FIXED_RUN_BEGIN pair=1 order=AB core_mask=0
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=0 profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=0 ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=43.59 total_ms_p50=44.76 total_ms_p95=48.70 malloc_ms_avg=0.01 letterbox_ms_avg=9.66 letterbox_ms_p50=9.62 letterbox_ms_p95=9.77 inputs_set_ms_avg=1.33 run_ms_avg=24.05 run_ms_p50=24.51 run_ms_p95=24.53 outputs_get_ms_avg=5.57 outputs_get_ms_p50=6.18 outputs_get_ms_p95=7.92 rknn_perf_run_ms_avg=24.04 rknn_perf_run_ms_p50=24.51 rknn_perf_run_ms_p95=24.52 postprocess_ms_avg=2.95 postprocess_ms_p50=3.65 postprocess_ms_p95=3.81 outputs_release_ms_avg=0.02
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=1 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=1 order=AB core_mask=all
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=all profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=all ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=38.46 total_ms_p50=37.84 total_ms_p95=41.53 malloc_ms_avg=0.01 letterbox_ms_avg=9.49 letterbox_ms_p50=9.61 letterbox_ms_p95=9.66 inputs_set_ms_avg=1.48 run_ms_avg=23.86 run_ms_p50=24.10 run_ms_p95=24.58 outputs_get_ms_avg=2.35 outputs_get_ms_p50=2.37 outputs_get_ms_p95=2.53 rknn_perf_run_ms_avg=23.86 rknn_perf_run_ms_p50=24.10 rknn_perf_run_ms_p95=24.58 postprocess_ms_avg=1.25 postprocess_ms_p50=1.34 postprocess_ms_p95=1.40 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=1 core_mask=all
+VISION_FIXED_RUN_BEGIN pair=2 order=BA core_mask=all
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=all profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=all ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=37.76 total_ms_p50=38.14 total_ms_p95=38.55 malloc_ms_avg=0.01 letterbox_ms_avg=9.81 letterbox_ms_p50=9.79 letterbox_ms_p95=9.89 inputs_set_ms_avg=1.40 run_ms_avg=23.00 run_ms_p50=22.58 run_ms_p95=24.96 outputs_get_ms_avg=2.20 outputs_get_ms_p50=2.41 outputs_get_ms_p95=2.44 rknn_perf_run_ms_avg=22.99 rknn_perf_run_ms_p50=22.57 rknn_perf_run_ms_p95=24.95 postprocess_ms_avg=1.32 postprocess_ms_p50=1.33 postprocess_ms_p95=1.34 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=2 core_mask=all
+VISION_FIXED_RUN_BEGIN pair=2 order=BA core_mask=0
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=0 profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=0 ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=37.80 total_ms_p50=38.74 total_ms_p95=39.11 malloc_ms_avg=0.02 letterbox_ms_avg=9.46 letterbox_ms_p50=9.63 letterbox_ms_p95=9.65 inputs_set_ms_avg=1.45 run_ms_avg=23.07 run_ms_p50=23.01 run_ms_p95=24.75 outputs_get_ms_avg=2.45 outputs_get_ms_p50=2.35 outputs_get_ms_p95=3.24 rknn_perf_run_ms_avg=23.07 rknn_perf_run_ms_p50=23.00 rknn_perf_run_ms_p95=24.74 postprocess_ms_avg=1.34 postprocess_ms_p50=1.32 postprocess_ms_p95=1.38 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=2 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=3 order=AB core_mask=0
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=0 profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=0 ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=39.63 total_ms_p50=39.93 total_ms_p95=40.22 malloc_ms_avg=0.01 letterbox_ms_avg=9.58 letterbox_ms_p50=9.58 letterbox_ms_p95=9.61 inputs_set_ms_avg=1.43 run_ms_avg=24.69 run_ms_p50=23.92 run_ms_p95=26.47 outputs_get_ms_avg=2.55 outputs_get_ms_p50=2.55 outputs_get_ms_p95=3.20 rknn_perf_run_ms_avg=24.68 rknn_perf_run_ms_p50=23.92 rknn_perf_run_ms_p95=26.46 postprocess_ms_avg=1.35 postprocess_ms_p50=1.30 postprocess_ms_p95=1.96 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=3 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=3 order=AB core_mask=all
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=all profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=all ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=37.43 total_ms_p50=36.35 total_ms_p95=39.59 malloc_ms_avg=0.01 letterbox_ms_avg=9.77 letterbox_ms_p50=9.81 letterbox_ms_p95=9.86 inputs_set_ms_avg=1.48 run_ms_avg=22.61 run_ms_p50=22.72 run_ms_p95=22.85 outputs_get_ms_avg=2.21 outputs_get_ms_p50=2.46 outputs_get_ms_p95=2.48 rknn_perf_run_ms_avg=22.61 rknn_perf_run_ms_p50=22.71 rknn_perf_run_ms_p95=22.85 postprocess_ms_avg=1.35 postprocess_ms_p50=1.32 postprocess_ms_p95=1.40 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=3 core_mask=all
+VISION_FIXED_RUN_BEGIN pair=4 order=BA core_mask=all
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=all profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=all ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=36.98 total_ms_p50=37.09 total_ms_p95=38.63 malloc_ms_avg=0.02 letterbox_ms_avg=9.78 letterbox_ms_p50=9.75 letterbox_ms_p95=9.91 inputs_set_ms_avg=1.33 run_ms_avg=22.35 run_ms_p50=22.22 run_ms_p95=22.87 outputs_get_ms_avg=2.16 outputs_get_ms_p50=2.39 outputs_get_ms_p95=2.42 rknn_perf_run_ms_avg=22.34 rknn_perf_run_ms_p50=22.21 rknn_perf_run_ms_p95=22.86 postprocess_ms_avg=1.34 postprocess_ms_p50=1.35 postprocess_ms_p95=1.37 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=4 core_mask=all
+VISION_FIXED_RUN_BEGIN pair=4 order=BA core_mask=0
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=0 profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=0 ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=40.14 total_ms_p50=41.27 total_ms_p95=42.93 malloc_ms_avg=0.02 letterbox_ms_avg=10.04 letterbox_ms_p50=9.66 letterbox_ms_p95=10.68 inputs_set_ms_avg=1.46 run_ms_avg=22.21 run_ms_p50=21.93 run_ms_p95=23.13 outputs_get_ms_avg=4.39 outputs_get_ms_p50=5.37 outputs_get_ms_p95=5.45 rknn_perf_run_ms_avg=22.20 rknn_perf_run_ms_p50=21.93 rknn_perf_run_ms_p95=23.12 postprocess_ms_avg=2.01 postprocess_ms_p50=2.42 postprocess_ms_p95=2.53 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=4 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=5 order=AB core_mask=0
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=0 profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=0 ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=39.68 total_ms_p50=39.93 total_ms_p95=40.81 malloc_ms_avg=0.01 letterbox_ms_avg=9.65 letterbox_ms_p50=9.61 letterbox_ms_p95=9.75 inputs_set_ms_avg=1.35 run_ms_avg=25.52 run_ms_p50=25.57 run_ms_p95=26.59 outputs_get_ms_avg=2.13 outputs_get_ms_p50=2.31 outputs_get_ms_p95=2.40 rknn_perf_run_ms_avg=25.51 rknn_perf_run_ms_p50=25.57 rknn_perf_run_ms_p95=26.59 postprocess_ms_avg=1.02 postprocess_ms_p50=0.95 postprocess_ms_p95=1.31 outputs_release_ms_avg=0.00
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=5 core_mask=0
+VISION_FIXED_RUN_BEGIN pair=5 order=AB core_mask=all
+YOLOv8 UVC RKNN Benchmark
+=========================
+model=model/yolov8.rknn label=model/coco_80_labels_list.txt device=0 size=320x240 fps=30 duration=60 infer_every=1 report_interval=5 min_confidence=25 core_mask=all profile=1 profile_frames=0 validate_list=validation/images.txt expected=validation/expected.txt write_expected=none
+load lable model/coco_80_labels_list.txt
+model input num: 1, output num: 9
+input tensors:
+  index=0, name=images, n_dims=4, dims=[1, 640, 640, 3], n_elems=1228800, size=1228800, fmt=NHWC, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+output tensors:
+  index=0, name=318, n_dims=4, dims=[1, 64, 80, 80], n_elems=409600, size=409600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-58, scale=0.117659
+  index=1, name=onnx::ReduceSum_326, n_dims=4, dims=[1, 80, 80, 80], n_elems=512000, size=512000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003104
+  index=2, name=331, n_dims=4, dims=[1, 1, 80, 80], n_elems=6400, size=6400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003173
+  index=3, name=338, n_dims=4, dims=[1, 64, 40, 40], n_elems=102400, size=102400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-45, scale=0.093747
+  index=4, name=onnx::ReduceSum_346, n_dims=4, dims=[1, 80, 40, 40], n_elems=128000, size=128000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003594
+  index=5, name=350, n_dims=4, dims=[1, 1, 40, 40], n_elems=1600, size=1600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003627
+  index=6, name=357, n_dims=4, dims=[1, 64, 20, 20], n_elems=25600, size=25600, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-34, scale=0.083036
+  index=7, name=onnx::ReduceSum_365, n_dims=4, dims=[1, 80, 20, 20], n_elems=32000, size=32000, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003874
+  index=8, name=369, n_dims=4, dims=[1, 1, 20, 20], n_elems=400, size=400, fmt=NCHW, type=INT8, qnt_type=AFFINE, zp=-128, scale=0.003922
+model is NHWC input fmt
+model input height=640, width=640, channel=3
+bench-rknn: init_yolov8_model success width=640 height=640 channel=3
+bench-rknn: set_core_mask=all ret=0
+UVC_RKNN_VALIDATE_BEGIN images=3 mode=compare_expected
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=0 path=validation/tennis-ball-close.jpg width=1279 height=1706 detections=1
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=1 path=validation/tennis-ball-black-box.jpg width=1279 height=1706 detections=2
+origin size=1279x1706 crop size=1264x1696
+input image: 1279 x 1706, subsampling: 4:2:0, colorspace: YCbCr, orientation: 1
+src width is not 4/16-aligned, convert image use cpu
+UVC_RKNN_VALIDATE_IMAGE index=2 path=validation/tennis-ball-plant.jpg width=1279 height=1706 detections=2
+UVC_RKNN_BENCH_PROFILE_RESULT profile_samples=3 perf_run_query_errors=0 total_ms_avg=43.52 total_ms_p50=44.63 total_ms_p95=47.44 malloc_ms_avg=0.01 letterbox_ms_avg=9.46 letterbox_ms_p50=9.53 letterbox_ms_p95=9.66 inputs_set_ms_avg=1.47 run_ms_avg=24.21 run_ms_p50=24.55 run_ms_p95=25.32 outputs_get_ms_avg=5.49 outputs_get_ms_p50=5.93 outputs_get_ms_p95=7.96 rknn_perf_run_ms_avg=24.21 rknn_perf_run_ms_p50=24.54 rknn_perf_run_ms_p95=25.32 postprocess_ms_avg=2.86 postprocess_ms_p50=3.58 postprocess_ms_p95=3.66 outputs_release_ms_avg=0.01
+UVC_RKNN_VALIDATE_PASS images=3
+VISION_FIXED_RUN_END pair=5 core_mask=all
+VISION_FIXED_CAMPAIGN_DONE os=linux pairs=5
