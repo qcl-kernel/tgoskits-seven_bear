@@ -116,9 +116,14 @@ def parse_integer(record: dict[str, str], field: str, marker: str) -> int:
         raise AnalysisError(f"{marker}: {field!r} is not an integer") from error
 
 
-def validate_config(record: dict[str, str], workload: str) -> dict[str, object]:
+def validate_config(
+    record: dict[str, str],
+    workload: str,
+    expected_config: dict[str, str] | None = None,
+) -> dict[str, object]:
     """Validate and normalize the fixed benchmark configuration."""
-    for field, expected in EXPECTED_CONFIG.items():
+    contract = EXPECTED_CONFIG if expected_config is None else expected_config
+    for field, expected in contract.items():
         if record.get(field) != expected:
             raise AnalysisError(
                 f"RTOS_BASELINE_CONFIG: {field} must be {expected!r}, "
@@ -156,7 +161,10 @@ def validate_workload_ready(record: dict[str, str], workload: str) -> None:
 
 
 def validate_results(
-    records: Sequence[dict[str, str]], workload: str
+    records: Sequence[dict[str, str]],
+    workload: str,
+    sample_count: int = MEASURED_EXPIRATIONS,
+    expected_duration_us: int = 10_000_000,
 ) -> dict[str, dict[str, object]]:
     """Validate aggregate statistics for both latency metrics."""
     if len(records) != len(EXPECTED_METRICS):
@@ -173,8 +181,8 @@ def validate_results(
             raise AnalysisError(f"{metric}: wrong schema or workload")
         if record.get("unit") != "ns":
             raise AnalysisError(f"{metric}: unit must be ns")
-        if parse_nonnegative(record, "count", metric) != 10000:
-            raise AnalysisError(f"{metric}: count must be 10000")
+        if parse_nonnegative(record, "count", metric) != sample_count:
+            raise AnalysisError(f"{metric}: count must be {sample_count}")
 
         statistics = [parse_nonnegative(record, field, metric) for field in STAT_FIELDS]
         minimum, mean, p50, p90, p99, p999, maximum = statistics
@@ -182,11 +190,15 @@ def validate_results(
             raise AnalysisError(f"{metric}: percentiles are not monotonic")
         if not minimum <= mean <= maximum:
             raise AnalysisError(f"{metric}: mean is outside the observed range")
-        expected_duration_us = parse_nonnegative(record, "expected_duration_us", metric)
+        recorded_expected_duration_us = parse_nonnegative(
+            record, "expected_duration_us", metric
+        )
         actual_duration_us = parse_nonnegative(record, "actual_duration_us", metric)
-        if expected_duration_us != 10_000_000:
-            raise AnalysisError(f"{metric}: expected duration is not ten seconds")
-        if actual_duration_us < expected_duration_us:
+        if recorded_expected_duration_us != expected_duration_us:
+            raise AnalysisError(
+                f"{metric}: expected duration must be {expected_duration_us} us"
+            )
+        if actual_duration_us < recorded_expected_duration_us:
             raise AnalysisError(f"{metric}: actual duration is shorter than requested")
         if observed_duration_us is None:
             observed_duration_us = actual_duration_us
@@ -198,7 +210,12 @@ def validate_results(
     return results
 
 
-def validate_load(record: dict[str, str], workload: str) -> dict[str, object]:
+def validate_load(
+    record: dict[str, str],
+    workload: str,
+    minimum_duration_us: int = 10_000_000,
+    allow_sub_permille_benchmark: bool = False,
+) -> dict[str, object]:
     """Validate runtime-accounted idle and stress execution."""
     if record.get("schema") != "1" or record.get("workload") != workload:
         raise AnalysisError("RTOS_BASELINE_LOAD: wrong schema or workload")
@@ -206,7 +223,7 @@ def validate_load(record: dict[str, str], workload: str) -> dict[str, object]:
         raise AnalysisError("RTOS_BASELINE_LOAD: load verification failed")
     if (
         parse_nonnegative(record, "window_duration_us", "RTOS_BASELINE_LOAD")
-        < 10_000_000
+        < minimum_duration_us
     ):
         raise AnalysisError("RTOS_BASELINE_LOAD: load window is too short")
 
@@ -227,7 +244,10 @@ def validate_load(record: dict[str, str], workload: str) -> dict[str, object]:
     if not 995 <= accounted_cpu <= 1000:
         raise AnalysisError("RTOS_BASELINE_LOAD: CPU accounting is incomplete")
     if load_fields["benchmark_permille"] == 0:
-        raise AnalysisError("RTOS_BASELINE_LOAD: benchmark execution was not measured")
+        if not allow_sub_permille_benchmark or parse_nonnegative(
+            record, "benchmark_cycles", "RTOS_BASELINE_LOAD"
+        ) == 0:
+            raise AnalysisError("RTOS_BASELINE_LOAD: benchmark execution was not measured")
 
     stress_permille = load_fields["stress_permille"]
     stress_blocks = parse_nonnegative(record, "stress_blocks", "RTOS_BASELINE_LOAD")
@@ -252,7 +272,12 @@ def validate_load(record: dict[str, str], workload: str) -> dict[str, object]:
     return normalize_record(record)
 
 
-def validate_complete(record: dict[str, str], workload: str) -> dict[str, object]:
+def validate_complete(
+    record: dict[str, str],
+    workload: str,
+    measured_expirations: int = MEASURED_EXPIRATIONS,
+    warmup_expirations: int = WARMUP_EXPIRATIONS,
+) -> dict[str, object]:
     """Validate and normalize the terminal success record."""
     if (
         record.get("schema") != "1"
@@ -270,8 +295,8 @@ def validate_complete(record: dict[str, str], workload: str) -> dict[str, object
     # expiration is already pending, but at least one warm-up expiration must
     # be the represented wake rather than a coalesced miss.
     if (
-        timer_misses > MAX_MEASURED_TIMER_MISSES
-        or warmup_timer_misses > MAX_WARMUP_TIMER_MISSES
+        timer_misses > measured_expirations
+        or warmup_timer_misses > warmup_expirations - 1
     ):
         raise AnalysisError("RTOS_BASELINE_COMPLETE: invalid timer miss count")
     if parse_nonnegative(record, "early_wakes", "RTOS_BASELINE_COMPLETE") != 0:
@@ -334,26 +359,37 @@ def command_output(command: Sequence[str]) -> str:
 
 
 def require_clean_source(zephyr_base: Path) -> None:
-    """Reject Zephyr worktree edits that would invalidate the release pin."""
-    command = [
-        "git",
-        "-C",
-        str(zephyr_base),
-        "status",
-        "--porcelain=v1",
-        "--untracked-files=all",
-    ]
+    """Reject content changes while ignoring stat-only worktree false positives."""
+    common = ["git", "-C", str(zephyr_base)]
+    commands = (
+        [*common, "diff", "--quiet", "--no-ext-diff", "--"],
+        [*common, "diff", "--cached", "--quiet", "--no-ext-diff", "--"],
+    )
     try:
-        result = subprocess.run(
-            command,
-            check=True,
+        differences = [
+            subprocess.run(
+                command,
+                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            for command in commands
+        ]
+        untracked = subprocess.run(
+            [*common, "ls-files", "--others", "--exclude-standard"],
+            check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
         )
-    except (OSError, subprocess.CalledProcessError) as error:
+    except OSError as error:
         raise AnalysisError("could not inspect the Zephyr source worktree") from error
-    if result.stdout:
+    if any(result.returncode not in (0, 1) for result in differences):
+        raise AnalysisError("could not inspect the Zephyr source worktree")
+    if untracked.returncode != 0:
+        raise AnalysisError("could not inspect the Zephyr source worktree")
+    if any(result.returncode == 1 for result in differences) or untracked.stdout:
         raise AnalysisError("Zephyr source worktree is not clean")
 
 

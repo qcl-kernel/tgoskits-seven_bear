@@ -213,6 +213,14 @@ docker run --rm -v "$PWD:/workspace" -w /workspace \
 - Axvisor shell 不解释 `;` 等 shell 操作符。板卡自动化必须把 `shutdown` 作为独立命令发送，不能发送 Linux 风格的 `sync; ...` 命令行。
 - Axvisor 挂载物理根分区后，不得把同一分区暴露给客户机。使用独立客户机映像或设备，避免宿主与客户机并发修改同一文件系统。
 
+## Orange Pi 5 Plus Axvisor 证据注意事项
+
+- 用 `PARTUUID=<uuid>` 等稳定选择器把 Linux 根分区传给板卡运行器。已验证板卡在 Linux 中显示为 `/dev/mmcblk1p2`，但它不是可移植的 Axvisor 或 U-Boot 根选择器，不得作为硬件不变量复制到启动参数。
+- 若需要本地修补 `uboot-shell` 提示符，补丁软件包版本必须精确匹配 `Cargo.lock` 选中的版本。即使来源路径正确，版本不满足锁定依赖时 Cargo 也会忽略 `[patch]` 软件包。板卡运行前后保留并恢复原有脏锁文件。
+- 有限运行的 RT-Thread 或 FreeRTOS 证据客户机必须先输出终止结果，给串口记录留出排空时间，重复紧凑关机标记，然后调用 PSCI `SYSTEM_OFF`。客户机仍轮询时不能抓取快照；等待 Axvisor 报告客户机停止且管理 shell 就绪。
+- 全部证据虚拟机到达终止状态后，才能使用 Axvisor shell 的块快照命令。要求 `AXVISOR_SNAPSHOT_SYNC_OK`，用 fsck 验证复制映像，交叉核对客户机、串口和采集 CSV 哈希，恢复 Linux，最后确认物理 ext4 根分区以读写模式挂载。
+- 从 Windows 检出的仓库经 WSL 执行板卡脚本时必须使用 LF 行尾。用 `git ls-files --eol` 与 `bash -n` 检查可执行脚本；CRLF 的 `set -eu` 行会在任何板卡或客户机断言运行前就在 BusyBox 中失败。
+
 ## QEMU 调试模式
 
 - 首条可靠输出前失败时加入 `-S -s`，在复位处停止并连接 GDB。

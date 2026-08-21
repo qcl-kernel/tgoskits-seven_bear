@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 #include <stdbool.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,8 +15,8 @@
 
 #include "miss_accounting.h"
 
-#define PERIOD_US 1000U
-#define PERIOD_TICKS 1U
+#define PERIOD_US ((uint32_t)CONFIG_RT_BASELINE_PERIOD_US)
+#define PERIOD_TICKS (PERIOD_US / 1000U)
 #define SAMPLE_COUNT 10000U
 #define WARMUP_COUNT 100U
 #define TOTAL_EXPIRATIONS (WARMUP_COUNT + SAMPLE_COUNT)
@@ -25,11 +26,27 @@
 #define BENCHMARK_STACK_SIZE 4096U
 #define STRESS_STACK_SIZE 2048U
 #define STRESS_OPERATIONS_PER_BLOCK 1024U
+#define RECORD_BUFFER_SIZE 768U
+
+#if defined(CONFIG_BOARD_ROC_RK3588_PC)
+#define RECORD_REPLAY_COUNT 3U
+#define RECORD_REPLAY_DELAY_MS 250U
+#define RECORD_TX_CHUNK_BYTES 16U
+#define RECORD_TX_CHUNK_DELAY_MS 5U
+#else
+#define RECORD_REPLAY_COUNT 1U
+#define RECORD_REPLAY_DELAY_MS 0U
+#define RECORD_TX_CHUNK_BYTES 0U
+#define RECORD_TX_CHUNK_DELAY_MS 0U
+#endif
 
 BUILD_ASSERT(CONFIG_SYS_CLOCK_TICKS_PER_SEC == 1000,
-	     "the configured tick must equal the benchmark period");
-BUILD_ASSERT(IS_ENABLED(CONFIG_BOARD_QEMU_CORTEX_A53),
-	     "the baseline requires qemu_cortex_a53");
+	     "the benchmark requires a 1 ms kernel tick");
+BUILD_ASSERT(PERIOD_US % 1000U == 0U,
+	     "the period must be an integral number of 1 ms ticks");
+BUILD_ASSERT(IS_ENABLED(CONFIG_BOARD_QEMU_CORTEX_A53) ||
+		     IS_ENABLED(CONFIG_BOARD_ROC_RK3588_PC),
+	     "the baseline requires qemu_cortex_a53 or an RK3588 board");
 BUILD_ASSERT(IS_ENABLED(CONFIG_ARM_ARCH_TIMER),
 	     "the baseline requires the AArch64 architected timer");
 BUILD_ASSERT(CONFIG_MP_MAX_NUM_CPUS == 1, "the native baseline is single-core");
@@ -39,6 +56,18 @@ BUILD_ASSERT(!IS_ENABLED(CONFIG_QEMU_ICOUNT),
 	     "instruction-count time is not comparable with the AxVisor run");
 BUILD_ASSERT(BENCHMARK_PRIORITY < STRESS_PRIORITY,
 	     "the benchmark must preempt the stress workload");
+
+#if defined(CONFIG_BOARD_QEMU_CORTEX_A53)
+#define BOARD_NAME "qemu_cortex_a53"
+#define CPU_MODEL_NAME "cortex-a53"
+#define PLATFORM_NAME "qemu-aarch64"
+#define QEMU_ICOUNT_NAME "false"
+#elif defined(CONFIG_BOARD_ROC_RK3588_PC)
+#define BOARD_NAME "roc_rk3588_pc"
+#define CPU_MODEL_NAME "cortex-a55"
+#define PLATFORM_NAME "orange-pi-5-plus-rk3588"
+#define QEMU_ICOUNT_NAME "not-applicable"
+#endif
 
 #if defined(CONFIG_RT_BASELINE_STRESS)
 #define WORKLOAD_NAME "cpu-stress"
@@ -79,6 +108,7 @@ static struct k_timer wake_timer;
 static uint64_t wake_lateness_ns[SAMPLE_COUNT];
 static uint64_t dispatch_latency_ns[SAMPLE_COUNT];
 static uint64_t sort_scratch[SAMPLE_COUNT];
+static char record_buffer[RECORD_BUFFER_SIZE];
 static uint64_t timer_expiry_cycles[TOTAL_EXPIRATIONS];
 static uint64_t first_deadline_tick;
 static uint64_t tick_epoch_cycle;
@@ -111,6 +141,8 @@ static uint64_t nearest_rank(uint32_t numerator, uint32_t denominator);
 static int compare_u64(const void *left, const void *right);
 static uint64_t delta_u64(uint64_t end, uint64_t start);
 static uint64_t ratio_permille(uint64_t portion, uint64_t whole);
+static void emit_record(const char *format, ...);
+static void delay_between_replays(uint32_t replay);
 static void emit_load_result(void);
 
 int main(void)
@@ -124,13 +156,20 @@ int main(void)
 		return 1;
 	}
 	cycles_per_tick = clock_hz / CONFIG_SYS_CLOCK_TICKS_PER_SEC;
-	printk("RTOS_BASELINE_CONFIG schema=1 os=zephyr zephyr_version=4.3.0 "
-	       "board=qemu_cortex_a53 cpu_model=cortex-a53 cpu_count=1 qemu_icount=false "
-	       "workload=%s period_us=%u samples=%u warmup=%u benchmark_priority=%d "
-	       "stress_priority=%d clock_hz=%u ticks_per_sec=%u\n",
-	       WORKLOAD_NAME, PERIOD_US, SAMPLE_COUNT, WARMUP_COUNT,
-	       BENCHMARK_PRIORITY, STRESS_PRIORITY, clock_hz,
-	       CONFIG_SYS_CLOCK_TICKS_PER_SEC);
+	for (uint32_t replay = 0U; replay < RECORD_REPLAY_COUNT; ++replay) {
+		emit_record(
+			"RTOS_BASELINE_CONFIG schema=1 os=zephyr zephyr_version=4.3.0 "
+			"board=%s cpu_model=%s cpu_count=1 platform=%s qemu_icount=%s "
+			"workload=%s period_us=%u samples=%u warmup=%u benchmark_priority=%d "
+			"stress_priority=%d clock_hz=%u ticks_per_sec=%u record_replays=%u "
+			"record_tx_chunk_bytes=%u record_tx_chunk_delay_ms=%u replay=%u\n",
+			BOARD_NAME, CPU_MODEL_NAME, PLATFORM_NAME, QEMU_ICOUNT_NAME,
+			WORKLOAD_NAME, PERIOD_US, SAMPLE_COUNT, WARMUP_COUNT,
+			BENCHMARK_PRIORITY, STRESS_PRIORITY, clock_hz,
+			CONFIG_SYS_CLOCK_TICKS_PER_SEC, RECORD_REPLAY_COUNT,
+			RECORD_TX_CHUNK_BYTES, RECORD_TX_CHUNK_DELAY_MS, replay + 1U);
+		delay_between_replays(replay);
+	}
 
 #if defined(CONFIG_RT_BASELINE_STRESS)
 	k_tid_t stress_tid = k_thread_create(
@@ -144,13 +183,25 @@ int main(void)
 		printk("RTOS_BASELINE_FATAL schema=1 stage=workload reason=stress-not-running\n");
 		return 1;
 	}
-	printk("RTOS_BASELINE_WORKLOAD_READY schema=1 kind=cpu-stress verified=true "
-	       "lower_priority=true benchmark_priority=%d stress_priority=%d blocks=%ld\n",
-	       BENCHMARK_PRIORITY, STRESS_PRIORITY, (long)atomic_get(&stress_blocks));
+	const long ready_blocks = (long)atomic_get(&stress_blocks);
+
+	for (uint32_t replay = 0U; replay < RECORD_REPLAY_COUNT; ++replay) {
+		emit_record(
+			"RTOS_BASELINE_WORKLOAD_READY schema=1 kind=cpu-stress verified=true "
+			"lower_priority=true benchmark_priority=%d stress_priority=%d "
+			"blocks=%ld replay=%u\n",
+			BENCHMARK_PRIORITY, STRESS_PRIORITY, ready_blocks, replay + 1U);
+		delay_between_replays(replay);
+	}
 #else
-	printk("RTOS_BASELINE_WORKLOAD_READY schema=1 kind=idle verified=true "
-	       "lower_priority=false benchmark_priority=%d stress_priority=%d blocks=0\n",
-	       BENCHMARK_PRIORITY, STRESS_PRIORITY);
+	for (uint32_t replay = 0U; replay < RECORD_REPLAY_COUNT; ++replay) {
+		emit_record(
+			"RTOS_BASELINE_WORKLOAD_READY schema=1 kind=idle verified=true "
+			"lower_priority=false benchmark_priority=%d stress_priority=%d "
+			"blocks=0 replay=%u\n",
+			BENCHMARK_PRIORITY, STRESS_PRIORITY, replay + 1U);
+		delay_between_replays(replay);
+	}
 #endif
 
 	if (!capture_load_snapshot(&load_start, NULL)) {
@@ -168,10 +219,17 @@ int main(void)
 		return 1;
 	}
 	emit_load_result();
-	printk("RTOS_BASELINE_COMPLETE schema=1 workload=%s status=pass "
-	       "timer_misses=%u warmup_timer_misses=%u early_wakes=0\n",
-	       WORKLOAD_NAME, measured_missed_expirations,
-	       warmup_missed_expirations);
+	for (uint32_t replay = 0U; replay < RECORD_REPLAY_COUNT; ++replay) {
+		emit_record(
+			"RTOS_BASELINE_COMPLETE schema=1 workload=%s status=pass "
+			"timer_misses=%u warmup_timer_misses=%u early_wakes=0 replay=%u\n",
+			WORKLOAD_NAME, measured_missed_expirations,
+			warmup_missed_expirations, replay + 1U);
+		delay_between_replays(replay);
+	}
+#if defined(CONFIG_BOARD_ROC_RK3588_PC)
+	k_sleep(K_SECONDS(2));
+#endif
 	sys_poweroff();
 	return 0;
 }
@@ -345,20 +403,24 @@ static bool emit_latency_result(const char *metric, const uint64_t *samples)
 	if (!summarize_latencies(samples, &summary)) {
 		return false;
 	}
-	printk("RTOS_BASELINE_RESULT schema=1 workload=%s metric=%s unit=ns count=%u "
-	       "min_ns=%llu mean_ns=%llu p50_ns=%llu p90_ns=%llu p99_ns=%llu "
-	       "p999_ns=%llu max_ns=%llu actual_duration_us=%llu "
-	       "expected_duration_us=%llu\n",
-	       WORKLOAD_NAME, metric, SAMPLE_COUNT,
-	       (unsigned long long)summary.minimum_ns,
-	       (unsigned long long)summary.mean_ns,
-	       (unsigned long long)summary.p50_ns,
-	       (unsigned long long)summary.p90_ns,
-	       (unsigned long long)summary.p99_ns,
-	       (unsigned long long)summary.p999_ns,
-	       (unsigned long long)summary.maximum_ns,
-	       (unsigned long long)measurement_duration_us,
-	       (unsigned long long)SAMPLE_COUNT * PERIOD_US);
+	for (uint32_t replay = 0U; replay < RECORD_REPLAY_COUNT; ++replay) {
+		emit_record(
+			"RTOS_BASELINE_RESULT schema=1 workload=%s metric=%s unit=ns count=%u "
+			"min_ns=%llu mean_ns=%llu p50_ns=%llu p90_ns=%llu p99_ns=%llu "
+			"p999_ns=%llu max_ns=%llu actual_duration_us=%llu "
+			"expected_duration_us=%llu replay=%u\n",
+			WORKLOAD_NAME, metric, SAMPLE_COUNT,
+			(unsigned long long)summary.minimum_ns,
+			(unsigned long long)summary.mean_ns,
+			(unsigned long long)summary.p50_ns,
+			(unsigned long long)summary.p90_ns,
+			(unsigned long long)summary.p99_ns,
+			(unsigned long long)summary.p999_ns,
+			(unsigned long long)summary.maximum_ns,
+			(unsigned long long)measurement_duration_us,
+			(unsigned long long)SAMPLE_COUNT * PERIOD_US, replay + 1U);
+		delay_between_replays(replay);
+	}
 	return true;
 }
 
@@ -417,6 +479,38 @@ static uint64_t ratio_permille(uint64_t portion, uint64_t whole)
 	return portion * 1000U / whole;
 }
 
+static void emit_record(const char *format, ...)
+{
+	va_list arguments;
+	int length;
+
+	va_start(arguments, format);
+	length = vsnprintk(record_buffer, sizeof(record_buffer), format, arguments);
+	va_end(arguments);
+	if (length < 0 || (size_t)length >= sizeof(record_buffer)) {
+		printk("RTOS_BASELINE_FATAL schema=1 stage=console reason=record-overflow\n");
+		return;
+	}
+
+#if defined(CONFIG_BOARD_ROC_RK3588_PC)
+	for (int index = 0; index < length; ++index) {
+		printk("%c", record_buffer[index]);
+		if (((uint32_t)index + 1U) % RECORD_TX_CHUNK_BYTES == 0U) {
+			k_sleep(K_MSEC(RECORD_TX_CHUNK_DELAY_MS));
+		}
+	}
+#else
+	printk("%s", record_buffer);
+#endif
+}
+
+static void delay_between_replays(uint32_t replay)
+{
+	if (RECORD_REPLAY_DELAY_MS > 0U && replay + 1U < RECORD_REPLAY_COUNT) {
+		k_sleep(K_MSEC(RECORD_REPLAY_DELAY_MS));
+	}
+}
+
 static void emit_load_result(void)
 {
 	const uint64_t cpu_cycles = delta_u64(load_end.cpu.execution_cycles,
@@ -445,18 +539,27 @@ static void emit_load_result(void)
 #else
 	verified = verified && stress_cycles == 0U && stress_block_delta == 0U;
 #endif
-	printk("RTOS_BASELINE_LOAD schema=1 workload=%s verified=%s "
-	       "window_duration_us=%llu cpu_non_idle_permille=%llu cpu_idle_permille=%llu "
-	       "benchmark_permille=%llu stress_permille=%llu stress_blocks=%llu "
-	       "stress_blocks_per_second=%llu\n",
-	       WORKLOAD_NAME, verified ? "true" : "false",
-	       (unsigned long long)window_us,
-	       (unsigned long long)ratio_permille(non_idle_cycles, cpu_cycles),
-	       (unsigned long long)ratio_permille(idle_cycles, cpu_cycles),
-	       (unsigned long long)ratio_permille(benchmark_cycles, cpu_cycles),
-	       (unsigned long long)ratio_permille(stress_cycles, cpu_cycles),
-	       (unsigned long long)stress_block_delta,
-	       (unsigned long long)stress_blocks_per_second);
+	for (uint32_t replay = 0U; replay < RECORD_REPLAY_COUNT; ++replay) {
+		emit_record(
+			"RTOS_BASELINE_LOAD schema=1 workload=%s verified=%s "
+			"window_duration_us=%llu cpu_non_idle_permille=%llu "
+			"cpu_idle_permille=%llu benchmark_permille=%llu stress_permille=%llu "
+			"stress_blocks=%llu stress_blocks_per_second=%llu cpu_cycles=%llu "
+			"idle_cycles=%llu benchmark_cycles=%llu stress_cycles=%llu replay=%u\n",
+			WORKLOAD_NAME, verified ? "true" : "false",
+			(unsigned long long)window_us,
+			(unsigned long long)ratio_permille(non_idle_cycles, cpu_cycles),
+			(unsigned long long)ratio_permille(idle_cycles, cpu_cycles),
+			(unsigned long long)ratio_permille(benchmark_cycles, cpu_cycles),
+			(unsigned long long)ratio_permille(stress_cycles, cpu_cycles),
+			(unsigned long long)stress_block_delta,
+			(unsigned long long)stress_blocks_per_second,
+			(unsigned long long)cpu_cycles,
+			(unsigned long long)idle_cycles,
+			(unsigned long long)benchmark_cycles,
+			(unsigned long long)stress_cycles, replay + 1U);
+		delay_between_replays(replay);
+	}
 }
 
 #if defined(CONFIG_RT_BASELINE_STRESS)
