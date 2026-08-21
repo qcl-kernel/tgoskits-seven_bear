@@ -63,6 +63,40 @@ class FakeDevice:
 
 
 class BoardPowerTests(unittest.TestCase):
+    def test_miot_schema_comments_are_removed_recursively(self) -> None:
+        schema = {
+            "type": "urn:miot-spec-v2:device:outlet:0000A002:cuco-v3:2",
+            "comment": "device note",
+            "services": [
+                {
+                    "iid": 2,
+                    "comment": "service note",
+                    "properties": [
+                        {
+                            "iid": 1,
+                            "comment": "property note",
+                            "value-list": [
+                                {"value": 0, "description": "off", "comment": "value note"},
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }
+
+        sanitized = board_power.remove_miot_schema_comments(schema)
+
+        self.assertNotIn("comment", sanitized)
+        service = sanitized["services"][0]
+        self.assertNotIn("comment", service)
+        self.assertNotIn("comment", service["properties"][0])
+        self.assertNotIn(
+            "comment",
+            service["properties"][0]["value-list"][0],
+        )
+        self.assertEqual(service["iid"], 2)
+        self.assertIn("comment", schema)
+
     def test_load_config_prefers_environment_token(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "power.toml"
