@@ -1,0 +1,98 @@
+{
+  "board": {
+    "board_id": "bf61f4d4a1d994ad",
+    "cpu_temp_milli_c": 43461,
+    "hostname": "orangepi5plus"
+  },
+  "controller": {
+    "acknowledged": 20,
+    "deadline_misses": 0,
+    "errors": 0,
+    "full_loop_max_us": 50663,
+    "full_loop_p50_us": 1929,
+    "full_loop_p95_us": 16647,
+    "full_loop_p99_us": 16647,
+    "iae_milli_c_s": 61355.8,
+    "max_overshoot_milli_c": 0,
+    "policy": "neural",
+    "pre_send_max_us": 13075,
+    "pre_send_p50_us": 20,
+    "pre_send_p95_us": 21,
+    "pre_send_p99_us": 21,
+    "recoveries": 0,
+    "retransmissions": 0,
+    "rmse_milli_c": 31799.08887059502,
+    "sent": 20,
+    "success_percent": 100.0,
+    "throughput_msg_s": 9.969132417887142,
+    "timeouts": 0,
+    "transport_max_us": 37588,
+    "transport_p50_us": 1910,
+    "transport_p95_us": 16627,
+    "transport_p99_us": 16627
+  },
+  "guest": "starryos",
+  "lifecycle": {
+    "block_snapshot": {
+      "backing_index": 0,
+      "filesystem_check": "clean",
+      "image_bytes": 67108864,
+      "image_path": "/home/orangepi/ivc-fts",
+      "image_sha256": "29f471a0fe5ddf3762b16b6269f1ed92f57131dd47970d8ebe1857be9276d9b7",
+      "vm_id": 1
+    },
+    "board_linux_restored": true,
+    "host_filesystem_synced": true,
+    "rtos_powered_off": true,
+    "rtos_terminal_result": true,
+    "starry_done": true,
+    "volatile_block_snapshotted": true
+  },
+  "network": {
+    "iface": "eth0",
+    "ip": "10.0.0.1/24",
+    "mac": "unknown",
+    "peer": "10.0.0.2",
+    "segment": 1,
+    "udp_port": 5500
+  },
+  "platform": "orangepi-5-plus",
+  "profile": "normal",
+  "raw_samples": {
+    "artifact_sha256": "dbe6807c34f840571e2766034687e8162012636669f8e82479d97a070b7a9538",
+    "deadline_misses": 0,
+    "dropped_samples": 0,
+    "guest_manifest_sha256": "f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2",
+    "path": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/competition/ivc/orangepi-rtos-20260818/final-psci-v2/freertos-smoke/run-001/raw.csv.gz",
+    "sample_count": 20,
+    "sha256": "f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2",
+    "uart_sha256": "f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2",
+    "uart_sha256_complete": true
+  },
+  "rtos": {
+    "accepted": 20,
+    "acks_dropped": 0,
+    "acks_sent": 20,
+    "applied": 20,
+    "duplicates": 0,
+    "errors_sent": 0,
+    "name": "freertos",
+    "profile": "normal",
+    "protocol_errors": 0,
+    "status_sent": 20
+  },
+  "schema_version": 2,
+  "source_log": {
+    "content_sha256": "f57ae30368d3df2ed1aa63cae63364df29fc0874b38201e0d640634fa2984356",
+    "path": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/competition/ivc/orangepi-rtos-20260818/final-psci-v2/freertos-smoke/run-001/console.log.gz",
+    "sha256": "d1553b50cb7462f85c956497abb0ff216d2828aa65bb95aa4541e3858179094d"
+  },
+  "starry": {
+    "backend": "native",
+    "count": 20,
+    "fault_profile": "none",
+    "mode": "neural",
+    "period_ms": 100,
+    "vcpus": 2
+  }
+}

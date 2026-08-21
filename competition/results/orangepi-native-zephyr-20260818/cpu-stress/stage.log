@@ -1,0 +1,5 @@
+f854f05df0354c22934aa8996a274cb7a29b2df337b128fd077db91dfbdab38f  /home/orangepi/tgos-native-zephyr/cpu-stress/zephyr.bin
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+NATIVE_ZEPHYR_STAGE_PASS
+NATIVE_ZEPHYR_REBOOT_ARMED
+Connection to 192.168.31.33 closed by remote host.

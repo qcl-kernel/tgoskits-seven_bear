@@ -1,0 +1,18 @@
+{
+  "captured_at_utc": "2026-08-18T06:53:11.330662+00:00",
+  "git_index": {
+    "bytes": 6333614,
+    "path": ".git/index",
+    "sha256": "db9754e770e65dfc8f3dbb171a4d372a02726829a24e7888f1449af9c6d55eb7"
+  },
+  "schema_version": 1,
+  "source": {
+    "commit": "3568e1b6d5cdd51a6b964a2a1d6d29200fea2056",
+    "core_autocrlf": "true",
+    "tag_object": "981205b3e7cdf9fdf2e9e71b8b6b64fcc71c12a0",
+    "version": "v4.3.0",
+    "worktree": "clean"
+  },
+  "validity": "post-run bounded attestation; analyzers recheck identity and index",
+  "zephyr_base": "/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/zephyr-v4.3.0"
+}

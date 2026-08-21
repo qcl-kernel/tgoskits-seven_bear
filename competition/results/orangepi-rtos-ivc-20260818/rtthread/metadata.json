@@ -1,0 +1,102 @@
+{
+  "board": {
+    "cpu_temp_milli_c": 44384,
+    "hostname": "orangepi5plus",
+    "id": "bf61f4d4a1d994ad",
+    "type": "OrangePi-5-Plus"
+  },
+  "inputs": {
+    "board_config": {
+      "path": "competition\\ivc\\config\\board-orangepi-5-plus-rtthread-smoke.toml",
+      "sha256": "31b87f79dfe8d9218d4ad6d443b3fc659f2f2821fbfdf03bab0dfb94c269612b",
+      "size_bytes": 623
+    },
+    "build_config": {
+      "path": "competition\\ivc\\config\\axvisor-orangepi-5-plus-rtthread-smoke.toml",
+      "sha256": "331109605935b0743756c8a354adfbdcd422036934a67233fc06c5dd8c69fdbb",
+      "size_bytes": 291
+    },
+    "rootfs": {
+      "path": "tmp\\competition\\ivc\\starry\\starry-ivc-rootfs-smoke.img",
+      "sha256": "2f6d2202d87c284395ffdb7770e7fa1440059fcb90043852ae71221c9822dc33",
+      "size_bytes": 67108864
+    },
+    "rtos_guest": {
+      "artifact": {
+        "path": "tmp\\competition\\ivc\\guests\\rtthread\\board-smoke\\rtthread.bin",
+        "sha256": "15ecfbb6b8a17696e690e99f1a78c9ed40ef437a43d0ed70467db92d3520fe75",
+        "size_bytes": 563472
+      },
+      "kind": "rt-thread"
+    },
+    "starry_dtb": {
+      "path": "tmp\\competition\\ivc\\starry\\starry-orangepi-5-plus.dtb",
+      "sha256": "bd35510466ffdd314733ef300318373b3524751447a7f7fd7ae9b4283e78e981",
+      "size_bytes": 1534
+    },
+    "starry_kernel": {
+      "path": "tmp\\competition\\ivc\\starry\\starryos.bin",
+      "sha256": "97fce5daaa9103768736b9a54a690e5f4612a221ac67672c56cebaadaf4c4b05",
+      "size_bytes": 13836288
+    },
+    "zephyr_guest": null
+  },
+  "model": {
+    "artifact": {
+      "path": "tools\\ivcproto\\src\\neural.rs",
+      "sha256": "c075fb7462a0bd7e52afe1a88b9ffc7d31f7f6502ec0c25288919189348e4938",
+      "size_bytes": 14635
+    },
+    "backend": "native",
+    "id": "thermal-4x6x1-v1",
+    "runtime_version": "native"
+  },
+  "outputs": {
+    "console_log": {
+      "path": "tmp\\competition\\ivc\\orangepi-rtos-20260818\\final-psci-v2\\rtthread-smoke\\run-001\\console.log.gz",
+      "sha256": "31a6dc3e63738e63f66d3a4a7613235e68bf3f8579442ad5d710f9654cc40173",
+      "size_bytes": 17676
+    },
+    "ort_csv": null,
+    "raw_csv": {
+      "path": "tmp\\competition\\ivc\\orangepi-rtos-20260818\\final-psci-v2\\rtthread-smoke\\run-001\\raw.csv.gz",
+      "sha256": "8b02490ac5531721321be2439a593235dde541a363f761c17853697504906200",
+      "size_bytes": 745
+    },
+    "rknn_csv": null,
+    "summary": {
+      "path": "tmp\\competition\\ivc\\orangepi-rtos-20260818\\final-psci-v2\\rtthread-smoke\\run-001\\summary.json",
+      "sha256": "db1f83b5de2be42be56cd8ee5b6638c044c335e4063289544609db690a2ac67a",
+      "size_bytes": 2885
+    }
+  },
+  "result": {
+    "controller_policy": "neural",
+    "deadline_misses": 0,
+    "dropped_samples": 0,
+    "ort_sample_count": null,
+    "rknn_sample_count": null,
+    "sample_count": 20,
+    "successful_marker": true,
+    "validated": true
+  },
+  "run": {
+    "board_type": "OrangePi-5-Plus",
+    "execution_order": 1,
+    "exit_status": 0,
+    "finished_at": "2026-08-18T08:18:33Z",
+    "profile": "rtthread-smoke",
+    "repeat_count": 1,
+    "run_id": "run-001",
+    "run_number": 1,
+    "started_at": "2026-08-18T08:13:46Z"
+  },
+  "schema_version": 1,
+  "source": {
+    "branch": "feat/rt-axvisor-partition-virtio-net",
+    "commit": "bd126053b079ccf5d04c98f1bd70d5c5bedbe243",
+    "dirty": true,
+    "tracked_change_count": 57,
+    "untracked_file_count": 846
+  }
+}

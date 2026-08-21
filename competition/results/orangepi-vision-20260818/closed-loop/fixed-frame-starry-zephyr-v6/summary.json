@@ -1,0 +1,48 @@
+{
+  "acceptance": {
+    "camera_throughput_claimed": false,
+    "fixed_frames": true,
+    "passed": true,
+    "real_rknn_backend": true,
+    "requested_equals_actual": true
+  },
+  "actions": [
+    "right",
+    "left",
+    "hold"
+  ],
+  "artifact_log_sha256": {
+    "controller": "51bd696b587eec03e35cd10f5208c05230c07d9b0209c16269394b24ce473524",
+    "runner": "931b8328b0670af3154b8e633d8a7bb56a212249c17ae1613e0ab57bf5443886"
+  },
+  "frames": 3,
+  "latency_us": {
+    "end_to_end": {
+      "max": 2980194,
+      "median": 1968705,
+      "min": 1690053
+    },
+    "inference_to_send": {
+      "max": 2741995,
+      "median": 1868789,
+      "min": 1363193
+    },
+    "transport": {
+      "max": 152695,
+      "median": 11746,
+      "min": 11619
+    }
+  },
+  "retries": 0,
+  "rtos": {
+    "accepted": 3,
+    "acks_sent": 3,
+    "actuator_status_sent": 3,
+    "applied": 3,
+    "duplicates": 0,
+    "errors_sent": 0,
+    "protocol_errors": 0
+  },
+  "schema_version": 1,
+  "workload": "fixed-frame-rknn-visual-sorting"
+}

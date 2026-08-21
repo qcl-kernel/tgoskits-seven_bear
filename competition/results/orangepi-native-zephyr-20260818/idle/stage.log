@@ -1,0 +1,5 @@
+20eedf0b2937b4201851fc62d3179e607fab5801235bf11abcd5c2d7fecb35e2  /home/orangepi/tgos-native-zephyr/idle/zephyr.bin
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+NATIVE_ZEPHYR_STAGE_PASS
+NATIVE_ZEPHYR_REBOOT_ARMED
+Connection to 192.168.31.33 closed by remote host.

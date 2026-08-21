@@ -1,0 +1,132 @@
+g [0;1;39mUser Login Management
+=> if ext4load mmc 1:2 0x50000000 /home/orangepi/tgos-native-zephyr/soak/zephyr.bin; then echo NATIVE_ZEPHYR_UBOOT_LOADED; echo NATIVE_ZEPHYR_GO; go 0x50000000; else echo NATIVE_ZEPHYR_UBOOT_LOAD_FAILED; fi
+65704 bytes read in 12 ms (5.2 MiB/s)
+NATIVE_ZEPHYR_UBOOT_LOADED
+NATIVE_ZEPHYR_GO
+## Starting application at 0x50000000 ...
+*** Booting Zephyr OS build v4.3.0 ***
+RTOS_BASELINE_CONFIG schema=1 os=zephyr zephyr_version=4.3.0 board=roc_rk3588_pc cpu_model=cortex-a55 cpu_count=1 platform=orange-pi-5-plus-rk3588 qemu_icount=not-applicable workload=cpu-stress period_us=180000 samples=10000 warmup=100 benchmark_priority=-16 stress_priority=5 clock_hz=24000000 ticks_per_sec=1000 record_replays=3 record_tx_chunk_bytes=16 record_tx_chunk_delay_ms=5 replay=1
+RTOS_BASELINE_CONFIG schema=1 os=zephyr zephyr_version=4.3.0 board=roc_rk3588_pc cpu_model=cortex-a55 cpu_count=1 platform=orange-pi-5-plus-rk3588 qemu_icount=not-applicable workload=cpu-stress period_us=180000 samples=10000 warmup=100 benchmark_priority=-16 stress_priority=5 clock_hz=24000000 ticks_per_sec=1000 record_replays=3 record_tx_chunk_bytes=16 record_tx_chunk_delay_ms=5 replay=2
+RTOS_BASELINE_CONFIG schema=1 os=zephyr zephyr_version=4.3.0 board=roc_rk3588_pc cpu_model=cortex-a55 cpu_count=1 platform=orange-pi-5-plus-rk3588 qemu_icount=not-applicable workload=cpu-stress period_us=180000 samples=10000 warmup=100 benchmark_priority=-16 stress_priority=5 clock_hz=24000000 ticks_per_sec=1000 record_replays=3 record_tx_chunk_bytes=16 record_tx_chunk_delay_ms=5 replay=3
+RTOS_BASELINE_WORKLOAD_READY schema=1 kind=cpu-stress verified=true lower_priority=true benchmark_priority=-16 stress_priority=5 blocks=1446 replay=1
+RTOS_BASELINE_WORKLOAD_READY schema=1 kind=cpu-stress verified=true lower_priority=true benchmark_priority=-16 stress_priority=5 blocks=1446 replay=2
+RTOS_BASELINE_WORKLOAD_READY schema=1 kind=cpu-stress verified=true lower_priority=true benchmark_priority=-16 stress_priority=5 blocks=1446 replay=3
+RTOS_BASELINE_RESULT schema=1 workload=cpu-stress metric=periodic_wake_lateness unit=ns count=10000 min_ns=2916 mean_ns=3049 p50_ns=3041 p90_ns=3166 p99_ns=3291 p999_ns=3375 max_ns=4291 actual_duration_us=1817900004 expected_duration_us=1800000000 replay=1
+RTOS_BASELINE_RESULT schema=1 workload=cpu-stress metric=periodic_wake_lateness unit=ns count=10000 min_ns=2916 mean_ns=3049 p50_ns=3041 p90_ns=3166 p99_ns=3291 p999_ns=3375 max_ns=4291 actual_duration_us=1817900004 expected_duration_us=1800000000 replay=2
+RTOS_BASELINE_RESULT schema=1 workload=cpu-stress metric=periodic_wake_lateness unit=ns count=10000 min_ns=2916 mean_ns=3049 p50_ns=3041 p90_ns=3166 p99_ns=3291 p999_ns=3375 max_ns=4291 actual_duration_us=1817900004 expected_duration_us=1800000000 replay=3
+RTOS_BASELINE_RESULT schema=1 workload=cpu-stress metric=timer_to_task_dispatch unit=ns count=10000 min_ns=1750 mean_ns=1758 p50_ns=1750 p90_ns=1750 p99_ns=2041 p999_ns=2041 max_ns=2916 actual_duration_us=1817900004 expected_duration_us=1800000000 replay=1
+RTOS_BASELINE_RESULT schema=1 workload=cpu-stress metric=timer_to_task_dispatch unit=ns count=10000 min_ns=1750 mean_ns=1758 p50_ns=1750 p90_ns=1750 p99_ns=2041 p999_ns=2041 max_ns=2916 actual_duration_us=1817900004 expected_duration_us=1800000000 replay=2
+RTOS_BASELINE_RESULT schema=1 workload=cpu-stress metric=timer_to_task_dispatch unit=ns count=10000 min_ns=1750 mean_ns=1758 p50_ns=1750 p90_ns=1750 p99_ns=2041 p999_ns=2041 max_ns=2916 actual_duration_us=1817900004 expected_duration_us=1800000000 replay=3
+RTOS_BASELINE_LOAD schema=1 workload=cpu-stress verified=true window_duration_us=1817821961 cpu_non_idle_permille=1000 cpu_idle_permille=0 benchmark_permille=0 stress_permille=999 stress_blocks=240465593 stress_blocks_per_second=132282 cpu_cycles=43623697467 idle_cycles=0 benchmark_cycles=283080 stress_cycles=43623414240 replay=1
+RTOS_BASELINE_LOAD schema=1 workload=cpu-stress verified=true window_duration_us=1817821961 cpu_non_idle_permille=1000 cpu_idle_permille=0 benchmark_permille=0 stress_permille=999 stress_blocks=240465593 stress_blocks_per_second=132282 cpu_cycles=43623697467 idle_cycles=0 benchmark_cycles=283080 stress_cycles=43623414240 replay=2
+RTOS_BASELINE_LOAD schema=1 workload=cpu-stress verified=true window_duration_us=1817821961 cpu_non_idle_permille=1000 cpu_idle_permille=0 benchmark_permille=0 stress_permille=999 stress_blocks=240465593 stress_blocks_per_second=132282 cpu_cycles=43623697467 idle_cycles=0 benchmark_cycles=283080 stress_cycles=43623414240 replay=3
+RTOS_BASELINE_COMPLETE schema=1 workload=cpu-stress status=pass timer_misses=0 warmup_timer_misses=0 early_wakes=0 replay=1
+RTOS_BASELINE_COMPLETE schema=1 workload=cpu-stress status=pass timer_misses=0 warmup_timer_misses=0 early_wakes=0 replay=2
+RTOS_BASELINE_COMPLETE schema=1 workload=cpu-stress status=pass timer_misses=0 warmup_timer_misses=0 early_wakes=0 replay=3
+DDR ff1a08bde6 typ 25/03/13-15:39:39,fwver: v1.19
+ch0 ttot6
+ch1 ttot6
+ch2 ttot6
+ch3 ttot6
+ch0 ttot7
+LPDDR5, 2400MHz
+channel[0] BW=16 Col=10 Bk=16 CS0 Row=16 CS1 Row=16 CS=2 Die BW=16 Size=4096MB
+ch1 ttot7
+channel[1] BW=16 Col=10 Bk=16 CS0 Row=16 CS1 Row=16 CS=2 Die BW=16 Size=4096MB
+ch2 ttot7
+channel[2] BW=16 Col=10 Bk=16 CS0 Row=16 CS1 Row=16 CS=2 Die BW=16 Size=4096MB
+ch3 ttot7
+channel[3] BW=16 Col=10 Bk=16 CS0 Row=16 CS1 Row=16 CS=2 Die BW=16 Size=4096MB
+Manufacturer ID:0xff
+DQS rds:h1,h1, 
+CH0 RX Vref:26.7%, TX Vref:20.0%,20.0%
+DQ rds:h1 h1 h7 h1 h1 h5 h3 h1 , l0 l0 h4 h2 h5 l0 l0 l0 
+
+DQS rds:l1,h1, 
+CH1 RX Vref:25.4%, TX Vref:21.0%,20.0%
+DQ rds:h1 h1 h7 l0 h1 h4 h2 l0 , h1 h2 l0 h1 l1 h4 h7 l1 
+
+DQS rds:h1,l0, 
+CH2 RX Vref:27.5%, TX Vref:20.0%,20.0%
+DQ rds:h1 h2 h1 l0 h2 h3 h1 h3 , h6 h1 h6 l0 l0 h1 h1 h1 
+
+DQS rds:l0,l0, 
+CH3 RX Vref:27.5%, TX Vref:20.0%,19.0%
+DQ rds:h3 h4 h1 h6 l0 h2 h1 h7 , h2 h1 h2 h1 l0 l0 h6 h3 
+
+stride=0x2, ddr_config=0x6
+hash ch_mask0-1 0x20 0x40, bank_mask0-3 0x0 0x2400 0x44800 0x89000, rank_mask0 0x2000
+change to F1: 534MHz
+ch0 ttot6
+ch1 ttot6
+ch2 ttot6
+ch3 ttot6
+change to F2: 1320MHz
+ch0 ttot8
+ch1 ttot8
+ch2 ttot8
+ch3 ttot8
+change to F3: 1968MHz
+ch0 ttot6
+ch1 ttot6
+ch2 ttot6
+ch3 ttot6
+change to F0: 2400MHz
+ch0 ttot7
+ch1 ttot7
+ch2 ttot7
+ch3 ttot7
+out
+
+U-Boot SPL 2025.10-00002-g6deb7e9d65a3-dirty (Oct 19 2025 - 19:27:24 +0800)
+Trying to boot from SPI
+## Checking hash(es) for config config-1 ... OK
+## Checking hash(es) for Image atf-1 ... sha256+ OK
+## Checking hash(es) for Image u-boot ... sha256+ OK
+## Checking hash(es) for Image fdt-1 ... sha256+ OK
+## Checking hash(es) for Image atf-2 ... sha256+ OK
+## Checking hash(es) for Image atf-3 ... sha256+ OK
+INFO:    Preloader serial: 2
+NOTICE:  BL31: v2.3():v2.3-924-gbc6030fac:derrick.huang, fwver: v1.51
+NOTICE:  BL31: Built : 17:48:01, Apr 25 2025
+INFO:    spec: 0x1
+INFO:    code: 0x88
+INFO:    customer demand: 0x0
+INFO:    ext 32k is valid
+INFO:    ddr: stride-en 4CH
+INFO:    GICv3 without legacy support detected.
+INFO:    ARM GICv3 driver initialized in EL3
+INFO:    valid_cpu_msk=0xff bcore0_rst = 0x0, bcore1_rst = 0x0
+INFO:    l3 cache partition cfg-0
+INFO:    system boots from cpu-hwid-0
+INFO:    bypass memory repair
+INFO:    idle_st=0x21fff, pd_st=0x11fff9, repair_st=0xfff70001
+INFO:    dfs DDR fsp_params[0].freq_mhz= 2400MHz
+INFO:    dfs DDR fsp_params[1].freq_mhz= 534MHz
+INFO:    dfs DDR fsp_params[2].freq_mhz= 1320MHz
+INFO:    dfs DDR fsp_params[3].freq_mhz= 1968MHz
+INFO:    BL31: Initialising Exception Handling Framework
+INFO:    BL31: Initializing runtime services
+WARNING: No OPTEE provided by BL2 boot loader, Booting device without OPTEE initialization. SMC`s destined for OPTEE will return SMC_UNK
+ERROR:   Error initializing runtime service opteed_fast
+INFO:    BL31: Preparing for EL3 exit to normal world
+INFO:    Entry point address = 0xa00000
+INFO:    SPSR = 0x3c9
+
+
+U-Boot 2025.10-00002-g6deb7e9d65a3-dirty (Oct 19 2025 - 19:27:24 +0800)
+
+Model: Xunlong Orange Pi 5 Plus
+SoC:   RK3588
+DRAM:  16 GiB
+Core:  362 devices, 32 uclasses, devicetree: separate
+WDT:   Not starting watchdog@feaf0000
+MMC:   mmc@fe2c0000: 1, mmc@fe2e00: 0
+Loading Environment from MMC... Reading from MMC(0)... OK
+In:    serial@feb50000
+Out:   serial@feb50000
+Err:   serial@feb50000
+Model: Xunlong Orange Pi 5 Plus
+SoC:   RK3588
+Net:   No ethernet found.
+=> 

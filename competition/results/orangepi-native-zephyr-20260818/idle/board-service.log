@@ -1,0 +1,9 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.23s
+     Running `target/debug/tg-xtask board connect -b OrangePi-5-Plus`
+Allocated board session:
+  board_type: OrangePi-5-Plus
+  board_id: orangepi-5-plus-1
+  session_id: abe4c2b3-9ab0-474f-a1e1-0275b4bf4922
+  lease_expires_at: 2026-08-18 14:36:23.402634276 +08:00
+  boot_mode: uboot
+[?2004l[?2004h[?2004l

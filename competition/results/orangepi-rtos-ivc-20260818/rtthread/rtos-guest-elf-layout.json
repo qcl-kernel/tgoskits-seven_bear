@@ -1,0 +1,30 @@
+{
+  "elf": "rtthread.elf",
+  "entry_point": 1074266112,
+  "load_segments": [
+    {
+      "alignment": 65536,
+      "file_offset": 65536,
+      "file_size": 560788,
+      "flags": 5,
+      "index": 0,
+      "memory_size": 560788,
+      "physical_address": 1074266112,
+      "virtual_address": 1074266112
+    },
+    {
+      "alignment": 65536,
+      "file_offset": 626336,
+      "file_size": 2672,
+      "flags": 6,
+      "index": 1,
+      "memory_size": 403440,
+      "physical_address": 1074826912,
+      "virtual_address": 1074826912
+    }
+  ],
+  "machine": "aarch64",
+  "ram_base": 1073741824,
+  "ram_size": 134217728,
+  "schema_version": 1
+}

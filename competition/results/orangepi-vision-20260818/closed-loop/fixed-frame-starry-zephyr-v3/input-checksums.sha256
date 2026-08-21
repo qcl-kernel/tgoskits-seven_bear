@@ -1,0 +1,7 @@
+a875cc98c5c51bb07ead8acee0b654ab191391e8e9939c19343a44406a479688  competition/ivc/config/axvisor-orangepi-5-plus-vision.toml
+6b2e3fe827dbc3b2dd7619ffca4abd642204213c4d016adc72d3fd63f413cf24  competition/ivc/config/board-orangepi-5-plus-vision.toml
+84265edd0f218fdda25976b69fe4bc81cb443e9f2f6c2d2fc8a9af5cf9c1b6c0  tmp/competition/ivc/starry/starryos-rknpu.bin
+33395c030a7fe9e6328f6d3300151351fc9583e9829afb02aae07a52e8b0917d  tmp/competition/ivc/starry/starry-orangepi-5-plus-rknpu.dtb
+a00fe75dd784bb856be52628a83ed804f7512c89ba1547e8a384417c8861ce88  tmp/competition/ivc/starry/starry-ivc-rootfs-vision.img
+54e9a3169eb360f585d044c709a4d7e310f3d8b7b437dfe28612718fc380bbc1  competition/ivc/zephyr/build-board-vision/zephyr/zephyr.bin
+40d62454f08c9a73ccd2349ee8ccadfa51e9a6f93c48e975b3302e29aff1a4d0  apps/starry/orangepi-5-plus-uvc-rknn/rknn-yolov8-image/install/rk3588_linux_aarch64/rknn_yolov8_image/model/yolov8.rknn

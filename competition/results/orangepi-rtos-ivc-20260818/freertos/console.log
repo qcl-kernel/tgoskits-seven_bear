@@ -1,0 +1,934 @@
+BOARD_HOST_LIBCLANG path=/usr/lib/llvm-14/lib source=system
+orangepi5plus
+BOARD_SERVICE_DTB_READY path=/home/seven_wsl/.local/share/ostool-server/dtbs/orangepi-5-plus-starry.dtb root=PARTUUID=5874edd8-1582-a144-a298-b139acd7b0e6
+     Locking 1 package to latest compatible version
+      Adding uboot-shell v0.2.7 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/toolchains/uboot-shell-0.2.7-split-prompt)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.70s
+     Running `target/debug/tg-xtask axvisor board -c competition/ivc/config/axvisor-orangepi-5-plus-freertos-smoke.toml --board-config competition/ivc/config/board-orangepi-5-plus-freertos-smoke.toml -b OrangePi-5-Plus`
+[2026-08-18T08:26:21Z INFO  axbuild::context] Workspace root: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc
+[2026-08-18T08:26:24Z INFO  axbuild::context] Workspace member dir for axvisor: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/axvisor
+Using build config: competition/ivc/config/axvisor-orangepi-5-plus-freertos-smoke.toml
+[axbuild] board build+run package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json config=competition/ivc/config/axvisor-orangepi-5-plus-freertos-smoke.toml ...
+sh -c /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/axbuild/std/prebuild/prebuild-aarch64-unknown-linux-musl-58aa9d8ec294b69b.sh
+AR_aarch64_unknown_linux_musl=aarch64-linux-musl-ar
+AXVISOR_VM_CONFIGS=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/competition/ivc/config/orangepi-5-plus-starry-smp2-smoke.toml:/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/competition/ivc/config/orangepi-5-plus-freertos-smoke.toml
+AX_ARCH=aarch64
+AX_LOG=info
+AX_TARGET=aarch64-unknown-none-softfloat
+BINDGEN_EXTRA_CLANG_ARGS_aarch64_unknown_linux_musl=--target=aarch64-linux-musl --sysroot=/ -mgeneral-regs-only
+CARGO_UNSTABLE_JSON_TARGET_SPEC=true
+CC_aarch64_unknown_linux_musl=aarch64-linux-musl-cc
+CFLAGS_aarch64_unknown_linux_musl=-mgeneral-regs-only -fno-stack-protector
+CXXFLAGS_aarch64_unknown_linux_musl=-mgeneral-regs-only -fno-stack-protector
+SMP=4
+cargo build --config /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/axbuild/std/config-aarch64-unknown-linux-musl-dynamic.toml -p axvisor --target scripts/targets/std/pie/aarch64-unknown-linux-musl.json -Z unstable-options --target-dir /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target --features ax-std/fs,ax-std/smp,fs,rockchip-dwmmc,rockchip-soc,sdmmc,log/release_max_level_info -Z json-target-spec --bin axvisor --release --message-format json-render-diagnostics
+     Locking 1 package to latest compatible version
+      Adding uboot-shell v0.2.7
+   Compiling axvisor v0.5.24 (/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/os/axvisor)
+warning: associated function `after_external_interrupt` is never used
+   --> virtualization/axvm/src/architecture/ops.rs:116:8
+    |
+ 12 | pub(crate) trait ArchOps {
+    |                  ------- associated function in this trait
+...
+116 |     fn after_external_interrupt(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `host_console_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:102:15
+    |
+102 | pub(crate) fn host_console_irq() -> Option<modules::ax_hal::irq::IrqId> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `dispatch_host_irq` is never used
+   --> virtualization/axvm/src/host/arceos.rs:106:15
+    |
+106 | pub(crate) fn dispatch_host_irq(vector: usize) {
+    |               ^^^^^^^^^^^^^^^^^
+
+warning: function `with_vm` is never used
+   --> virtualization/axvm/src/manager.rs:165:15
+    |
+165 | pub(crate) fn with_vm<F, R>(vm_id: VMId, f: F) -> Option<R>
+    |               ^^^^^^^
+
+warning: function `active_vcpu_mask` is never used
+   --> virtualization/axvm/src/manager.rs:195:15
+    |
+195 | pub(crate) fn active_vcpu_mask(vm_id: VMId) -> Option<usize> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `inject_interrupt` is never used
+   --> virtualization/axvm/src/manager.rs:207:15
+    |
+207 | pub(crate) fn inject_interrupt(vm_id: VMId, vcpu_id: usize, vector: usize) -> AxVmResult {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: variant `Generic` is never constructed
+  --> virtualization/axvm/src/runtime/hvc.rs:26:5
+   |
+25 | pub(crate) enum HyperCallAbi {
+   |                 ------------ variant in this enum
+26 |     Generic,
+   |     ^^^^^^^
+   |
+   = note: `HyperCallAbi` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `handle` is never used
+   --> virtualization/axvm/src/timer.rs:174:8
+    |
+129 | impl TimerWheels {
+    | ---------------- method in this implementation
+...
+174 |     fn handle(&self, token: usize) -> Option<VmTimerHandle> {
+    |        ^^^^^^
+
+warning: function `cancel_timer` is never used
+   --> virtualization/axvm/src/timer.rs:252:15
+    |
+252 | pub(crate) fn cancel_timer(token: usize) {
+    |               ^^^^^^^^^^^^
+
+warning: associated items `try_handle_port_write`, `handle_nested_page_fault`, and `debug_nested_page_fault` are never used
+    --> virtualization/axvm/src/vm/mod.rs:1737:19
+     |
+1049 | impl AxVM {
+     | --------- associated items in this implementation
+...
+1737 |     pub(crate) fn try_handle_port_write(
+     |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+1750 |     pub(crate) fn handle_nested_page_fault(
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+1765 |     fn debug_nested_page_fault(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `SimpleVmPlan` is never constructed
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:65:19
+   |
+65 | pub(crate) struct SimpleVmPlan(VmDevicePlan);
+   |                   ^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+  --> virtualization/axvm/src/vm/prepare/device_plan/mod.rs:68:25
+   |
+67 | impl SimpleVmPlan {
+   | ----------------- associated function in this implementation
+68 |     pub(crate) const fn new(devices: VmDevicePlan) -> Self {
+   |                         ^^^
+
+warning: `axvm` (lib) generated 12 warnings
+    Finished `release` profile [optimized] target(s) in 10.84s
+warning: the following packages contain code that will be rejected by a future version of Rust: core v0.0.0 (/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core), memchr v2.8.3
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 7`
+Allocated board session:
+  board_type: OrangePi-5-Plus
+  board_id: orangepi-5-plus-1
+  session_id: 4e05f255-130a-4bfc-90e3-3ffcd3d0c411
+  lease_expires_at: 2026-08-18 16:26:56.995530947 +08:00
+  boot_mode: uboot
+Converting ELF to BIN format...
+  elf: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor
+  bin: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin
+/home/seven_wsl/.rustup/toolchains/nightly-2026-07-15-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy --strip-all -O binary /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin
+[2026-08-18T08:26:47Z INFO  ostool::run::uboot] Starting U-Boot runner...
+[2026-08-18T08:26:47Z INFO  ostool::run::uboot] kernel from: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin
+[2026-08-18T08:26:47Z INFO  ostool::run::uboot] Using network interface hint: eth0
+Waiting for remote board to power on through ostool-server...
+BOARD_REBOOT_ARMED
+Connection to 192.168.31.33 closed by remote host.
+[2026-08-18T08:26:54Z INFO  uboot_shell] cmd: setenv autoload yes
+[2026-08-18T08:26:54Z INFO  uboot_shell] cmd: setenv netmask 255.255.255.0
+[2026-08-18T08:26:55Z INFO  uboot_shell] cmd: net list
+[2026-08-18T08:26:55Z INFO  uboot_shell] cmd: bootdev hunt ethernet
+[2026-08-18T08:27:03Z WARN  uboot_shell] cmd `bootdev hunt ethernet` failed: Timeout, retrying...
+[2026-08-18T08:27:04Z INFO  ostool::run::uboot] Board network ok
+[2026-08-18T08:27:04Z INFO  uboot_shell] cmd: setenv serverip 192.168.31.132
+[2026-08-18T08:27:04Z INFO  uboot_shell] cmd: echo $fdt_addr_r
+[2026-08-18T08:27:05Z INFO  uboot_shell] cmd: echo $ramdisk_addr_r
+[2026-08-18T08:27:05Z INFO  uboot_shell] cmd: echo $kernel_addr_r
+[2026-08-18T08:27:05Z INFO  ostool::run::uboot] Using $kernel_addr_r as kernel entry: 0x2000000
+[2026-08-18T08:27:05Z INFO  uboot_shell] cmd: echo $kernel_comp_addr_r
+[2026-08-18T08:27:06Z INFO  ostool::run::uboot] image load to kernel_comp_addr_r: 0xa000000
+[2026-08-18T08:27:06Z INFO  uboot_shell] cmd: setenv loadaddr 0xa000000
+[2026-08-18T08:27:06Z INFO  ostool::run::uboot] fitimage loadaddr: 0xa000000
+[2026-08-18T08:27:06Z INFO  ostool::run::uboot] kernel entry: 0x2000000
+[2026-08-18T08:27:06Z INFO  ostool::run::uboot] Using DTB from: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/ostool-4e05f255-130a-4bfc-90e3-3ffcd3d0c411-orangepi-5-plus-starry.dtb
+[2026-08-18T08:27:06Z INFO  ostool::boot::fit] Making FIT image...
+[2026-08-18T08:27:06Z INFO  ostool::boot::fit] kernel: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/axvisor.bin (size: 4644928)
+[2026-08-18T08:27:06Z INFO  ostool::boot::fit] 已读取 DTB 文件: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/ostool-4e05f255-130a-4bfc-90e3-3ffcd3d0c411-orangepi-5-plus-starry.dtb (大小: 283082)
+[2026-08-18T08:27:06Z INFO  ostool::boot::fit] FIT image ok: /mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/target/aarch64-unknown-linux-musl/release/image.fit
+[2026-08-18T08:27:06Z INFO  ostool::run::uboot] No TFTP config, using loady to upload FIT image...
+
+send file
+loady 0xa000000
+## Ready for binary (ymodem) download to 0x0A000000 at 1500000 bps...
+[2026-08-18T08:27:07Z INFO  uboot_shell::ymodem] Sending file: image.fit
+C## Total Size      = 0x004b3518 = 4928792 Bytes
+## Start Addr      = 0x0A000000
+=>
+send ok
+[2026-08-18T08:28:06Z INFO  ostool::run::uboot] Booting kernel with command: bootm
+Interacting with U-Boot shell...
+bootm
+## Loading kernel (any) from FIT Image at 0a000000 ...
+   Using 'config-ostool' configuration
+   Verifying Hash Integrity ... OK
+   Trying 'kernel' kernel subimage
+     Description:  This kernel
+     Type:         Kernel Image
+     Compression:  uncompressed
+     Data Start:   0x0a000168
+     Data Size:    4644928 Bytes = 4.4 MiB
+     Architecture: AArch64
+     OS:           Linux
+     Load Address: 0x02000000
+     Entry Poinh Integrity ... OK
+## Loading fdt (any) from FIT Image at 0a000000 ...
+   Using 'config-ostool' configuration
+   Verifying Hash Integrity ... OK
+   Trying 'fdt' fdt subimage
+     Description:  This fdt
+     Type:         Flat Device Tree
+     Compre28
+     Data Size:    283082 Bytes = 276.4 KiB
+     Architecture: AArch64
+     Load Address: 0x12000000
+   Verifying Hash Integrity ... OK
+   Loading fdt from 0x0a46e228 to 0x12000000
+   Booting using the fdt blob at 0x12000000
+Working FDT set to 12000000
+   Loading Kernel Image to 2000000
+   Loading Device Tree to 00000000ecb71000, end 00000000ecbb91c9 ... OK
+Working FDT set to ecb71000
+
+Starting kernel ...
+
+root=PARTUUID=5874edd8-1582-a144-a298-b139acd7b0e6 rw console=ttyS2,1500000 console=tty1 splash=verbose consoleblank=0 earlycon=uart8250,mmio32,0xfeb50000 cpuidle.off=1 rodata=off rootwait rootfstype=ext4 loglevel=8 ubootpart=4cda819a-b7aa-46f4-bfa2-3a8b1825d142 usb-storage.quirks= cma=128M cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1
+VM Load @PA:0x2000000
+VM Load Offset: 0xffff000082000000
+Memory Map:
+  Rsv    0x00000000110000 - 0x000000001f0100 (896.25 KiB)
+  Free   0x00000000200000 - 0x00000002000000 (30 MiB)
+  KImg   0x00000002000000 - 0x00000002600000 (6 MiB)
+  Free   0x00000002600000 - 0x0000000c000000 (154 MiB)
+  Rsv    0x0000000c - 0x0000000e000000 (32 MiB)
+  Free   0x0000000e000000 - 0x0000x000003fc000000 (11.94 GiB)
+  Free   0x000003fc500000 - 0x000003fff00000 (58 MiB)
+  Free   0x000004f0000000 - 0x00000500000000 (256 MiB)
+Initialize RAM allocator: 0x200000..0x2000000
+Reserving CPU-local areas
+CPU-local area stride: 0x45000 bytes
+Total CPU-local allocation: 0x228000 bytes (8 CPUs)
+Flushed RAM used range to memory map:CPU-local areas allocated at 0x246000 - 0x46e000
+EL: 2
+Mapping early memory regions...
+Ram                 : [0x0000000000200000, 0x00000000f0000000) -> [0x0000000000200000, 0x00000000f0000000) (3.75 GiB)
+Ram                 : [0x0000000100000000, 0x00000003fc000000) -> [0x0000000100000000, 0x00000003fc000000iB)
+Ram                 : [0x00000003fc500000, 0x00000003fff00000) -> [0x00000003fc500000, 0x00000003fff00000) (58 MiB)
+Ram                 : [0x00000004f0000000, 0x0000000500000000) -> [0x00000004f0000000, 0x0000000500000000) (256 MiB)
+KImage              : [0x0000ffff80000000, 0x000000002000000, 0x0000000002600000) (6 MiB)
+PerCpu              : [0x0000ff0000246000, 0x0000ff000046e000) -> [0x0000000000246000, 0x000000000046e000) (2.16 MiB)
+Debug serial        : [0x00000000feb50000, 0x00000000feb51000) -> [0x00000000feb50000, 0x00000000feb51000) (4 KiB)
+Boot page table at physical address: PA:0x46e000
+Setting up table registers...
+MMU Entry point at physical address: 0x220570c
+Trap vector at 0xffff801f9000
+Memory Map:
+  Rsv    0x00000000110000 - 0x000000001f0100 (896.25 KiB)
+  Rsv    0x000000002000006000 (280 KiB)
+  PerCPU 0x0000000246000 - 0x0000000046e000 (2.1sv    0x0000000046e000 - 0x0000000047d000 (60 KiB)
+  Free   0x0000000047d000 - 0x00000002000000 (27.51 MiB)
+  KImg   0x00000002000000 - 0x00000002600000 (6 MiB)
+  Free   0x00000002600000 - 0x0000000c000000 (154 MiB)
+  Rsv    0x0000000c000000 - 0x0000000010000000 (32 MiB)
+  Rsv    0x- 0x00000020000000 (256 MiB)
+  Free   0x00000020000000 - 0x000000f0000000 (3.25 GiB)
+  MMIO   0x000000feb50000 - 0x000000feb51000 (4 KiB)
+  Free   0x00000100000000 - 0x000003fc000000 (11.94 GiB)
+  Free   0x000003fc500000 - 0x000003fff00000 (58 MiB)
+  Free   0x000004f0000000 - 0x00000500000000 (256 MiB)
+Jumping to main entry point at 0xffff801e3304 with SP 0x0000ff000028b000
+
+       d8888                            .d88888b.   .d8888b.
+      d88888                           d88P" "Y88b d88P  Y88b
+     d88P888                           888     888 Y88b.
+    d88P 888 888d888  .d8888b  .d88b.  888     888  "Y888b.
+   d88P  888 888P"   d88P"    d8P  Y8b 888     888     "Y88b.
+  d88P   888 888     888      88888888 888     888       "888
+ d8888888888 888     Y88b.    Y8b.     Y88b. .d88P Y88b  d88P
+d88P     888 888      "Y8888P  "Y8888   "Y88888P"   "Y8888P"
+
+arch = aarch64
+platform = RK3588 OPi 5 Plus
+target = aarch64-unknown-none-softfloat
+build_mode = 
+log_level = info
+backtrace = false
+smp = 4
+
+[37m[ 77.728698 ax_runtime:224] [32mLogging is enabled.[m
+[m[37m[ 77.729183 ax_runtime:225] [32mPrimary CPU 0 started, arg = 0x200000.[m
+[m[37m[ 77.729813 ax_runtime:227] [32mFound physcial memory regions:[m
+[m[37m[ 77.730455 ax_runtime:229] [32m  [PA:0x110000, PA:0x1f0100) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 77.731344 ax_runtime:229] [32m  [PA:0x200000, PA:0x246000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 77.732237 ax_runtime:229] [32m  [PA:0x246000, PA:0x46e000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 77.733129 ax_runtime:229] [32m  [PA:0x46e000, PA:0x47d000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 77.734022 ax_runtime:229] [32m  [PA:0x47d000, PA:0x2000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 77.734839 ax_runtime:229] [32m  [PA:0x2000000, PA:0x2600000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 77.735747 ax_runtime:229] [32m  [PA:0x2600000, PA:0xc000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 77.736572 ax_runtime:229] [32m  [PA:0xc000000, PA:0xe000000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 77.737479 ax_runtime:229] [32m  [PA:0xe000000, PA:0x10000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 77.738311 ax_runtime:229] [32m  [PA:0x10000000, PA:0x20000000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[m[37m[ 77.739234 ax_runtime:229] [32m  [PA:0x20000000, PA:0xf0000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 77.740074 ax_runtime:229] [32m  [PA:0xfeb50000, PA:0xfeb51000) mmio (READ | WRITE | DEVICE | RESERVED)[m
+[m[37m[ 77.740959 ax_runtime:229] [32m  [PA:0x100000000, PA:0x3fc000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 77.741814 ax_runtime:229] [32m  [PA:0x3fc500000, PA:0x3fff00000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 77.742669 ax_runtime:229] [32m  [PA:0x4f0000000, PA:0x500000000) free memory (READ | WRITE | FREE)[m
+[m[37m[ 77.743524 ax_runtime:377] [32mInitialize global memory allocator...[m
+[m[37m[ 77.744147 ax_runtime:378] [32m  use buddy-slab-allocator allocator.[m
+[m[37m[ 77.744771 ax_alloc::buddy_slab:158] [32mInitialize global memory allocator, start_vaddr: 0x100000000, size: 0x2fc000000[m
+[m[37m[ 77.757296 ax_alloc::buddy_slab:424] [32mglobal allocator initialized[m
+[m[37m[ 77.757919 ax_alloc::buddy_slab:168] 
+[m[37m[ 77.764663 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x3fc500000, size: 0x3a00000[m
+[m[37m[ 77.765583 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0x4f0000000, size: 0x10000000[m
+[m[37m[ 77.766697 ax_runtime:264] [32mkernel aspace: [VA:0x0, VA:0xffffffffffffffff)[m
+[m[37m[ 77.767381 ax_mm:107] [32mInitialize virtual memory management...[m
+[m[37m[ 80.343625 ax_runtime:276] [32mInitialize platform devices...[m
+[m[37m[ 80.422395 someboot::arch::power:23] [32mPower management method : SMC[m
+[m[37m[ 80.423037 somehal::driver:5] [32mInive with FDT at 0x200000[m
+[m[37m[ 80.631459 ax_driver::soc::rockchip::pinctrl:301] [32mRockchip RK3588 pinctrl registered successfully[m
+[m[37m[ 80.752729 somehal::arch::gic::v3:274] [32mGICv3 CPU 0 EOI mode: two_step=true[m
+[m[37m[ 80.902639 ax_task::api:150] [32mInitialize scheduling...[m
+[m[37m[ 80.903231 ax_task::api:158] [32m  use FIFO scheduler.[m
+[m[37m[ 80.903747 ax_runtime:302] [32mInitialize interrupt handlers...[m
+[m[37m[ 80.904376 ax_runtime::devices:[37m[ 81.048503 ax_driver::soc::scmi:54] [33m[scmi] SCMI shmem phandle 72 cannot be resolved by rdrive; using RK3588 shmem fallback 0x10f000+0x100[m
+[m[37m[ 81.049809 ax_driver::soc::scmi:84] [32mSCMI clock protocol registered: path=/firmware/scmi/protocol@14, phandle=Some(Phandle(15)), protocol=0x14[m
+[m[3732mSCMI SMC registered: smc_id=0x82000010, shmem_phandle=72, shmem=0x10f000+0x100[m
+[m[37m[ 81.053044 ax_driver::soc::rockchip::cru::rk3588:60] [32mRK3588 CRU reg: addr=0xfd7c0000, size=0x5c000, rockchip,grf=<0x77>[m
+[m[37m[ 81.054155 rockchip_soc::variants::rk3588::cru:123] [32mCRU@fd7c0000: Initializing and verifying clock configuration...[m
+[m[37m[ 81.055168 rockchip_soc::variants::rk3588::cru:174] [33m⚠ CRU@fd7c0000: ACLK_BUS_ROOT div mismatch! u-boot: 3, current: 4[m
+[m[37m[ 81.056205 rockchip_soc::variants::rk3588::cru:248] [32m✓ CRU@fd7c0000: Clock configuration verified[m
+[m[37m[ 81.057091 ax_driver::soc::rockchip::cru::rk3588:79] [32mRK3588 CRU clock/reset registered successfully[m
+[m[37m[ 81.059781 ax_driver::soc::rockchip::pm:78] [32mRockchip power-domain provider registered successfully[m
+[m[37m[ 81.789586 ax_driver::soc::fixed_regulator:70] [32mFixed regulator vcc5v0_host enabled via pinctrl[m
+[m[37m[ 81.916185 ax_driver::soc::fixed_regulator:70] [32mFixed regulator vcc3v3_pcie_eth enabled via pinctrl[m
+[m[37m[ 81.994853 ax_driver::soc::fixed_regulator:70] [32mFixed regulator wifi_disable enabled via pinctrl[m
+[m[37m[ 82.033010 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2c0000] enabled SDMMC clock Some("biu") (0x17)[m
+[m[37m[ 82.033945 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2c0000] enabled SDMMC clock Some("ci_driver::block::rockchip::clock:32m[mmc@fe2c0000] enabled SDMMC 7m[ 82.035831 ax_driver::block::rockchip::clock:12] [32m[mmc@feclock Some("ciu-sample") (0x2c3)[m
+[m[37m[ 82.110323 ax_driver::block::rockchip::sd:192] [32m[mmc@fe2c0000] vqmmc-supply phandle Phandle(283) is not a fixed GPIO regulator; skip pinctrl enable[m
+[m[37m[ 82.111613 ax_driver::block::rockchip::sd:121] [32mrockchip-dwmmc probe: node=mmc@fe2c0000, addr=0xfe2c0000, size=0x4000[m
+[m[37m[ 82.112740 ax_driver::block::rockchip::sd:133] [32mrockchip-dwmmc: using ciu reference clock 49500000 Hz[m
+[m[37m[ 82.113819 ax_driver::block::rockchip::sd::phase:41] [32mrockchip-dwmmc: RK3588 SDMMC phase configured: drive=90deg sample=0deg parent=49500000Hz[m
+[m[37m[ 82.115081 ax_driver::block::rockchip::sd:160] [32mrockchip-dwmmc: defer protocol initialization controller=rockchip-dwmmc:/mmc@fe2c0000 media=SD preference=SdOnly[m
+[m[37m[ 82.116651 ax_driver::block::rockchip::sd:171] [32mrockchip-dwmmc block device registered irq=None[m
+[m[37m[ 82.118639 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("core") (0x13a)[m
+[m[37m[ 82.119572 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("bus") (0x138)[m
+[m[37m[ 82.120492 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("axi") (0x139)[m
+[m[37m[ 82.121412 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("block") (0x13b)[m
+[m[37m[ 82.122346 ax_driver::block::rockchip::clock:12] [32m[mmc@fe2e0000] enabled SDHCI clock Some("timer") (0x13c)[m
+[m[37m[ 82.123296 ax_driver::block::rockchip::sdhci_rk3588:176] [32mrockchip-sdhci probe: node=mmc@fe2e0000, addr=0xfe2e0000, size=0x10000[m
+[m[37m[ 82.124481 ax_driver::block::rockchip::sdhci_rk3588:191] [32mrockchip-sdhci: using external CRU clock[m
+[m[37m[ 82.125375 ax_driver::block::rockchip::sdhci_rk3588:208] [32mrockchip-sdhci: defer protocol initialization controller=rockchip-sdhci:/mmc@fe2e0000 media=MMC preference=MmcFirst[m
+[m[37m[ 82.127013 ax_driver::block::rockchip::s2mrockchip-sdhci block device registered irq=None[m
+[m[37m[ 82.128127 sdmmc_protocol::sdio::init::state_machine:102] [32msd129020 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 0 bou[37m[ 82.132095 sdmmc_protocol::sdio::init::state_machine:102] [37m[ 82.143131 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op SwitchVoltage(V330)[m
+[m[37m[ 82.14tion)[m
+[m[37m[ 82.145954 ax_driver::block::rockchip::sd:72] [32mrockchip-dwmmc: ciu clock set target=400000 Hz cclkin=800000 Hz bus=400000 Hz[m
+[m[37m[ 82.180167 sdmmc_protocol::sdio::init::state_machine::identify:175] [32msdio: detected Sd ocr=0xc0ff8000[m
+[m[37m[ 82.182458 sdmmc_protocol::sdio::init::state_machine::identify:340] [32msdio: CSD capacity_blocks=Some(62333952)[m
+[m[37m[ 82.183737 sdmmc_protocol::sdio::init::state_machine::identify:354] [32msdio: switch SD bus width to 4-bit[m
+[m[37m[ 82.185276 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetBusWidth(Bit4)[m
+[m[37m[ 82.186367 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetClock(Default)[m
+[m[37m[ 82.187363 ax_driver::block::rockchip::sd:72] [32mrockchip-dwmmc: ciu clock set target=25000000 Hz cclkin=49500000 Hz bus=24750000 Hz[m
+[m[37m[ 82.191966 ax_driver::block::rockchip::sd:72] [32mrockchip-dwmmc: ciu clock set target=50000000 Hz cclkin=99000000 Hz bus=49500000 Hz[m
+[m[37m[ 82.193585 sdmmc_protocol::sdio::init::state_machine::sd:185] [32msdio: SD speed selected HighSpeed[m
+[m[37m[ 82.194577 sdmmc_protocol::sdio::init::state_machine:237] [32msdio: init done kind=xaaaa ocr=0xc0ff8000 host_bus_width=Bit4 ext_csd_bus_width=None ext_csd_timing=None[m
+[m[37m[ 82.196222 sdmmc_protocol::rdif::queue:172] [32msdmmc block init complete: kind=Sd high_capacity=true rca=43690 capacity_blocks=62333952 cache_enabled=false[m
+[m[37m[ 82.197604 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op ResetAll[m
+[m[37m[ 82.198557 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 0 bound to CPU 0 with hardware depth 1[m
+[m[37m[ 82.199453 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device rockchip-sdhci:/mmc@fe2e0000 IRQ source 0 (IrqId { domain: IrqDomainId(7), hwirq: HwIrq(237) }) fixed to CPU 0 for queue mask 0x1[m
+[m[37m[ 82.201292 ax_driver::block::rockchip::sdhci_rk3588:262] [32mrockchip-sdhci: RK3588 DWCMSHC vendor reset area1=0x500[m
+[m[37m[ 82.202300 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op Power[37m[ 82.213110 sdmmc_protocol::sdio::init::state_machine:102] [32msdio: submit bus op SwitchVoltage(V330)[m
+[m[37m[ 82.219288 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetBusWidth(Bit1)[m
+[m[37m[ 82.220160 sdmmc_protocol::sdio::init::state_machine:63] [32msdio: submit bus op SetClock(Identification)[m
+[m[37m[ 82.221205 ax_driver::block::rockchip::sdhci_rk3588:121] [32mrockchip-sdhci: core clock set to 375000 Hz[m
+[m[37m[ 82.264332 sdmmc_protocol::sdio::init::state_machine::identify:264] [32msdio: detected Mmc ocr=0xc0ff8080[m
+[m[37m[ 82.266712 sdmmc_protocol::sdio::init::state_machine::identify:340] [32msdio: CSD capacity_blocks=None[m
+[m[37m[ 82.279446 sdmmc_protocol::sdio::init::state_machine::mmc:38] [32msdio: EXT_CSD sector_count=122224640[m
+[m[37m[ 82.282174 ax_driver::block::rockchip::sdhci_rk3588:121] [32mrockchip-sdhci: core clock set to 50000000 Hz[m
+[m[37m[ 82.283327 sdmmc_protocol::sdio::init::state_machine::mmc:314] [32msdio: MMC speed selected HighSpeed bus_width=Bit8[m
+[m[37m[ 82.284397 sdmmc_protocol::sdio::init::state_machine::mmc:340] [32msdio: enabled 65536 KiB volatile write cache[m
+[m[37m[ 82.285472 sdmmc_protocol::sdio::init::state_machine:237] [32msdio: init done kind=Mmc sd_v2=false high_capacity=true rca=0x1 ocr=0xc0ff8080 host_bus_width=Bit8 ext_csd_bus_width=Some(Sdr1) ext_csd_timing=Some(Compat)[m
+[m[37m[ 82.287215 sdmmc_protocol::rdif::queue:172] [32msdmmc block init complete: kind=Mmc high_capacity=true rca=1 capacity_blocks=122224640 cache_enabled=true[m
+[m[37m[ 82.328938 ax_fs_ng::root:348] [32m    partition 1 name=Some("bootfs") fs=Some(Fat) lba 61440..2158592[m
+[m[37m[ 82.330117 ax_fs_ng::root:348] [32m    partition 2 name=None fs=Some(Ext4) lba 2158592..61702144[m
+[m[37m[ 82.330949 ax_fs_ng::root:364] [32m  block device 0 (rockchip-dwmmc:/mmc@fe2c0000) has Gpt partition table with 2 partitions[m
+[m[37m[ 82.355974 ax_fs_ng::root:348] [32m    partition 1 name=Some("uboot") fs=None lba 8192..16384[m
+[m[37m[ 82.357120 ax_fs_ng::root:348] [32m    partition 2 name=Some("misc") fs=None lba 16384..24576[m
+[m[37m[ 82.358222 ax_fs_ng::root:348] [32m    partition 3 name=Some("bootctrl") fs=None lba 24576..28672[m
+[m[37m[ 82.359372 ax_fs_ng::root:348] [32m    partition 4 name=Some("resource") fs=None lba 28672..40960[m
+[m[37m[ 82.360411 ax_fs_ng::root:348] [32m    partition 5 name=Some("boot_linux") fs=Some(Ext4) lba 40960..237568[m
+[m[37m[ 82.361656 ax_fs_ng::root:348] [32m    partition 6 name=Some("ramdisk") fs=None lba 237568..245760[m
+[m[37m[ 82.362702 ax_fs_ng::root:348] [32m    partition 7 name=Some("system") fs=Some(Ext4) lba 245760..4440064[m
+[m[37m[ 82.363769 ax_fs_ng::root:348] [32m    partition 8 name=Some("vendor") fs=Some(Ext4) lba 4440064..6537216[m
+[m[37m[ 82.364875 ax_fs_ng::root:348] [32m    partition 9 name=Some("sys-prod") fs=Some(Ext4) lba 6537216..6639616[m
+[m[37m[ 82.365971 ax_fs_ng::root:348] [32m    partition 10 name=Some("chip-prod") fs=Some(Ext4) lba 6639616..6742016[m
+[m[37m[ 82.367194 ax_fs_ng::root:348] [32m    partition 11 name=Some("updater") fs=None lba 6742016..6807552[m
+[m[37m[ 82.368311 ax_fs_ng::root:348] [32m    partition 12 name=Some("eng_system") fs=None lba 6807552..6840320[m
+[m[37m[ 82.369451 ax_fs_ng::root:348] [32m    partition 13 name=Some("eng_chipset") fs=None lba 6840320..6873088[m
+[m[37m[ 82.370598 ax_fs_ng::root:348] [32m    partition 14 name=Some("chip_ckm") fs=None lba 6938624..7069696[m
+[m[37m[ 82.371850 ax_fs_ng::root:348] [32m    partition 15 name=Some("userdata") fs=None lba 19955712..122224576[m
+[m[37m[ 82.372750 ax_fs_ng::root:364] [32m  block device 1 (rockchip-sdhci:/mmc@fe2e0000) has Gpt partition table with 15 partitions[m
+[m[37m[ 82.373855 ax_fs_ng::root:455] [32m  matched root by PARTUUID on disk0 partition 2 (<unnamed>, fs=ext4, lba 2158592..61702144)[m
+[m[37m[ 82.374927 ax_fs_ng:93] [32mInitialize filesystem subsystem...[m
+[m[37m[ 82.375497 ax_fs_ng:94] [32m  selected root device: disk0 partition 2 (<unnamed>, fs=ext4, lba 2158592..61702144)[m
+[m[37m[ 82.405328 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 82.407130 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 82.407710 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 82.408317 rsext4::ext4::mount:468] [32m  - total blocks: 7442944[m
+[m[37m[ 82.408917 rsext4::ext4::mount:469] [32m  - free blocks: 5800925[m
+[m[37m[ 82.409510 rsext4::ext4::mount:470] [32m  - total inodes: 1845888[m
+[m[37m[ 82.410110 rsext4::ext4::mount:471] [32m  - free inodes: 1796785[m
+[m[37m[ 82.410703 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 82.424102 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 82.424722 ax_fs_ng:106] [32m  filesystem type: "ext4"[m
+[m[37m[ 82.437304 ax_fs_ng::root:610] [32m  mounting partition disk0 partition 1 (bootfs, fs=fat, lba 61440..2158592) at /boot[m
+[m[37m[ 82.441755 rsext4::hashtree::lookup:241] [31mFS DOES NOT SUPPORT NORMAL MULTIPLE POINTERS, PLEASE TURN ON EXTENT FEATURE![m
+[m[37m[ 82.442774 rsext4::ext4::mount:354] [32m/lost+found not found by path scan;will create![m
+[m[37m[ 82.443541 rsext4::hashtree::lookup:241] [31mFS DOES NOT SUPPORT NORMAL MULTIPLE POINTERS, PLEASE TURN ON EXTENT FEATURE![m
+[m[37m[ 82.446035 rsext4::file::blocks:66] [31mnot support traditional block pointer[m
+[m[37m[ 82.446721 rsext4::ext4::mount:356] [33m/lost+found missing and create failed[m
+[m[37m[ 82.447461 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 82.448039 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 82.448646 rsext4::ext4::mount:468] [32m  - total blocks: 16384[m
+[m[37m[ 82.449231 rsext4::ext4::mount:469] [32m  - free blocks: 5068[m
+[m[37m[ 82.449801 rsext4::ext4::mount:470] [32m  - total inodes: 8192[m
+[m[37m[ 82.450379 rsext4::ext4::mount:471] [32m  - free inodes: 8054[m
+[m[37m[ 82.450949 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 82.455322 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 82.455931 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 5 (boot_linux, fs=ext4, lba 40960..237568) at /boot[m
+[m[37m[ 82.457390 rsext4::crc32c::arm64:54] [33mID_AA64ISAR0_EL1[19:16]: 0x1[m
+[m[37m[ 82.458016 rsext4::crc32c::arm64:57] [33mHardware CRC32C support detected.[m
+[m[37m[ 82.459810 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 82.461400 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 82.461979 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 82.462587 rsext4::ext4::mount:468] [32m  - total blocks: 393215[m
+[m[37m[ 82.463179 rsext4::ext4::mount:469] [32m  - free blocks: 61635[m
+[m[37m[ 82.463757 rsext4::ext4::mount:470] [32m  - total inodes: 98304[m
+[m[37m[ 82.464341 rsext4::ext4::mount:471] [32m  - free inodes: 94293[m
+[m[37m[ 82.464928 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 82.466202 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 82.466809 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 7 (system, fs=ext4, lba 245760..4440064) at /system[m
+[m[37m[ 82.470225 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 82.471968 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 82.472547 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 82.473155 rsext4::ext4::mount:468] [32m  - total blocks: 65535[m
+[m[37m[ 82.473740 rsext4::ext4::mount:469] [32m  - free blocks: 24032[m
+[m[37m[ 82.474317 rsext4::ext4::mount:470] [32m  - total inodes: 65536[m
+[m[37m[ 82.474911 rsext4::ext4::mount:471] [32m  - free inodes: 65194[m
+[m[37m[ 82.475481 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 82.476754 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 82.477361 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 8 (vendor, fs=ext4, lba 4440064..6537216) at /vendor[m
+[m[37m[ 82.480693 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 82.482267 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 82.482846 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 82.483453 rsext4::ext4::mount:468] [32m  - total blocks: 12800[m
+[m[37m[ 82.484038 rsext4::ext4::mount:469] [32m  - free blocks: 11981[m
+[m[37m[ 82.484624 rsext4::ext4::mount:470] [32m  - total inodes: 12800[m
+[m[37m[ 82.485202 rsext4::ext4::mount:471] [32m  - free inodes: 12786[m
+[m[37m[ 82.485779 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 82.487051 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 82.487657 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 9 (sys-prod, fs=ext4, lba 6537216..6639616) at /sys-prod[m
+[m[37m[ 82.491043 rsext4::ext4::mount:331] [32m/lost+found exists (superblock hint inode=11)[m
+[m[37m[ 82.492619 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[m[37m[ 82.493198 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[m[37m[ 82.493806 rsext4::ext4::mount:468] [32m  - total blocks: 12800[m
+[m[37m[ 82.494399 rsext4::ext4::mount:469] [32m  - free blocks: 11981[m
+[m[37m[ 82.494969 rsext4::ext4::mount:470] [32m  - total inodes: 12800[m
+[m[37m[ 82.495554 rsext4::ext4::mount:471] [32m  - free inodes: 12786[m
+[m[37m[ 82.496131 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[ 82.497402 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[m[37m[ 82.498009 ax_fs_ng::root:610] [32m  mounting partition disk1 partition 10 (chip-prod, fs=ext4, lba 6639616..6742016) at /chip-prod[m
+[m[37m[ 82.500492 somehal::arch::gic::v3:274] [32mGICv3 CPU 1 EOI mode: two_step=true[m
+[m[37m[ 82.501202 ax_runtime::mp:79] [32mSecondary CPU 1 started.[m
+[m[37m[ 82.501778 somehal::arch::gic::v3:274] [32mGICv3 CPU 2 EOI mode: two_step=true[m
+[m[37m[ 82.501808 ax_runtime::mp:110] [32mSecondary CPU 1 init OK.[m
+[m[37m[ 82.502483 ax_runtime::mp:79] [32mSecondary CPU 2 started.[m
+[m[37m[ 82.503057 somehal::arch::gic::v3:274] [32mGICv3 CPU 3 EOI mode: two_step=true[m
+[m[37m[ 82.503633 ax_runtime::mp:110] [32mSecondary CPU 2 init OK.[m
+[m[37m[ 82.504282 ax_runtime::mp:79] [32mSecondary CPU 3 started.[m
+[m[37m[ 82.504283 ax_runtime:350] [32mPrimary CPU 0 init OK.[m
+[m[37m[ 82.505430 ax_runtime::mp:110] [32mSecondary CPU 3 init OK.[m
+[m[37m[ 82.506468 0:2 ax_fs_ng::block::runtime::lifecycle::device:369] [32mblock device rockchip-dwmmc:/mmc@fe2c0000 online with 1 hctxs across 4 CPUs[m
+[m[37m[ 82.507664 0:2 ax_fs_ng::block::runtime::lifecycle::device:369] [32mblock device rockchip-sdhci:/mmc@fe2e0000 online with 1 hctxs across 4 CPUs[m
+[m
+
+       d8888            888     888  d8b
+      d88888            888     888  Y8P
+     d88P888            888     888
+    d88P 888  888  888  Y88b   d88P  888  .d8888b    .d88b.   888d888
+   d88P  888  `Y8bd8P'   Y88b d88P   888  88K       d88""88b  888P"
+  d88P   888    X88K      Y88o88P    888  "Y8888b.  888  888  888
+ d8888888888  .d8""8b.     Y888P     888       X88  Y88..88P  888
+d88P     888  888  888      Y8P      888   88888P'   "Y88P"   888
+
+
+by AxVisor Team
+
+[37m[ 82.512540 0:2 axvisor:82] [32mStarting virtualization...[m
+[m[37m[ 82.513080 0:2 axvm::host::arceos:390] [32mEnabling hardware virtualization support on all cores...[m
+[m[37m[ 82.513935 0:2 axvm::host::arceos:396] [32mCore 0 is initializing hardware virtualization support...[m
+[m[37m[ 82.514805 0:2 axvm::timer:334] [32mInitializing AxVM timer wheel...[m
+[m[37m[ 82.637117 0:2 axvm::host::arceos:398] [32mHardware virtualization support enabled on core 0[m
+[m[37m[ 82.637961 1:15
+[m[37m[ 82.638001 3:17 axvm::host::arceos:408] [32mCore 3 is initializing hardware virtualization support...[m
+[m[37m[ 82.637993 0:2 axvm::host::arceos:424] [32mWaiting for all cores imer:334] [32mInitializing AxVM timer wheel...[m
+[m[37m[ 82.641440 2:16 axvm::timer:334] [32mInitializing AxVM timer wheel...[m
+[m[37m[ 82.639697 3:17 axvm::timer:334] [32mInitializing AxVM timer wheel...[m
+[m on core 3[m
+[m[37m[ 82.642120 1:15 axvm::host::arceos:411]  support enabled on core 1[m
+761 0:2 axvm::host::arceos:440] [32mAll cores have enabled hardtualization support.[m
+[m[37m[ 82.648458 0:2 axvisor::manager:151] [32mNOT find dir: /guest/vm_default in filesystem[m
+[m[37m[ 82.649216 0:2 axvisor::config:90] [32mUsing static VM configs.[m
+[m[37m[ 82.750264 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@0, node_id: 0x0, hardware_cpu_id: 0x0[m[37m[ 82.751301 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@100, node_id: 0x100, hardware_cpu_id: 0x100[m
+[m[37m[ 82.752376 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@200, node_id: 0x200, hardware_cpu_id: 0x200[m
+[m[37m[ 82.753449 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@300, node_id: 0x300, hardware_cpu_id: 0x300[m
+[m[37m[ 82.754535 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@400, node_id: 0x400, hardware_cpu_id: 0x400[m
+[m[37m[ 82.755612 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@500, node_id: 0x500, hardware_cpu_id: 0x500[m
+[m[37m[ 82.756686 0:2 axvm::arch::aarch64::fdt::core::parser:U node: /cpus/cpu@600, node_id: 0x600, hardware_cpu_id: 0x600[m
+[m[37m[ 82.757759 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@700, node_id: 0x700, hardware_cpu_id: 0x700[m
+[m[37m[ 82.772447 0:2 axvm::arch::aarch64::fdt::core::parser:469] [32mFound 8 host CPU nodes[m
+[m[37m[ 82.773204 0:2 axvm::arch::aarch64::fdt::core:142] [32mVM[1] found DTB, parsing...[m
+[m[37m[ 82.947231 0:2 axvm::arch::aarch64::fdt::core::device:96] [32mFound excluded devices: ["/interrupt-controller@8000000", "/serial@9000000", "/timer"][m
+[m[37m[ 82.949578 0:2 axvisor::config:137] [32mCreating VM[1] "starry-ivc-orangepi-smoke"[m
+[m[37m[ 87.735247 0:2 axvm::vm:1073] [32mVM created: id=1[m
+[m[37m[ 88.067816 0:2 axvisor::config:149] [32mVM[1] created success, loading images...[m
+[m[37m[ 89.125642 0:2 axdevice::device:1229] [32mDeviceRuntime: registered device id=0[m
+[m[37m[ 89.126351 0:2 axdevice::device:1229] [32mDeviceRuntime: registered device id=1[m
+[m[37m[ 89.127194 0:2 axdevice::device:1229] [32mDeviceRuntime: registered device id=2[m
+[m[37m[ 89.127985 0:2 axdevice::device:1229] [32mDeviceRuntime: registered device id=3[m
+[m[37m[ 89.128781 0:2 axdevice::device:1229] [32mDeviceRuntime: registered device id=4[m
+[m[37m[ 89.129609 0:2 axvm::vm::prepare:86] [32mVM setup: id=1[m
+[m[37m[ 89.222784 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@0, node_id: 0x0, hardware_cpu_id: 0x04::fdt::core::parser:462] [32mCPU node: /cpus/cpu@100, node_id: 0x100, hardware_cpu_id: 0x100[m
+[m[37m[ 89.224913 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@200, node_id: 0x200, hardware_cpu_id: 0x200[m
+[m[37m[ 89.225989 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@300, node_id: 0x300, hardware_cpu_id: 0x300[m
+[m[37m[ 89.227066 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@400, node_id: 0x400, hardware_cpu_id: 0x400[m
+[m[37m[ 89.228143 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@500, node_id: 0x500, hardware_cpu_id: 0x500[m
+[m[37m[ 89.229219 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@600, node_id: 0x600, hardware_cpu_id: 0x600[m
+[m[37m[ 89.230294 0:2 axvm::arch::aarch64::fdt::core::parser:462] [32mCPU node: /cpus/cpu@700, node_id: 0x700, hardware_cpu_id: 0x700[m
+[m[37m[ 89.245072 0:2 axvm::arch::aarch64::fdt::core::parser:469] [32mFound 8 host CPU nodes[m
+[m[37m[ 89.245830 0:2 axvm::a the VM configuration[m
+[m[37m[ 89.573622 0:2 axvm::arch::aarch64::fdt::core::device:96] [32mFound excluded devices: ["/interrupt-controller@fe600000", "/serial@fd890000", "/serial@feb40000", "/serial@feb50000", "/serial@feb60000", "/serial@feb7000000", "/serial@febb0000", "/seriroller@fe600000/msi-controller@fe660000"][m
+[m[37m[ 89.662343 0:2 axvm::arch::aarch64::fdt::core::device:96] [32mFound excluded devices: ["/interrupt-controller@fe600000", "/serial@fd890000", "/serial@feb40000", "/serial@feb50000", "/serial@feb60000", "/serial@feb70000", "/serial@feb80000", "/serial@feb90000", "/serial@feba0000", "/serial@febb0000", "/serial@febc0000", "/timer", "/timer@feae0000", "/interrupt-controller@fe600000/msi-controller@fe640000", "/interrupt-controller@fe600000/msi-controller@fe660000"][m
+[m[37m[ 89.666639 0:2 axvisor::config:137] [32mCreating VM[2] "freertos-ivc-orangepi-smoke"[m
+[m[37m[ 89.668276 0:2 axvm::vm:1073] [32mVM created: id=2[m
+[m[37m[ 89.834820 0:2 axvisor::config:149] [32mVM[2] created success, loading images...[m
+[m[37m[ 89.842887 0:2 axdevice::d47160 3:2 axvm::runtime:53] [32oting VMs...[m
+[m[37m[ 89.847759 3:2 axvm::vm:1294] [32mSta9.848232 3:2 axvm::runtime::vcpus:362] [32mSpawning task for VM, "VM[1]-VCpu[0]") created cpumask: [1, ], initial CPU 1[m
+[m][m
+[m[37m[ 89.851341 1:22 axvm::runtime::vcpus:501] [32mVM.[m
+[m[37m[ 89.851813 3:2 axvm::runtime::vcpus:362] [32mSpawning task for VM[2] VCpu[0][m
+[m[37m[ 89.853147 3:2 axvm::runtime::vcpus:400] [32mVCpu tas[VM 1] console=ttyAMA0,115200 earlycon=pl011,0x09000000 root=/dev/vda rw fsck.repair=yes
+[VM 2]  IVC-RTOS-NET rtos=freertos mac=52:54:00:00:00:02 ip=10.0.0.2/24 mmio=0x0b000000
+[VM 1] VM Load @PA:0x80200000
+[VM 1] VM Load Offset: 0x100200000
+[VM 2] IVC-RTOS-SELFTEST PASS rtos=freertos vector=rust-wire-v1
+[VM 1] Memory Map:
+[VM 1]   Free   0x00000080000000 - 0x00000080200000 (2 MiB)
+[VM 2] IVC-RTOS-READY rtos=freertos bind=10.0.0.2:5500 window_bits=64 ack_loss_drop_every=0 expected_commands=20 expected_vision_decisions=0 expected_protocol_errors=0
+[VM 1]   KImg   0x00000080200000 - 0x00000081000000 (14 MiB)
+[VM 1]   Free   0x00000081000000 - 0x00000090000000 (240 MiB)
+[VM 1] Initialize RAM allocator: 0x81000000..0x90000000
+[VM 1] Reserving CPU-local areas
+[VM 1] CPU-local area stride: 0x41000 bytes
+[VM 1] Total CPU-local allocation: 0x82000 bytes (2 CPUs)
+[VM 1] Flushed RAM used range to memory map: 0x81000000..0x81002000, current: 0x81002000
+[VM 1] Flushed RAM used range to memory map: 0x81002000..0x81084000, current: 0x81084000
+[VM 1] CPU-local areas allocated at 0x81002000 - 0x81084000
+[VM 1] EL: 1
+[VM 1] Mapping early memory regions...
+[VM 1] Ram                 : [0xffff000080000000, 0xffff000090000000) -> [0x0000000080000000, 0x0000000090000000) (256 MiB)
+[VM 1] KImage              : [0xffffffff80000000, 0xffffffff80e00000) -> [0x0000000080200000, 0x0000000081000000) (14 MiB)
+[VM 1] PerCpu              : [0xffffff0081002000, 0xffffff0081084000) -> [0x0000000081002000, 0x0000000081084000) (520 KiB)
+[VM 1] Debug serial        : [0xffff000009000000, 0xffff000009001000) -> [0x0000000009000000, 0x0000000009001000) (4 KiB)
+[VM 1] Boot page table at physical address: PA:0x81084000
+[VM 1] Setting up table registers...
+[VM 1] MMU Entry point at physical address: 0x80593188
+[VM 1] Trap vector at 0xffffffff80391000
+[VM 1] Memory Map:
+[VM 1]   MMIO   0x00000009000000 - 0x00000009001000 (4 KiB)
+[VM 1]   Free   0x00000080000000 - 0x00000080200000 (2 MiB)
+[VM 1]   KImg   0x00000080200000 - 0x00000081000000 (14 MiB)
+[VM 1]   Rsv    0x00000081000000 - 0x00000081002000 (8 KiB)
+[VM 1]   PerCPU 0x00000081002000 - 0x00000081084000 (520 KiB)
+[VM 1]   Rsv    0x00000081084000 - 0x0000008108e000 (40 KiB)
+[VM 1]   Free   0x0000008108e000 - 0x00000090000000 (239.45 MiB)
+[VM 1] Jumping to main entry point at 0xffffffff803763a0 with SP 0xffffff0081043000
+[VM 1] 
+[VM 1]        d8888                            .d88888b.   .d8888b.
+[VM 1]       d88888                           d88P" "Y88b d88P  Y88b
+[VM 1]      d88P888                           888     888 Y88b.
+[VM 1]     d88P 888 888d888  .d8888b  .d88b.  888     888  "Y888b.
+[VM 1]    d88P  888 888P"   d88P"    d8P  Y8b 888     888     "Y88b.
+[VM 1]   d88P   888 888     888      88888888 888     888       "888
+[VM 1]  d8888888888 888     Y88b.    Y8b.     Y88b. .d88P Y88b  d88P
+[VM 1] d88P     888 888      "Y8888P  "Y8888   "Y88888P"   "Y8888P"
+[VM 1] 
+[VM 1] arch = aarch64
+[VM 1] platform = AxVisor Orange Pi 5 Plus IVC StarryOS guest
+[VM 1] target = aarch64-unknown-none-softfloat
+[VM 1] build_mode = 
+[VM 1] log_level = info
+[VM 1] backtrace = false
+[VM 1] smp = 2
+[VM 1] 
+[VM 1] [37m[  1.110481 ax_runtime:222] [32mLogging is enabled.[m
+[VM 1] [m[37m[  1.118368 ax_runtime:223] [32mPrimary CPU 0 started, arg = 0x81000000.[m
+[VM 1] [m[37m[  1.128803 ax_runtime:225] [32mFound physcial memory regions:[m
+[VM 1] [m[37m[  1.138093 ax_runtime:227] [32m  [PA:0x9000000, PA:0x9001000) mmio (READ | WRITE | DEVICE | RESERVED)[m
+[VM 1] [m[37m[  1.152126 ax_runtime:227] [32m  [PA:0x80000000, PA:0x80200000) free memory (READ | WRITE | FREE)[m
+[VM 1] [m[37m[  1.165669 ax_runtime:227] [32m  [PA:0x80200000, PA:0x81000000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[VM 1] [m[37m[  1.180607 ax_runtime:227] [32m  [PA:0x81000000, PA:0x81002000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[VM 1] [m[37m[  1.195544 ax_runtime:227] [32m  [PA:0x81002000, PA:0x81084000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[VM 1] [m[37m[  1.210368 ax_runtime:227] [32m  [PA:0x81084000, PA:0x8108e000) reserved (READ | WRITE | EXECUTE | RESERVED)[m
+[VM 1] [m[37m[  1.225290 ax_runtime:227] [32m  [PA:0x8108e000, PA:0x90000000) free memory (READ | WRITE | FREE)[m
+[VM 1] [m[37m[  1.238886 ax_runtime:375] [32mInitialize global memory allocator...[m
+[VM 1] [m[37m[  1.248921 ax_runtime:376] [32m  use buddy-slab-allocator allocator.[m
+[VM 1] [m[37m[  1.258975 ax_alloc::buddy_slab:158] [32mInitialize global memory allocator, start_vaddr: 0xffff00008108e000, s[VM 1] [m[37m[  1.276062 ax_alloc::buddy_slab:424] [32mglobal allocator initialized[m
+[VM 1] [m[37m[  1.286193 ax_alloc::buddy_slab:168] [32mAdd memory region, start_vaddr: 0xffff000080000000, size: 0x200000[m
+[VM 1] [m[37m[  1.300890 buddy_slab_allocator::global:151] [32mGlobalAllocator: skip region 0xffff000080000000+0x200000, no a097152 alignment[m
+[VM 1] [m[37m[  1.321648 ax_runtime:262] [32mkernel aspace: [VA:0xffff000000000000, VA:0xffffffffffffffff)[m
+[VM 1] [m[37m[  1.334488 ax_mm:103] [32mInitialize virtual memory management...[m
+[VM 1] [m[37m[  1.385335 ax_runtime:274] [32mInitialize platform devices...[m
+[VM 1] [m[37m[  1.395734 someboot::arch::power:23] [32mPower management method : HVC[m
+[VM 1] [m[37m[  1.406068 somehal::driver:5] [32mInitializing rdrive with FDT at 0xffff000081000000[m
+[VM 1] [m[37m[  1.465091 ax_task::api:140] [32mInitialize scheduling...[m
+[VM 1] [m[37m[  1.473874 ax_task::api:148] [32m  use Round-robin scheduler.[m
+[VM 1] [m[37m[  1.483072 ax_runtime:300] [32mInitialize interrupt handlers...[m
+[VM 1] [m[37m[  1.492832 ax_runtime::devices:2] [32mProbe platform devices...[m
+[VM 1] [m[37m[  1.503100 ax_driver::serial::pl011:22] [32mProbing PL011 serial device: pl011@9000000[m
+[VM 1] [m[37m[  1.515772 ax_driver::serial::pl011:38] [32mPL011 serial@0xffff000009000000 registered successfully[m
+[VM 1] [m[37m[  1.530786 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b000000 at PA 0xb000000, size 0x1000[m
+[VM 1] [m[37m[  1.547748 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b000000[m
+[VM 1] [m[37m[  1.560472 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b000000 at PA 0xb000000, size 0x1000[m
+[VM 1] [m[37m[  1.577376 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b000000[m
+[VM 1] [m[37m[  1.589915 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b000000 at PA 0xb000000, size 0x1000[m
+[VM 1] [m[37m[  1.606785 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b000000[m
+[VM 1] [m[37m[  1.619825 ax_driver::virtio::block:658] [32mfound a block device of size 65536KB[m
+[VM 1] [m[37m[  1.633308 ax_driver::virtio::block:106] [32mregistered IRQ-driven VirtIO MMIO block device[m
+[VM 1] [m[37m[  1.646739 ax_driver::virtio:193] [32mprobing virtio-mmio node virtio_mmio@b001000 at PA 0xb001000, size 0x1000[m
+[VM 1] [m[37m[  1.663253 ax_driver::virtio:200] [32mmapped virtio-mmio at VA 0xffff00000b001000[m
+[VM 1] [m[37m[  1.675648 virtio_drivers::device::net::dev_raw:33] [32mnegotiated_features Features(MAC | VERSION_1)[m
+[VM 1] [m[37m[  1.691863 ax_driver::virtio::net:419] [32mregistered virtio network device irq=None[m
+[VM 1] [m[37m[  1.705760 ax_runtime::serial:489] [32mserial runtime PL011 UART ready: cpu=0, irq=Some(Source(FdtInterrupt(FdtIrqSpec { controller: 4, cells: [0, 1, 4] }))), polling=false[m
+[VM 1] [mBoot at 1970-01-01 00:00:01.730349541 UTC
+[VM 1] 
+[VM 1] [37m[  1.736616 ax_fs_ng::block::runtime::hctx:177] [32mblock hctx 0 bound to CPU 0 with hardware depth 1[m
+[VM 1] [m[37m[  1.751760 ax_fs_ng::block::runtime::lifecycle::device:300] [32mblock device virtio-blk IRQ source 0 (IrqId { domain: IrqDomainId(7), hwirq: HwIrq(32) }) fixed to CPU 0 for queue mask 0x1[m
+[VM 1] [m[37m[  1.780596 ax_fs_ng::root:341] [32m    raw device fs=Some(Ext4)[m
+[VM 1] [m[37m[  1.791010 ax_fs_ng::root:372] [32m  block device 0 (virtio-blk) has no usable partition table; treating the whe disk as a candidate[m
+[VM 1] [m[37m[  1.811096 ax_fs_ng::root:553] [32m  only one raw block device is available; using it as root[m
+[VM 1] [m[37m[  1.825668 ax_fs_ng:86] [32mInitialize filesystem subsystem...[m
+[VM 1] [m[37m[  1.835304 ax_fs_ng:87] [32m  selected root device: disk0 raw device[m
+[VM 1] [m[37m[  1.846252 rsext4::crc32c::arm64:54] [33mID_AA64ISAR0_EL1[19:16]: 0x1[m
+[VM 1] [m[37m[  1.856905 rsext4::crc32c::arm64:57] [33mHardware CRC32C support detected.[m
+[VM 1] [m[37m[  1.872468 rsext4::ext4::mount:344] [32m/lost+found exists (path resolution, repaired hint inode=11)[m
+[VM 1] [m[37m[  1.889486 rsext4::ext4::mount:466] [32mExt4 filesystem mounted[m
+[VM 1] [m[37m[  1.899831 rsext4::ext4::mount:467] [32m  - block size: 4096 bytes[m
+[VM 1] [m[37m[  1.910561 rsext4::ext4::mount:468] [32m  - total blocks: 16384[m
+[VM 1] [m[37m[  1.921063 rsext4::ext4::mount:469] [32m  - free blocks: 7981[m
+[VM 1] [m[37m[  1.931260 rsext4::ext4::mount:470] [32m  - total inodes: 8192[m
+[VM 1] [m[37m[  1.941647 rsext4::ext4::mount:471] [32m  - free inodes: 8140[m
+[VM 1] [m[37m[  1.951923 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[VM 1] [m[37m[  1.968584 rsext4::ext4::mount:550] [32mExt4 filesystem mounted[m
+[VM 1] [m[37m[  1.978798 ax_fs_ng:99] [32m  filesystem type: "ext4"[m
+[VM 1] [m[37m[  1.991506 ax_net:192] [32mInitialize network subsystem...[m
+[VM 1] [m[37m[  2.001765 ax_net:212] [32m  use NIC 0: "virtio-net"[m
+[VM 1] [m[37m[  2.011448 ax_runtime::irq:120] [32mregistered eth0 irq IrqId { domain: IrqDomainId(7), hwirq: HwIrq(34) }[m
+[VM 1] [m[37m[  2.027819 ax_net:238] [32meth0:[m
+[VM 1] [m[37m[  2.033707 ax_net:239] [32m  id:   2[m
+[VM 1] [m[37m[  2.039909 ax_net:240] [32m  mac:  52-54-00-00-00-01[m
+[VM 1] [m[37m[  2.048778 ax_net:257] [32m  mode: dhcp[m
+[VM 1] [m[37m[  2.055714 ax_net:295] [32mDevice: lo[m
+[VM 1] [m[37m[  2.062016 ax_net:295] [32mDevice: eth0[m
+[VM 1] [m[37m[  2.069517 ax_net::service:606] [32meth0: DHCP enabled[m
+[VM 1] [m[37m[  4.117535 ax_net:992] [33mDHCP bootstrap timed out[m
+[37m[ 93.253303 1:22 axvm::runtime::hvc:272] [32mVM[1] PSCI_CPU_ON target=0x200 entry=0x80592c7c context=0x81043d00[m
+[m[37m[ 93.254256 1:22 axvm::runtime::vcpus:362] [32mSpawning task for VM[1] VCpu[1][m
+[m[37m[ 93.254967 1:22 axvm::runtime::vcpus:400] [32mVCpu task Task(27, "VM[1]-VCpu[1]") created cpumask: [2, ], initial CPU 2[m
+[m[37m[ 93.256004 2:27 axvm::runtime::vcpus:461] [32mVM[1] VCpu[1] waiting for running[m
+[m[37m[ 93.256711 2:27 axvmunning...[m
+[m[VM 1] [m[37m[  4.133793 ax_runtime::mp:79] [32mSecondary CPU 1 started.[m
+[VM 1] [m[37m[  4.133793 ax_runtime:348] [32mPrimary CPU 0 init OK.[m
+[VM 1] [m[37m[  4.144061 ax_runtime::mp:110] [32mSecondary CPU 1 init OK.[m
+[VM 1] [m[37m[  4.163379 0:2 ax_fs_ng::block::runtime::lifecycle::device:369] [32mblock device virtio-blk online with 1 hctxs across 2 CPUs[m
+[VM 1] [m[37m[  4.182414 0:2 ktracepoint:282] [32mtracepoint_data_start: 0xffffffff804dac28, tracepoint_data_end: 0xffffffff804dac88[m
+[VM 1] [m[37m[  4.200751 0:2 ktracepoint:297] [32mtracepoint_data_len: 6[m
+[VM 1] [m[37m[  4.210629 0:2 ktracepoint:314] [32mtracepoint registered: sched:sched_process_exit[m
+[VM 1] [m[37m[  4.223836 0:2 ktracepoint:314] [32mtracepoint registered: sched:sched_process_fork[m
+[VM 1] [m[37m[  4.236222 0:2 ktracepoint:314] [32mtracepoint registered: sched:sched_switch[m
+[VM 1] [m[37m[  4.248165 0:2 ktracepoint:314] [32mtracepoint registered: syscalls:sys_clone[m
+[VM 1] [m[37m[  4.260344 0:2 ktracepoint:314] [32mtracepoint registered: syscalls:sys_enter_openat[m
+[VM 1] [m[37m[  4.273724 0:2 ktracepoint:314] [32mtracepoint registered: syscalls:sys_mkdirat[m
+[VM 1] [mInitialized 6 tracepoints
+[VM 1] kmod subsystem initialized
+[VM 1] [37m[  4.292476 0:2 starry_kernel::pseudofs:86] [32mInitialize pseudofs...[m
+[VM 1] [m[37m[  4.304280 0:2 starry_kernel::pseudofs::dev::tty::serial:256] [32mttyS0 registered: path=/pl011@9000000, alias=Some(0), paddr=0x9000000, irq=Some(Source(FdtInterrupt(FdtIrqSpec { controller: 4, cells: [0, 1, 4] })))[m
+[VM 1] [m[37m[  4.334763 0:2 starry_kernel::pseudofs::dev::tty::serial:201] [32m/dev/console bound to ttyS0[m
+[VM 1] [m[37m[  4.349536 0:2 starry_kernel::pseudofs:80] [32mMounted devfs at /dev[m
+[VM 1] [m[37m[  4.360616 0:2 starry_kernel::pseudofs::usbfs:55] [32musbfs: initializing manager[m
+[VM 1] [m[37m[  4.373622 0:2 starry_kernel::pseudofs::usbfs::manager:1486] [32musbfs: discovered 0 USB host(s)[m
+[VM 1] [m[37m[  4.387815 0:2 starry_kernel::pseudofs::usbfs:58] [32musbfs: no USB host found, skip mounting usbfs[m
+[VM 1] [m[37m[  4.402906 0:2 starry_kernel::pseudofs:80] [32mMounted tmpfs at /dev/shm[m
+[VM 1] [m[37m[  4.429620 0:2 starry_kernel::pseudofs:80] [32mMounted tmpfs at /tmp[m
+[VM 1] [m[37m[  4.440744 0:2 starry_kernel::pseudofs:80] [32mMounted mqueue at /dev/mqueue[m
+[VM 1] [m[37m[  4.453318 0:2 starry_kernel::dyn_debug:61] [32mdebug_init: initializing dynamic debug sites[m
+[VM 1] [m[37m[  4.467779 0:2 starry_kernel::dyn_debug:64] [32mdebug_init: found 192 dynamic debug sites[m
+[VM 1] [m[37m[  4.481463 0:2 starry_kernel::pseudofs::proc:74] [32mRead kallsyms, size: 1336KB[m
+[VM 1] [m[37m[  4.518133 0:2 starry_kernel::pseudofs:80] [32mMounted proc at /proc[m
+[VM 1] [m[37m[  4.529822 0:2 starry_kernel::pseudofs:80] [32mMounted sysfs at /sys[m
+[VM 1] [m[37m[  4.541215 0:2 starry_kernel::pseudofs:80] [32mMounted debug at /sys/kernel/debug[m
+[VM 1] [m[37m[  4.554428 0:2 starry_kernel::task::timer:331] [32mInitialize alarm...[m
+[VM 1] [m[37m[  4.570442 0:16 starry_kernel::task::user:70] [32mEnter user space: ip=0x400640, sp=0x3fffffff630[m
+[VM 1] [mWelcome to [96m[1mStarry OS[0m!
+[VM 1] /bin/sh: env: not found
+[VM 1] 
+[VM 1] Use [1m[3mapk[0m to install packages.
+[VM 1] 
+[VM 1] STARRY_GROUPED_AUTORUN_INIT
+[VM 1] [37m[  4.677551 0:16 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  4.677650 0:17 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffe920[m
+[VM 1] [m[37m[  4.720968 0:18 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3fffffff230[m
+[VM 1] [m[37m[  4.723042 0:18 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0[VM 1] [m[37m[  4.745027 0:19 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffede0[m
+[VM 1] [m[37m[  4.775534 0:19 starry_kernel::task::ops:398] [32mTask(19, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  4.786520 0:19 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 18[m
+[VM 1] [m[37m[  4.795935 0:18 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  4.796020 0:18 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  4.821304 0:18 starry_kernel::task::ops:398] [32mTask(18, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  4.832235 0:18 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 1] [m[37m[  4.832412 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  4.832480 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [mIVC-STARRY-BOOT mode=neural backend=native fault_profile=none count=20 period_ms=100 vcpus=2
+[VM 1] [37m[  4.835530 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  4.887415 0:20 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffedb0[m
+[VM 1] [m[37m[  4.917177 0:20 starry_kernel::task::ops:398] [32mTask(20, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  4[VM 1] [m[37m[  4.937642 0:17 starry_kernel::syscall::task::wa1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  4.937715 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNO[VM 1] [m[37m[  4.975032 0:21 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[VM 1] [m[37m[  4.981474 0:21 starry_kernel::task::ops:398] [32mTask(21, "busybox") exit with[VM 1] [m[37m[  5.012393 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0[VM 1] [m[37m[  5.012463 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  5.014479 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0[VM 1] [m[37m[  5.050253 0:22 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[VM 1] [m[37m[  5.057054 0:22 starry_kernel::task::ops:398] [32mTask(22, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  5.078574 0:22 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 1] [m[37m[  5.087942 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.088012 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  5.113558 0:23 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3fffffff230[m
+[VM 1] [m[37m[  5.115636 0:23 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.137532 0:24 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffede0[m
+[VM 1] [m[37m[  5.159026 0:24 starry_kernel::task::ops:398] [32mTask(24, "busybox") exit with code: 256[m
+[VM 1] [m[37m[  5.169958 0:24 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 23[m
+[VM 1] [m[37m[  5.179370 0:23 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0[m
+[VM 1] [m[37m[  5.179440 0:23 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  5.179780 0:23 starry_kernel::task::ops:398] [32mTask(23, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  5.214358 0:23 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 1] [m[37m[  5.214525 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.214585 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [mIVC-STARRY-NET iface=eth0 mac=unknown ip=10.0.0.1/24 peer=10.0.0.2 udp_port=5500 segment=1
+[VM 1] IVC-STARRY-PEER-WAIT seconds=2
+[VM 1] [37m[  5.216668 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  5.263026 0:25 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3fffffff460[m
+[VM 1] [m[37m[  7.290365 0:25 starry_kernel::task::ops:398] [32mTask(25, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  7.301421 0:25 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 1] [m[37m[  7.311203 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  7.311271 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOm
+[VM 1] [m[37m[  7.314283 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  7.350025 0:26 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffede0[m
+[VM 1] [m[37m[  7.386957 0:26 ax_net::udp:288] [32mUDP socket #0: bound on *:49152[m
+[VM 1] [mIVC-CONTROLLER-START peer=10.0.0.2:5500 count=20 policy=neural period_ms=100 session_id=3102134838 backend=native ack_timeout_ms=1000
+[VM 1] [37m[  7.421545 0:8 ax_net::device::ethernet:406] [32meth0: requesting ARP for 10.0.0.2[m
+[VM 1] [m[37m[  7.431946 0:7 ax_net::device::ethernet:486] [32meth0: ARP 10.0.0.2 -> 52-54-00-00-00-02[m
+[VM 2] IVC-RTOS-PROGRESS rtos=freertos accepted=1 seq=1 mode=Neural actuator_permille=951 measured_milli_c=20266 duplicates=0 protocol_errors=0
+[VM 1] [m[37m[  7.431984 0:7 ax_net::device::ethernet:561] [32meth0: sending pending IPv4 packet to 10.0.0.2 via 52-54-00-00-00-02[m
+[VM 1] [mIVC-CONTROLLER-STATUS seq=1 mode=Neural actuator_permille=951 measured_milli_c=20266 setpoint_milli_c=45000
+[VM 2] IVC-RTOS-PROGRESS rtos=freertos accepted=20 seq=20 mode=Neural actuator_permille=1000 measured_milli_c=25340 duplicates=0 protocol_errors=0
+[VM 1] IVC-CONTROLLER-STATUS seq=20 mode=Neural actuator_permille=1000 measured_milli_c=25340 setpoint_milli_c=50000
+[VM 2] IVC-RTOS-RESULT rtos=freertos profile=normal accepted=20 applied=20 duplicates=0 acks_dropped=0 status_sent=20 acks_sent=20 errors_sent=0 protocol_errors=0
+[VM 2] IVC-RTOS-OUTCOME profile=normal accepted=20 applied=20 duplicates=0 acks_dropped=0
+[VM 2] IVC-RTOS-MESSAGES status_sent=20 acks_sent=20 errors_sent=0 protocol_errors=0
+[VM 2] IVC-RTOS-OUTCOME profile=normal accepted=20 applied=20 duplicates=0 acks_dropped=0
+[VM 2] IVC-RTOS-MESSAGES status_sent=20 acks_sent=20 errors_sent=0 protocol_errors=0
+[VM 1] IVC-CONTROLLER-RAW path=/var/lib/ivc/raw.csv samples=20
+[VM 1] IVC-CONTROLLER-OUTCOME policy=neural sent=20 acknowledged=20 errors=0 timeouts=0
+[VM 1] IVC-CONTROLLER-RELIABILITY retransmissions=0 recoveries=0 success_percent=100.000
+[VM 1] IVC-CONTROLLER-FULL-LOOP p50_us=1929 p95_us=16647 p99_us=16647 max_us=50663
+[VM 1] IVC-CONTROLLER-PRE-SEND p50_us=20 p95_us=21 p99_us=21 max_us=13075
+[VM 1] IVC-CONTROLLER-TRANSPORT p50_us=1910 p95_us=16627 p99_us=16627 max_us=37588 throughput_msg_s=9.923
+[VM 1] IVC-CONTROLLER-CONTROL rmse_milli_c=31799.089 iae_milli_c_s=61355.800 max_overshoot_milli_c=0
+[VM 1] IVC-CONTROLLER-OUTCOME policy=neural sent=20 acknowledged=20 errors=0 timeouts=0
+[VM 1] IVC-CONTROLLER-RELIABILITY retransmissions=0 recoveries=0 success_percent=100.000
+[VM 1] IVC-CONTROLLER-FULL-LOOP p50_us=1929 p95_us=16647 p99_us=16647 max_us=50663
+[VM 1] IVC-CONTROLLER-PRE-SEND p50_us=20 p95_us=21 p99_us=21 max_us=13075
+[VM 1] IVC-CONTROLLER-TRANSPORT p50_us=1910 p95_us=16627 p99_us=16627 max_us=37588 throughput_msg_s=9.923
+[VM 1] IVC-CONTROLLER-CONTROL rmse_milli_c=31799.089 iae_milli_c_s=61355.800 max_overshoot_milli_c=0
+[VM 1] IVC-CONTROLLER-RESULT policy=neural sent=20 acknowledged=20 errors=0 timeouts=0 retransmissions=0 recoveries=0 success_pe16647 full_loop_p99_us=16647 full_loop_max_us=50663 pre_send_p50=20 pre_send_p95_us=21 pre_send_p99_us=21 pre_send_max_us=13075 transport_p50_us=1910 transport_p95_us=16627 transport_p99_us=16627 transport_max_us=37588 throughput_msg_s=9.923 rmse_milli_c=31799.089 iae_milli_c_s=61355.800 max_overshoot_milli_c=0
+[VM 1] [37m[  9.861648 0:26 starry_kernel::task::ops:398] [32mTask(26, "ivcproto") exit with code: 0[m
+[VM 1] [m[37m[  9.872632 0:26 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 1] [m[37m[  9.882416 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  9.882487 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 2] IVC-RTOS-POWEROFF rtos=freertos accepted=20
+[VM 1] [m[37m[  9.909000 0:27 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffd090[m
+[VM 1] [m[37m[  9.915852 0:27 starry_kernel::task::ops:398] [32mTask(27, "busybox") exit with code: 0[m
+[VM 1] [m[37m[  9.937392 0:27 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 1] [m[37m[  9.937579 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[  9.937643 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[  9.972556 0:28 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffd570[m
+[VM 1] [m[37m[  9.991662 0:28 starry_kernel::task::ops:398] [32mTask(28, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 10.003212 0:28 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 2] IVC-RTOS-POWEROFF rtos=freertos accepted=20
+[VM 1] [m[37m[ 10.003381 0:17 starry_kernel::syscall::task::wait:245] [32sys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 10.003445 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 1] [m[37m[ 10.055817 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 10.055905 0:29 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffdc80[m
+[VM 1] [m[37m[ 10.062534 0:29 starry_kernel::task::ops:398] [32mTask(29, "busybox") exit with code: 0[m
+[VM 1] [m[37m[ 10.095528 0:29 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[VM 1] [m[37m[ 10.104783 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 10.104852 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[VM 2] IVC-RTOS-POWEROFF rtos=freertos accepted=20
+[VM 1] [m[37m[ 10.106762 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[VM 1] [m[37m[ 10.143121 0:30 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffec40[m
+[VM 2] IVC-RTOS-POWEROFF rtos=freertos accepted=20
+[VM 2] IVC-RTOS-POWEROFF rtos=freertos accepted=20
+[37m[ 99.587138 0:24 axvm::runtime::hvc:352] [33mVM[2] PSCI_SYSTEM_OFF[m
+[m[37m[ 99.587742 0:24 axvm::vm:1416] [32mStopping VM[2]: SystemDown[m
+[m[37m[ 99.588318 0:24 axvm::runtime::vcpus:625] [33mVM[2] VCpu[0] stopping because of VM stopping[m
+[m[37m[ 99.589108 0:24 axvm::runtime::vcpus:337] [32mVM[2] last vCPU task exiting, decreasing running VM count[m
+[m[37m[ 99.590025 0:24 axvm::runtime::vcpus:347] [32mVM[2] state changed to Stopped[m
+[m[37m[ 99.590703 0:24 axvm::runtime::vcpus:645] [32mVM[2] VCpu[0] exiting...[m
+[m[m[37m[ 14.149135 0:30 starry_kernel::task::ops:398] [32mTask(30, "busybox") exit with code: 0[m
+[m[37m[ 14.159388 0:30 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[m[37m[ 14.167921 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 14.167990 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=20 sha256=f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2
+[37m[ 14.170109 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 14.214301 0:31 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffec10[m
+[m[37m[ 15.220316 0:31 starry_kernel::task::ops:398] [32mTask(31, "busybox") exit with code: 0[m
+[m[37m[ 15.230745 0:31 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[m[37m[ 15.239761 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 15.239830 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=20 sha256=f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2
+[37m[ 15.241779 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 15.285280 0:32 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffec10[m
+[m[37m[ 16.291244 0:32 starry_kernel::task::ops:398] [32mTask(32, "busybox") exit with code: 0[m
+[m[37m[ 16.301816 0:32 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[m[37m[ 16.310962 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.311031 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=20 sha256=f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2
+[37m[ 16.313120 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 16.356213 0:33 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffec10[m
+[m[37m[ 17.362236 0:33 starry_kernel::task::ops:398] [32mTask(33, "busybox") exit with code: 0[m
+[m[37m[ 17.373017 0:33 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[m[37m[ 17.381420 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.381487 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=20 sha256=f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2
+[37m[ 17.383588 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 17.426903 0:34 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffec10[m
+[m[37m[ 18.432996 0:34 starry_kernel::task::ops:398] [32mTask(34, "busybox") exit with code: 0[m
+[m[37m[ 18.442956 0:34 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[m[37m[ 18.451348 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.451415 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-RAW path=/var/lib/ivc/raw.csv samples=20 sha256=f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2
+[37m[ 18.453494 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 18.497176 0:35 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3ffffffec10[m
+[m[37m[ 19.503091 0:35 starry_kernel::task::ops:398] [32mTask(35, "busybox") exit with code: 0[m
+[m[37m[ 19.513022 0:35 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[m[37m[ 19.521308 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.521457 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[m[37m[ 19.523459 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.555610 0:36 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3fffffff2c0[m
+[m[37m[ 19.584543 0:36 starry_kernel::task::ops:398] [32mTask(36, "busybox") exit with code: 0[m
+[m[37m[ 19.594397 0:36 starry_kernel::task::signal:605] [32mSend signal SIGCHLD to process 17[m
+[m[37m[ 19.602570 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.602638 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(WNOHANG)[m
+[mIVC-STARRY-DONE exit=0
+[37m[ 19.604813 0:17 starry_kernel::syscall::task::wait:245] [32msys_waitpid <= pid: -1, options: WaitPidOptions(0x0)[m
+[m[37m[ 19.638917 0:37 starry_kernel::task::user:70] [32mEnter user space: ip=0x48653c, sp=0x3fffffff460[m
+[m[37m[ 19.665285 0:37 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[108.805100 1:22 axvm::runtime::hvc:352] [33mVM[1] PSCI_SYSTEM_OFF[m
+[m[37m[108.805703 1:22 axvm::vm:1416] [32mStopping VM[1]: SystemDown[m
+[m
+
+[A[3x7mvisor][ VM1[01]8 .s8topp0ed6; r2eturni87ng t o1 the :2man2 aagxemvemnt ::sruhntime::elvl
+cpusWe:6l25c] o[3me3m tVo M[AxV1is] VorCp uS[hell!0
+Ty]pe 'h stopepinlg pbe' ctoa see uavsea iloablef c VoMmm ansdtsopp
+inUgse[ UmP/DOW
+N[ amrro[3ws7 mt[o10 na8.80v6i29g4 2:ate co2mman7d a xhvism::truntorimy
+eC:on:vscpousle:6 sh2ortc5] uts:[
+ 3 C3tmVrMl+[X1], VCp u[then1] s h to retppuirnng b to ethcause Axve oisf oVMr  shsetll
+opp i ngCtr[lm+X
+, [then m[  [37am[t10t8a.ch t8h081e33  1:pr2evi2ou axvms::r uruntninmei:n:gv guecspust:6
+45  Ctrl+X] [32m,VM the[n1]  VC] p au[0]tta ecxitinh g.th.e ne.x[t m
+runn[mi[ng gu3est7m[
+1
+08.809[28Ka12 x2v:2i7 soraxvm::/:$r untime::vcpus:337] [32mVM[1] last vCPU task exiting, decreasing running VM count[m
+[m[37m[108.812142 2:19 axvm::arch::aarch64::vtimer::state:225] [33mfailed to wake VM[1] vCPU 1 for architectural timer: InvalidState { operation: "axvm::runtime::vcpus", detail: "VM[1] is not accepting interrupts" }[m
+[m[37m[108.813849 2:27 axvm::runtime::vcpus:347] [32mVM[1] state changed to Stopped[m
+[m[37m[108.814527 2:27 axvm::runtime::vcpus:645] [32mVM[1] VCpu[1] exiting...[m
+[mAXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+AXVISOR_SHELL_READY
+[2Kaxvisor:/$ s[2Kaxvisor:/$ ss[2Kaxvisor:/$ ss [2Kaxvisor:/$ ss 1[2Kaxvisor:/$ ss 1 [2Kaxvisor:/$ ss 1 0[2Kaxvisor:/$ ss 1 0 [2Kaxvisor:/$ ss 1 0 /[2Kaxvisor:/$ ss 1 0 /h[2Kaxvisor:/$ ss 1 0 /ho[2Kaxvisor:/$ ss 1 0 /hom[2Kaxvisor:/$ ss 1 0 /home[2Kaxvisor:/$ ss 1 0 /home/[2Kaxvisor:/$ ss 1 0 /home/o[2Kaxvisor:/$ ss 1 0 /home/or[2Kaxvisor:/$ ss 1 0 /home/ora[2Kaxvisor:/$ ss 1 0 /home/oran[2Kaxvisor:/$ ss 1 0 /home/orang[2Kaxvisor:/$ ss 1 0 /home/orange[2Kaxvisor:/$ ss 1 0 /home/orangep[2Kaxvisor:/$ ss 1 0 /home/orangepi[2Kaxvisor:/$ ss 1 0 /home/orangepi/[axvisor:/$ ss 1 0 /home/orangepi/i[2Kaxvisor:/$ ss 1 0 /home/orangepi/iv[2Kaxvisor:/$ ss 1 0 /home/orangepi/ivc[2Kaxvisor:/$ ss 1 0 /home/orangepi/ivc-[2Kaxvisor:/$ ss 1 0 /home/orangepi/ivc-f[2Kaxvisor:/$ ss 1 0 /home/orangepi/ivc-ft[2Kaxvisor:/$ ss 1 0 /home/orangepi/ivc-fts
+AXVISOR_VM_BLOCK_SNAPSHOT_STARTED vm=1 index=0 path=/home/orangepi/ivc-fts
+[37m[110.104130 3:2 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[110.107622 3:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[m[37m[110.108257 3:2 rsext4::ext4::sync:13]37m[110.110153 3:2 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[110.111415 3:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[m[37m[110.112049 3:2 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[110.113314 3:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[m[37m[110.113947 3:2 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[110.115199 3:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[m[37m[110.115913 3:2 rsext4::ext4::sync:13] [32mSyncing filesystem...[m
+[m[37m[110.159033 3:2 rsext4::ext4::sync:43] [32mFilesystem unmounted cleanly[m
+[mAXVISOR_SNAPSHOT_SYNC_OK
+AXVISOR_SNAPSHOT_SYNC_OK
+AXVISOR_SNAP
+=== SUCCESS PATTERN MATCHED: (?m)^AXVISOR_SNAPSHOT_SYNC_OK\r*$ ===
+SHOT_SYNC_OK
+AXVISOR_SNAPSHOT_SYNC_OK
+AXVISOR_SNAPSHOT_SYNC_OK
+AXVISOR_VM_BLOCK_SNAPSHOT vm=1 index=0 path=/home/orangepi/ivc-fts bytes=67108864
+AXVISOR_VM_BLOCK_SNAPSHOT vm=1 index=0 path=/home/orangepi/ivc-fts bytes=67SNAPSHOT vm=1 index=0 path=/homets bytes=67108864
+AXVISOR_HOST_FILESYSTEM_SYNCED
+AXVISOR_HOST_FILESYSTEM_SYNCED
+AXVISOR_HOST_FILESYSTEM_SYNCED
+AXVISOR_HOST_FILESYSTEM_SYNCED
+AXVISOR_HOST_FILESYSTEM_SYNCED
+axvisor:/$ [axbuild] board build+run package=axvisor target=scripts/targets/std/pie/aarch64-unknown-linux-musl.json config=competition/ivc/config/axvisor-orangepi-5-plus-freertos-smoke.toml ... done (159.69s)
+ssh: connect to host 192.168.31.33 port 22: Connection timed out
+Axvisor filesystem sync marker was confirmed by the board test
+/home/seven_wsl/.local/share/tgos-board-power-venv/lib/python3.13/site-packages/miio/miot_device.py:23: FutureWarning: functools.partial will be a method descriptor in future Python versions; wrap it in enum.member() if you want to preserve the old behavior
+  Bool = partial(_str2bool)
+RESULT action=status board=orangepi-5-plus-rk3588 power=on watts=2 temperature_celsius=51 fault_code=0
+/home/seven_wsl/.local/share/tgos-board-power-venv/lib/python3.13/site-packages/miio/miot_device.py:23: FutureWarning: functools.partial will be a method descriptor in future Python versions; wrap it in enum.member() if you want to preserve the old behavior
+  Bool = partial(_str2bool)
+RESULT action=cycle board=orangepi-5-plus-rk3588 power=on watts=0 temperature_celsius=51 fault_code=0
+
+=> setenv devtype mmc; setenv devnum 1; setenv mmc_bootdev 1; setenv distro_bootpart 1; setenv prefix /; echo UBOOT_LINUX_BOOT_BEGIN; fatload mmc 1:1 0x00c00000 boot.scr; source 0x00c00000
+UBOOT_LINUX_BOOT_BEGIN
+3413 bytes read in 3 ms (1.1 MiB/s)
+## Executing script at 00c00000
+Boot script loaded from mmc 1
+178 bytes read in 2 ms (86.9 KiB/s)
+15301327 bytes read in 1289 ms (11.3 MiB/s)
+ssh: connect to host 192.168.31.33 port 22: No route to host
+ssh: connect to host 192.168.31.33 port 22: No route to host
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+BOARD_LINUX_RESTORED
+debugfs 1.46.5 (30-Dec-2021)
+debugfs 1.46.5 (30-Dec-2021)
+BOARD_RESULT_IMAGE_VALIDATED vm=1 index=0 path=/home/orangepi/ivc-fts bytes=67108864 sha256=29f471a0fe5ddf3762b16b6269f1ed92f57131dd47970d8ebe1857be9276d9b7 fsck=clean
+BOARD_GUEST_RAW_MANIFEST path=/var/lib/ivc/raw.csv samples=20 sha256=f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2
+BOARD_RAW_RESULT_HARVESTED path=/mnt/c/Users/10469/Workspace/starryos_t/tgoskits-rt-ivc/tmp/competition/ivc/orangepi-rtos-20260818/final-psci-v2/freertos-smoke/run-001/raw.csv samples=20 sha256=f807c462ee89d687483ab1b09727dca654a018c49773a56c926e7ef8052b97a2
+BOARD_IDENTITY board_id=bf61f4d4a1d994ad hostname=orangepi5plus cpu_temp_milli_c=43461

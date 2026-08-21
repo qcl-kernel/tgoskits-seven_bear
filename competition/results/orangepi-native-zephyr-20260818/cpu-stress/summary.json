@@ -1,0 +1,253 @@
+{
+  "artifacts": {
+    "binary": {
+      "bytes": 65704,
+      "path": "build/zephyr/zephyr.bin",
+      "sha256": "f854f05df0354c22934aa8996a274cb7a29b2df337b128fd077db91dfbdab38f"
+    },
+    "board_service": {
+      "bytes": 382,
+      "path": "board-service.log",
+      "sha256": "2914033f1855568c7d49230fc1968501222025eb28a8e0171a5fa5b6b0220a12"
+    },
+    "build_log": {
+      "bytes": 17037,
+      "path": "build.log",
+      "sha256": "2e5f45c026819dcb85895c7f76cb340df4f6656a81e2c96782cbd941c88fb59e"
+    },
+    "dot_config": {
+      "bytes": 25074,
+      "path": "build/zephyr/.config",
+      "sha256": "c1fe910b2f0d4dd18124e3112adde56953bde2fdbf37633935f0bee5f370ae17"
+    },
+    "elf": {
+      "bytes": 922608,
+      "path": "build/zephyr/zephyr.elf",
+      "sha256": "eafaafe32dd9f0628454662f1776cb1f8fc7faccb2a03f422eed7e4ec2db6fbe"
+    },
+    "post_linux_health": {
+      "bytes": 14919,
+      "path": "post-run-linux-health.log",
+      "sha256": "42f69d0cbe02892bc0de0d1ca17bfb8aceba97eeb0f958847ca6deccbdc6819f"
+    },
+    "power_after": {
+      "bytes": 133,
+      "path": "power-after.json",
+      "sha256": "11e4b9d675e8afad849fbb3a96aeca8afd84b8e88701e639b9c6b4fc5e71d459"
+    },
+    "power_before": {
+      "bytes": 133,
+      "path": "power-before.json",
+      "sha256": "9e2012b4a2d2c9924a47fb782285e1f056c313a9e21126ea36e00dc9135d5219"
+    },
+    "pre_linux_health": {
+      "bytes": 14918,
+      "path": "pre-run-linux-health.log",
+      "sha256": "d1935c0d60606f4e7bb15f01688072e24b04a05a35b01366a3708502c3a7639b"
+    },
+    "raw_console": {
+      "bytes": 8270,
+      "path": "console.log",
+      "sha256": "4638c426eb67d7c42e2ff3c99f2d64c07c99c6e4ee795a070ac48152a1a20755"
+    },
+    "serial_status": {
+      "bytes": 16,
+      "path": "serial-status.txt",
+      "sha256": "95512730f82139fad0145179475fe7db6e116de5f328036822355253e80f8e68"
+    },
+    "source_provenance": {
+      "bytes": 629,
+      "path": "source-provenance.json",
+      "sha256": "7a2a541c0eb5ce8f4b8305cd220e3edd0cf9571e2b9d7c30ccde63fb96e57c1e"
+    },
+    "stage_log": {
+      "bytes": 288,
+      "path": "stage.log",
+      "sha256": "03f0398121f21c2df444f0c78fc9779122d77253335c6c6eda9dacf6f01787c0"
+    }
+  },
+  "completion": {
+    "early_wakes": 0,
+    "schema": 1,
+    "status": "pass",
+    "timer_misses": 0,
+    "warmup_timer_misses": 0,
+    "workload": "cpu-stress"
+  },
+  "configuration": {
+    "benchmark_priority": -16,
+    "board": "roc_rk3588_pc",
+    "clock_hz": 24000000,
+    "cpu_count": 1,
+    "cpu_model": "cortex-a55",
+    "os": "zephyr",
+    "period_us": 1000,
+    "platform": "orange-pi-5-plus-rk3588",
+    "qemu_icount": "not-applicable",
+    "record_replays": 3,
+    "record_tx_chunk_bytes": 16,
+    "record_tx_chunk_delay_ms": 5,
+    "samples": 10000,
+    "schema": 1,
+    "stress_priority": 5,
+    "ticks_per_sec": 1000,
+    "warmup": 100,
+    "workload": "cpu-stress",
+    "zephyr_version": "4.3.0"
+  },
+  "generated_at_utc": "2026-08-18T06:53:11.550663+00:00",
+  "hardware": {
+    "board": "Orange Pi 5 Plus",
+    "measured_cpu": "Cortex-A55 CPU0",
+    "power_after": {
+      "action": "status",
+      "electric_power_watts": 2,
+      "fault_code": 0,
+      "name": "orangepi-5-plus-rk3588",
+      "power_on": true,
+      "temperature_celsius": 50
+    },
+    "power_before": {
+      "action": "status",
+      "electric_power_watts": 1,
+      "fault_code": 0,
+      "name": "orangepi-5-plus-rk3588",
+      "power_on": true,
+      "temperature_celsius": 51
+    },
+    "soc": "Rockchip RK3588",
+    "timer": "AArch64 architected counter at 24 MHz",
+    "uart": "RK3588 UART2 at 1,500,000 baud"
+  },
+  "load": {
+    "benchmark_cycles": 212345,
+    "benchmark_permille": 0,
+    "cpu_cycles": 241786909,
+    "cpu_idle_permille": 0,
+    "cpu_non_idle_permille": 1000,
+    "idle_cycles": 0,
+    "schema": 1,
+    "stress_blocks": 1330461,
+    "stress_blocks_per_second": 131716,
+    "stress_cycles": 241574396,
+    "stress_permille": 999,
+    "verified": true,
+    "window_duration_us": 10100962,
+    "workload": "cpu-stress"
+  },
+  "method": {
+    "clock": "k_cycle_get_64 backed by the RK3588 architected timer",
+    "dispatch_latency": "task observation minus timer callback timestamp",
+    "measurement_logging": "no console output occurs while samples are collected",
+    "percentile": "nearest-rank over 10,000 samples",
+    "period": "1000 us absolute k_timer period",
+    "wake_lateness": "task observation minus absolute timer deadline"
+  },
+  "metrics": {
+    "periodic_wake_lateness": {
+      "actual_duration_us": 10000004,
+      "count": 10000,
+      "expected_duration_us": 10000000,
+      "max_ns": 4208,
+      "mean_ns": 2750,
+      "metric": "periodic_wake_lateness",
+      "min_ns": 2625,
+      "p50_ns": 2750,
+      "p90_ns": 2875,
+      "p999_ns": 2875,
+      "p99_ns": 2875,
+      "schema": 1,
+      "unit": "ns",
+      "workload": "cpu-stress"
+    },
+    "timer_to_task_dispatch": {
+      "actual_duration_us": 10000004,
+      "count": 10000,
+      "expected_duration_us": 10000000,
+      "max_ns": 2916,
+      "mean_ns": 1458,
+      "metric": "timer_to_task_dispatch",
+      "min_ns": 1458,
+      "p50_ns": 1458,
+      "p90_ns": 1458,
+      "p999_ns": 1458,
+      "p99_ns": 1458,
+      "schema": 1,
+      "unit": "ns",
+      "workload": "cpu-stress"
+    }
+  },
+  "profile": "short",
+  "schema_version": 1,
+  "scope": "Zephyr directly on Orange Pi 5 Plus RK3588; no AxVisor or guest virtualization",
+  "serial_capture_status": 0,
+  "serial_replays": {
+    "completion": {
+      "complete_copies": 3,
+      "complete_replays": [
+        1,
+        2,
+        3
+      ],
+      "configured_copies": 3,
+      "incomplete_copies": 0,
+      "malformed_copies": 0
+    },
+    "configuration": {
+      "complete_copies": 3,
+      "complete_replays": [
+        1,
+        2,
+        3
+      ],
+      "configured_copies": 3,
+      "incomplete_copies": 0,
+      "malformed_copies": 0
+    },
+    "load": {
+      "complete_copies": 3,
+      "complete_replays": [
+        1,
+        2,
+        3
+      ],
+      "configured_copies": 3,
+      "incomplete_copies": 0,
+      "malformed_copies": 0
+    },
+    "results": {
+      "complete_copies": {
+        "periodic_wake_lateness": 1,
+        "timer_to_task_dispatch": 3
+      },
+      "configured_copies_per_metric": 3,
+      "incomplete_copies": 0,
+      "malformed_copies": 1
+    },
+    "workload_ready": {
+      "complete_copies": 3,
+      "complete_replays": [
+        1,
+        2,
+        3
+      ],
+      "configured_copies": 3,
+      "incomplete_copies": 0,
+      "malformed_copies": 0
+    }
+  },
+  "source": {
+    "commit": "3568e1b6d5cdd51a6b964a2a1d6d29200fea2056",
+    "core_autocrlf": "true",
+    "tag_object": "981205b3e7cdf9fdf2e9e71b8b6b64fcc71c12a0",
+    "version": "v4.3.0",
+    "worktree": "clean"
+  },
+  "tools": {
+    "compiler": "aarch64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+    "host_kernel": "6.18.33.2-microsoft-standard-WSL2",
+    "host_machine": "x86_64",
+    "python": "3.10.12"
+  },
+  "workload": "cpu-stress"
+}

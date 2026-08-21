@@ -1,0 +1,162 @@
+root_mount=/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Load Kernel Module fuse...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Started Nameserver information manager.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Reached target Preparation for Network.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in File System Check on Root Device being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Load Kernel Modules...
+Aug 18 14:52:32 orangepi5plus kernel: fuse: init (API version 7.37)
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Remount Root and Kernel File Systems...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Coldplug All udev Devices...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted Huge Pages File System.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted POSIX Message Queue File System.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted Kernel Debug File System.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted Kernel Trace File System.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Restore / save the current clock.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Create List of Static Device Nodes.
+Aug 18 14:52:32 orangepi5plus kernel: EXT4-fs (mmcblk1p2): re-mounted. Quota mode: none.
+Aug 18 14:52:32 orangepi5plus systemd[1]: modprobe@configfs.service: Deactivated successfully.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load Kernel Module configfs.
+Aug 18 14:52:32 orangepi5plus systemd[1]: modprobe@drm.service: Deactivated successfully.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load Kernel Module drm.
+Aug 18 14:52:32 orangepi5plus systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load Kernel Module efi_pstore.
+Aug 18 14:52:32 orangepi5plus systemd[1]: modprobe@fuse.service: Deactivated successfully.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load Kernel Module fuse.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load Kernel Modules.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Remount Root and Kernel File Systems.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounting FUSE Control File System...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounting Kernel Configuration File System...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Platform Persistent Storage Archival being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Load/Save Random Seed...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Apply Kernel Variables...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Create System Users...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted FUSE Control File System.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted Kernel Configuration File System.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Set the console keyboard layout.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load/Save Random Seed.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in First Boot Complete being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Create System Users.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Create Static Device Nodes in /dev...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Apply Kernel Variables.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Create Static Device Nodes in /dev.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Reached target Preparation for Local File Systems.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounting /tmp...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Rule-based Manager for Device Events and Files...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted /tmp.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Coldplug All udev Devices.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Started Rule-based Manager for Device Events and Files.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Helper to synchronize boot up for ifupdown...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Show Plymouth Boot Screen...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Helper to synchronize boot up for ifupdown.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Created slice Slice /system/systemd-backlight.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Load/Save Screen Backlight Brightness of backlight:backlight...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load/Save Screen Backlight Brightness of backlight:backlight.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Started Show Plymouth Boot Screen.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Found device /dev/ttyFIQ0.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Found device /dev/disk/by-uuid/B7B5-A91A.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Dispatch Password Requests to Console Directory Watch when bootsplash is active being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Started Forward Password Requests to Plymouth Directory Watch.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Arbitrary Executable File Formats File System Automount Point being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Reached target Local Encrypted Volumes.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Reached target Hardware activated USB gadget.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Load Kernel Module efi_pstore...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in File System Check on Root Device being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting File System Check on /dev/disk/by-uuid/B7B5-A91A...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Listening on Load/Save RF Kill Switch Status /dev/rfkill Watch.
+Aug 18 14:52:32 orangepi5plus systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load Kernel Module efi_pstore.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Platform Persistent Storage Archival being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Started File System Check Daemon to report status.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished File System Check on /dev/disk/by-uuid/B7B5-A91A.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounting /boot...
+Aug 18 14:52:32 orangepi5plus kernel: FAT-fs (mmcblk1p1): utf8 is not a recommended IO charset for FAT filesystems, filesystem will be case sensitive!
+Aug 18 14:52:32 orangepi5plus systemd[1]: Mounted /boot.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Reached target Local File Systems.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Load AppArmor profiles being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Set console font and keymap...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Raise network interfaces...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Orange Pi ZRAM config...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Tell Plymouth To Write Out Runtime Data...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in RPC security service for NFS server being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Mark the need to relabel after reboot being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Set Up Additional Binary Formats being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Store a System Token in an EFI Variable being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Commit a transient machine-id on disk being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Manage USB device functions...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Set console font and keymap.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Received SIGRTMIN+20 from PID 339 (plymouthd).
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Tell Plymouth To Write Out Runtime Data.
+Aug 18 14:52:32 orangepi5plus kernel: zram0: detected capacity change from 0 to 16347872
+Aug 18 14:52:32 orangepi5plus kernel: Adding 8173932k swap on /dev/zram0.  Priority:5 extents:1 across:8173932k SS
+Aug 18 14:52:32 orangepi5plus kernel: zram: Added device: zram1
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Raise network interfaces.
+Aug 18 14:52:32 orangepi5plus kernel: zram1: detected capacity change from 0 to 409600
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Orange Pi ZRAM config.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Orange Pi memory supported logging...
+Aug 18 14:52:32 orangepi5plus kernel: EXT4-fs (zram1): mounted filesystem without journal. Quota mode: none.
+Aug 18 14:52:32 orangepi5plus kernel: file system registered
+Aug 18 14:52:32 orangepi5plus kernel: read descriptors
+Aug 18 14:52:32 orangepi5plus kernel: read strings
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Dispatch Password Requests to Console Directory Watch when bootsplash is active being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Arbitrary Executable File Formats File System Automount Point being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Load AppArmor profiles being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Load Kernel Module efi_pstore...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Set Up Additional Binary Formats being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Store a System Token in an EFI Variable being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Commit a transient machine-id on disk being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Load Kernel Module efi_pstore.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Condition check resulted in Platform Persistent Storage Archival being skipped.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Started Manage USB device functions.
+Aug 18 14:52:32 orangepi5plus kernel: rk_pcie_establish_link: 227 callbacks suppressed
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: android_work: did not send uevent (0 0 0000000000000000)
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Linking... LTSSM is 0x3
+Aug 18 14:52:32 orangepi5plus kernel: rk-pcie fe170000.pcie: PCIe Link Fail, LTSSM is 0x3, hw_retries=1
+Aug 18 14:52:32 orangepi5plus systemd[1]: Finished Orange Pi memory supported logging.
+Aug 18 14:52:32 orangepi5plus systemd[1]: Starting Journal Service...
+Aug 18 14:52:32 orangepi5plus systemd[1]: Started Journal Service.
+Aug 18 14:52:33 orangepi5plus kernel: dwc3 fc000000.usb: request ffffff8109fed100 was not queued to ep0out
+Aug 18 14:52:33 orangepi5plus kernel: android_work: did not send uevent (0 0 0000000000000000)
+Aug 18 14:52:33 orangepi5plus kernel: rd 0-7: Disabling EAS, schedutil is mandatory
+Aug 18 14:52:33 orangepi5plus kernel: xhci-hcd xhci-hcd.15.auto: xHCI Host Controller
+Aug 18 14:52:33 orangepi5plus kernel: xhci-hcd xhci-hcd.15.auto: new USB bus registered, assigned bus number 7
+Aug 18 14:52:33 orangepi5plus kernel: xhci-hcd xhci-hcd.15.auto: hcc params 0x0220fe64 hci version 0x110 quirks 0x0000800002010010
+Aug 18 14:52:33 orangepi5plus kernel: xhci-hcd xhci-hcd.15.auto: irq 82, io mem 0xfc000000
+Aug 18 14:52:33 orangepi5plus kernel: xhci-hcd xhci-hcd.15.auto: xHCI Host Controller
+Aug 18 14:52:33 orangepi5plus kernel: xhci-hcd xhci-hcd.15.auto: new USB bus registered, assigned bus number 8
+Aug 18 14:52:33 orangepi5plus kernel: xhci-hcd xhci-hcd.15.auto: Host supports USB 3.0 SuperSpeed
+Aug 18 14:52:33 orangepi5plus kernel: usb usb7: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 6.01
+Aug 18 14:52:33 orangepi5plus kernel: usb usb7: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+Aug 18 14:52:33 orangepi5plus kernel: usb usb7: Product: xHCI Host Controller
+Aug 18 14:52:33 orangepi5plus kernel: usb usb7: Manufacturer: Linux 6.1.43-rockchip-rk3588 xhci-hcd
+Aug 18 14:52:33 orangepi5plus kernel: usb usb7: SerialNumber: xhci-hcd.15.auto
+Aug 18 14:52:33 orangepi5plus kernel: hub 7-0:1.0: USB hub found
+Aug 18 14:52:33 orangepi5plus kernel: hub 7-0:1.0: 1 port detected
+Aug 18 14:52:33 orangepi5plus kernel: usb usb8: We don't know the algorithms for LPM for this host, disabling LPM.
+Aug 18 14:52:33 orangepi5plus kernel: usb usb8: New USB device found, idVendor=1d6b, idProduct=0003, bcdDevice= 6.01
+Aug 18 14:52:33 orangepi5plus kernel: usb usb8: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+Aug 18 14:52:33 orangepi5plus kernel: usb usb8: Product: xHCI Host Controller
+Aug 18 14:52:33 orangepi5plus kernel: usb usb8: Manufacturer: Linux 6.1.43-rockchip-rk3588 xhci-hcd
+Aug 18 14:52:33 orangepi5plus kernel: usb usb8: SerialNumber: xhci-hcd.15.auto
+Aug 18 14:52:33 orangepi5plus kernel: hub 8-0:1.0: USB hub found
+Aug 18 14:52:33 orangepi5plus kernel: hub 8-0:1.0: 1 port detected
+Aug 18 14:52:33 orangepi5plus kernel: rk-pcie fe170000.pcie: failed to initialize host
+Aug 18 14:52:35 orangepi5plus kernel: RTL8226B_RTL8221B 2.5Gbps PHY r8169-3-3100:00: attached PHY driver (mii_bus:phy_addr=r8169-3-3100:00, irq=MAC)
+Aug 18 14:52:35 orangepi5plus kernel: r8169 0003:31:00.0 enP3p49s0: Link is Down
+Aug 18 14:52:35 orangepi5plus kernel: RTL8226B_RTL8221B 2.5Gbps PHY r8169-4-4100:00: attached PHY driver (mii_bus:phy_addr=r8169-4-4100:00, irq=MAC)
+Aug 18 14:52:35 orangepi5plus kernel: ttyFIQ ttyFIQ0: tty_port_close_start: tty->count = 1 port count = 2
+Aug 18 14:52:35 orangepi5plus kernel: r8169 0004:41:00.0 enP4p65s0: Link is Down
+Aug 18 14:52:37 orangepi5plus kernel: r8169 0003:31:00.0 enP3p49s0: Link is Up - 2.5Gbps/Full - flow control rx/tx
+Aug 18 14:52:37 orangepi5plus kernel: IPv6: ADDRCONF(NETDEV_CHANGE): enP3p49s0: link becomes ready
+Aug 18 14:52:40 orangepi5plus kernel: platform mtd_vendor_storage: deferred probe pending
+Aug 18 14:52:45 orangepi5plus kernel: ttyFIQ ttyFIQ0: tty_port_close_start: tty->count = 1 port count = 2
+POST_NATIVE_LINUX_HEALTH_PASS

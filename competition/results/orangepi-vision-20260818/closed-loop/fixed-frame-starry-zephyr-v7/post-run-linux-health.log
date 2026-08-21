@@ -1,0 +1,14 @@
+POST_VISION_LINUX_HEALTH_BEGIN
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+ 13:22:59 up 1 min,  2 users,  load average: 0.82, 0.39, 0.14
+[sudo] password for orangepi: Aug 18 13:21:53 orangepi5plus kernel: EXT4-fs (mmcblk1p2): mounted filesystem with writeback data mode. Quota mode: none.
+Aug 18 13:21:53 orangepi5plus systemd[1]: Created slice Slice /system/systemd-fsck.
+Aug 18 13:21:53 orangepi5plus systemd[1]: Listening on fsck to fsckd communication Socket.
+Aug 18 13:21:53 orangepi5plus systemd[1]: Listening on Journal Audit Socket.
+Aug 18 13:21:53 orangepi5plus systemd[1]: Listening on Journal Socket (/dev/log).
+Aug 18 13:21:53 orangepi5plus systemd[1]: Listening on Journal Socket.
+Aug 18 13:21:53 orangepi5plus kernel: EXT4-fs (mmcblk1p2): re-mounted. Quota mode: none.
+Aug 18 13:21:53 orangepi5plus kernel: EXT4-fs (zram1): mounted filesystem without journal. Quota mode: none.
+Aug 18 13:21:53 orangepi5plus systemd[1]: Starting Journal Service...
+Aug 18 13:21:53 orangepi5plus systemd[1]: Started Journal Service.
+POST_VISION_LINUX_HEALTH_PASS

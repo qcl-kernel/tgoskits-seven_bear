@@ -25,6 +25,15 @@ competition/results/axvisor-rt-formal-20260816/*.json text eol=lf
 competition/results/axvisor-rt-formal-20260816/*.md text eol=lf
 competition/results/axvisor-rt-formal-20260816/*.sha256 text eol=lf
 competition/results/axvisor-rt-formal-20260816/SHA256SUMS text eol=lf
+competition/results/orangepi-native-zephyr-20260818/** binary
+competition/results/orangepi-native-zephyr-20260818/**/checksums.sha256 text eol=lf
+competition/results/orangepi-native-zephyr-20260818/README.md text eol=lf
+competition/results/orangepi-rtos-ivc-20260818/** binary
+competition/results/orangepi-rtos-ivc-20260818/**/checksums.sha256 text eol=lf
+competition/results/orangepi-rtos-ivc-20260818/README.md text eol=lf
+competition/results/orangepi-vision-20260818/** binary
+competition/results/orangepi-vision-20260818/**/checksums.sha256 text eol=lf
+competition/results/orangepi-vision-20260818/README.md text eol=lf
 competition/video/*.ass text eol=lf
 competition/video/*.json text eol=lf
 competition/video/*.md text eol=lf

@@ -1,0 +1,5 @@
+87c5ce9e29e909aa3f97feb4d9845e039907212478684ac23bf2d2a161d27b00  /home/orangepi/tgos-native-zephyr/soak/zephyr.bin
+/dev/mmcblk1p2 ext4   rw,noatime,errors=remount-ro,commit=600
+NATIVE_ZEPHYR_STAGE_PASS
+NATIVE_ZEPHYR_REBOOT_ARMED
+Connection to 192.168.31.33 closed by remote host.
