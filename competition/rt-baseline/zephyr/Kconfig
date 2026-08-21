@@ -11,3 +11,13 @@ config RT_BASELINE_STRESS
 	  Keep a lower-priority thread continuously runnable while the periodic
 	  benchmark thread is sleeping. The benchmark verifies that this thread
 	  executed during the measurement window.
+
+config RT_BASELINE_PERIOD_US
+	int "Absolute periodic benchmark interval in microseconds"
+	range 1000 1000000
+	default 1000
+	help
+	  Select the absolute timer interval. The ordinary idle and CPU-stress
+	  captures use 1 ms. The physical-board soak uses 180 ms with the same
+	  10,000 samples, producing a 30-minute measured window without changing
+	  the bounded in-memory statistics implementation.

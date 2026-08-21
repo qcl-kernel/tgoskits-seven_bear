@@ -372,6 +372,30 @@ Important details:
 - The Axvisor shell does not interpret shell operators such as `;`. Board automation must send `shutdown` as a standalone command rather than a Linux-style `sync; ...` command line.
 - Never expose the same physical root partition to a guest after Axvisor mounts it. Use an independent guest image or device so the host and guest cannot mutate one filesystem concurrently.
 
+## Orange Pi 5 Plus Axvisor Evidence Notes
+
+- Pass the Linux root to the board runner with a stable selector such as
+  `PARTUUID=<uuid>`. `/dev/mmcblk1p2` is the Linux-visible name on the validated
+  board, but it is not a portable Axvisor or U-Boot root selector and must not be
+  copied into the boot arguments as a hardware invariant.
+- If a local `uboot-shell` prompt fix is required, make the patched crate version
+  exactly match the version selected by `Cargo.lock`. Cargo ignores a `[patch]`
+  package whose version does not satisfy the locked dependency, even when the
+  source path is otherwise correct. Preserve and restore a pre-existing dirty
+  lockfile around the board run.
+- A finite RT-Thread or FreeRTOS evidence guest must first emit its terminal
+  result, allow the UART records to drain, repeat a compact power-off marker,
+  and then invoke PSCI `SYSTEM_OFF`. Do not snapshot while the guest is still
+  polling: wait until Axvisor reports the guest stopped and the management shell
+  is ready.
+- Use the Axvisor shell's block snapshot command only after every evidence VM has
+  reached its terminal state. Require `AXVISOR_SNAPSHOT_SYNC_OK`, validate the
+  copied image with fsck, cross-check the guest, UART, and harvested CSV hashes,
+  restore Linux, and finally confirm the physical ext4 root is mounted read-write.
+- Board scripts executed by WSL from a Windows-hosted checkout must have LF line
+  endings. Check the executable scripts with `git ls-files --eol` and `bash -n`;
+  a CRLF `set -eu` line fails in BusyBox before any board or guest assertion runs.
+
 ## QEMU Debugging Patterns
 
 - Add `-S -s` to stop at reset and attach GDB when the failure is before the first reliable print.
