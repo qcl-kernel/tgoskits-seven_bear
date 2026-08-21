@@ -8,6 +8,7 @@ import tempfile
 import unittest
 import zlib
 from pathlib import Path
+from unittest import mock
 
 
 ANALYZER_PATH = Path(__file__).resolve().parents[1] / "analyze_board.py"
@@ -131,6 +132,29 @@ class BoardAnalysisTests(unittest.TestCase):
     def raw_log(self, raw_csv: str = RAW_CSV) -> str:
         digest = hashlib.sha256(raw_csv.encode()).hexdigest()
         return RAW_LOG_TEMPLATE.format(raw_sha256=digest)
+
+    def test_cli_accepts_default_zephyr_profile(self) -> None:
+        output_file = tempfile.NamedTemporaryFile(delete=False)
+        output_file.close()
+        output_path = Path(output_file.name)
+        self.addCleanup(output_path.unlink, missing_ok=True)
+        raw_path = self.write_raw_csv()
+        raw_sha256 = hashlib.sha256(raw_path.read_bytes()).hexdigest()
+        arguments = [
+            str(ANALYZER_PATH),
+            str(self.write_log(RAW_LOG_TEMPLATE.format(raw_sha256=raw_sha256))),
+            "--raw-csv",
+            str(raw_path),
+            "--expected-count",
+            "4",
+            "--output",
+            str(output_path),
+        ]
+
+        with mock.patch.object(sys, "argv", arguments):
+            self.assertEqual(analyzer.main(), 0)
+
+        self.assertGreater(output_path.stat().st_size, 0)
 
     def rknn_log(self, rknn_csv: str = RKNN_CSV) -> str:
         digest = hashlib.sha256(rknn_csv.encode()).hexdigest()
@@ -572,6 +596,43 @@ BOARD_IDENTITY board_id=test-rk3588 hostname=orangepi5plus cpu_temp_milli_c=4250
             result["lifecycle"]["block_snapshot"]["image_path"],
             "/home/orangepi/ivc-rs",
         )
+
+    def test_rtos_smoke_snapshot_paths_are_accepted(self) -> None:
+        for snapshot_path in ("/home/orangepi/ivc-rts", "/home/orangepi/ivc-fts"):
+            with self.subTest(snapshot_path=snapshot_path):
+                rtos_log = VALID_LOG.replace(
+                    "/home/orangepi/axvisor-guest/starry-ivc-rootfs.result.img",
+                    snapshot_path,
+                )
+
+                result = analyzer.analyze(self.write_log(rtos_log), 1_800)
+
+                self.assertEqual(
+                    result["lifecycle"]["block_snapshot"]["image_path"],
+                    snapshot_path,
+                )
+
+    def test_named_rtos_poweroff_is_reported_in_lifecycle(self) -> None:
+        rtos_log = self.raw_log().replace(
+            "[guest-console:pl011-zephyr] IVC-RTOS-OUTCOME",
+            "[guest-console:pl011-rtthread] IVC-RTOS-READY rtos=rt-thread\n"
+            "[guest-console:pl011-rtthread] IVC-RTOS-OUTCOME",
+        ).replace(
+            "[guest-console:pl011-zephyr] IVC-RTOS-MESSAGES",
+            "[guest-console:pl011-rtthread] IVC-RTOS-MESSAGES",
+        ).replace(
+            "[guest-console:pl011-zephyr] IVC-RTOS-POWEROFF accepted=4",
+            "[guest-console:pl011-rtthread] "
+            "IVC-RTOS-POWEROFF rtos=rt-thread accepted=4",
+        )
+
+        result = analyzer.analyze(
+            self.write_log(rtos_log),
+            4,
+            expected_rtos="rt-thread",
+        )
+
+        self.assertTrue(result["lifecycle"]["rtos_powered_off"])
 
     def test_rknn_samples_are_harvested_and_cross_checked(self) -> None:
         result = analyzer.analyze(

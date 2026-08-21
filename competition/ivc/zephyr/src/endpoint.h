@@ -85,6 +85,28 @@ struct ivc_thermal_plant {
 	int64_t temperature_micro_c;
 };
 
+struct ivc_vision_endpoint {
+	uint64_t timeout_us;
+	uint32_t last_sequence;
+	uint32_t last_frame_id;
+	bool has_last_valid_decision;
+	uint64_t last_valid_decision_us;
+	enum ivc_vision_action last_safe_action;
+	enum ivc_vision_action last_requested_action;
+	enum ivc_vision_action last_actual_action;
+	uint32_t last_decision_age_at_send_us;
+	bool timeout_reported;
+};
+
+enum ivc_vision_apply_result {
+	IVC_VISION_APPLY_APPLIED,
+	IVC_VISION_APPLY_INVALID_PAYLOAD,
+	IVC_VISION_APPLY_STALE_SEQUENCE,
+	IVC_VISION_APPLY_REPLAYED_FRAME,
+	IVC_VISION_APPLY_FUTURE_TIMESTAMP,
+	IVC_VISION_APPLY_EXPIRED,
+};
+
 void ivc_receive_window_init(struct ivc_receive_window *window);
 
 enum ivc_delivery ivc_receive_window_observe(struct ivc_receive_window *window,
@@ -121,5 +143,18 @@ void ivc_thermal_plant_init(struct ivc_thermal_plant *plant);
 void ivc_thermal_plant_step(struct ivc_thermal_plant *plant, uint16_t actuator_permille,
 			    uint32_t step);
 int32_t ivc_thermal_plant_temperature(const struct ivc_thermal_plant *plant);
+
+void ivc_vision_endpoint_init(struct ivc_vision_endpoint *endpoint, uint64_t timeout_us);
+
+void ivc_vision_endpoint_begin_session(struct ivc_vision_endpoint *endpoint);
+
+enum ivc_vision_apply_result ivc_vision_endpoint_apply(
+	struct ivc_vision_endpoint *endpoint, uint32_t sequence,
+	const struct ivc_vision_decision *decision, uint64_t sender_sent_at_us,
+	uint64_t received_at_us, struct ivc_actuator_status *status);
+
+bool ivc_vision_endpoint_check_timeout(struct ivc_vision_endpoint *endpoint,
+				       uint64_t now_us,
+				       struct ivc_actuator_status *status);
 
 #endif /* IVC_ENDPOINT_H_ */

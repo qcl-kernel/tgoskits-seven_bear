@@ -4400,6 +4400,7 @@ name = "ivcproto"
 version = "0.5.15"
 dependencies = [
  "anyhow",
+ "libc",
  "thiserror 2.0.20",
 ]
 

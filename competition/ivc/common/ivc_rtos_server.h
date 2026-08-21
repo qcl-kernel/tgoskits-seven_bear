@@ -22,6 +22,8 @@ struct ivc_rtos_transport {
 	bool (*send)(void *context, const uint8_t *frame, size_t length,
 		     const struct ivc_rtos_peer *peer);
 	void (*log_line)(void *context, const char *line);
+	void (*sleep_ms)(void *context, uint32_t milliseconds);
+	void (*power_off)(void *context);
 	void *context;
 };
 
@@ -30,6 +32,7 @@ struct ivc_rtos_server_config {
 	const char *local_address;
 	uint16_t local_port;
 	uint32_t expected_commands;
+	uint32_t expected_vision_decisions;
 	uint32_t expected_protocol_errors;
 	uint32_t drop_ack_every;
 	bool stop_after_result;

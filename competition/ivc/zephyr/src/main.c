@@ -51,12 +51,17 @@ struct ivc_server {
 	struct ivc_endpoint endpoint;
 	struct ivc_thermal_plant plant;
 	struct ivc_ack_loss_policy ack_loss;
+	struct ivc_vision_endpoint vision_endpoint;
 	uint32_t applied_commands;
 	uint64_t protocol_errors;
 	uint64_t status_sent;
 	uint64_t acknowledgements_sent;
 	uint64_t errors_sent;
 	uint64_t safe_fallbacks;
+	uint32_t applied_vision_decisions;
+	uint64_t actuator_status_sent;
+	struct ivc_actuator_status last_actuator_status;
+	bool has_last_actuator_status;
 	uint64_t recoveries;
 	uint64_t stale_status_sent;
 	uint64_t stale_acknowledgements_sent;
@@ -103,6 +108,7 @@ static bool validate_fault_configuration(void)
 {
 	const uint32_t drop_every = (uint32_t)CONFIG_IVC_DROP_ACK_EVERY;
 	const uint32_t expected_commands = (uint32_t)CONFIG_IVC_EXPECTED_COMMANDS;
+	const uint32_t expected_vision = (uint32_t)CONFIG_IVC_EXPECTED_VISION_DECISIONS;
 	const uint32_t expected_errors = (uint32_t)CONFIG_IVC_EXPECTED_PROTOCOL_ERRORS;
 	const uint32_t expected_session_resets = (uint32_t)CONFIG_IVC_EXPECTED_SESSION_RESETS;
 	const uint32_t expected_session_rejections =
@@ -113,7 +119,10 @@ static bool validate_fault_configuration(void)
 				     expected_session_rejections != 0U ||
 				     expected_safe_fallbacks != 0U;
 
-	if ((drop_every != 0U && expected_commands == 0U) || drop_every > expected_commands ||
+	if ((expected_commands != 0U && expected_vision != 0U) ||
+	    (expected_vision != 0U && (drop_every != 0U || expected_errors != 0U ||
+				     restart_profile)) ||
+	    (drop_every != 0U && expected_commands == 0U) || drop_every > expected_commands ||
 	    (expected_errors != 0U && expected_commands == 0U) ||
 	    (expected_errors != 0U && drop_every != 0U) ||
 	    (restart_profile && expected_commands == 0U) ||
@@ -247,6 +256,18 @@ static bool send_status(int socket_fd, const struct sockaddr *peer, socklen_t pe
 			    IVC_ERROR_NONE, payload, sizeof(payload));
 }
 
+static bool send_actuator_status(int socket_fd, const struct sockaddr *peer,
+				 socklen_t peer_length, const struct ivc_header *request,
+				 const struct ivc_actuator_status *status)
+{
+	uint8_t payload[IVC_ACTUATOR_STATUS_PAYLOAD_LENGTH];
+
+	return ivc_encode_actuator_status(status, payload) &&
+	       send_payload(socket_fd, peer, peer_length, request,
+			    IVC_MESSAGE_ACTUATOR_STATUS, IVC_ERROR_NONE, payload,
+			    sizeof(payload));
+}
+
 static bool send_ack(int socket_fd, const struct sockaddr *peer, socklen_t peer_length,
 		     const struct ivc_header *request, const struct ivc_receive_window *window)
 {
@@ -262,11 +283,68 @@ static void report_ready(void)
 {
 	printk("IVC-RTOS-READY bind=%s:%u mac=52:54:00:00:00:02 window_bits=%u "
 	       "ack_loss_drop_every=%u expected_commands=%u expected_protocol_errors=%u "
-	       "exit_after_expected=%u\n",
+	       "expected_vision_decisions=%u exit_after_expected=%u\n",
 	       IVC_LOCAL_IPV4, IVC_LOCAL_UDP_PORT, IVC_RECEIVE_WINDOW_BITS,
 	       (uint32_t)CONFIG_IVC_DROP_ACK_EVERY, (uint32_t)CONFIG_IVC_EXPECTED_COMMANDS,
 	       (uint32_t)CONFIG_IVC_EXPECTED_PROTOCOL_ERRORS,
+	       (uint32_t)CONFIG_IVC_EXPECTED_VISION_DECISIONS,
 	       (uint32_t)IS_ENABLED(CONFIG_IVC_EXIT_AFTER_EXPECTED_COMMANDS));
+}
+
+static const char *vision_action_name(enum ivc_vision_action action)
+{
+	switch (action) {
+	case IVC_VISION_HOLD:
+		return "hold";
+	case IVC_VISION_SORT_LEFT:
+		return "left";
+	case IVC_VISION_SORT_RIGHT:
+		return "right";
+	case IVC_VISION_EMERGENCY_STOP:
+		return "emergency-stop";
+	default:
+		return "unknown";
+	}
+}
+
+static void report_vision_result_if_complete(struct ivc_server *server)
+{
+	const uint32_t expected = (uint32_t)CONFIG_IVC_EXPECTED_VISION_DECISIONS;
+	uint32_t copy;
+
+	if (server->result_reported || expected == 0U ||
+	    server->receive_window.metrics.accepted != expected ||
+	    server->applied_vision_decisions != expected || server->protocol_errors != 0U) {
+		return;
+	}
+	printk("IVC-RTOS-VISION-RESULT accepted=%llu applied=%u duplicates=%llu "
+	       "actuator_status_sent=%llu acks_sent=%llu errors_sent=%llu "
+	       "protocol_errors=%llu\n",
+	       server->receive_window.metrics.accepted,
+	       server->applied_vision_decisions,
+	       server->receive_window.metrics.duplicates, server->actuator_status_sent,
+	       server->acknowledgements_sent, server->errors_sent,
+	       server->protocol_errors);
+	server->result_reported = true;
+#if CONFIG_IVC_EXIT_AFTER_EXPECTED_COMMANDS
+	k_sleep(K_MSEC(IVC_POWEROFF_INITIAL_PAUSE_MS));
+	for (copy = 0U; copy < IVC_POWEROFF_RECORD_COPIES; ++copy) {
+		printk("IVC-RTOS-VISION-RESULT accepted=%llu applied=%u duplicates=%llu "
+		       "actuator_status_sent=%llu acks_sent=%llu errors_sent=%llu "
+		       "protocol_errors=%llu\n",
+		       server->receive_window.metrics.accepted,
+		       server->applied_vision_decisions,
+		       server->receive_window.metrics.duplicates,
+		       server->actuator_status_sent, server->acknowledgements_sent,
+		       server->errors_sent, server->protocol_errors);
+		printk("IVC-RTOS-VISION-POWEROFF accepted=%llu\n",
+		       server->receive_window.metrics.accepted);
+		k_sleep(K_MSEC(IVC_POWEROFF_RECORD_PAUSE_MS));
+	}
+	sys_poweroff();
+#else
+	(void)copy;
+#endif
 }
 
 static void report_restart_ready(void)
@@ -658,12 +736,91 @@ static void process_control(struct ivc_server *server, int socket_fd,
 	report_result_if_complete(server);
 }
 
+static bool delivery_is_rejected(enum ivc_delivery delivery)
+{
+	return delivery == IVC_DELIVERY_NEW_OUT_OF_ORDER ||
+	       delivery == IVC_DELIVERY_OUTSIDE_WINDOW ||
+	       delivery == IVC_DELIVERY_INVALID_IDENTIFIER ||
+	       delivery == IVC_DELIVERY_SEQUENCE_EXHAUSTED ||
+	       delivery == IVC_DELIVERY_SESSION_REJECTED;
+}
+
+static void process_vision_decision(struct ivc_server *server, int socket_fd,
+				    const struct sockaddr *peer, socklen_t peer_length,
+				    const struct ivc_frame_view *frame,
+				    const struct ivc_vision_decision *decision)
+{
+	enum ivc_delivery delivery = ivc_receive_window_observe(
+		&server->receive_window, frame->header.session_id,
+		frame->header.sequence);
+	struct ivc_actuator_status status;
+	bool have_status = false;
+
+	if (delivery_is_rejected(delivery)) {
+		reject_datagram(server, socket_fd, peer, peer_length, &frame->header,
+			       delivery == IVC_DELIVERY_SEQUENCE_EXHAUSTED ?
+				       IVC_ERROR_INTERNAL :
+				       IVC_ERROR_SEQUENCE_OUTSIDE_WINDOW,
+			       "invalid-vision-delivery");
+		return;
+	}
+	if (ivc_delivery_applies_control(delivery)) {
+		enum ivc_vision_apply_result result;
+
+		if (delivery == IVC_DELIVERY_NEW_SESSION) {
+			ivc_vision_endpoint_begin_session(&server->vision_endpoint);
+		}
+		result = ivc_vision_endpoint_apply(
+			&server->vision_endpoint, frame->header.sequence, decision,
+			frame->header.timestamp_us, monotonic_us(), &status);
+		if (result != IVC_VISION_APPLY_APPLIED) {
+			reject_datagram(
+				server, socket_fd, peer, peer_length, &frame->header,
+				result == IVC_VISION_APPLY_EXPIRED ?
+					IVC_ERROR_VISION_DECISION_EXPIRED :
+					IVC_ERROR_INVALID_VISION_DECISION,
+				result == IVC_VISION_APPLY_EXPIRED ?
+					"vision-decision-expired" :
+					"invalid-vision-decision");
+			return;
+		}
+		server->last_actuator_status = status;
+		server->has_last_actuator_status = true;
+		server->applied_vision_decisions++;
+		have_status = true;
+		printk("IVC-RTOS-VISION frame=%u seq=%u requested=%s actual=%s "
+		       "state=applied age_at_send_us=%u local_apply_us=%u\n",
+		       status.frame_id, status.applied_sequence,
+		       vision_action_name(status.requested_action),
+		       vision_action_name(status.actual_action),
+		       status.decision_age_at_send_us, status.local_apply_latency_us);
+	} else if (server->has_last_actuator_status &&
+		   server->last_actuator_status.applied_sequence ==
+			   frame->header.sequence) {
+		status = server->last_actuator_status;
+		have_status = true;
+		printk("IVC-RTOS-VISION-DUPLICATE frame=%u seq=%u duplicates=%llu\n",
+		       status.frame_id, status.applied_sequence,
+		       server->receive_window.metrics.duplicates);
+	}
+	if (have_status &&
+	    send_actuator_status(socket_fd, peer, peer_length, &frame->header, &status)) {
+		server->actuator_status_sent++;
+	}
+	if (send_ack(socket_fd, peer, peer_length, &frame->header,
+		     &server->receive_window)) {
+		server->acknowledgements_sent++;
+	}
+	report_vision_result_if_complete(server);
+}
+
 static void process_datagram(struct ivc_server *server, int socket_fd,
 			     const struct sockaddr *peer, socklen_t peer_length, size_t length)
 {
 	struct ivc_decode_rejection rejection;
 	struct ivc_frame_view frame;
 	struct ivc_control_command command;
+	struct ivc_vision_decision decision;
 	enum ivc_decode_result decode_result;
 
 	replay_ready_if_needed(server);
@@ -681,6 +838,18 @@ static void process_datagram(struct ivc_server *server, int socket_fd,
 		}
 		return;
 	}
+	if (frame.header.message_type == IVC_MESSAGE_VISION_DECISION) {
+		if (!ivc_decode_vision_decision(frame.payload,
+					frame.header.payload_length, &decision)) {
+			reject_datagram(server, socket_fd, peer, peer_length,
+				       &frame.header, IVC_ERROR_INVALID_VISION_DECISION,
+				       "invalid-vision-decision-payload");
+			return;
+		}
+		process_vision_decision(server, socket_fd, peer, peer_length, &frame,
+					&decision);
+		return;
+	}
 	if (frame.header.message_type != IVC_MESSAGE_CONTROL) {
 		reject_datagram(server, socket_fd, peer, peer_length, &frame.header,
 			       IVC_ERROR_INVALID_CONTROL, "unexpected-message-type");
@@ -696,6 +865,7 @@ static void process_datagram(struct ivc_server *server, int socket_fd,
 
 static void check_safe_timeout(struct ivc_server *server)
 {
+	struct ivc_actuator_status vision_status;
 	enum ivc_timeout_result result = ivc_endpoint_check_timeout(&server->endpoint, monotonic_us());
 
 	if (result == IVC_TIMEOUT_ENTERED_SAFE_STATE) {
@@ -709,6 +879,15 @@ static void check_safe_timeout(struct ivc_server *server)
 		++server->protocol_errors;
 		printk("IVC-RTOS-ERROR seq=%u code=%u reason=clock-moved-backward\n",
 		       server->endpoint.last_sequence, (unsigned int)IVC_ERROR_INTERNAL);
+	}
+	if (ivc_vision_endpoint_check_timeout(&server->vision_endpoint, monotonic_us(),
+					      &vision_status)) {
+		server->safe_fallbacks++;
+		server->last_actuator_status = vision_status;
+		printk("IVC-RTOS-VISION-SAFE-FALLBACK frame=%u actual=%s "
+		       "reason=controller-timeout\n",
+		       vision_status.frame_id,
+		       vision_action_name(vision_status.actual_action));
 	}
 }
 
@@ -739,6 +918,7 @@ int main(void)
 
 	ivc_receive_window_init(&server.receive_window);
 	ivc_endpoint_init(&server.endpoint);
+	ivc_vision_endpoint_init(&server.vision_endpoint, IVC_COMMAND_TIMEOUT_US);
 	ivc_thermal_plant_init(&server.plant);
 	ivc_ack_loss_policy_init(&server.ack_loss, (uint32_t)CONFIG_IVC_DROP_ACK_EVERY);
 	server.applied_commands = 0U;
@@ -747,6 +927,9 @@ int main(void)
 	server.acknowledgements_sent = 0U;
 	server.errors_sent = 0U;
 	server.safe_fallbacks = 0U;
+	server.applied_vision_decisions = 0U;
+	server.actuator_status_sent = 0U;
+	server.has_last_actuator_status = false;
 	server.recoveries = 0U;
 	server.stale_status_sent = 0U;
 	server.stale_acknowledgements_sent = 0U;

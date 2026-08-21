@@ -88,6 +88,8 @@
 		reg = <0 0xfdab0000 0 0x10000>,
 		      <0 0xfdac0000 0 0x10000>,
 		      <0 0xfdad0000 0 0x10000>;
+		/* Axvisor prepared power, clocks, and resets before this handoff. */
+		tgos,host-prepared-resources;
 		dma-coherent;
 		status = "okay";
 	};

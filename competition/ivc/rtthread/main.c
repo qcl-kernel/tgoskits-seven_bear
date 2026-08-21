@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
+#include "aarch64_psci.h"
 #include "ivc_rtos_server.h"
 #include "network.h"
 
@@ -22,6 +23,10 @@
 
 #ifndef IVC_DROP_ACK_EVERY
 #define IVC_DROP_ACK_EVERY 0U
+#endif
+
+#ifndef IVC_STOP_AFTER_RESULT
+#define IVC_STOP_AFTER_RESULT 0U
 #endif
 
 #define IVC_LOCAL_ADDRESS "10.0.0.2"
@@ -97,6 +102,18 @@ static void log_line(void *context, const char *line)
 	rt_kprintf("%s\n", line);
 }
 
+static void sleep_ms(void *context, uint32_t milliseconds)
+{
+	(void)context;
+	rt_thread_mdelay(milliseconds);
+}
+
+static void power_off(void *context)
+{
+	(void)context;
+	ivc_aarch64_psci_system_off();
+}
+
 int main(void)
 {
 	struct socket_transport socket_context;
@@ -108,6 +125,7 @@ int main(void)
 		.expected_commands = IVC_EXPECTED_COMMANDS,
 		.expected_protocol_errors = IVC_EXPECTED_PROTOCOL_ERRORS,
 		.drop_ack_every = IVC_DROP_ACK_EVERY,
+		.stop_after_result = IVC_STOP_AFTER_RESULT != 0U,
 	};
 
 	if (!ivc_rtthread_network_start()) {
@@ -124,6 +142,8 @@ int main(void)
 		.receive = socket_receive,
 		.send = socket_send,
 		.log_line = log_line,
+		.sleep_ms = sleep_ms,
+		.power_off = power_off,
 		.context = &socket_context,
 	};
 	return ivc_rtos_server_run(&config, &transport);

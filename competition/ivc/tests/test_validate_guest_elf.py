@@ -67,6 +67,7 @@ class ValidateGuestElfTests(unittest.TestCase):
 
             result = validator.validate_elf(path, 0x4008_0000, 0x4000_0000, 0x0800_0000)
 
+            self.assertEqual(result["elf"], "guest.elf")
             self.assertEqual(result["entry_point"], 0x4008_0000)
             self.assertEqual(len(result["load_segments"]), 1)
 

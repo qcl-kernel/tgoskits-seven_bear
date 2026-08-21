@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 static struct ivc_control_command neural_command(uint32_t sample_id)
 {
@@ -21,6 +22,71 @@ static struct ivc_control_command neural_command(uint32_t sample_id)
 static void test_protocol_golden_vector(void)
 {
 	assert(ivc_protocol_self_test());
+}
+
+static void test_vision_protocol_golden_vectors(void)
+{
+	const struct ivc_vision_decision decision = {
+		.requested_action = IVC_VISION_SORT_LEFT,
+		.safe_action = IVC_VISION_HOLD,
+		.detection_present = true,
+		.frame_id = UINT32_C(0x01020304),
+		.captured_at_us = UINT64_C(1000),
+		.inference_finished_at_us = UINT64_C(1400),
+		.ttl_us = UINT32_C(5000),
+		.class_id = 32U,
+		.confidence_q10000 = 8591U,
+		.region_id = 1U,
+		.bounding_box = {.left = 517U, .top = 932U, .right = 730U, .bottom = 1151U},
+	};
+	static const uint8_t expected[] = {
+		1, 1, 0, 1, 4, 3, 2, 1, 0xe8, 3, 0, 0, 0, 0, 0, 0,
+		0x78, 5, 0, 0, 0, 0, 0, 0, 0x88, 0x13, 0, 0, 32, 0, 0x8f, 0x21,
+		1, 0, 0, 0, 5, 2, 0xa4, 3, 0xda, 2, 0x7f, 4,
+	};
+	struct ivc_vision_decision decoded;
+	uint8_t payload[IVC_VISION_DECISION_PAYLOAD_LENGTH];
+
+	assert(ivc_encode_vision_decision(&decision, payload));
+	assert(memcmp(payload, expected, sizeof(expected)) == 0);
+	assert(ivc_decode_vision_decision(payload, sizeof(payload), &decoded));
+	assert(decoded.frame_id == decision.frame_id);
+	assert(decoded.requested_action == decision.requested_action);
+	assert(decoded.bounding_box.bottom == decision.bounding_box.bottom);
+}
+
+static void test_vision_endpoint_rejects_expiry_and_replay(void)
+{
+	struct ivc_vision_endpoint endpoint;
+	struct ivc_vision_decision decision = {
+		.requested_action = IVC_VISION_SORT_LEFT,
+		.safe_action = IVC_VISION_HOLD,
+		.detection_present = true,
+		.frame_id = 1U,
+		.captured_at_us = UINT64_C(1000),
+		.inference_finished_at_us = UINT64_C(1400),
+		.ttl_us = UINT32_C(5000),
+		.class_id = 32U,
+		.confidence_q10000 = 8591U,
+		.region_id = 1U,
+		.bounding_box = {.left = 517U, .top = 932U, .right = 730U, .bottom = 1151U},
+	};
+	struct ivc_actuator_status status;
+
+	ivc_vision_endpoint_init(&endpoint, UINT64_C(500000));
+	assert(ivc_vision_endpoint_apply(&endpoint, 1U, &decision, UINT64_C(2000),
+					 UINT64_C(10000), &status) == IVC_VISION_APPLY_APPLIED);
+	assert(status.actual_action == IVC_VISION_SORT_LEFT);
+	assert(ivc_vision_endpoint_apply(&endpoint, 2U, &decision, UINT64_C(2100),
+					 UINT64_C(10100), &status) == IVC_VISION_APPLY_REPLAYED_FRAME);
+	decision.frame_id = 2U;
+	decision.ttl_us = 500U;
+	assert(ivc_vision_endpoint_apply(&endpoint, 2U, &decision, UINT64_C(2000),
+					 UINT64_C(10100), &status) == IVC_VISION_APPLY_EXPIRED);
+	assert(ivc_vision_endpoint_check_timeout(&endpoint, UINT64_C(510001), &status));
+	assert(status.state == IVC_ACTUATOR_SAFE_FALLBACK);
+	assert(status.actual_action == IVC_VISION_HOLD);
+	assert(!ivc_vision_endpoint_check_timeout(&endpoint, UINT64_C(510002), &status));
 }
 
 static void test_crc32_bytes_matches_the_standard_check_value(void)
@@ -264,6 +330,8 @@ static void test_thermal_plant_step_matches_rust_reference(void)
 int main(void)
 {
 	test_protocol_golden_vector();
+	test_vision_protocol_golden_vectors();
+	test_vision_endpoint_rejects_expiry_and_replay();
 	test_crc32_bytes_matches_the_standard_check_value();
 	test_decode_failures_preserve_safe_error_response_context();
 	test_receive_window_exact_once_and_reordering();

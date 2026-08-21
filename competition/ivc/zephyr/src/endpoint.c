@@ -322,3 +322,99 @@ int32_t ivc_thermal_plant_temperature(const struct ivc_thermal_plant *plant)
 	}
 	return (int32_t)((temperature_micro_c - INT64_C(500)) / INT64_C(1000));
 }
+
+void ivc_vision_endpoint_init(struct ivc_vision_endpoint *endpoint, uint64_t timeout_us)
+{
+	*endpoint = (struct ivc_vision_endpoint){
+		.timeout_us = timeout_us,
+		.last_safe_action = IVC_VISION_HOLD,
+		.last_requested_action = IVC_VISION_HOLD,
+		.last_actual_action = IVC_VISION_HOLD,
+	};
+}
+
+void ivc_vision_endpoint_begin_session(struct ivc_vision_endpoint *endpoint)
+{
+	if (endpoint != NULL) {
+		endpoint->last_sequence = 0U;
+	}
+}
+
+enum ivc_vision_apply_result ivc_vision_endpoint_apply(
+	struct ivc_vision_endpoint *endpoint, uint32_t sequence,
+	const struct ivc_vision_decision *decision, uint64_t sender_sent_at_us,
+	uint64_t received_at_us, struct ivc_actuator_status *status)
+{
+	uint64_t age_at_send_us;
+	uint8_t encoded[IVC_VISION_DECISION_PAYLOAD_LENGTH];
+
+	if (endpoint == NULL || status == NULL ||
+	    !ivc_encode_vision_decision(decision, encoded)) {
+		return IVC_VISION_APPLY_INVALID_PAYLOAD;
+	}
+	if (sequence == 0U || sequence <= endpoint->last_sequence) {
+		return IVC_VISION_APPLY_STALE_SEQUENCE;
+	}
+	if (decision->frame_id <= endpoint->last_frame_id) {
+		return IVC_VISION_APPLY_REPLAYED_FRAME;
+	}
+	if (sender_sent_at_us < decision->inference_finished_at_us) {
+		return IVC_VISION_APPLY_FUTURE_TIMESTAMP;
+	}
+	age_at_send_us = sender_sent_at_us - decision->inference_finished_at_us;
+	if (age_at_send_us > decision->ttl_us) {
+		return IVC_VISION_APPLY_EXPIRED;
+	}
+
+	endpoint->last_sequence = sequence;
+	endpoint->last_frame_id = decision->frame_id;
+	endpoint->has_last_valid_decision = true;
+	endpoint->last_valid_decision_us = received_at_us;
+	endpoint->last_safe_action = decision->safe_action;
+	endpoint->last_requested_action = decision->requested_action;
+	endpoint->last_actual_action = decision->requested_action;
+	endpoint->last_decision_age_at_send_us = (uint32_t)age_at_send_us;
+	endpoint->timeout_reported = false;
+	*status = (struct ivc_actuator_status){
+		.state = IVC_ACTUATOR_APPLIED,
+		.requested_action = decision->requested_action,
+		.actual_action = decision->requested_action,
+		.frame_id = decision->frame_id,
+		.applied_sequence = sequence,
+		.decision_age_at_send_us = (uint32_t)age_at_send_us,
+		.local_apply_latency_us = 0U,
+		.executed_at_us = received_at_us,
+		.fault = IVC_ERROR_NONE,
+	};
+	return IVC_VISION_APPLY_APPLIED;
+}
+
+bool ivc_vision_endpoint_check_timeout(struct ivc_vision_endpoint *endpoint,
+				       uint64_t now_us,
+				       struct ivc_actuator_status *status)
+{
+	uint64_t silence_us;
+
+	if (endpoint == NULL || status == NULL || !endpoint->has_last_valid_decision ||
+	    now_us < endpoint->last_valid_decision_us) {
+		return false;
+	}
+	silence_us = now_us - endpoint->last_valid_decision_us;
+	if (silence_us <= endpoint->timeout_us || endpoint->timeout_reported) {
+		return false;
+	}
+	endpoint->timeout_reported = true;
+	endpoint->last_actual_action = endpoint->last_safe_action;
+	*status = (struct ivc_actuator_status){
+		.state = IVC_ACTUATOR_SAFE_FALLBACK,
+		.requested_action = endpoint->last_requested_action,
+		.actual_action = endpoint->last_safe_action,
+		.frame_id = endpoint->last_frame_id,
+		.applied_sequence = endpoint->last_sequence,
+		.decision_age_at_send_us = endpoint->last_decision_age_at_send_us,
+		.local_apply_latency_us = 0U,
+		.executed_at_us = now_us,
+		.fault = IVC_ERROR_CONTROLLER_TIMEOUT,
+	};
+	return true;
+}

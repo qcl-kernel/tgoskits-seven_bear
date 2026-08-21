@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# This script is invoked by WSL after a Windows-hosted checkout; keep LF endings.
 
 set -euo pipefail
 

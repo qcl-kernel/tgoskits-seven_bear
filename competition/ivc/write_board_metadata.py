@@ -35,6 +35,13 @@ def build_metadata(arguments: argparse.Namespace) -> dict[str, object]:
         else None
     )
     summary_document = read_optional_json(arguments.summary)
+    rtos_guest_path = getattr(arguments, "rtos_guest", None) or getattr(
+        arguments, "zephyr_guest", None
+    )
+    if rtos_guest_path is None:
+        raise MetadataError("board metadata requires an RTOS guest artifact")
+    rtos_guest_kind = getattr(arguments, "rtos_guest_kind", "zephyr")
+    rtos_guest = optional_file_record(rtos_guest_path, workspace)
     rknn_evidence_required = arguments.inference_backend == "rknn-npu"
     ort_evidence_required = arguments.inference_backend == "onnxruntime"
     return {
@@ -57,9 +64,11 @@ def build_metadata(arguments: argparse.Namespace) -> dict[str, object]:
             "starry_kernel": optional_file_record(arguments.starry_kernel, workspace),
             "starry_dtb": optional_file_record(arguments.starry_dtb, workspace),
             "rootfs": optional_file_record(arguments.rootfs, workspace),
-            "zephyr_guest": optional_file_record(
-                arguments.zephyr_guest, workspace
-            ),
+            "rtos_guest": {
+                "kind": rtos_guest_kind,
+                "artifact": rtos_guest,
+            },
+            "zephyr_guest": rtos_guest if rtos_guest_kind == "zephyr" else None,
         },
         "board": {
             "type": arguments.board_type,
@@ -236,7 +245,13 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--starry-kernel", type=Path, required=True)
     parser.add_argument("--starry-dtb", type=Path, required=True)
     parser.add_argument("--rootfs", type=Path, required=True)
-    parser.add_argument("--zephyr-guest", type=Path, required=True)
+    parser.add_argument("--zephyr-guest", type=Path)
+    parser.add_argument("--rtos-guest", type=Path)
+    parser.add_argument(
+        "--rtos-guest-kind",
+        choices=("zephyr", "rt-thread", "freertos"),
+        default="zephyr",
+    )
     parser.add_argument("--model-id", required=True)
     parser.add_argument("--model-artifact", type=Path, required=True)
     parser.add_argument("--inference-backend", required=True)

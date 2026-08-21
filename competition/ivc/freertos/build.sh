@@ -5,7 +5,7 @@ set -euo pipefail
 
 usage() {
     cat <<'EOF'
-usage: build.sh [normal|ack-loss] [output-directory]
+usage: build.sh [normal|ack-loss|board-smoke] [output-directory]
 
 Build the pinned FreeRTOS/Bao AxVisor IVC guest. The default output is
 tmp/competition/ivc/guests/freertos/<profile>.
@@ -28,11 +28,22 @@ tcp_commit=c12361095aca68aeed858f45d14395fbffa92c0d
 jobs=${IVC_RTOS_BUILD_JOBS:-2}
 
 case "$profile" in
+    # The normal QEMU contract remains IVC_EXPECTED_COMMANDS=100; the physical
+    # board-smoke profile deliberately narrows only this bound to 20.
     normal)
+        expected_commands=100
         drop_ack_every=0
+        stop_after_result=0
         ;;
     ack-loss)
+        expected_commands=100
         drop_ack_every=5
+        stop_after_result=0
+        ;;
+    board-smoke)
+        expected_commands=20
+        drop_ack_every=0
+        stop_after_result=1
         ;;
     -h|--help)
         usage
@@ -94,7 +105,8 @@ mkdir -p -- "$app"
 for source in FreeRTOSConfig.h FreeRTOSIPConfig.h main.c network.c network.h sources.mk; do
     install -m 0644 "$script_dir/$source" "$app/$source"
 done
-for source in ivc_rtos_server.c ivc_rtos_server.h virtio_net_mmio.c virtio_net_mmio.h; do
+for source in aarch64_psci.h ivc_rtos_server.c ivc_rtos_server.h \
+    virtio_net_mmio.c virtio_net_mmio.h; do
     install -m 0644 "$script_dir/../common/$source" "$app/$source"
 done
 for source in protocol.c protocol.h endpoint.c endpoint.h; do
@@ -108,8 +120,9 @@ make -C "$source_root" "-j$jobs" \
     "BUILD_DIR=$build" \
     "CROSS_COMPILE=$cross_compile" \
     "FREERTOS_PLUS_TCP_DIR=$tcp_source" \
-    IVC_EXPECTED_COMMANDS=100 \
+    "IVC_EXPECTED_COMMANDS=$expected_commands" \
     "IVC_DROP_ACK_EVERY=$drop_ack_every" \
+    "IVC_STOP_AFTER_RESULT=$stop_after_result" \
     2>&1 | tee "$temporary_output/build.log"
 
 install -m 0644 "$build/freertos.elf" "$temporary_output/freertos.elf"
@@ -125,8 +138,10 @@ python3 "$script_dir/../common/validate_guest_elf.py" \
         "$profile" "$source_commit"
     printf 'kernel_commit=%s\nruntime_commit=%s\nplus_tcp_commit=%s\n' \
         "$kernel_commit" "$runtime_commit" "$tcp_commit"
-    printf 'compiler=%s\nexpected_commands=100\ndrop_ack_every=%s\n' \
-        "$("${cross_compile}gcc" --version | head -n 1)" "$drop_ack_every"
+    printf 'compiler=%s\nexpected_commands=%s\ndrop_ack_every=%s\n' \
+	"$("${cross_compile}gcc" --version | head -n 1)" \
+	"$expected_commands" "$drop_ack_every"
+    printf 'stop_after_result=%s\n' "$stop_after_result"
 } >"$temporary_output/source-provenance.txt"
 (
     cd -- "$temporary_output"
