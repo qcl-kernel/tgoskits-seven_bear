@@ -1,0 +1,140 @@
+{
+  "artifacts": {
+    "board_config": {
+      "bytes": 929,
+      "path": "competition/ivc/config/board-orangepi-5-plus-isolation.toml",
+      "sha256": "38adc1b5727dbc29e7df8b9ec5ba7a3f922c31d032e5340427f40358f276a808"
+    },
+    "build_config": {
+      "bytes": 310,
+      "path": "competition/ivc/config/axvisor-orangepi-5-plus-isolation.toml",
+      "sha256": "a2627594867e27e208e3a32ecbf58919a7a52c1502306c599cf1d80bf108ef71"
+    },
+    "console": {
+      "bytes": 64459,
+      "path": "competition/results/orangepi-isolation-20260819-v9/console.log",
+      "sha256": "6fa692cf06adb05abbde755e8e2a4565849e76b1768bafb4dbdfabbcd00c4de3"
+    },
+    "guest_configs": [
+      {
+        "bytes": 591,
+        "path": "competition/ivc/config/orangepi-5-plus-isolation-vm1.toml",
+        "sha256": "f8a341f3d45ddf8855ca964c3bfec6680d778f843d368a24696c14745f6db5ba"
+      },
+      {
+        "bytes": 591,
+        "path": "competition/ivc/config/orangepi-5-plus-isolation-vm2.toml",
+        "sha256": "e433318861c7df38ed1e5778ec1eedb94c1dc39ccaf4cd083790d5992f9393be"
+      },
+      {
+        "bytes": 591,
+        "path": "competition/ivc/config/orangepi-5-plus-isolation-vm3.toml",
+        "sha256": "62c47d369e093457c6645466d114b52dd3b3bf3f62e5ef0c705556b12879703d"
+      }
+    ],
+    "guest_images": [
+      {
+        "bytes": 1687600,
+        "path": "target/aarch64-unknown-linux-musl/release/arceos-virtio-net-isolation-vm1.bin",
+        "sha256": "339893b600d688c29e48626c0c3d6dfa57f413bb442e0e8952468fad40517bd6"
+      },
+      {
+        "bytes": 1650736,
+        "path": "target/aarch64-unknown-linux-musl/release/arceos-virtio-net-isolation-vm2.bin",
+        "sha256": "440cb2a07d4d16f87b548db599f4399c109f1a3ba730378a998f100934255d50"
+      },
+      {
+        "bytes": 1642544,
+        "path": "target/aarch64-unknown-linux-musl/release/arceos-virtio-net-isolation-vm3.bin",
+        "sha256": "16ed3592bcbd9483d20e44faa9fd6ee75f855e765a10b551c64013042067bd8b"
+      }
+    ]
+  },
+  "limitations": [
+    "isolates AxVisor virtual-switch segments, not physical Ethernet or device passthrough",
+    "active hostile frames use a feature-gated diagnostic path, not a general raw-socket ABI"
+  ],
+  "platform": {
+    "board_type": "OrangePi-5-Plus",
+    "host_filesystem_enabled": false,
+    "host_pcpu": 0,
+    "physical_device_passthrough": false,
+    "runtime_identity": "RK3588 OPi 5 Plus"
+  },
+  "results": {
+    "active_l2_probes": {
+      "ethertype": "0x88b5",
+      "known_cross_segment": 32,
+      "spoofed_source": 32,
+      "unknown_unicast": 32
+    },
+    "cross_segment_udp_probes": 100,
+    "observation_ms": 7000,
+    "runtime_cpu_bindings": {
+      "vm1": 1,
+      "vm2": 2,
+      "vm3": 3
+    },
+    "same_segment_tcp_bytes": 65536,
+    "same_segment_tcp_checksum": "0x7f8000",
+    "switch_metrics": {
+      "delivery_errors": 0,
+      "dropped_reflected_unicast": 0,
+      "dropped_resource_exhaustion": 0,
+      "dropped_short_frames": 0,
+      "dropped_spoofed_sources": 32,
+      "dropped_topology_frames": 0,
+      "dropped_unavailable_rx_buffer": 0,
+      "dropped_unknown_ingress": 0,
+      "dropped_unknown_unicast": 64,
+      "empty_tx_notifications": 0,
+      "forwarded_copies": 71,
+      "forwarding_attempts": 71,
+      "multicast_frames": 107,
+      "skipped_unavailable_vm_snapshots": 0,
+      "topology_snapshot_errors": 0,
+      "transmitted_bytes": 82898,
+      "transmitted_frames": 269,
+      "tx_notifications": 269,
+      "unicast_frames": 66
+    },
+    "vm1_cross_segment_probes_received": 0,
+    "vm3_tx_frames": 196
+  },
+  "schema_version": 2,
+  "scope": "AxVisor three-guest virtual-switch isolation on Orange Pi 5 Plus/RK3588",
+  "source": {
+    "clean_commit_required_by_runner": true,
+    "commit": "d2ff70273fb820ab6cfb21cc4e4966a9ae22c3af"
+  },
+  "status": "pass",
+  "topology": [
+    {
+      "cpu_mask": "0x2",
+      "ipv4": "10.0.2.15/24",
+      "mac": "52:54:00:00:00:01",
+      "mpidr": "0x100",
+      "pcpu": 1,
+      "segment_id": 1,
+      "vm_id": 1
+    },
+    {
+      "cpu_mask": "0x4",
+      "ipv4": "10.0.2.16/24",
+      "mac": "52:54:00:00:00:02",
+      "mpidr": "0x200",
+      "pcpu": 2,
+      "segment_id": 1,
+      "vm_id": 2
+    },
+    {
+      "cpu_mask": "0x8",
+      "ipv4": "10.0.2.17/24",
+      "mac": "52:54:00:00:00:03",
+      "mpidr": "0x300",
+      "pcpu": 3,
+      "segment_id": 2,
+      "vm_id": 3
+    }
+  ]
+}

@@ -1,0 +1,459 @@
+{
+  "records": [
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "9dbc8520-1c8a-4321-83fe-4654b5fff4fa",
+          "duration_seconds": 40.515665333,
+          "entry_ids": [
+            "architecture_title",
+            "architecture_subtitle",
+            "starry_box",
+            "zephyr_box",
+            "axvisor_box",
+            "camera_npu_box",
+            "actuator_box",
+            "network_box",
+            "closed_loop_label",
+            "claim_boundary_label",
+            "rt_metric_dispatch",
+            "rt_metric_emulated_irq",
+            "rt_metric_periodic_jitter",
+            "rt_metric_direct_irq",
+            "shared_profile",
+            "partitioned_profile",
+            "rt_max_axis",
+            "rt_worst_title",
+            "rt_worst_subtitle",
+            "observed_max_note",
+            "rt_p99_title",
+            "rt_p99_subtitle",
+            "pair_axis",
+            "improvement_axis",
+            "control_rmse_milli_c",
+            "control_iae_milli_c_s",
+            "control_max_overshoot_milli_c",
+            "manual_baseline",
+            "neural_policy",
+            "normalized_axis",
+            "control_title",
+            "control_subtitle",
+            "control_tradeoff_note",
+            "vision_inference_to_send",
+            "vision_transport",
+            "vision_end_to_end",
+            "stat_median",
+            "stat_p95",
+            "stat_max",
+            "latency_ms_axis",
+            "vision_latency_title",
+            "vision_latency_subtitle",
+            "vision_latency_note",
+            "preprocess_letterbox_avg",
+            "preprocess_total_avg",
+            "preprocess_total_p95",
+            "core_run_avg",
+            "core_run_p95",
+            "core_total_p95",
+            "vision_optimization_title",
+            "vision_optimization_subtitle",
+            "core_tradeoff_note",
+            "native_wake_p99",
+            "native_wake_max",
+            "native_dispatch_p99",
+            "native_dispatch_max",
+            "idle_workload",
+            "stress_workload",
+            "nanoseconds_axis",
+            "native_title",
+            "native_subtitle",
+            "native_note",
+            "isolation_title",
+            "isolation_subtitle",
+            "vm1_box",
+            "vm2_box",
+            "vm3_box",
+            "segment1_box",
+            "segment2_box",
+            "isolation_barrier",
+            "isolation_counters",
+            "encoder_position",
+            "planned_start",
+            "planned_outbound",
+            "torque_window",
+            "so100_final_annotation",
+            "elapsed_ms_axis",
+            "encoder_axis",
+            "so100_title",
+            "so100_subtitle",
+            "so100_boundary_note",
+            "pilot_ai",
+            "fixed_left",
+            "fixed_right",
+            "fixed_hold",
+            "pilot_accuracy",
+            "pilot_wrong_direction",
+            "percent_axis",
+            "pilot_title",
+            "pilot_subtitle",
+            "pilot_boundary_note"
+          ],
+          "input_sha256": "7277f00a82b18acb188065176bc310bb542c3c60147b93c73a2318c3add3fe7e",
+          "output_sha256": "61de47bcbf9fec1c3e36e58dfdce66d6df7fe7e549f9b3c65e77735536772818",
+          "usage": {
+            "cache_read_tokens": 21900,
+            "input_tokens": 39072,
+            "output_tokens": 18909,
+            "thinking_tokens": 14806,
+            "total_tokens": 57981
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 91,
+      "generated_at_utc": "2026-08-23T16:08:24.731925+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/chart-labels.json",
+      "output_sha256": "61de47bcbf9fec1c3e36e58dfdce66d6df7fe7e549f9b3c65e77735536772818",
+      "purpose": "中文技术材料",
+      "source": "competition/submission/copy/source/chart-labels.json",
+      "source_sha256": "292410499fe7b899c9f385598c47ad6e5bfb2c6a149b0d6d84d60d2c0b9e6d72"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "f638ab49-b011-4586-88ab-c488f3b2fa4f",
+          "duration_seconds": 34.366701456,
+          "entry_ids": [
+            "06_realtime_evidence_boundary",
+            "10_isolation",
+            "11_ai_model",
+            "14_vision_optimization",
+            "16_so100",
+            "17_traceability",
+            "18_conclusion"
+          ],
+          "input_sha256": "0d3a7eb5bc5262d86f10451af968904662f47c0c1b16e6126ac67840755b98cc",
+          "output_sha256": "5f26d2ab68d778217956bc8be0b574a5a7cf2366d792916421da112b41b6ebf1",
+          "usage": {
+            "cache_read_tokens": 17558,
+            "input_tokens": 36533,
+            "output_tokens": 15007,
+            "thinking_tokens": 11267,
+            "total_tokens": 51540
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 7,
+      "generated_at_utc": "2026-08-23T16:41:00.548834+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/design-corrections.json",
+      "output_sha256": "5f26d2ab68d778217956bc8be0b574a5a7cf2366d792916421da112b41b6ebf1",
+      "purpose": "比赛设计文档事实边界修订",
+      "source": "competition/submission/copy/source/design-corrections.json",
+      "source_sha256": "0d3a7eb5bc5262d86f10451af968904662f47c0c1b16e6126ac67840755b98cc"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "4525baa5-5ae3-453d-b506-0b808d515f9c",
+          "duration_seconds": 19.402488276,
+          "entry_ids": [
+            "11_ai_model",
+            "13_vision_loop"
+          ],
+          "input_sha256": "de2d781087bce2c38dcd0992c82cf112daccaa3910821bfa7ce3c5e9e9a56c2d",
+          "output_sha256": "fe656d428c64ff8337082b95fb8c67b2004b5f41a22d637106e70175e315daf0",
+          "usage": {
+            "cache_read_tokens": 17207,
+            "input_tokens": 27970,
+            "output_tokens": 7051,
+            "thinking_tokens": 5766,
+            "total_tokens": 35021
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 2,
+      "generated_at_utc": "2026-08-23T16:42:41.932786+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/design-final-corrections.json",
+      "output_sha256": "fe656d428c64ff8337082b95fb8c67b2004b5f41a22d637106e70175e315daf0",
+      "purpose": "比赛设计文档最终事实边界修订",
+      "source": "competition/submission/copy/source/design-final-corrections.json",
+      "source_sha256": "de2d781087bce2c38dcd0992c82cf112daccaa3910821bfa7ce3c5e9e9a56c2d"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "f0df917b-0a5a-4e82-bd4c-d436a7e83d54",
+          "duration_seconds": 75.272463839,
+          "entry_ids": [
+            "00_cover",
+            "01_executive_summary",
+            "02_requirement_map",
+            "03_architecture",
+            "04_topology",
+            "05_realtime_design",
+            "06_realtime_evidence_boundary",
+            "07_native_baseline",
+            "08_protocol",
+            "09_reliability",
+            "10_isolation",
+            "11_ai_model",
+            "12_control_effect",
+            "13_vision_loop",
+            "14_vision_optimization",
+            "15_visual_pilot",
+            "16_so100",
+            "17_traceability",
+            "18_conclusion"
+          ],
+          "input_sha256": "db5c2ff8975566d3d52a18fbd3bb52bff83b9873f1f8f41bc814d3db06eb6ce4",
+          "output_sha256": "594908c1759349d0a45d6beb27aa4a60d5ee3fefa92ce587b3ba63b5624d6861",
+          "usage": {
+            "cache_read_tokens": 26754,
+            "input_tokens": 55777,
+            "output_tokens": 35636,
+            "thinking_tokens": 22248,
+            "total_tokens": 91413
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 19,
+      "generated_at_utc": "2026-08-23T16:22:24.134429+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/design-sections.json",
+      "output_sha256": "594908c1759349d0a45d6beb27aa4a60d5ee3fefa92ce587b3ba63b5624d6861",
+      "purpose": "比赛设计文档",
+      "source": "competition/submission/copy/source/design-sections.json",
+      "source_sha256": "db5c2ff8975566d3d52a18fbd3bb52bff83b9873f1f8f41bc814d3db06eb6ce4"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "59161038-5451-47b5-a64b-8791f1737b04",
+          "duration_seconds": 25.595882216,
+          "entry_ids": [
+            "design__17_traceability",
+            "reproduction__03_offline",
+            "test__17_reproduction_checks",
+            "video__09_caption",
+            "video__09_narration"
+          ],
+          "input_sha256": "4448c13b82b2642c122869d92a3449c0918946c51df8a04ff2e0bfdad248335f",
+          "output_sha256": "9dfde6db7a764491211b716dc6b13fff0c1d20218c202ff904980639137b7d3f",
+          "usage": {
+            "cache_read_tokens": 17142,
+            "input_tokens": 28937,
+            "output_tokens": 7667,
+            "thinking_tokens": 5988,
+            "total_tokens": 36604
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 5,
+      "generated_at_utc": "2026-08-23T17:03:55.839632+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/evidence-count-corrections.json",
+      "output_sha256": "9dfde6db7a764491211b716dc6b13fff0c1d20218c202ff904980639137b7d3f",
+      "purpose": "交付材料证据输入计数修订",
+      "source": "competition/submission/copy/source/evidence-count-corrections.json",
+      "source_sha256": "4448c13b82b2642c122869d92a3449c0918946c51df8a04ff2e0bfdad248335f"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "62f5d2d3-99c8-49d8-a850-928150b50a0c",
+          "duration_seconds": 34.303755622,
+          "entry_ids": [
+            "00_cover",
+            "01_source",
+            "02_environment",
+            "03_offline",
+            "04_polish",
+            "05_pdf",
+            "06_video",
+            "07_qemu",
+            "08_board",
+            "09_success"
+          ],
+          "input_sha256": "c9b83faa8fa3a074772835c182666a03154c5d39464feda3cb347f8722057fe2",
+          "output_sha256": "6c9509384b1b73844c42fad304fdc8938d8cbf7e61c46d79a2bcbe31209a7564",
+          "usage": {
+            "cache_read_tokens": 21701,
+            "input_tokens": 34990,
+            "output_tokens": 17384,
+            "thinking_tokens": 12848,
+            "total_tokens": 52374
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 10,
+      "generated_at_utc": "2026-08-23T16:32:32.899489+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/reproduction-sections.json",
+      "output_sha256": "6c9509384b1b73844c42fad304fdc8938d8cbf7e61c46d79a2bcbe31209a7564",
+      "purpose": "比赛复现说明",
+      "source": "competition/submission/copy/source/reproduction-sections.json",
+      "source_sha256": "c9b83faa8fa3a074772835c182666a03154c5d39464feda3cb347f8722057fe2"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "bd51eb6f-bbb9-475b-b48f-c1c4dada11c7",
+          "duration_seconds": 78.898592545,
+          "entry_ids": [
+            "00_cover",
+            "01_result_matrix",
+            "02_method",
+            "03_rt_campaign",
+            "04_rt_p99_soak",
+            "05_rt_provenance",
+            "06_native_zephyr",
+            "07_ivc_smoke",
+            "08_faults",
+            "09_isolation",
+            "10_ai_backends",
+            "11_control_effect",
+            "12_uvc",
+            "13_continuous_vision",
+            "14_optimization",
+            "15_labeled_pilot",
+            "16_so100",
+            "17_reproduction_checks",
+            "18_limitations"
+          ],
+          "input_sha256": "9acffe1cbcd55d30a40299a58046c11183a26db1cec4511ae032a1a5b049c47c",
+          "output_sha256": "d91249b88bdb9cf7820bf1f4fdfafac8d8fe70f528530fef28800b41238ca872",
+          "usage": {
+            "cache_read_tokens": 26556,
+            "input_tokens": 56469,
+            "output_tokens": 35394,
+            "thinking_tokens": 24193,
+            "total_tokens": 91863
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 19,
+      "generated_at_utc": "2026-08-23T16:30:49.785253+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/test-sections.json",
+      "output_sha256": "d91249b88bdb9cf7820bf1f4fdfafac8d8fe70f528530fef28800b41238ca872",
+      "purpose": "比赛测试报告",
+      "source": "competition/submission/copy/source/test-sections.json",
+      "source_sha256": "9acffe1cbcd55d30a40299a58046c11183a26db1cec4511ae032a1a5b049c47c"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "6169abf9-b138-4369-a4d7-a908bcd234e8",
+          "duration_seconds": 24.671301099,
+          "entry_ids": [
+            "00_narration",
+            "01_narration",
+            "02_narration",
+            "03_narration",
+            "04_narration",
+            "05_narration",
+            "06_narration",
+            "07_narration",
+            "08_narration",
+            "09_narration"
+          ],
+          "input_sha256": "6b168330157984aad3335443b0e9a4faa1aa321f7ad0eb863cd888b82d4f047e",
+          "output_sha256": "bfbf741dd543c8e0816f8a2818a1ef0fcab6a9ab1b7d552969c88c42b0b9c1da",
+          "usage": {
+            "cache_read_tokens": 17307,
+            "input_tokens": 32356,
+            "output_tokens": 10913,
+            "thinking_tokens": 8442,
+            "total_tokens": 43269
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 10,
+      "generated_at_utc": "2026-08-23T16:52:57.522910+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/video-final-corrections.json",
+      "output_sha256": "bfbf741dd543c8e0816f8a2818a1ef0fcab6a9ab1b7d552969c88c42b0b9c1da",
+      "purpose": "五分钟比赛视频精简旁白",
+      "source": "competition/submission/copy/source/video-final-corrections.json",
+      "source_sha256": "6b168330157984aad3335443b0e9a4faa1aa321f7ad0eb863cd888b82d4f047e"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
+          "conversation_id": "c9d28335-5a59-43c9-adb6-b8425ada7e77",
+          "duration_seconds": 34.582764598,
+          "entry_ids": [
+            "00_title",
+            "00_caption",
+            "00_narration",
+            "01_title",
+            "01_caption",
+            "01_narration",
+            "02_title",
+            "02_caption",
+            "02_narration",
+            "03_title",
+            "03_caption",
+            "03_narration",
+            "04_title",
+            "04_caption",
+            "04_narration",
+            "05_title",
+            "05_caption",
+            "05_narration",
+            "06_title",
+            "06_caption",
+            "06_narration",
+            "07_title",
+            "07_caption",
+            "07_narration",
+            "08_title",
+            "08_caption",
+            "08_narration",
+            "09_title",
+            "09_caption",
+            "09_narration"
+          ],
+          "input_sha256": "580da6d5fce739ab494a8f4d8cc369e95e509e8b1753d7f565d2103d8505d88a",
+          "output_sha256": "ac89663d586e94bb175f2910ab46488c9990ca7f19da7f9df80a3c753cd12512",
+          "usage": {
+            "cache_read_tokens": 21742,
+            "input_tokens": 32676,
+            "output_tokens": 14869,
+            "thinking_tokens": 10852,
+            "total_tokens": 47545
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 30,
+      "generated_at_utc": "2026-08-23T16:33:20.368199+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/video-scenes.json",
+      "output_sha256": "ac89663d586e94bb175f2910ab46488c9990ca7f19da7f9df80a3c753cd12512",
+      "purpose": "比赛视频旁白与字幕",
+      "source": "competition/submission/copy/source/video-scenes.json",
+      "source_sha256": "d01a758003664ace5a7cc86df9212a81ae01cdccaae527035819d1edf70e7b41"
+    }
+  ],
+  "schema_version": 1
+}

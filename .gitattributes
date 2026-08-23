@@ -34,6 +34,15 @@ competition/results/orangepi-rtos-ivc-20260818/README.md text eol=lf
 competition/results/orangepi-vision-20260818/** binary
 competition/results/orangepi-vision-20260818/**/checksums.sha256 text eol=lf
 competition/results/orangepi-vision-20260818/README.md text eol=lf
+competition/results/rt-formal-current-head-audit-20260819/*.json text eol=lf
+competition/results/orangepi-isolation-20260819-v9/*.json text eol=lf
+competition/results/orangepi-native-zephyr-campaign-*/*.json text eol=lf
+competition/results/orangepi-live-camera-*/*.json text eol=lf
+competition/results/orangepi-labeled-scenes-*/*.json text eol=lf
+competition/results/orangepi-vision-fixed-core-*/*.json text eol=lf
+competition/results/orangepi-vision-continuous-*/**/*.json text eol=lf
+competition/results/orangepi-so100-id1-live-revalidation-*/*.json text eol=lf
+competition/results/orangepi-vision-preprocess-*/*.json binary
 competition/video/*.ass text eol=lf
 competition/video/*.json text eol=lf
 competition/video/*.md text eol=lf

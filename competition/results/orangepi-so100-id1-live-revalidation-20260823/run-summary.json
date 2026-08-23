@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "evidence_class": "supervised-single-cycle-physical-actuator",
+  "source": {
+    "branch": "feat/competition-final-evidence-20260818",
+    "commit": "e47d0b7935c58a03e8bcaa14c0855a71084eceea",
+    "worktree_clean_before_deployment": true
+  },
+  "board": {
+    "board_type": "OrangePi-5-Plus",
+    "board_id": "orangepi-5-plus-1",
+    "session_id": "c1b9f99d-4adb-47fd-8574-f7fc6a12f877",
+    "hostname": "orangepi5plus",
+    "architecture": "aarch64",
+    "serial_path": "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5A7C122017-if00",
+    "serial_device": "/dev/ttyACM0",
+    "lease_released": true,
+    "available_after_run": "1/1"
+  },
+  "operator_acknowledgements": {
+    "operator_present": true,
+    "workspace_clear": true,
+    "estop_12v_reachable": true,
+    "positive_id1_corridor_clear": true
+  },
+  "source_preflight": {
+    "path": "../orangepi-so100-id1-rebaseline-20260823/preflight-new-safe-pose-stable.json",
+    "sha256": "4149864a5495b295f1fe979eb8296512020af7986a693486c97ecf643b69155d",
+    "positions": {
+      "1": 2042,
+      "2": 1224,
+      "3": 2147,
+      "4": 1122,
+      "5": 1969,
+      "6": 1617
+    }
+  },
+  "one_time_policy": {
+    "sha256": "8456e5596242b83bd05c22826c4c9b1bb790062d9573a31228e19693793e49a8",
+    "execution_authorized": true,
+    "maximum_start_drift": 0,
+    "relative_step": 32,
+    "position_tolerance": 8,
+    "retained_as_standalone_file": false,
+    "consumed": true
+  },
+  "pre_execution_guard": {
+    "first_guard_result": "blocked-before-executor-on-transient-serial-occupancy",
+    "first_guard_python_executor_invoked": false,
+    "first_guard_device_io_attempted": false,
+    "serial_holder_after_diagnosis": null,
+    "physical_executor_invocations": 1
+  },
+  "dry_run": {
+    "local_sha256": "87f4620ffa9b6f866d35f032600ea33992ea8416bb8012f44657c30b22151a19",
+    "board_sha256": "67b0fcb2503d117692a0a6f86118b962a946b56927521ad7981f2336997ebdd9",
+    "status": "pass",
+    "device_io_attempted": false,
+    "trajectory": [
+      2042,
+      2074,
+      2042
+    ]
+  },
+  "preflight": {
+    "immediate_captured_at_utc": "2026-08-23T15:16:33.106140+00:00",
+    "executor_captured_at_utc": "2026-08-23T15:16:47.542371+00:00",
+    "positions": {
+      "1": 2042,
+      "2": 1224,
+      "3": 2147,
+      "4": 1122,
+      "5": 1969,
+      "6": 1617
+    },
+    "torque_enabled_ids": [],
+    "moving_ids": [],
+    "status_fault_ids": [],
+    "motor_errors": []
+  },
+  "execution": {
+    "artifact_sha256": "9910b6200cee062c61a89c6fed2ed7a35b3cbabe484b2c71794538e0233af3d2",
+    "generated_at_utc": "2026-08-23T15:16:49.555643+00:00",
+    "exit_code": 0,
+    "status": "pass",
+    "motor_id": 1,
+    "planned_start": 2042,
+    "planned_outbound": 2074,
+    "planned_return": 2042,
+    "maximum_observed_outbound": 2073,
+    "outbound_dwell_final": 2071,
+    "return_monitor_final": 2045,
+    "disarmed_final": 2045,
+    "position_tolerance": 8,
+    "sample_count": 81,
+    "torque_disabled_at_end": true,
+    "final_status": 0,
+    "final_moving": false
+  },
+  "postflight": {
+    "first_captured_at_utc": "2026-08-23T15:17:00.810098+00:00",
+    "stable_captured_at_utc": "2026-08-23T15:17:11.531746+00:00",
+    "first_positions": {
+      "1": 2047,
+      "2": 1224,
+      "3": 2147,
+      "4": 1122,
+      "5": 1969,
+      "6": 1617
+    },
+    "stable_positions": {
+      "1": 2047,
+      "2": 1224,
+      "3": 2147,
+      "4": 1122,
+      "5": 1969,
+      "6": 1617
+    },
+    "id1_return_error": 5,
+    "torque_enabled_ids": [],
+    "moving_ids": [],
+    "status_fault_ids": [],
+    "motor_errors": []
+  },
+  "cleanup": {
+    "board_temporary_directory_removed": true,
+    "board_one_time_policy_removed": true,
+    "local_one_time_policy_removed": true,
+    "repository_default_policy_authorized": false
+  },
+  "claims": {
+    "id1_single_cycle": "pass",
+    "full_arm_motion": "not-tested",
+    "armed_motion_estop": "not-tested",
+    "rtos_mediator": "not-tested",
+    "camera_synchronized_physical_loop": "not-tested"
+  }
+}
