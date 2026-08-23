@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "generator": "competition/submission/tools/build_video.py",
+  "voice": {
+    "provider": "Microsoft Edge TTS",
+    "name": "zh-CN-YunyangNeural",
+    "rate": "+20%"
+  },
+  "historical_source": {
+    "path": "competition/results/terminal-demo-20260817/demo-terminal-5min.mp4",
+    "sha256": "afeff60df2f9f8ab854aad6000c48398bc08681b991ff41cb6f9b88b6efc4a31",
+    "disclosure": "Post-hoc evidence visualization; not synchronized physical footage."
+  },
+  "scenes": [
+    {
+      "index": 0,
+      "duration_seconds": 22,
+      "title": "单芯片 RK3588 上的智能工控混合系统",
+      "narration_sha256": "0010f9c2ca7b924580d8ca1a17b8ab0a27eb4e0825f463e93fc929b7e8c31cb2",
+      "raw_audio_seconds": 15.432,
+      "historical_source_start_seconds": null
+    },
+    {
+      "index": 1,
+      "duration_seconds": 28,
+      "title": "系统架构：算力与确定性分域",
+      "narration_sha256": "a0e1fa8e91f7c210bfe02c7058b9a664fd94d94f57271786441b12c59ff2286a",
+      "raw_audio_seconds": 22.344,
+      "historical_source_start_seconds": 10.0
+    },
+    {
+      "index": 2,
+      "duration_seconds": 36,
+      "title": "实时性：看最差运行，也看逐配对尾延迟",
+      "narration_sha256": "8ba28dea49dfe4b4bd175eac6f1c822c1a1b7c88636c58d0a0b32acc8f654483",
+      "raw_audio_seconds": 28.632,
+      "historical_source_start_seconds": 63.0
+    },
+    {
+      "index": 3,
+      "duration_seconds": 30,
+      "title": "同板原生 Zephyr：给虚拟化结果一个参照",
+      "narration_sha256": "13627797c5981cbe5b53ed0f779d5dbfbc6474364325c206775372cee2081a6e",
+      "raw_audio_seconds": 25.512,
+      "historical_source_start_seconds": null
+    },
+    {
+      "index": 4,
+      "duration_seconds": 36,
+      "title": "IVC/1：能控制、能确认、能报错、能恢复",
+      "narration_sha256": "1ecb645e6e5c05086c2bd97d92a2a5631931708f2ad6778b101410fd9bdb0a81",
+      "raw_audio_seconds": 30.408,
+      "historical_source_start_seconds": 123.0
+    },
+    {
+      "index": 5,
+      "duration_seconds": 28,
+      "title": "AI 控制：误差下降，但超调必须公开",
+      "narration_sha256": "c6160acb2e36e5758010178d77d6010ad7f37dbd1ba1cc5c30d8ef6b0275501b",
+      "raw_audio_seconds": 27.048,
+      "historical_source_start_seconds": null
+    },
+    {
+      "index": 6,
+      "duration_seconds": 34,
+      "title": "USB 摄像头到 RTOS：连续视觉链路已闭合",
+      "narration_sha256": "065e67b90f5f0cd0ceaa4ff86b8dbab0cbe923881f85011a4d07b756667adf4e",
+      "raw_audio_seconds": 29.544,
+      "historical_source_start_seconds": null
+    },
+    {
+      "index": 7,
+      "duration_seconds": 32,
+      "title": "RK3588 优化与隔离：收益必须可复核",
+      "narration_sha256": "4d5c242a624df3f73e37379c2cb64b61b69501326c8d75ce20319758359125cd",
+      "raw_audio_seconds": 28.728,
+      "historical_source_start_seconds": null
+    },
+    {
+      "index": 8,
+      "duration_seconds": 34,
+      "title": "直观场景与机械臂：展示边界同样重要",
+      "narration_sha256": "b0d920ef4d401291c2f07a09d463d879a720f338593fd206ea03dd3fa533917e",
+      "raw_audio_seconds": 26.232,
+      "historical_source_start_seconds": null
+    },
+    {
+      "index": 9,
+      "duration_seconds": 20,
+      "title": "可追溯交付：结果、文档和视频来自同一证据快照",
+      "narration_sha256": "339a6e151820272c7b8e02fbd9a9543fde8802bffaa7fb18dfccaf33578a748d",
+      "raw_audio_seconds": 24.936,
+      "historical_source_start_seconds": null
+    }
+  ],
+  "outputs": {
+    "video": {
+      "path": "competition/submission/output/video/tgoskits-ivc-competition-demo.mp4",
+      "sha256": "ca3ceff32c408dc280c374437944f47ac23d8071e2752eb66c50bf0fc9ad234f",
+      "duration_seconds": 300.0
+    },
+    "subtitles": {
+      "path": "competition/submission/output/video/tgoskits-ivc-competition-demo.zh-CN.srt",
+      "sha256": "4a301368df34a48f29d0992e36bb320181efbb1ae1e5c58b1f0bba8982c83cc3"
+    }
+  },
+  "limitations": [
+    "No synchronized physical camera-to-arm footage is claimed.",
+    "SO-100 evidence is a supervised single-joint pilot without an RTOS mediator.",
+    "Continuous-loop actuator output is virtual state only."
+  ]
+}

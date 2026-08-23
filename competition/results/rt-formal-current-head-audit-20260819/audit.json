@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-08-18T18:33:31Z",
+  "status": "historical-evidence-valid-current-head-not-rerun",
+  "audited_source": {
+    "commit": "6b1d54e84d292145af6b3dd56daa7692c523be0b",
+    "tree": "073e92462fd5949ad2cb48fe8a415f8e3fc68b78",
+    "tracked_and_untracked_clean": true
+  },
+  "formal_campaign": {
+    "evidence_path": "competition/results/axvisor-rt-formal-20260816",
+    "source_commit": "c82da8464ab69e7da95e9be08293559e67b28fac",
+    "source_tree": "424d62d908518601acf8c4e8debea6a0662e9522",
+    "source_is_ancestor_of_audited_commit": false,
+    "merge_base": "54aaf45f2b2bff7767a60a3f8e6769ad3ea8d2e5",
+    "standalone_verification": {
+      "status": "pass",
+      "checked_files": 23,
+      "archive_files": 113,
+      "source_inputs": 34
+    },
+    "archive": {
+      "name": "axvisor-rt-formal-20260816-c82da8464.tar.gz",
+      "sha256": "68c1efb1ae0338692a84943c7056e104e2abed9e62a89dcdb0e2540ea1f9859e",
+      "release": "https://github.com/yueneiqi/tgoskits-competition-evidence/releases/tag/axvisor-rt-formal-20260816-c82da8464"
+    }
+  },
+  "committed_source_input_comparison": {
+    "method": "compare Git blob identities for every preregistered source input",
+    "total": 34,
+    "unchanged": 33,
+    "changed": 1,
+    "changed_inputs": [
+      {
+        "path": "competition/ivc/orangepi/restore-linux.sh",
+        "category": "post-run board recovery orchestration",
+        "formal_git_blob": "fa921a3b7924f95b0124d9f7a4f0108c76a7d908",
+        "formal_sha256": "4fa7c9ab18cfa95240db8ea300054462668d153fb9ed95c314b0efe62224f94b",
+        "formal_bytes": 6912,
+        "audited_git_blob": "dcec3129a13449ade75dc4cc3d4883e53361812e",
+        "audited_sha256": "de8a6108950472916c67c25197d9d9a793e64f833fd37617af8edf70d2ed5892",
+        "audited_bytes": 8110,
+        "loaded_into_measured_runtime_image": false,
+        "change_summary": "adds linked-worktree config resolution and WSL/Windows Python selection for safe Linux restore"
+      }
+    ]
+  },
+  "delivery_verifier": {
+    "status": "rejected-as-designed",
+    "exit_code": 2,
+    "reason": "evidence source is not an ancestor of HEAD: c82da8464ab69e7da95e9be08293559e67b28fac"
+  },
+  "formal_result": {
+    "m2_exit_gate_met": true,
+    "pair_count": 5,
+    "iterations_per_metric_per_half": 10000,
+    "shared_soak_seconds": 1864.677,
+    "partitioned_soak_seconds": 1845.735,
+    "worst_of_runs_max_improvement_percent": {
+      "dispatch_latency": 99.331,
+      "emulated_irq_response": 99.444,
+      "periodic_jitter": 99.548,
+      "virtual_timer_injection_to_guest_irq": 43.443
+    },
+    "p99_pairs_within_five_percent_non_regression_gate": {
+      "dispatch_latency": 5,
+      "emulated_irq_response": 5,
+      "periodic_jitter": 5,
+      "virtual_timer_injection_to_guest_irq": 5
+    }
+  },
+  "claim_boundary": {
+    "formal_metrics_apply_to_commit": "c82da8464ab69e7da95e9be08293559e67b28fac",
+    "audited_commit_was_physically_rerun_for_rt": false,
+    "current_head_performance_claim": false,
+    "note": "The formal campaign remains immutable historical physical-board evidence; this audit does not transfer its measurements to the audited commit."
+  }
+}

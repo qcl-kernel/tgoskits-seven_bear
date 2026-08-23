@@ -1,0 +1,444 @@
+{
+  "campaign": {
+    "finished_at_utc": "2026-08-19T05:39:26Z",
+    "ordering": "odd pairs idle->cpu-stress; even pairs cpu-stress->idle",
+    "pairs": 4,
+    "runs": 8,
+    "source_branch": "feat/competition-final-evidence-20260818",
+    "source_commit": "1baefe16b0bd4689388492c718095278a27e9d88",
+    "started_at_utc": "2026-08-19T04:59:24Z"
+  },
+  "evidence": [
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "e439c85c25dee6adee45ac8a8e0e58ded8a5cc7fbaf77c4436f4c148c17aaf03",
+      "finished_at_utc": "2026-08-19T05:02:44Z",
+      "pair": 1,
+      "path": "pair-01/idle",
+      "started_at_utc": "2026-08-19T05:01:37Z",
+      "summary_sha256": "0d01c8917de0ad7abc4fc3f1f92a496bddbfb10d36e474417f99d6e0fd7bb1d3",
+      "workload": "idle"
+    },
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "ab45c0284553f0f9fb11b19971483f1dc4c07e4e54ab9940bdb305188d0906d7",
+      "finished_at_utc": "2026-08-19T05:07:46Z",
+      "pair": 1,
+      "path": "pair-01/cpu-stress",
+      "started_at_utc": "2026-08-19T05:06:39Z",
+      "summary_sha256": "7a6543b834824d9fac0fa0b5b24dcec2b4faeee27e230b605def1a3440cb0066",
+      "workload": "cpu-stress"
+    },
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "88d59432d40135d3cc479cbdc7261999936b82ba0a50fef8fef6aedbc9f6344e",
+      "finished_at_utc": "2026-08-19T05:12:46Z",
+      "pair": 2,
+      "path": "pair-02/cpu-stress",
+      "started_at_utc": "2026-08-19T05:11:39Z",
+      "summary_sha256": "c5eb79fdda32c3749dfb8b41d199473bfb6d14cee568712751c9a3d81e6b10af",
+      "workload": "cpu-stress"
+    },
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "c94bb675e2ddb5ba7ab5b20938c891e3da109f5ece928b68f8bbcad55a4921a8",
+      "finished_at_utc": "2026-08-19T05:17:47Z",
+      "pair": 2,
+      "path": "pair-02/idle",
+      "started_at_utc": "2026-08-19T05:16:39Z",
+      "summary_sha256": "9740d08decde38ee583f758e1bfc3a40a8c9f42acbbd0b79336dd72714b53e92",
+      "workload": "idle"
+    },
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "9201c255e0605ea426108a9cf99b6f7a6f0cdd86d5ef96e77625675f5769a00d",
+      "finished_at_utc": "2026-08-19T05:22:50Z",
+      "pair": 3,
+      "path": "pair-03/idle",
+      "started_at_utc": "2026-08-19T05:21:44Z",
+      "summary_sha256": "767cbda3eee0c70551b3adb1025fa3b5ad8891b3b129634e95b34dfcb79af727",
+      "workload": "idle"
+    },
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "76ddb542c21495a22d6f523909b5b4cbf83b3cbf5d6f6a2d5ddefc65aabe9fa5",
+      "finished_at_utc": "2026-08-19T05:27:50Z",
+      "pair": 3,
+      "path": "pair-03/cpu-stress",
+      "started_at_utc": "2026-08-19T05:26:44Z",
+      "summary_sha256": "dab170155b4987bf2b1c13e537dd38bb72fd12d3f071614bc8f5e33bd1c1bf72",
+      "workload": "cpu-stress"
+    },
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "f84b95d4a213875592ed5ca196bffff0be91d61b906a87da04ab5162cbbeddda",
+      "finished_at_utc": "2026-08-19T05:32:51Z",
+      "pair": 4,
+      "path": "pair-04/cpu-stress",
+      "started_at_utc": "2026-08-19T05:31:45Z",
+      "summary_sha256": "17a84accefdbdf7c86bd85b8c2fb71073889c8d40cda58a826a7135fff6668ce",
+      "workload": "cpu-stress"
+    },
+    {
+      "checked_artifacts": 16,
+      "checksums_sha256": "3addfd205c2a67b465264c187e463244b8f095419562cca43f458a8485c581b0",
+      "finished_at_utc": "2026-08-19T05:37:49Z",
+      "pair": 4,
+      "path": "pair-04/idle",
+      "started_at_utc": "2026-08-19T05:36:42Z",
+      "summary_sha256": "6f66219fdf2ac0afc1e265195fd16cce46a997a3eaefc1447fc676f28031249d",
+      "workload": "idle"
+    }
+  ],
+  "generated_at_utc": "2026-08-19T05:39:28.113981+00:00",
+  "identity": {
+    "board": {
+      "board": "Orange Pi 5 Plus",
+      "measured_cpu": "Cortex-A55 CPU0",
+      "soc": "Rockchip RK3588",
+      "timer": "AArch64 architected counter at 24 MHz"
+    },
+    "configuration": {
+      "board": "roc_rk3588_pc",
+      "clock_hz": 24000000,
+      "cpu_count": 1,
+      "cpu_model": "cortex-a55",
+      "os": "zephyr",
+      "period_us": 1000,
+      "platform": "orange-pi-5-plus-rk3588",
+      "samples": 10000,
+      "warmup": 100,
+      "zephyr_version": "4.3.0"
+    },
+    "source": {
+      "commit": "3568e1b6d5cdd51a6b964a2a1d6d29200fea2056",
+      "tag_object": "981205b3e7cdf9fdf2e9e71b8b6b64fcc71c12a0",
+      "version": "v4.3.0",
+      "worktree": "clean"
+    }
+  },
+  "limitations": [
+    "Zephyr runs directly on Cortex-A55 CPU0 and does not include AxVisor",
+    "paired results compare workload sensitivity within Zephyr, not identical-kernel virtualization overhead",
+    "per-run summaries retain percentiles rather than all 10,000 individual samples"
+  ],
+  "paired_comparison": {
+    "periodic_wake_lateness": {
+      "max_ns": {
+        "stress_minus_idle_median_ns": 333.0,
+        "stress_minus_idle_ns": [
+          333,
+          208,
+          333,
+          459
+        ],
+        "stress_over_idle_median_percent": 8.503499999999999,
+        "stress_over_idle_percent": [
+          8.594,
+          5.368,
+          8.413,
+          12.108
+        ]
+      },
+      "p999_ns": {
+        "stress_minus_idle_median_ns": -83.5,
+        "stress_minus_idle_ns": [
+          -84,
+          -83,
+          41,
+          -208
+        ],
+        "stress_over_idle_median_percent": -2.746,
+        "stress_over_idle_percent": [
+          -2.8,
+          -2.692,
+          1.367,
+          -6.747
+        ]
+      },
+      "p99_ns": {
+        "stress_minus_idle_median_ns": 0.0,
+        "stress_minus_idle_ns": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "stress_over_idle_median_percent": 0.0,
+        "stress_over_idle_percent": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "timer_to_task_dispatch": {
+      "max_ns": {
+        "stress_minus_idle_median_ns": 291.0,
+        "stress_minus_idle_ns": [
+          291,
+          291,
+          291,
+          291
+        ],
+        "stress_over_idle_median_percent": 11.086,
+        "stress_over_idle_percent": [
+          11.086,
+          11.086,
+          11.086,
+          11.086
+        ]
+      },
+      "p999_ns": {
+        "stress_minus_idle_median_ns": 146.0,
+        "stress_minus_idle_ns": [
+          292,
+          0,
+          292,
+          -292
+        ],
+        "stress_over_idle_median_percent": 10.0135,
+        "stress_over_idle_percent": [
+          20.027,
+          0.0,
+          20.027,
+          -16.686
+        ]
+      },
+      "p99_ns": {
+        "stress_minus_idle_median_ns": 0.0,
+        "stress_minus_idle_ns": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "stress_over_idle_median_percent": 0.0,
+        "stress_over_idle_percent": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "schema_version": 1,
+  "scope": "Repeated paired native Zephyr RT baseline on Orange Pi 5 Plus/RK3588",
+  "status": "pass",
+  "workloads": {
+    "cpu-stress": {
+      "completion": {
+        "early_wakes": 0,
+        "timer_misses": 0,
+        "warmup_timer_misses": 0
+      },
+      "load": {
+        "cpu_idle_permille": {
+          "max": 0,
+          "median": 0.0,
+          "min": 0
+        },
+        "cpu_non_idle_permille": {
+          "max": 1000,
+          "median": 1000.0,
+          "min": 1000
+        },
+        "stress_blocks_per_second": {
+          "max": 131717,
+          "median": 131715.5,
+          "min": 131714
+        },
+        "stress_permille": {
+          "max": 999,
+          "median": 999.0,
+          "min": 999
+        }
+      },
+      "metrics": {
+        "periodic_wake_lateness": {
+          "max_ns": {
+            "max": 4291,
+            "median": 4229.0,
+            "min": 4083
+          },
+          "mean_ns": {
+            "max": 2750,
+            "median": 2750.0,
+            "min": 2750
+          },
+          "min_ns": {
+            "max": 2625,
+            "median": 2625.0,
+            "min": 2625
+          },
+          "p50_ns": {
+            "max": 2750,
+            "median": 2750.0,
+            "min": 2750
+          },
+          "p90_ns": {
+            "max": 2875,
+            "median": 2875.0,
+            "min": 2875
+          },
+          "p999_ns": {
+            "max": 3041,
+            "median": 2958.0,
+            "min": 2875
+          },
+          "p99_ns": {
+            "max": 2875,
+            "median": 2875.0,
+            "min": 2875
+          }
+        },
+        "timer_to_task_dispatch": {
+          "max_ns": {
+            "max": 2916,
+            "median": 2916.0,
+            "min": 2916
+          },
+          "mean_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "min_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "p50_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "p90_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "p999_ns": {
+            "max": 1750,
+            "median": 1750.0,
+            "min": 1458
+          },
+          "p99_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          }
+        }
+      },
+      "runs": 4
+    },
+    "idle": {
+      "completion": {
+        "early_wakes": 0,
+        "timer_misses": 0,
+        "warmup_timer_misses": 0
+      },
+      "load": {
+        "cpu_idle_permille": {
+          "max": 999,
+          "median": 999.0,
+          "min": 999
+        },
+        "cpu_non_idle_permille": {
+          "max": 0,
+          "median": 0.0,
+          "min": 0
+        },
+        "stress_blocks_per_second": {
+          "max": 0,
+          "median": 0.0,
+          "min": 0
+        },
+        "stress_permille": {
+          "max": 0,
+          "median": 0.0,
+          "min": 0
+        }
+      },
+      "metrics": {
+        "periodic_wake_lateness": {
+          "max_ns": {
+            "max": 3958,
+            "median": 3875.0,
+            "min": 3791
+          },
+          "mean_ns": {
+            "max": 2750,
+            "median": 2750.0,
+            "min": 2750
+          },
+          "min_ns": {
+            "max": 2625,
+            "median": 2625.0,
+            "min": 2625
+          },
+          "p50_ns": {
+            "max": 2750,
+            "median": 2750.0,
+            "min": 2750
+          },
+          "p90_ns": {
+            "max": 2875,
+            "median": 2875.0,
+            "min": 2875
+          },
+          "p999_ns": {
+            "max": 3083,
+            "median": 3041.5,
+            "min": 3000
+          },
+          "p99_ns": {
+            "max": 2875,
+            "median": 2875.0,
+            "min": 2875
+          }
+        },
+        "timer_to_task_dispatch": {
+          "max_ns": {
+            "max": 2625,
+            "median": 2625.0,
+            "min": 2625
+          },
+          "mean_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "min_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "p50_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "p90_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          },
+          "p999_ns": {
+            "max": 1750,
+            "median": 1604.0,
+            "min": 1458
+          },
+          "p99_ns": {
+            "max": 1458,
+            "median": 1458.0,
+            "min": 1458
+          }
+        }
+      },
+      "runs": 4
+    }
+  }
+}

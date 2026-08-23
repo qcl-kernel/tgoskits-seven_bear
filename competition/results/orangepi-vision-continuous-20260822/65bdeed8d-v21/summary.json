@@ -1,0 +1,113 @@
+{
+  "acceptance": {
+    "bounded_live_uvc_contract": true,
+    "ehci_guest_polled_events": true,
+    "exclusive_ehci_handoff": true,
+    "exclusive_npu_handoff": true,
+    "guest_logs_hash_verified": true,
+    "guest_snapshot_persisted": true,
+    "passed": true,
+    "physical_actuator_claimed": false,
+    "physical_camera_identity_requires_preflight": true,
+    "physical_camera_identity_verified": true,
+    "post_run_linux_reenumeration": true,
+    "real_rknn_backend": true,
+    "requested_equals_actual": true
+  },
+  "action_counts": {
+    "hold": 59,
+    "left": 1
+  },
+  "artifact_log_sha256": {
+    "controller": "5625b4e37cf61b7c1fb055dadbdaceb791d42d6167b886494a8eb6cd7507dcb2",
+    "runner": "4d9d502b2dc9f4e8aa5ca0737fa5cc6ad48c2874e001d683ddceef752bb7a9c8"
+  },
+  "camera": {
+    "controller": "/usb@fc880000",
+    "postflight_sysfs": "/sys/devices/platform/fc880000.usb/usb5/5-1",
+    "preflight_sysfs": "/sys/devices/platform/fc880000.usb/usb5/5-1",
+    "usb_id": "4c4a:4a55"
+  },
+  "capture": {
+    "fps": 30,
+    "negotiated_format": "mjpeg",
+    "requested_format": "mjpeg",
+    "scheduling_policy": "immediate",
+    "size": "352x288"
+  },
+  "decisions": 60,
+  "first_frame_id": 4,
+  "guest_snapshot": {
+    "backing_index": 0,
+    "bytes": 268435456,
+    "path": "/home/orangepi/vision-continuous-result.img",
+    "vm": 1
+  },
+  "hardware_handoff": {
+    "ehci": {
+      "controller": "0xfc880000",
+      "dma": "identity",
+      "event_delivery": "poll",
+      "exclusive": true,
+      "physical_spi_forwarded": false,
+      "size": "0x40000",
+      "spi": 218
+    },
+    "npu": {
+      "cores": 3,
+      "exclusive": true,
+      "scmi_clock_id": 6,
+      "scmi_rate_hz": 200000000
+    }
+  },
+  "last_frame_id": 230,
+  "latency_us": {
+    "end_to_end": {
+      "max": 2437752,
+      "median": 474923.0,
+      "min": 258353,
+      "p95": 595729
+    },
+    "inference_to_send": {
+      "max": 464386,
+      "median": 64894.0,
+      "min": 15341,
+      "p95": 114292
+    },
+    "transport": {
+      "max": 439526,
+      "median": 238375.0,
+      "min": 53095,
+      "p95": 317179
+    }
+  },
+  "retries": 0,
+  "rtos": {
+    "accepted": 60,
+    "acks_sent": 60,
+    "actuator_status_sent": 60,
+    "applied": 60,
+    "duplicates": 0,
+    "errors_sent": 0,
+    "protocol_errors": 0
+  },
+  "runner": {
+    "candidate_filter_records": 0,
+    "captured": 231,
+    "decision_candidates_filtered": 0,
+    "decision_record_errors": 0,
+    "decision_record_target": 60,
+    "decision_records": 60,
+    "decode_errors": 0,
+    "dropped_latest": 170,
+    "frame_accounting_closed": true,
+    "inference_errors": 0,
+    "inferences": 60,
+    "overwritten_latest": 170,
+    "pending_latest": 1,
+    "post_inference_waits": 0,
+    "selected_latest": 60
+  },
+  "schema_version": 2,
+  "workload": "continuous-uvc-rknn-visual-sorting"
+}

@@ -1,0 +1,287 @@
+{
+  "acceptance": {
+    "all_runs_reused_preprocess_buffer": true,
+    "minimum_letterbox_improvement_percent": 25.0,
+    "minimum_total_improvement_percent": 15.0,
+    "passed": true,
+    "validation_images_per_run": 3
+  },
+  "contract": "rk3588-preprocess-five-pairs-v1",
+  "evidence_type": "rk3588-preprocess-paired-profile",
+  "metrics": {
+    "letterbox_ms_avg": {
+      "direction": "lower_is_better",
+      "favorable_pairs": 5,
+      "fixed_q12": {
+        "best": 42.89,
+        "median": 42.92,
+        "values": [
+          42.89,
+          43.03,
+          42.91,
+          42.92,
+          43.22
+        ],
+        "worst": 43.22
+      },
+      "legacy_float": {
+        "best": 81.1,
+        "median": 81.25,
+        "values": [
+          81.99,
+          81.31,
+          81.25,
+          81.19,
+          81.1
+        ],
+        "worst": 81.99
+      },
+      "non_regressed_pairs": 5,
+      "paired_improvement_percent": [
+        47.68874252957678,
+        47.07908006395277,
+        47.187692307692316,
+        47.13634684074393,
+        46.707768187422936
+      ],
+      "paired_improvement_percent_median": 47.13634684074393
+    },
+    "letterbox_ms_p95": {
+      "direction": "lower_is_better",
+      "favorable_pairs": 5,
+      "fixed_q12": {
+        "best": 46.39,
+        "median": 46.44,
+        "values": [
+          46.39,
+          46.66,
+          46.41,
+          46.44,
+          46.67
+        ],
+        "worst": 46.67
+      },
+      "legacy_float": {
+        "best": 84.67,
+        "median": 84.83,
+        "values": [
+          85.8,
+          84.78,
+          84.83,
+          84.92,
+          84.67
+        ],
+        "worst": 85.8
+      },
+      "non_regressed_pairs": 5,
+      "paired_improvement_percent": [
+        45.93240093240093,
+        44.963434772351974,
+        45.29058116232465,
+        45.31323598681112,
+        44.88012282980985
+      ],
+      "paired_improvement_percent_median": 45.29058116232465
+    },
+    "malloc_ms_avg": {
+      "direction": "lower_is_better",
+      "favorable_pairs": 0,
+      "fixed_q12": {
+        "best": 0.01,
+        "median": 0.01,
+        "values": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ],
+        "worst": 0.01
+      },
+      "legacy_float": {
+        "best": 0.01,
+        "median": 0.01,
+        "values": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ],
+        "worst": 0.01
+      },
+      "non_regressed_pairs": 5,
+      "paired_improvement_percent": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "paired_improvement_percent_median": 0.0
+    },
+    "rknn_perf_run_ms_avg": {
+      "direction": "lower_is_better",
+      "favorable_pairs": 2,
+      "fixed_q12": {
+        "best": 17.81,
+        "median": 17.84,
+        "values": [
+          17.81,
+          17.84,
+          17.85,
+          17.84,
+          17.87
+        ],
+        "worst": 17.87
+      },
+      "legacy_float": {
+        "best": 17.7,
+        "median": 17.86,
+        "values": [
+          17.7,
+          18.5,
+          17.83,
+          17.86,
+          17.86
+        ],
+        "worst": 18.5
+      },
+      "non_regressed_pairs": 2,
+      "paired_improvement_percent": [
+        -0.6214689265536691,
+        3.5675675675675684,
+        -0.1121704991587388,
+        0.11198208286673894,
+        -0.055991041433379414
+      ],
+      "paired_improvement_percent_median": -0.055991041433379414
+    },
+    "rknn_perf_run_ms_p95": {
+      "direction": "lower_is_better",
+      "favorable_pairs": 3,
+      "fixed_q12": {
+        "best": 21.13,
+        "median": 21.16,
+        "values": [
+          21.16,
+          21.32,
+          21.13,
+          21.16,
+          21.2
+        ],
+        "worst": 21.32
+      },
+      "legacy_float": {
+        "best": 20.9,
+        "median": 21.19,
+        "values": [
+          20.9,
+          22.87,
+          21.25,
+          21.19,
+          21.18
+        ],
+        "worst": 22.87
+      },
+      "non_regressed_pairs": 3,
+      "paired_improvement_percent": [
+        -1.2440191387559885,
+        6.777437691298647,
+        0.5647058823529458,
+        0.14157621519585245,
+        -0.09442870632672132
+      ],
+      "paired_improvement_percent_median": 0.14157621519585245
+    },
+    "total_ms_avg": {
+      "direction": "lower_is_better",
+      "favorable_pairs": 5,
+      "fixed_q12": {
+        "best": 76.97,
+        "median": 77.02,
+        "values": [
+          76.97,
+          77.45,
+          77.0,
+          77.02,
+          77.34
+        ],
+        "worst": 77.45
+      },
+      "legacy_float": {
+        "best": 115.37,
+        "median": 115.53,
+        "values": [
+          115.77,
+          116.39,
+          115.53,
+          115.37,
+          115.46
+        ],
+        "worst": 116.39
+      },
+      "non_regressed_pairs": 5,
+      "paired_improvement_percent": [
+        33.51472747689384,
+        33.456482515680044,
+        33.35064485415044,
+        33.24087717777586,
+        33.01576303481725
+      ],
+      "paired_improvement_percent_median": 33.35064485415044
+    },
+    "total_ms_p95": {
+      "direction": "lower_is_better",
+      "favorable_pairs": 5,
+      "fixed_q12": {
+        "best": 98.46,
+        "median": 98.58,
+        "values": [
+          98.46,
+          99.91,
+          98.54,
+          98.58,
+          99.0
+        ],
+        "worst": 99.91
+      },
+      "legacy_float": {
+        "best": 137.19,
+        "median": 137.41,
+        "values": [
+          140.37,
+          139.47,
+          137.41,
+          137.19,
+          137.34
+        ],
+        "worst": 140.37
+      },
+      "non_regressed_pairs": 5,
+      "paired_improvement_percent": [
+        29.856807010044886,
+        28.364522836452284,
+        28.287606433301793,
+        28.143450688825716,
+        27.916120576671037
+      ],
+      "paired_improvement_percent_median": 28.287606433301793
+    }
+  },
+  "model_sha256": "40d62454f08c9a73ccd2349ee8ccadfa51e9a6f93c48e975b3302e29aff1a4d0",
+  "os": "starry",
+  "pairs": 5,
+  "payload": {
+    "benchmark_sha256": "54ceebcfd80ea53b10df1bb205a187e5f42bc375e484bd170e131e456c6611c1",
+    "file_count": 12,
+    "manifest_path": "competition/results/orangepi-vision-preprocess-20260819-v8/payload.sha256",
+    "manifest_sha256": "f3641603d32673f4d8e281bf972c96d12fb2a0786a4ab3b2faa796c1f3e17625",
+    "model_sha256": "40d62454f08c9a73ccd2349ee8ccadfa51e9a6f93c48e975b3302e29aff1a4d0"
+  },
+  "schema_version": 1,
+  "source": {
+    "log_sha256": "7152b67857a094f955438ae408cb86bc3f60f4728f969f44bd8b846ea5c9eb42",
+    "path": "competition/results/orangepi-vision-preprocess-20260819-v8/console.log"
+  }
+}
