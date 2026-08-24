@@ -6,106 +6,139 @@
     "name": "zh-CN-YunyangNeural",
     "rate": "+20%"
   },
-  "historical_source": {
+  "terminal_source": {
     "path": "competition/results/terminal-demo-20260817/demo-terminal-5min.mp4",
     "sha256": "afeff60df2f9f8ab854aad6000c48398bc08681b991ff41cb6f9b88b6efc4a31",
-    "disclosure": "Post-hoc evidence visualization; not synchronized physical footage."
+    "disclosure": "Archived terminal evidence, cropped and fitted inside the projection safe area."
+  },
+  "live_camera_source": {
+    "path": "competition/submission/assets/video/live-camera/orange-pi-uvc-live-20260824.mp4",
+    "sha256": "b3cc1deaf8826178ca0575841d7edc2118161b30c7a58e63bc69d3a4a91430e0",
+    "metadata_path": "competition/submission/assets/video/live-camera/capture-metadata.json",
+    "metadata_sha256": "7dbead39cab9a7e214a3b357d2861e3585c83a7257fe454d3657c41f0a601d1d",
+    "source_kind": "physical-usb-camera-live-capture",
+    "captured_at_utc": "2026-08-24T03:01:03Z",
+    "hostname": "orangepi5plus",
+    "device": "/dev/video0",
+    "driver": "uvcvideo",
+    "frame_count": 600,
+    "disclosure": "This is a physical live UVC capture from the Orange Pi. It is not synchronized with RKNN inference, RTOS actions, or SO-100 motion."
   },
   "scenes": [
     {
       "index": 0,
       "duration_seconds": 22,
       "title": "单芯片 RK3588 上的智能工控混合系统",
-      "narration_sha256": "0010f9c2ca7b924580d8ca1a17b8ab0a27eb4e0825f463e93fc929b7e8c31cb2",
-      "raw_audio_seconds": 15.432,
-      "historical_source_start_seconds": null
+      "narration_sha256": "1746bd7e1fd91973fac74a8203cc5f7296449963e8e111fea1f1e0ebc547f5b6",
+      "raw_audio_seconds": 19.152,
+      "media_kind": "static",
+      "terminal_source_start_seconds": null,
+      "live_camera_source_start_seconds": null
     },
     {
       "index": 1,
       "duration_seconds": 28,
       "title": "系统架构：算力与确定性分域",
-      "narration_sha256": "a0e1fa8e91f7c210bfe02c7058b9a664fd94d94f57271786441b12c59ff2286a",
-      "raw_audio_seconds": 22.344,
-      "historical_source_start_seconds": 10.0
+      "narration_sha256": "817833e164ab2a0f215c9b587e790734142cf42901ea30d3c6c2f2b963848ca0",
+      "raw_audio_seconds": 23.112,
+      "media_kind": "terminal",
+      "terminal_source_start_seconds": 10.0,
+      "live_camera_source_start_seconds": null
     },
     {
       "index": 2,
       "duration_seconds": 36,
       "title": "实时性：看最差运行，也看逐配对尾延迟",
-      "narration_sha256": "8ba28dea49dfe4b4bd175eac6f1c822c1a1b7c88636c58d0a0b32acc8f654483",
-      "raw_audio_seconds": 28.632,
-      "historical_source_start_seconds": 63.0
+      "narration_sha256": "d39d2cec0a60de43dbf626d1eebd4a16a561e48064cdb4208832fa19884620dc",
+      "raw_audio_seconds": 30.216,
+      "media_kind": "terminal",
+      "terminal_source_start_seconds": 63.0,
+      "live_camera_source_start_seconds": null
     },
     {
       "index": 3,
       "duration_seconds": 30,
       "title": "同板原生 Zephyr：给虚拟化结果一个参照",
-      "narration_sha256": "13627797c5981cbe5b53ed0f779d5dbfbc6474364325c206775372cee2081a6e",
-      "raw_audio_seconds": 25.512,
-      "historical_source_start_seconds": null
+      "narration_sha256": "e16a774888dc14b45bbab9a640b74af639ff6758157a682b0185d5a64d08b355",
+      "raw_audio_seconds": 27.048,
+      "media_kind": "static",
+      "terminal_source_start_seconds": null,
+      "live_camera_source_start_seconds": null
     },
     {
       "index": 4,
       "duration_seconds": 36,
       "title": "IVC/1：能控制、能确认、能报错、能恢复",
-      "narration_sha256": "1ecb645e6e5c05086c2bd97d92a2a5631931708f2ad6778b101410fd9bdb0a81",
-      "raw_audio_seconds": 30.408,
-      "historical_source_start_seconds": 123.0
+      "narration_sha256": "d98238155f66617b327d4dbaf10141ba375c0cfaf3d6e28ab3bd8ee9a4446487",
+      "raw_audio_seconds": 33.264,
+      "media_kind": "terminal",
+      "terminal_source_start_seconds": 123.0,
+      "live_camera_source_start_seconds": null
     },
     {
       "index": 5,
       "duration_seconds": 28,
       "title": "AI 控制：误差下降，但超调必须公开",
-      "narration_sha256": "c6160acb2e36e5758010178d77d6010ad7f37dbd1ba1cc5c30d8ef6b0275501b",
-      "raw_audio_seconds": 27.048,
-      "historical_source_start_seconds": null
+      "narration_sha256": "763061a4f0d037348dd5df2d22668b241899a8205eeaba24928dc6084663cff5",
+      "raw_audio_seconds": 28.896,
+      "media_kind": "static",
+      "terminal_source_start_seconds": null,
+      "live_camera_source_start_seconds": null
     },
     {
       "index": 6,
       "duration_seconds": 34,
-      "title": "USB 摄像头到 RTOS：连续视觉链路已闭合",
-      "narration_sha256": "065e67b90f5f0cd0ceaa4ff86b8dbab0cbe923881f85011a4d07b756667adf4e",
-      "raw_audio_seconds": 29.544,
-      "historical_source_start_seconds": null
+      "title": "现场 USB 摄像头：真实输入",
+      "narration_sha256": "100b0f45a424dbe80e3d7e5ca4fe0d114d355ef71fc9a4095f5c0ec6e35a3784",
+      "raw_audio_seconds": 32.352,
+      "media_kind": "live-camera",
+      "terminal_source_start_seconds": null,
+      "live_camera_source_start_seconds": 0.0
     },
     {
       "index": 7,
       "duration_seconds": 32,
       "title": "RK3588 优化与隔离：收益必须可复核",
-      "narration_sha256": "4d5c242a624df3f73e37379c2cb64b61b69501326c8d75ce20319758359125cd",
-      "raw_audio_seconds": 28.728,
-      "historical_source_start_seconds": null
+      "narration_sha256": "559036f7e64f7b837cf3f096236a2ab6e98a3fa3a75432936fe6c028dd4ad714",
+      "raw_audio_seconds": 29.592,
+      "media_kind": "static",
+      "terminal_source_start_seconds": null,
+      "live_camera_source_start_seconds": null
     },
     {
       "index": 8,
       "duration_seconds": 34,
-      "title": "直观场景与机械臂：展示边界同样重要",
-      "narration_sha256": "b0d920ef4d401291c2f07a09d463d879a720f338593fd206ea03dd3fa533917e",
-      "raw_audio_seconds": 26.232,
-      "historical_source_start_seconds": null
+      "title": "实机采集与物理执行：明确边界",
+      "narration_sha256": "762872e66136c401584fae0a14d5e8364ad6df3e3bde76502b0def6b093b420e",
+      "raw_audio_seconds": 28.104,
+      "media_kind": "live-camera",
+      "terminal_source_start_seconds": null,
+      "live_camera_source_start_seconds": 6.0
     },
     {
       "index": 9,
       "duration_seconds": 20,
-      "title": "可追溯交付：结果、文档和视频来自同一证据快照",
-      "narration_sha256": "339a6e151820272c7b8e02fbd9a9543fde8802bffaa7fb18dfccaf33578a748d",
-      "raw_audio_seconds": 24.936,
-      "historical_source_start_seconds": null
+      "title": "一芯多域：迈向确定性执行",
+      "narration_sha256": "5e402090607a9c37da65e9463c584d632909e62057465aee0ff0807e450225fc",
+      "raw_audio_seconds": 31.488,
+      "media_kind": "static",
+      "terminal_source_start_seconds": null,
+      "live_camera_source_start_seconds": null
     }
   ],
   "outputs": {
     "video": {
       "path": "competition/submission/output/video/tgoskits-ivc-competition-demo.mp4",
-      "sha256": "ca3ceff32c408dc280c374437944f47ac23d8071e2752eb66c50bf0fc9ad234f",
+      "sha256": "4b499cff2d44830ba820743cce53a602ce8be799907ca78e47d41e4d5a9cc612",
       "duration_seconds": 300.0
     },
     "subtitles": {
       "path": "competition/submission/output/video/tgoskits-ivc-competition-demo.zh-CN.srt",
-      "sha256": "4a301368df34a48f29d0992e36bb320181efbb1ae1e5c58b1f0bba8982c83cc3"
+      "sha256": "97b9719d7cbf450c69950884a805b8fc153ebbc66362e0d57039145767363581"
     }
   },
   "limitations": [
-    "No synchronized physical camera-to-arm footage is claimed.",
+    "The displayed camera footage is a physical USB capture, but it is not synchronized with RKNN, RTOS, or SO-100 events.",
     "SO-100 evidence is a supervised single-joint pilot without an RTOS mediator.",
     "Continuous-loop actuator output is virtual state only."
   ]

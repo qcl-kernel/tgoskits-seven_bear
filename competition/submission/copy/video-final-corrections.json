@@ -1,12 +1,18 @@
 {
-  "00_narration": "本系统运行于 Orange Pi 5 Plus，基于 AxVisor 隔离 StarryOS 与 RTOS：前者负责视觉与神经网络，后者负责动作与状态回传。本片只展示可核验证据，并明确区分正式结果、pilot 与未完成的物理闭环。",
-  "01_narration": "在同一颗 RK3588 上，StarryOS 客户机分配 2 个 vCPU 和 256 MiB，负责 USB 摄像头、图像预处理与 RKNN 推理；Zephyr 分配 1 个 vCPU 和 128 MiB，负责协议与动作状态机。应用数据只通过 IVC/1 over UDP/IPv4 传输，主通道不使用共享内存、HyperCall 或裸 MMIO。",
-  "02_narration": "冻结的正式 RT 测试包含 5 组预注册 AB/BA，每项每 half 各采集 10,000 样本。调度延迟、模拟中断、周期抖动与虚拟定时器注入的 worst maximum 分别改善 99.331%、99.444%、99.548% 和 43.443%；但调度延迟 worst p99 为 -1.080%。这些数据均为 observed maximum 而非 WCET，且归属于指定源提交，不是当前 HEAD 重跑。",
-  "03_narration": "在同一块 Orange Pi 5 Plus 上，原生 Zephyr 4.3.0 完成 4 组 idle 与 CPU stress 的 AB/BA，共 8 次 10,000 样本运行，全部为 0 timer miss。周期唤醒 p99 中位数为 2,875 ns，timer→task p99 为 1,458 ns；另一次 1,817.822 秒 soak 同样为 0 miss。该结果仅作为同板 RTOS 参照，不是 identical-kernel 虚拟化开销结论。",
-  "04_narration": "IVC/1 的每个 UDP datagram 承载一个 frame，32-byte header 包含 version、type、session、sequence、timestamp、length、error code 与 CRC-32。控制端必须同时收到匹配的 STATUS 与 ACK；64-sequence 窗口使重复包只重放响应，不重复执行动作。ACK-loss、typed ERROR 与 guest restart 各完成 3 次物理 campaign。当前 reset smoke 在真实 VM reset 前后共完成 120 条命令，accepted 与 applied 均为 120。",
-  "05_narration": "canonical 神经网络在 native Rust、ONNX Runtime CPU 与 RKNN NPU 三个后端共用权重、golden vectors 与协议载荷。五组 AB/BA 中，相比固定 500 permille 手动基线，neural 的 RMSE 降低 35.926646%，IAE 降低 51.932443%；但最大超调增加 96.315789%。结论表明误差改善与超调退化并存，而不是 AI 全面胜出。",
-  "06_narration": "USB 摄像头的原生 StarryOS 测试持续 60.1 秒，采集 965 帧并完成 483 次推理，解码与推理错误均为 0。跨 Guest 运行生成 60 条 decision，RTOS 全部 accepted 和 applied 并逐条回传状态。图像采集到动作状态回传的时延中位数为 474.923 ms，p95 为 595.729 ms，观测最大值为 2,437.752 ms。本次动作是虚拟状态，没有物理执行器。",
-  "07_narration": "RK3588 固定输入五配对测试显示，Q12 预处理使 letterbox 平均耗时降低 47.136%，总耗时平均值降低 33.351%，总耗时 p95 降低 28.288%。NPU all-core 的 run 平均值只改善 0.612%，run p95 却退化 2.074%，因此不设为默认。网络隔离测试中，同段 TCP 传输 65,536 bytes，100 个跨 segment UDP 探针的接收数为 0。",
-  "08_narration": "网球分拣将输出映射为 left、right 和 hold，便于同屏展示边界框、sequence、RTOS 状态与延迟。但当前只有 3 个标注正样本，AI 正确 2/3，固定 right 也是 2/3，不能证明总体 AI 优势。SO-100 已通过 USB Control 连接 Orange Pi，并完成 ID1 的 2042→2074→2042 有人值守单周期；它尚未接入 RTOS mediator，也未与摄像头同步。",
-  "09_narration": "提交材料从一个只读快照汇总 20 个结果 JSON，并保存每个输入的 SHA-256。图表从快照生成，中文通过 agy 与 Gemini 3.7 Flash High 润色，PDF 使用固定提交的 ilm-zh。下一步是重跑当前 HEAD 的正式 RT campaign，扩展分层标注数据，并将 SO-100 接入 RTOS mediator，完成可核验的摄像头同步物理闭环。"
+  "00_narration": "本演示呈现一套运行在 Orange Pi 5 Plus 上的智能工控混合关键系统。由 AxVisor 隔离 StarryOS 与 RTOS：前者负责视觉与神经网络，后者负责动作控制与状态回传。本片仅展示可核验证据，并严格区分正式测试结果、pilot 试验与未完成的物理闭环。",
+  "01_narration": "在同一颗 RK3588 上，StarryOS 客户机分配 2 个 vCPU 和 256 MiB，负责 USB 摄像头采集、图像预处理与 RKNN 推理；Zephyr 分配 1 个 vCPU 和 128 MiB，负责协议解析与动作状态机。应用数据仅通过 IVC/1 over UDP/IPv4 传输，主通道不使用共享内存、HyperCall 或裸 MMIO。",
+  "02_narration": "冻结的正式 RT 测试包含 5 组预注册 AB/BA 实验，每项每 half 各采集 10,000 样本。调度延迟、模拟中断、周期抖动与虚拟定时器注入的 worst maximum 分别改善 99.331%、99.444%、99.548% 和 43.443%。但调度延迟的 worst p99 为 -1.080%。上述指标均为 observed maximum，而非 WCET；且数据源自指定基准提交，并非当前 HEAD 重跑结果。",
+  "03_narration": "在同一块 Orange Pi 5 Plus 上，原生 Zephyr 4.3.0 完成了 4 组 idle 与 CPU stress 的 AB/BA 测试，共 8 次 10,000 样本运行，全部保持 0 timer miss。周期唤醒 p99 中位数为 2,875 ns，timer→task p99 为 1,458 ns。另一次 1,817.822 秒 soak 测试同样记录为 0 miss。该结果作为同板 RTOS 参照，并非 identical-kernel 虚拟化开销结论。",
+  "04_narration": "IVC/1 协议的每个 UDP datagram 承载一个 frame，其 32-byte header 包含 version、type、session、sequence、timestamp、length、error code 与 CRC-32。控制端必须同时收到匹配的 STATUS 与 ACK 响应；64-sequence 窗口机制确保重复数据包仅重放应答，不重复执行动作。针对 ACK-loss、typed ERROR 和 guest restart 场景各完成 3 次物理 campaign。当前 reset smoke 测试在真实 VM reset 前后完成 120 条命令，accepted 与 applied 数量均为 120。",
+  "05_narration": "canonical 神经网络在 native Rust、ONNX Runtime CPU 和 RKNN NPU 三个推理后端间共享权重、golden vectors 与协议载荷。在五组 AB/BA 测试中，相较于固定 500 permille 的手动基线，neural 控制的 RMSE 降低 35.926646%，IAE 降低 51.932443%；但最大超调增加 96.315789%。实验结论表明跟踪误差改善与超调退化并存，而非 AI 全面胜出。",
+  "06_caption": "Orange Pi 5 Plus /dev/video0；UVC MJPEG；600 帧现场采集",
+  "06_narration": "本段画面由 Orange Pi 5 Plus 的 /dev/video0 通过 uvcvideo 驱动直接采集，共计 600 帧，非 validation 目录中的样本图片，亦非仓库中的推理结果截图。该画面仅用于证明当前物理摄像头输入链路真实可用。历史连续链路测试持续 60.1 秒，采集 965 帧并完成 483 次推理，跨 Guest 的 60 条 decision 均被 RTOS 确认为 accepted 和 applied；但本段实拍与该测试不在同一时间线，不能作为 RKNN、RTOS 或机械臂动作的同步证据。",
+  "06_title": "现场 USB 摄像头：真实输入",
+  "07_narration": "RK3588 固定输入五配对测试显示，Q12 预处理使 letterbox 平均耗时降低 47.136%，总耗时平均值降低 33.351%，总耗时 p95 降低 28.288%。NPU all-core 模式下的 run 平均值仅改善 0.612%，run p95 却退化 2.074%，故未设为默认配置。网络隔离测试中，同网段 TCP 传输 65,536 bytes，100 个跨 segment UDP 探针的接收数均为 0。",
+  "08_caption": "现场摄像头实拍 + SO-100 ID1 单周期；两项尚未同步",
+  "08_narration": "画面左侧为 Orange Pi 现场采集的物理摄像头画面，右侧为 SO-100 的有人值守测试记录。机械臂通过 USB Control 接入 Orange Pi，完成 ID1 的 2042→2074→2042 单周期动作，观测最大位置为 2073，测试结束正常卸载扭矩且无故障。两项证据均来自实体硬件，但未在同一 sequence 下同步；机械臂目前尚未接入 RTOS mediator，因此不声明基于摄像头驱动的物理闭环。",
+  "08_title": "实机采集与物理执行：明确边界",
+  "09_caption": "USB 感知、RKNN 推理、IVC/1、RTOS 状态机、SO-100",
+  "09_narration": "基于单颗 RK3588 芯片，AxVisor 将感知计算与实时控制解耦至不同客户机：由 StarryOS 负责 USB 图像采集与 RKNN 推理，RTOS 维护通信协议与动作状态。现有实测证据已覆盖实时调度、网络隔离、IVC 恢复、板端视觉与 SO-100 单关节执行；当前的验证边界为摄像头与机械臂尚未按同一 sequence 同步。下一步将由 RTOS mediator 串联决策输出、动作回执与急停记录，构建全链路可审计的物理闭环。",
+  "09_title": "一芯多域：迈向确定性执行"
 }

@@ -158,9 +158,9 @@ SO-100 通过 USB Control 连接 Orange Pi，由 12 V 独立电源供电。测�
 
 # 17. 可追溯性与复现设计
 
-`competition/submission/data/evidence-snapshot.json` 为材料生成专用的只读归一化快照，完整记录 21 个保留证据输入的相对路径与 SHA-256，并对关键 gate 和声明边界执行断言。图表仅读取该快照与经 `agy` 润色的标签，不从任何独立手写数值生成。中文正文、图表标签、视频字幕与旁白由 `agy` CLI 调用 `gemini-3.7-flash-high`（配置 effort=high）处理，`competition/submission/agy-polish-manifest.json` 记录输入输出哈希、conversation ID 与 usage。
+`competition/submission/data/evidence-snapshot.json` 为材料生成专用的只读归一化快照，完整记录 21 个保留证据输入的相对路径与 SHA-256，并对关键 gate 和声明边界执行断言。图表严格仅读取该快照与经 `agy` 润色的标签，不从另一份手写数值生成。中文正文、图表标签、视频字幕与旁白由 `agy` CLI 调用 `gemini-3.7-flash-high`（配置 effort=high）处理，`competition/submission/agy-polish-manifest.json` 记录输入输出哈希、conversation ID 与 usage。
 
-PDF 基于 Typst 与 `ilm-zh` 的固定提交 `7a6080e891631d45ab2c2b40531ea8a3f211270f` 构建。最终交付材料包含生成命令、工具版本、PDF 逐页视觉检查结果、视频抽帧检查结果与 SHA-256 清单。复现者可先进行离线证据校验，再选择 QEMU、板端 smoke 或需要 board lease 的物理 campaign；文档生成不替代硬件重跑。
+PDF 使用 Typst 与 `ilm-zh` 的固定提交 `7a6080e891631d45ab2c2b40531ea8a3f211270f` 构建。最终交付材料包含生成命令、工具版本、PDF 逐页视觉检查结果、视频抽帧检查结果与 SHA-256 清单。复现者可先进行离线证据校验，再选择 QEMU、板端 smoke 或需要 board lease 的物理 campaign；文档生成不替代硬件重跑。
 
 # 18. 结论与后续优先级
 

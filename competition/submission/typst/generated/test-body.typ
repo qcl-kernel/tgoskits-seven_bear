@@ -243,9 +243,9 @@ trace 起始为 configured-disarmed position=2042、torque=false；上电后向�
 
 = 17. 复现与自动校验
 <复现与自动校验>
-材料生成前执行证据抽取器，对 21 个输入 JSON 计算 SHA-256，并断言正式 RT、当前 reset、原生 Zephyr、隔离、UVC、连续视觉、优化、pilot 与 SO-100 的关键 gate。图表脚本只读取归一化快照。中文润色清单记录 `gemini-3.7-flash-high`、effort=high、conversation ID、usage 与输入输出哈希。
+材料生成前执行证据抽取器，对 21 个输入 JSON 计算 SHA-256，并断言正式 RT、当前 reset、原生 Zephyr、隔离、UVC、连续视觉、优化、pilot 与 SO-100 的关键 gate。图表脚本仅读取归一化快照。中文润色清单记录 `gemini-3.7-flash-high`、effort=high、conversation ID、usage 与输入输出哈希。
 
-离线复现先运行 Python 单元测试、证据快照重建、图表重建、PDF 构建与校验；硬件复现再依次取得 board lease、确认 Linux 状态、上传并核验镜像、`sync`、重启到 AxVisor、采集 marker、恢复 Linux。完整命令见随附复现说明。
+离线复现先运行 Python 单元测试、证据快照重建、图表重建、PDF 构建与校验；硬件复现再依次获取 board lease、确认 Linux 状态、上传并核验镜像、执行 `sync`、重启至 AxVisor、采集 marker 并恢复 Linux。完整命令见随附复现说明。
 
 = 18. 限制、风险与判定
 <限制风险与判定>

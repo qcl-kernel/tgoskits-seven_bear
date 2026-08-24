@@ -94,15 +94,47 @@ class GeneratorContractTests(unittest.TestCase):
     def test_routed_corrections_cover_all_final_artifacts(self) -> None:
         routed = self.assemble.load_routed_corrections("evidence-count-corrections.json")
         self.assertEqual(set(routed), {"design", "test", "reproduction", "video"})
-        self.assertEqual(set(routed["video"]), {"09_caption", "09_narration"})
+        self.assertEqual(routed["video"], {})
         self.assertIn("21 个保留证据输入", routed["design"]["17_traceability"])
 
     def test_video_timeline_is_exactly_five_minutes(self) -> None:
         scenes = self.video.load_scenes()
         self.assertEqual(len(scenes), 10)
         self.assertEqual(sum(scene.duration for scene in scenes), 300)
-        self.assertIn("21 个证据输入", scenes[-1].caption)
-        self.assertIn("21 个结果 JSON", scenes[-1].narration)
+
+    def test_terminal_evidence_stays_inside_the_projection_safe_area(self) -> None:
+        self.assertEqual(self.video.TERMINAL_SCENES, frozenset({1, 2, 4}))
+        self.assertTrue(
+            all(self.video.scene_media_kind(index) == "terminal" for index in self.video.TERMINAL_SCENES)
+        )
+        left, top, right, bottom = self.video.TERMINAL_MEDIA_BOX
+        self.assertGreaterEqual(left, round(self.video.WIDTH * 0.08))
+        self.assertGreaterEqual(top, round(self.video.HEIGHT * 0.15))
+        self.assertLessEqual(right, round(self.video.WIDTH * 0.92))
+        self.assertLessEqual(bottom, round(self.video.HEIGHT * 0.85))
+
+    def test_camera_scenes_use_a_physical_live_capture(self) -> None:
+        self.assertEqual(self.video.LIVE_CAMERA_SCENES, frozenset({6, 8}))
+        self.assertTrue(
+            all(
+                self.video.scene_media_kind(index) == "live-camera"
+                for index in self.video.LIVE_CAMERA_SCENES
+            )
+        )
+        self.assertTrue(self.video.LIVE_CAMERA_VIDEO.is_file())
+        metadata = json.loads(self.video.LIVE_CAMERA_METADATA.read_text(encoding="utf-8"))
+        self.assertEqual(metadata["source_kind"], "physical-usb-camera-live-capture")
+        self.assertEqual(metadata["hostname"], "orangepi5plus")
+        self.assertEqual(metadata["device"], "/dev/video0")
+        self.assertEqual(metadata["driver"], "uvcvideo")
+        self.assertEqual(metadata["frame_count"], 600)
+        self.assertEqual(metadata["video_sha256"], sha256(self.video.LIVE_CAMERA_VIDEO))
+
+    def test_closing_scene_focuses_on_the_system_instead_of_material_generation(self) -> None:
+        closing = self.video.load_scenes()[-1]
+        copy = "\n".join((closing.title, closing.caption, closing.narration))
+        for forbidden in ("agy", "Gemini", "ilm-zh", "PDF", "提交材料", "证据输入", "视频来自"):
+            self.assertNotIn(forbidden, copy)
 
     def test_subtitle_chunks_stay_within_display_limit(self) -> None:
         chunks = self.video.subtitle_chunks("第一句用于测试；第二句包含更多内容，但仍需被稳定切分。")
