@@ -70,10 +70,10 @@ impl GuestMemory {
         if self.descriptor_range.contains(&address) {
             let read_number = self.descriptor_reads.fetch_add(1, Ordering::Relaxed) + 1;
             if read_number > self.descriptor_read_limit.load(Ordering::Relaxed) {
-                return Err(DeviceManagerError::UnexpectedResponse {
+                return Err(DeviceManagerError::Device(DeviceError::Backend {
                     operation: "read test guest descriptor",
                     detail: "descriptor read limit exceeded".into(),
-                });
+                }));
             }
         }
 

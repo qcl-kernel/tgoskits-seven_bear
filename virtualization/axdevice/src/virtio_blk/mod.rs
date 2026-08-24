@@ -1,6 +1,6 @@
 //! Memory-backed virtio block device for the resolved VM device graph.
 
-use alloc::{boxed::Box, format, string::String, sync::Arc, vec::Vec};
+use alloc::{boxed::Box, format, string::String, sync::Arc, vec, vec::Vec};
 use core::{cell::RefCell, fmt};
 
 use ax_sync::SpinLock;
@@ -12,8 +12,9 @@ use axdevice_base::{
 use axvm_types::GuestPhysAddr;
 
 use crate::{
-    DeviceBundle, DeviceFirmwareSpec, DeviceLifecycle, DeviceManagerError, DeviceManagerResult,
-    DeviceModel, DeviceRequirements, ResourceRequest, ResourceSlot, ServiceCardinality, ServiceKey,
+    AcpiContributionSpec, AcpiDeviceSpec, DeviceBundle, DeviceFirmwareSpec, DeviceLifecycle,
+    DeviceManagerError, DeviceManagerResult, DeviceModel, DeviceRequirements, FdtContributionSpec,
+    FdtNodeSpec, ResourceRequest, ResourceSlot, ServiceCardinality, ServiceKey,
     virtio::{
         memory::{GuestRead, GuestWrite},
         queue::{QueueAddressKind, QueueState},
@@ -126,11 +127,22 @@ impl DeviceModel for VirtioBlockModel {
     }
 
     fn firmware(&self) -> DeviceFirmwareSpec {
-        DeviceFirmwareSpec::new("virtio_mmio")
-            .with_compatible("virtio,mmio")
-            .with_register(ResourceSlot::new("registers").expect("static slot is valid"))
-            .with_interrupt(ResourceSlot::new("irq").expect("static slot is valid"))
-            .with_flag_property("dma-coherent")
+        let registers = ResourceSlot::new("registers").expect("static slot is valid");
+        let interrupt = ResourceSlot::new("irq").expect("static slot is valid");
+        DeviceFirmwareSpec::interfaces(
+            Some(vec![FdtContributionSpec::Conventional(
+                FdtNodeSpec::new("virtio_mmio")
+                    .with_compatible("virtio,mmio")
+                    .with_register(registers.clone())
+                    .with_interrupt(interrupt.clone())
+                    .with_empty_property("dma-coherent"),
+            )]),
+            Some(vec![AcpiContributionSpec::Conventional(
+                AcpiDeviceSpec::new_indexed("VB", "LNRO0005")
+                    .with_register(registers)
+                    .with_interrupt(interrupt),
+            )]),
+        )
     }
 
     fn build(

@@ -30,6 +30,7 @@ pub(crate) fn make_guest_memory_visible(addr: ax_memory_addr::VirtAddr, size: us
     CurrentArch::make_guest_memory_visible(addr, size);
 }
 
+#[cfg(target_arch = "aarch64")]
 pub(crate) fn quiesce_guest_memory_cache(addr: ax_memory_addr::VirtAddr, size: usize) {
     CurrentArch::quiesce_guest_memory_cache(addr, size);
 }

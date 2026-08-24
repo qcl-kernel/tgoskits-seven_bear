@@ -71,7 +71,7 @@ impl GuestOutputMux {
     }
 
     /// Restores line-safe multi-guest output and drains complete buffered lines.
-    pub(crate) fn resume_boot_multiplex(
+    pub fn resume_boot_multiplex(
         &mut self,
         preferred_vm: usize,
         multiple_running: bool,

@@ -94,6 +94,7 @@ pub(crate) trait BootImagePlatform {
     fn make_guest_memory_visible(_addr: VirtAddr, _size: usize) {}
 
     /// Cleans and invalidates guest memory cached by the current host CPU.
+    #[cfg(target_arch = "aarch64")]
     fn quiesce_guest_memory_cache(_addr: VirtAddr, _size: usize) {}
 
     fn default_boot_firmware_load_gpa(
