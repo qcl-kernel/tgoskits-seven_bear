@@ -2,9 +2,9 @@
 
 ## 比赛设计文档
 
-本方案在 Orange Pi 5 Plus 的 RK3588 单芯片上运行 AxVisor、至少 2 vCPU 的 StarryOS 客户机与 RTOS 客户机。StarryOS 承担 USB 摄像头采集、神经网络推理和控制决策，RTOS 负责确定性动作执行与状态回传，主数据通道为 IVC/1 over UDP/IPv4。本文同时阐明实时化、网络协议、隔离、AI 闭环、物理执行器和可复现证据的设计边界。
+本方案在 Orange Pi 5 Plus 的 RK3588 单芯片上运行 AxVisor，承载至少 2 vCPU 的 StarryOS 客户机与 RTOS 客户机。StarryOS 负责 USB 摄像头采集、神经网络推理与控制决策，RTOS 负责确定性动作执行与状态回传，主数据通道为 IVC/1 over UDP/IPv4。本文同步给出实时化、网络协议、隔离、AI 闭环、物理执行器和可复现证据的设计边界。
 
-版本基线：目标分支基于 `upstream/dev` 的 `c82bbc444cd4a25cc269e86378c9a31a8d2506ba`；材料生成时的 HEAD 为 `34a6117c4ee9a9c5e3d4ffe012df50fd29aa40ad`。冻结的正式 RT 数据归属于 `c82da8464ab69e7da95e9be08293559e67b28fac`，而非当前 HEAD 的板端重跑。
+版本基线：目标分支基于 `upstream/dev` 的 `f70cf8d0eadc43caf176e7873244e8fae8154d9c`；材料重建输入 HEAD 为 `0c3ac8654f67922dcbc96eae3de380ffc0c79fea`。已冻结的正式 RT 数据归属于 `c82da8464ab69e7da95e9be08293559e67b28fac`，非该输入 HEAD 的板端重跑。
 
 # 1. 方案摘要与成功标准
 

@@ -16,15 +16,18 @@ GENERATED = TYPST / "generated"
 
 def main() -> int:
     routed = load_routed_corrections("evidence-count-corrections.json")
+    version_refresh = load_routed_corrections("version-refresh.json")
     design = load_sections("design-sections.json")
     design.update(load_sections("design-corrections.json"))
     design.update(load_sections("design-final-corrections.json"))
     design.update(routed["design"])
+    design.update(version_refresh["design"])
     design = {key: design[key] for key in sorted(design)}
     report = load_sections("test-sections.json")
     report.update(routed["test"])
     reproduction = load_sections("reproduction-sections.json")
     reproduction.update(routed["reproduction"])
+    reproduction.update(version_refresh["reproduction"])
     video = load_sections("video-scenes.json")
     video.update(load_sections("video-final-corrections.json"))
     video.update(routed["video"])
