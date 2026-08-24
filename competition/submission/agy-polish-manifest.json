@@ -358,6 +358,53 @@
       "calls": [
         {
           "attempt": 1,
+          "conversation_id": "9c4773a8-8edb-48a9-b57d-bcac516309a3",
+          "duration_seconds": 15.693779283,
+          "entry_ids": [
+            "design__00_cover"
+          ],
+          "input_sha256": "fc265212084dfc1cd7ba3d392271c52230ff8d9d9ca5a40d208782c511da2459",
+          "output_sha256": "49a494344316c91724eb1cd611d39e29a42585c2a7cd94187b1b7573ec28ef98",
+          "usage": {
+            "cache_read_tokens": 0,
+            "input_tokens": 41677,
+            "output_tokens": 4010,
+            "thinking_tokens": 3393,
+            "total_tokens": 45687
+          }
+        },
+        {
+          "attempt": 1,
+          "conversation_id": "bf956352-5e63-4f62-9823-b797ae640ee7",
+          "duration_seconds": 15.081761447,
+          "entry_ids": [
+            "reproduction__01_source"
+          ],
+          "input_sha256": "fef6158a3034824dec55be6d5652706877bf3636bc980f76c08caf4bddbdc06d",
+          "output_sha256": "d79f64bb443898e37e42041c7c5697a9183f3c11f73c6a9f270ecc6b8eee7e6c",
+          "usage": {
+            "cache_read_tokens": 16856,
+            "input_tokens": 25421,
+            "output_tokens": 4263,
+            "thinking_tokens": 3753,
+            "total_tokens": 29684
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 2,
+      "generated_at_utc": "2026-08-24T15:53:03.485241+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/version-refresh.json",
+      "output_sha256": "37cac362218901c8cd0ddef0d14662c68698cc1f92df82ba1c53692ced71a455",
+      "purpose": "比赛成果材料版本来源刷新",
+      "source": "competition/submission/copy/source/version-refresh.json",
+      "source_sha256": "cd5454fc45261d628a5caa81279e4cd1c185d1fcb241d0619a4e106fedad3ced"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
           "conversation_id": "93d66d32-1fd8-4c21-ae9c-ed4319e7dfff",
           "duration_seconds": 23.217173375,
           "entry_ids": [

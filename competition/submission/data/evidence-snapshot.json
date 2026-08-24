@@ -65,7 +65,7 @@
     },
     "freertos_ivc": {
       "path": "competition/results/orangepi-rtos-ivc-20260818/freertos/summary.json",
-      "sha256": "9d04a794d7c709b9fcd4c8c952998454e923fa78369450283e7ec820cca72e2f"
+      "sha256": "03cbd40de1ab1f8375fcc89b0e7824759524e5dae44649c2c90712359d88ea94"
     },
     "isolation": {
       "path": "competition/results/orangepi-isolation-20260819-v9/summary.json",
@@ -85,7 +85,7 @@
     },
     "native_zephyr_soak": {
       "path": "competition/results/orangepi-native-zephyr-20260818/soak/summary.json",
-      "sha256": "d6afbf8b3fb6185792e873be236a048e1516da3d52427229d629eb7f1aff3de8"
+      "sha256": "4db5fd386f2a146356b07f1abf8e3d092b4163af09967c46fc24a45ab1bd0a1f"
     },
     "ort": {
       "path": "competition/results/current-source-smoke-20260813/historical-formal/ort/campaign-summary.json",
@@ -105,7 +105,7 @@
     },
     "rtthread_ivc": {
       "path": "competition/results/orangepi-rtos-ivc-20260818/rtthread/summary.json",
-      "sha256": "0804f0691549367adddca0a7ef126fe7632c76d65f567c6e39f508f61e15f727"
+      "sha256": "db1f83b5de2be42be56cd8ee5b6638c044c335e4063289544609db690a2ac67a"
     },
     "so100_summary": {
       "path": "competition/results/orangepi-so100-id1-live-revalidation-20260823/run-summary.json",
@@ -130,10 +130,10 @@
   },
   "generation": {
     "ilm_zh_commit": "7a6080e891631d45ab2c2b40531ea8a3f211270f",
-    "repository_branch": "feat/competition-final-evidence-20260818",
-    "repository_head": "34a6117c4ee9a9c5e3d4ffe012df50fd29aa40ad",
-    "upstream_dev": "c82bbc444cd4a25cc269e86378c9a31a8d2506ba",
-    "upstream_left_right_count": "0\t208"
+    "repository_branch": "chore/seven-bear-results-materials",
+    "repository_head": "0c3ac8654f67922dcbc96eae3de380ffc0c79fea",
+    "upstream_dev": "f70cf8d0eadc43caf176e7873244e8fae8154d9c",
+    "upstream_left_right_count": "0\t84"
   },
   "isolation": {
     "active_l2_probes": {

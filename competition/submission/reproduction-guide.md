@@ -4,7 +4,7 @@
 
 # 1. 固定源码与分支
 
-目标分支为 `feat/competition-final-evidence-20260818`，基于 `upstream/dev` 的 `c82bbc444cd4a25cc269e86378c9a31a8d2506ba`。生成快照记录的 HEAD 为 `34a6117c4ee9a9c5e3d4ffe012df50fd29aa40ad`。请先确认分支与基线状态：
+目标分支为 `chore/seven-bear-results-materials`，基于 `upstream/dev` 的 `f70cf8d0eadc43caf176e7873244e8fae8154d9c`。证据快照与文档重建输入 HEAD 为 `0c3ac8654f67922dcbc96eae3de380ffc0c79fea`。首先确认分支与基线：
 
 ```sh
 git status --short
@@ -13,7 +13,7 @@ git rev-parse upstream/dev
 git rev-list --left-right --count upstream/dev...HEAD
 ```
 
-正式 RT 证据绑定提交 `c82da8464ab69e7da95e9be08293559e67b28fac`。当前 HEAD 并非该提交的板端重跑结果，文档重建不得更动此项边界。
+正式 RT 证据另绑定 `c82da8464ab69e7da95e9be08293559e67b28fac`。重建输入 HEAD 并非该提交的板端重跑，不能通过文档重建改变这一边界。
 
 # 2. 环境与工具
 
