@@ -1,0 +1,5 @@
+.gitattributes text eol=lf
+*.md text eol=lf
+SHA256SUMS text eol=lf
+*.pdf binary
+*.mp4 binary
