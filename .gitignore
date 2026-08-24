@@ -77,3 +77,4 @@ offline-monitor-analysis*.html
 
 # Reproducible VHS/FFmpeg intermediate captures
 /competition/video/build/
+/competition/ivc/zephyr/build-*/

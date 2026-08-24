@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "campaign_id": "starry-so100-ball-closed-loop-v1",
+  "board": "Orange Pi 5 Plus (RK3588)",
+  "paired_trial_count": 30,
+  "strategies": {
+    "ai": "YOLOv8 sports-ball region decision after three RTOS-authorized frames",
+    "fixed": "always HOLD; frozen before capture and never adapted to a trial label"
+  },
+  "primary_metrics": [
+    {
+      "name": "action_accuracy",
+      "direction": "higher-is-better",
+      "definition": "actual stable action equals the preregistered expected action"
+    },
+    {
+      "name": "capture_to_stable_p95_us",
+      "direction": "lower-is-better",
+      "definition": "nearest-rank p95 of stable_at_us minus captured_at_us"
+    }
+  ],
+  "secondary_metrics": [
+    {
+      "name": "absent_false_motion_rate",
+      "definition": "non-HOLD stable actions among absent-ball trials"
+    }
+  ],
+  "evidence_gate": {
+    "required_records_per_trial": 2,
+    "physical_result_verified": true,
+    "maximum_latency_us": 5000000,
+    "allow_missing_or_reordered_records": false
+  },
+  "trials": [
+    {"trial_id": "T01", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T02", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T03", "condition": "left",   "expected_action": "left",  "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T04", "condition": "left",   "expected_action": "left",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T05", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T06", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T07", "condition": "absent", "expected_action": "hold",  "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T08", "condition": "left",   "expected_action": "left",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T09", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T10", "condition": "right",  "expected_action": "right", "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T11", "condition": "left",   "expected_action": "left",  "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T12", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T13", "condition": "left",   "expected_action": "left",  "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T14", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T15", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T16", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T17", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T18", "condition": "left",   "expected_action": "left",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T19", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T20", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T21", "condition": "left",   "expected_action": "left",  "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T22", "condition": "left",   "expected_action": "left",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T23", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T24", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T25", "condition": "absent", "expected_action": "hold",  "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T26", "condition": "left",   "expected_action": "left",  "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T27", "condition": "right",  "expected_action": "right", "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T28", "condition": "right",  "expected_action": "right", "strategy_order": ["fixed", "ai"]},
+    {"trial_id": "T29", "condition": "left",   "expected_action": "left",  "strategy_order": ["ai", "fixed"]},
+    {"trial_id": "T30", "condition": "absent", "expected_action": "hold",  "strategy_order": ["fixed", "ai"]}
+  ]
+}

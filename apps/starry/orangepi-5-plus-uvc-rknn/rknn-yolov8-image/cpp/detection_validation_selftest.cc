@@ -117,6 +117,30 @@ int main()
                      "missing target selects hold") != 0) {
         return 1;
     }
+    const std::string hold_record = rknn_validation::FormatVisionDecisionRecord(
+        42, 1000, 1500, 1000000, sorting);
+    if (require_true(
+            hold_record ==
+                "VISION_DECISION_RECORD version=1 frame_id=42 captured_at_us=1000 "
+                "inference_finished_at_us=1500 ttl_us=1000000 requested_action=hold "
+                "safe_action=hold detection_present=0 class_id=65535 confidence_q10000=0 "
+                "region_id=0 left=0 top=0 right=0 bottom=0",
+            "hold decision record preserves one frame identity") != 0) {
+        return 1;
+    }
+
+    actual.clear();
+    actual.push_back(DetectionEntry(32, 7081, 170, 70, 230, 130));
+    sorting = rknn_validation::SelectSortingDecision(actual, 32, 160);
+    const std::string right_record = rknn_validation::FormatVisionDecisionRecord(
+        43, 2000, 2600, 750000, sorting);
+    if (require_true(
+            right_record.find("frame_id=43") != std::string::npos &&
+                right_record.find("requested_action=right") != std::string::npos &&
+                right_record.find("left=170 top=70 right=230 bottom=130") != std::string::npos,
+            "right decision record carries the selected bounding box") != 0) {
+        return 1;
+    }
 
     printf("PASS detection_validation_selftest\n");
     return 0;

@@ -10,6 +10,12 @@ ssh_identity=${ORANGEPI_SSH_IDENTITY:-${HOME}/.ssh/orangepi_automation}
 guest_dir=${ORANGEPI_IVC_GUEST_DIR:-/home/orangepi/axvisor-guest}
 artifact_dir=$workspace/tmp/competition/ivc/starry
 lease_dir=$workspace/tmp/competition/ivc/board-lease
+selected_kernel=${IVC_VISION_KERNEL:-$artifact_dir/starryos-rknpu.bin}
+selected_dtb=${IVC_VISION_DTB:-$artifact_dir/starry-orangepi-5-plus-rknpu.dtb}
+selected_rootfs=${IVC_VISION_ROOTFS:-$artifact_dir/starry-ivc-rootfs-vision.img}
+remote_kernel_name=${IVC_VISION_REMOTE_KERNEL_NAME:-starryos-rknpu.bin}
+remote_dtb_name=${IVC_VISION_REMOTE_DTB_NAME:-starry-orangepi-5-plus-rknpu.dtb}
+remote_rootfs_name=${IVC_VISION_REMOTE_ROOTFS_NAME:-starry-ivc-rootfs-vision.img}
 
 case "$guest_dir" in
     /home/orangepi/*) ;;
@@ -24,14 +30,14 @@ if [[ "$guest_dir" =~ [^A-Za-z0-9_./-] ]]; then
 fi
 
 artifact_sources=(
-    "$artifact_dir/starryos-rknpu.bin"
-    "$artifact_dir/starry-orangepi-5-plus-rknpu.dtb"
-    "$artifact_dir/starry-ivc-rootfs-vision.img"
+    "$selected_kernel"
+    "$selected_dtb"
+    "$selected_rootfs"
 )
 artifact_names=(
-    starryos-rknpu.bin
-    starry-orangepi-5-plus-rknpu.dtb
-    starry-ivc-rootfs-vision.img
+    "$remote_kernel_name"
+    "$remote_dtb_name"
+    "$remote_rootfs_name"
 )
 for artifact in "${artifact_sources[@]}" "$ssh_identity"; do
     if [[ ! -r "$artifact" ]]; then

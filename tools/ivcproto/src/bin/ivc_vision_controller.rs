@@ -1,8 +1,9 @@
 #[cfg(unix)]
 use std::mem::MaybeUninit;
 use std::{
-    env, fs,
-    io::ErrorKind,
+    env,
+    fs::File,
+    io::{self, BufRead, BufReader, ErrorKind},
     net::{SocketAddr, UdpSocket},
     process::ExitCode,
     str::FromStr,
@@ -55,30 +56,6 @@ fn run() -> Result<(), String> {
         return Err("session id must be nonzero".to_owned());
     }
 
-    let input = fs::read_to_string(&record_path)
-        .map_err(|error| format!("read decision records {record_path}: {error}"))?;
-    let mut decisions = Vec::new();
-    for (line_index, line) in input.lines().enumerate() {
-        if let Some(decision) = parse_decision_record(line)
-            .map_err(|error| format!("record line {}: {error}", line_index + 1))?
-        {
-            if decisions
-                .last()
-                .is_some_and(|previous: &VisionDecision| previous.frame_id >= decision.frame_id)
-            {
-                return Err(format!(
-                    "frame ids must strictly increase, received {} after {}",
-                    decision.frame_id,
-                    decisions.last().unwrap().frame_id
-                ));
-            }
-            decisions.push(decision);
-        }
-    }
-    if decisions.is_empty() {
-        return Err("decision record contains no VISION_DECISION_RECORD lines".to_owned());
-    }
-
     let socket = UdpSocket::bind("0.0.0.0:0").map_err(|error| format!("bind UDP: {error}"))?;
     socket
         .connect(peer)
@@ -86,6 +63,24 @@ fn run() -> Result<(), String> {
     socket
         .set_read_timeout(Some(RESPONSE_POLL))
         .map_err(|error| format!("set response timeout: {error}"))?;
+
+    if record_path == "-" {
+        println!("VISION_CLOSED_LOOP_BEGIN peer={peer} frames=stream session_id={session_id}");
+        let stdin = io::stdin();
+        let applied = relay_decision_records(stdin.lock(), |sequence, decision| {
+            send_decision(&socket, session_id, sequence, decision)
+        })?;
+        println!("VISION_CLOSED_LOOP_DONE frames={applied} applied={applied} errors=0");
+        return Ok(());
+    }
+
+    let file = File::open(&record_path)
+        .map_err(|error| format!("read decision records {record_path}: {error}"))?;
+    let mut decisions = Vec::new();
+    relay_decision_records(BufReader::new(file), |_sequence, decision| {
+        decisions.push(decision);
+        Ok(())
+    })?;
 
     println!(
         "VISION_CLOSED_LOOP_BEGIN peer={peer} frames={} session_id={session_id}",
@@ -100,6 +95,44 @@ fn run() -> Result<(), String> {
         decisions.len()
     );
     Ok(())
+}
+
+fn relay_decision_records<R, F>(reader: R, mut relay: F) -> Result<usize, String>
+where
+    R: BufRead,
+    F: FnMut(u32, VisionDecision) -> Result<(), String>,
+{
+    let mut count = 0usize;
+    let mut previous_frame_id = None;
+    for (line_index, line) in reader.lines().enumerate() {
+        let line_number = line_index + 1;
+        let line = line.map_err(|error| format!("read record line {line_number}: {error}"))?;
+        let Some(decision) = parse_decision_record(&line)
+            .map_err(|error| format!("record line {line_number}: {error}"))?
+        else {
+            continue;
+        };
+        if let Some(previous) = previous_frame_id
+            && previous >= decision.frame_id
+        {
+            return Err(format!(
+                "frame ids must strictly increase, received {} after {}",
+                decision.frame_id, previous
+            ));
+        }
+        let next_count = count
+            .checked_add(1)
+            .ok_or_else(|| "decision record count overflow".to_owned())?;
+        let sequence = u32::try_from(next_count)
+            .map_err(|_| "decision record count exceeds protocol sequence range".to_owned())?;
+        relay(sequence, decision)?;
+        previous_frame_id = Some(decision.frame_id);
+        count = next_count;
+    }
+    if count == 0 {
+        return Err("decision record contains no VISION_DECISION_RECORD lines".to_owned());
+    }
+    Ok(count)
 }
 
 fn send_decision(
@@ -205,7 +238,12 @@ fn send_decision(
     }
 
     let completed_at_us = monotonic_us()?;
-    let status = status.unwrap();
+    let status = status.ok_or_else(|| {
+        format!(
+            "frame {} completed without actuator authorization status",
+            decision.frame_id
+        )
+    })?;
     if status.state != ActuatorState::Applied
         || status.requested_action != decision.requested_action
         || status.actual_action != decision.requested_action
@@ -220,10 +258,25 @@ fn send_decision(
     }
     println!(
         concat!(
-            "VISION_CLOSED_LOOP_EVENT frame={} detection={} class_id={} ",
+            "VISION_RTOS_AUTH_RECORD version=1 session_id={} sequence={} frame_id={} ",
+            "requested_action={} authorized_action={} state={} retries={}"
+        ),
+        session_id,
+        sequence,
+        decision.frame_id,
+        action_name(decision.requested_action),
+        action_name(status.actual_action),
+        state_name(status.state),
+        retries
+    );
+    println!(
+        concat!(
+            "VISION_CLOSED_LOOP_EVENT session_id={} sequence={} frame={} detection={} class_id={} ",
             "confidence_q10000={} bbox={},{},{},{} requested={} actual={} state={} ",
             "inference_to_send_us={} transport_us={} end_to_end_us={} retries={}"
         ),
+        session_id,
+        sequence,
         decision.frame_id,
         u8::from(decision.detection_present),
         decision.class_id,
@@ -297,5 +350,57 @@ const fn state_name(state: ActuatorState) -> &'static str {
 }
 
 fn usage() -> String {
-    "usage: ivc-vision-controller <peer-ip:port> <runner-log> [session-id]".to_owned()
+    "usage: ivc-vision-controller <peer-ip:port> <runner-log|-> [session-id]".to_owned()
+}
+
+#[cfg(test)]
+mod tests {
+    use std::io::Cursor;
+
+    use super::relay_decision_records;
+
+    const RECORD_ONE: &str = concat!(
+        "VISION_DECISION_RECORD version=1 frame_id=1 captured_at_us=1000 ",
+        "inference_finished_at_us=1400 ttl_us=5000000 requested_action=right ",
+        "safe_action=hold detection_present=1 class_id=32 confidence_q10000=7081 ",
+        "region_id=2 left=479 top=706 right=773 bottom=1010\n"
+    );
+
+    #[test]
+    fn relays_records_incrementally_and_ignores_human_output() {
+        let input = format!("stream-rknn: started\n{RECORD_ONE}stream-rknn: progress\n");
+        let mut relayed = Vec::new();
+        let count = relay_decision_records(Cursor::new(input), |sequence, decision| {
+            relayed.push((sequence, decision.frame_id));
+            Ok(())
+        })
+        .unwrap();
+
+        assert_eq!(count, 1);
+        assert_eq!(relayed, vec![(1, 1)]);
+    }
+
+    #[test]
+    fn preserves_prior_delivery_when_a_later_stream_record_is_invalid() {
+        let input = format!("{RECORD_ONE}VISION_DECISION_RECORD version=1 frame_id=2\n");
+        let mut relayed = Vec::new();
+        let error = relay_decision_records(Cursor::new(input), |sequence, decision| {
+            relayed.push((sequence, decision.frame_id));
+            Ok(())
+        })
+        .unwrap_err();
+
+        assert_eq!(relayed, vec![(1, 1)]);
+        assert!(error.contains("record line 2"), "{error}");
+    }
+
+    #[test]
+    fn rejects_non_increasing_frame_ids() {
+        let repeated = RECORD_ONE.to_owned();
+        let input = format!("{RECORD_ONE}{repeated}");
+        let error =
+            relay_decision_records(Cursor::new(input), |_sequence, _decision| Ok(())).unwrap_err();
+
+        assert!(error.contains("strictly increase"), "{error}");
+    }
 }

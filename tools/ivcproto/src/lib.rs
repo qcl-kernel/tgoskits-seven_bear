@@ -17,6 +17,7 @@ pub mod ort;
 pub mod reliability;
 #[cfg(all(feature = "rknn", target_arch = "aarch64", target_env = "gnu"))]
 pub mod rknn;
+pub mod so100;
 pub mod vision;
 pub mod vision_records;
 pub mod wire;
