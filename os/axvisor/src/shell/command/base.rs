@@ -316,7 +316,7 @@ fn do_exit(cmd: &ParsedCommand) {
 
 #[cfg(feature = "fs")]
 fn do_shutdown(_cmd: &ParsedCommand) {
-    if let Err(error) = axvm::shutdown_host_filesystems() {
+    if let Err(error) = axvm::host::shutdown_filesystems() {
         println!("AXVISOR_HOST_FILESYSTEM_SYNC_FAILED: {error}");
         return;
     }

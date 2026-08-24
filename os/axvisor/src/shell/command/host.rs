@@ -23,7 +23,6 @@ use std::{
     fs::{self, File},
     io::{self, Write},
     path::Path,
-    println,
     string::String,
     thread,
     time::Duration,
@@ -298,11 +297,11 @@ fn persist_bytes_atomically(output_path: &str, contents: &[u8]) -> Result<()> {
         let mut output = File::create(&temporary_path)?;
         for chunk in contents.chunks(SNAPSHOT_WRITE_CHUNK_BYTES) {
             output.write_all(chunk)?;
-            axvm::sync_host_filesystems().context("sync persisted chunk to host storage")?;
+            axvm::host::sync_filesystems().context("sync persisted chunk to host storage")?;
         }
         drop(output);
         fs::rename(&temporary_path, output_path)?;
-        axvm::sync_host_filesystems().context("sync persisted rename to host storage")
+        axvm::host::sync_filesystems().context("sync persisted rename to host storage")
     })();
 
     if result.is_err() {
@@ -325,12 +324,12 @@ pub(super) fn sync_host_filesystems_and_report() -> bool {
 
 #[cfg(feature = "fs")]
 fn synchronize_host_filesystems() -> Result<()> {
-    axvm::shutdown_host_filesystems().context("sync mounted host filesystems")
+    axvm::host::shutdown_filesystems().context("sync mounted host filesystems")
 }
 
 #[cfg(feature = "fs")]
 fn flush_host_filesystems() -> Result<()> {
-    axvm::sync_host_filesystems().context("flush mounted host filesystems")
+    axvm::host::sync_filesystems().context("flush mounted host filesystems")
 }
 
 #[cfg(feature = "fs")]

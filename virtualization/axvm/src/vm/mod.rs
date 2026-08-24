@@ -561,6 +561,7 @@ impl VmRuntimeHandle {
         self.notify_vcpu_event(0)
     }
 
+    #[cfg(any(target_arch = "aarch64", test))]
     pub(crate) fn device_poll_requested(&self) -> bool {
         self.device_poll_requested.load(Ordering::Acquire)
     }
@@ -1239,6 +1240,7 @@ pub struct AxVM {
     /// Lifecycle and runtime state reached from both task and interrupt context.
     machine: IrqSafeMutex<Machine<AxVMResources, Arc<VmRuntimeHandle>>>,
     fw_cfg_payload: Arc<FwCfgPayloadSlot>,
+    reset_memory_snapshot: IrqSafeMutex<Option<Arc<reset_memory::GuestMemorySnapshot>>>,
 }
 
 impl AxVM {
@@ -1264,6 +1266,7 @@ impl AxVM {
             config: SleepMutex::new(config),
             machine: IrqSafeMutex::new(Machine::Ready(resources)),
             fw_cfg_payload,
+            reset_memory_snapshot: IrqSafeMutex::new(None),
         });
 
         info!("VM created: id={}", result.id());
@@ -1681,13 +1684,13 @@ impl AxVM {
         Ok(())
     }
 
-    fn wait_until_stopped(&self) -> AxVmResult {
+    fn wait_until_stopped(&self, mut wait_step: impl FnMut()) -> AxVmResult {
         const MAX_YIELDS: usize = 10_000;
         for _ in 0..MAX_YIELDS {
             match self.status() {
                 VmStatus::Stopped | VmStatus::Ready => return Ok(()),
                 VmStatus::Stopping | VmStatus::Running | VmStatus::Paused | VmStatus::Pausing => {
-                    crate::host::task::yield_now();
+                    wait_step();
                 }
                 status => {
                     return ax_err!(
@@ -1704,6 +1707,14 @@ impl AxVM {
     }
 
     fn stop_and_join_runtime(&self, reason: StopReason) -> AxVmResult {
+        self.stop_and_join_runtime_with(reason, crate::host::task::yield_now)
+    }
+
+    fn stop_and_join_runtime_with(
+        &self,
+        reason: StopReason,
+        mut wait_step: impl FnMut(),
+    ) -> AxVmResult {
         match self.status() {
             VmStatus::Running | VmStatus::Paused => {
                 // A request-stop accepted in the start->stop window strands the
@@ -1720,13 +1731,13 @@ impl AxVM {
                 if let Ok(runtime) = self.runtime_handle() {
                     runtime.notify_all();
                 }
-                self.wait_until_stopped()?;
+                self.wait_until_stopped(&mut wait_step)?;
             }
             VmStatus::Stopping => {
                 if let Ok(runtime) = self.runtime_handle() {
                     runtime.notify_all();
                 }
-                self.wait_until_stopped()?;
+                self.wait_until_stopped(&mut wait_step)?;
             }
             VmStatus::Stopped | VmStatus::Ready => {}
             status => {
@@ -1746,8 +1757,18 @@ impl AxVM {
     /// Resets the VM by discarding runtime-only state, rebuilding vCPUs/devices,
     /// and starting from a fresh `Running` state.
     pub fn reset(self: &Arc<Self>) -> AxVmResult {
+        self.reset_with_wait(crate::host::task::yield_now)
+    }
+
+    /// Resets the VM while delegating each stop-wait iteration to the caller.
+    ///
+    /// A non-yielding callback is suitable only when the caller runs on a host
+    /// CPU that is not assigned to this VM; otherwise it can prevent the vCPU
+    /// tasks from observing the stop request.
+    pub fn reset_with_wait(self: &Arc<Self>, mut wait_step: impl FnMut()) -> AxVmResult {
         info!("Resetting VM[{}]", self.id());
-        self.stop_and_join_runtime(StopReason::Forced)?;
+        self.stop_and_join_runtime_with(StopReason::Forced, &mut wait_step)?;
+        self.restore_reset_memory()?;
 
         self.machine.lock().reset_with(|resources| {
             resources
@@ -1773,6 +1794,40 @@ impl AxVM {
         self.get_devices()
             .map(|devices| devices.devices().count())
             .unwrap_or(0)
+    }
+
+    /// Copies one volatile virtio block backing after the VM has stopped.
+    ///
+    /// Backings are ordered by their resolved graph registration order. The
+    /// returned bytes are independent of subsequent VM resets or guest writes.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error unless the VM is stopped or when `index` does not name
+    /// a configured virtio block backing.
+    pub fn snapshot_virtio_block_backing(&self, index: usize) -> AxVmResult<Vec<u8>> {
+        let machine = self.machine.lock();
+        let status = machine.status();
+        ensure_block_snapshot_status(self.id(), status)?;
+        let resources = machine
+            .resources()
+            .ok_or_else(|| ax_err_type!(BadState, "VM resources are not available"))?;
+        let devices = resources.devices()?;
+        let backing = devices
+            .services()
+            .all::<VirtioBlockBackendKey>()
+            .into_iter()
+            .nth(index)
+            .ok_or_else(|| {
+                AxVmError::invalid_input(
+                    "snapshot virtio block backing",
+                    format_args!(
+                        "VM[{}] has no virtio block backing at index {index}",
+                        self.id()
+                    ),
+                )
+            })?;
+        Ok(backing.snapshot())
     }
 
     /// Queue a QEMU fw_cfg device that will be attached during VM initialization.
@@ -1925,18 +1980,18 @@ impl AxVM {
         Ok(port.deliver_rx(
             &|gpa, buffer| {
                 self.read_from_guest(gpa, buffer).map_err(|error| {
-                    DeviceManagerError::UnexpectedResponse {
+                    DeviceManagerError::Device(DeviceError::Backend {
                         operation: "read guest memory for virtio-net RX",
                         detail: std::format!("{error}"),
-                    }
+                    })
                 })
             },
             &|gpa, buffer| {
                 self.write_to_guest(gpa, buffer).map_err(|error| {
-                    DeviceManagerError::UnexpectedResponse {
+                    DeviceManagerError::Device(DeviceError::Backend {
                         operation: "write guest memory for virtio-net RX",
                         detail: std::format!("{error}"),
-                    }
+                    })
                 })
             },
             frame,
@@ -2470,6 +2525,16 @@ impl Drop for AxVM {
     }
 }
 
+fn ensure_block_snapshot_status(vm_id: usize, status: VmStatus) -> AxVmResult {
+    if status != VmStatus::Stopped {
+        return Err(AxVmError::invalid_state(
+            "snapshot virtio block backing",
+            format_args!("VM[{vm_id}] is {status}"),
+        ));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use std::{cell::RefCell, sync::atomic::AtomicBool};
@@ -2480,6 +2545,17 @@ mod tests {
     };
 
     use super::*;
+
+    #[test]
+    fn block_snapshot_requires_a_stopped_vm() {
+        assert!(ensure_block_snapshot_status(7, VmStatus::Stopped).is_ok());
+
+        let error = ensure_block_snapshot_status(7, VmStatus::Running).unwrap_err();
+
+        assert!(matches!(error, AxVmError::InvalidState { .. }));
+        assert!(error.to_string().contains("VM[7]"));
+        assert!(error.to_string().contains("running"));
+    }
 
     #[cfg(feature = "host-test")]
     #[test]
@@ -2977,6 +3053,7 @@ pub(crate) fn destroyed_vm_for_test(id: VMId) -> AxVMRef {
         config: SleepMutex::new(config),
         machine: IrqSafeMutex::new(Machine::Destroyed),
         fw_cfg_payload: Arc::new(FwCfgPayloadSlot::new()),
+        reset_memory_snapshot: IrqSafeMutex::new(None),
     })
 }
 

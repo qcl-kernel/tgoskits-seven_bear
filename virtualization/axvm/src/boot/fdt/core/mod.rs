@@ -12,7 +12,6 @@ use crate::{
 
 pub(crate) mod create;
 mod device;
-pub(crate) mod device_model;
 pub(crate) mod interrupt;
 mod parser;
 mod policy;

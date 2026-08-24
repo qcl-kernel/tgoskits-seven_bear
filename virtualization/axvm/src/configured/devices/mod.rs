@@ -1,6 +1,8 @@
 //! AxVM-owned configurable virtual-device models.
 
 mod ivc;
+pub(super) mod legacy_virtio_blk;
+mod legacy_virtio_net;
 mod virtio_blk;
 mod virtio_net;
 
@@ -11,6 +13,8 @@ pub(super) fn register_devices(
     catalog: &mut crate::ConfiguredDeviceCatalog,
 ) -> Result<(), crate::ConfiguredDeviceError> {
     ivc::register(catalog)?;
+    legacy_virtio_blk::register(catalog)?;
+    legacy_virtio_net::register(catalog)?;
     virtio_blk::register(catalog)?;
     virtio_net::register(catalog)
 }
