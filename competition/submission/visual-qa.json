@@ -23,10 +23,10 @@
     "resolution": "1920x1080",
     "frame_rate": "30/1",
     "midpoint_frames_seconds": [11, 36, 68, 101, 134, 166, 197, 230, 263, 290],
-    "inspection": "One midpoint frame per scene reviewed at full resolution; the corrected final evidence-count frame was re-extracted and reviewed",
+    "inspection": "All ten scene midpoint frames reviewed at full resolution; terminal scenes 2, 3, and 5 were checked for safe-area containment; physical-camera scenes 7 and 9 and the technical closing frame were reviewed separately",
     "audio_probe": {
       "mean_volume_db": -23.4,
-      "max_volume_db": -4.0
+      "max_volume_db": -4.2
     },
     "result": "pass"
   },
@@ -35,6 +35,8 @@
     "No overlapping text or media cards",
     "Claim-boundary disclosures remain legible",
     "Chinese glyphs render without tofu or missing-font boxes",
-    "Final evidence count is 21 in documents, subtitles, narration, and closing frame"
+    "Terminal recordings stay inside their framed projection-safe region",
+    "Physical USB camera footage is visibly separated from historical RKNN, RTOS, and SO-100 evidence",
+    "Closing narration contains system scope and next steps, not material-generation details"
   ]
 }

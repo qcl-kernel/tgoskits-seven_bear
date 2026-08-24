@@ -22,22 +22,16 @@ CHARTS = SUBMISSION / "assets" / "charts"
 VIDEO_ASSETS = SUBMISSION / "assets" / "video"
 OUTPUT = SUBMISSION / "output" / "video"
 BUILD = REPO / "tmp" / "competition-submission-build" / "video-final"
-HISTORICAL_VIDEO = (
+TERMINAL_VIDEO = (
     REPO
     / "competition"
     / "results"
     / "terminal-demo-20260817"
     / "demo-terminal-5min.mp4"
 )
-TENNIS_VALIDATION = REPO / "apps" / "starry" / "aka00-tennis-yolo" / "validation"
-STREAM_RESULT = (
-    REPO
-    / "apps"
-    / "starry"
-    / "orangepi-5-plus-uvc-rknn"
-    / "images"
-    / "yolov8-stream-result.png"
-)
+LIVE_CAMERA_DIR = VIDEO_ASSETS / "live-camera"
+LIVE_CAMERA_VIDEO = LIVE_CAMERA_DIR / "orange-pi-uvc-live-20260824.mp4"
+LIVE_CAMERA_METADATA = LIVE_CAMERA_DIR / "capture-metadata.json"
 
 WIDTH = 1920
 HEIGHT = 1080
@@ -45,7 +39,19 @@ FPS = 30
 VOICE = "zh-CN-YunyangNeural"
 VOICE_RATE = "+20%"
 SCENE_DURATIONS = (22, 28, 36, 30, 36, 28, 34, 32, 34, 20)
-HISTORICAL_STARTS = {1: 10.0, 2: 63.0, 4: 123.0}
+TERMINAL_STARTS = {1: 10.0, 2: 63.0, 4: 123.0}
+TERMINAL_SCENES = frozenset(TERMINAL_STARTS)
+LIVE_CAMERA_STARTS = {6: 0.0, 8: 6.0}
+LIVE_CAMERA_SCENES = frozenset(LIVE_CAMERA_STARTS)
+
+# All dynamic footage stays inside the projector-safe region.  The terminal
+# crop focuses on the source recording's useful top 500 rows before scaling.
+TERMINAL_MEDIA_BOX = (170, 215, 1750, 915)
+TERMINAL_CONTENT_BOX = (194, 275, 1726, 891)
+LIVE_CAMERA_CONTENT_BOXES = {
+    6: (116, 270, 1216, 888),
+    8: (116, 270, 1116, 832),
+}
 
 COLORS = {
     "background": "#07111f",
@@ -82,8 +88,10 @@ def main() -> int:
 
     for scene in scenes:
         image_path = VIDEO_ASSETS / f"scene-{scene.index:02d}.png"
-        if scene.index in HISTORICAL_STARTS:
-            render_dynamic_overlay(scene, image_path)
+        if scene_media_kind(scene.index) == "terminal":
+            render_terminal_frame(scene, image_path)
+        elif scene_media_kind(scene.index) == "live-camera":
+            render_live_camera_frame(scene, image_path)
         else:
             render_static_scene(scene, image_path)
 
@@ -122,14 +130,21 @@ def require_inputs() -> None:
     required = [
         COPY / "video-scenes.json",
         COPY / "video-final-corrections.json",
-        HISTORICAL_VIDEO,
-        STREAM_RESULT,
+        TERMINAL_VIDEO,
+        LIVE_CAMERA_VIDEO,
+        LIVE_CAMERA_METADATA,
         Path(r"C:\Windows\Fonts\msyhbd.ttc"),
         Path(r"C:\Windows\Fonts\msyh.ttc"),
     ]
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
         raise FileNotFoundError(f"missing video inputs: {missing}")
+    metadata = json.loads(LIVE_CAMERA_METADATA.read_text(encoding="utf-8"))
+    if metadata.get("video_sha256") != sha256(LIVE_CAMERA_VIDEO):
+        raise RuntimeError("live camera video does not match its recorded SHA-256")
+    if metadata.get("framing_approved") is not True:
+        reason = metadata.get("framing_rejection_reason", "no rejection reason recorded")
+        raise RuntimeError(f"live camera framing is not approved: {reason}")
 
 
 def load_json(path: Path) -> dict[str, str]:
@@ -141,11 +156,11 @@ def load_json(path: Path) -> dict[str, str]:
 
 def load_scenes() -> list[Scene]:
     copy = load_json(COPY / "video-scenes.json")
-    copy.update(load_json(COPY / "video-final-corrections.json"))
     routed = load_json(COPY / "evidence-count-corrections.json")
     copy.update(
         {key.removeprefix("video__"): value for key, value in routed.items() if key.startswith("video__")}
     )
+    copy.update(load_json(COPY / "video-final-corrections.json"))
     scenes = []
     for index, duration in enumerate(SCENE_DURATIONS):
         prefix = f"{index:02d}"
@@ -161,6 +176,14 @@ def load_scenes() -> list[Scene]:
     if sum(scene.duration for scene in scenes) != 300:
         raise ValueError("scene duration total must equal 300 seconds")
     return scenes
+
+
+def scene_media_kind(index: int) -> str:
+    if index in TERMINAL_SCENES:
+        return "terminal"
+    if index in LIVE_CAMERA_SCENES:
+        return "live-camera"
+    return "static"
 
 
 def font(size: int, *, bold: bool = False) -> ImageFont.FreeTypeFont:
@@ -292,44 +315,15 @@ def render_static_scene(scene: Scene, output_path: Path) -> None:
     elif scene.index == 5:
         inner = card(image, (180, media_top, WIDTH - 180, media_bottom), padding=32)
         paste_contained(image, CHARTS / "04-control-effect.png", inner)
-    elif scene.index == 6:
-        left = card(image, (90, media_top, 1180, media_bottom), padding=24)
-        right = card(image, (1210, media_top, WIDTH - 90, media_bottom), padding=20)
-        paste_contained(image, CHARTS / "05-vision-loop-latency.png", left)
-        paste_contained(image, STREAM_RESULT, right, background="#111820")
-        draw_pill(image, (1270, 884), "VIRTUAL ACTUATOR OUTPUT", COLORS["warning"])
     elif scene.index == 7:
         left = card(image, (90, media_top, 955, media_bottom), padding=25)
         right = card(image, (985, media_top, WIDTH - 90, media_bottom), padding=25)
         paste_contained(image, CHARTS / "06-vision-optimization.png", left)
         paste_contained(image, CHARTS / "08-isolation.png", right)
-    elif scene.index == 8:
-        top_left = card(image, (90, media_top, 940, 610), padding=18)
-        top_right = card(image, (970, media_top, WIDTH - 90, 610), padding=18)
-        paste_contained(image, CHARTS / "10-labeled-pilot.png", top_left)
-        paste_contained(image, CHARTS / "09-so100-id1.png", top_right)
-        photos = [
-            TENNIS_VALIDATION / "tennis-ball-black-box.jpg",
-            TENNIS_VALIDATION / "tennis-ball-close.jpg",
-            TENNIS_VALIDATION / "tennis-ball-plant.jpg",
-        ]
-        gap = 24
-        total_width = WIDTH - 180
-        photo_width = (total_width - 2 * gap) // 3
-        for position, photo in enumerate(photos):
-            x1 = 90 + position * (photo_width + gap)
-            inner = card(image, (x1, 640, x1 + photo_width, media_bottom), padding=14)
-            paste_contained(image, photo, inner, background="#111820")
-        draw_pill(
-            image,
-            (105, 892),
-            "SUPERVISED PILOT • NO CAMERA SYNC • NO RTOS MEDIATOR",
-            COLORS["warning"],
-        )
     elif scene.index == 9:
         left = card(image, (90, media_top, 1080, media_bottom), padding=28)
         paste_contained(image, CHARTS / "01-system-architecture.png", left)
-        draw_stat_cards(image)
+        draw_system_stat_cards(image)
     else:
         raise ValueError(f"static layout is not defined for scene {scene.index}")
 
@@ -346,15 +340,15 @@ def draw_pill(image: Image.Image, origin: tuple[int, int], value: str, fill: str
     draw.text((origin[0] + 17, origin[1] + 7), value, font=pill_font, fill=COLORS["ink"])
 
 
-def draw_stat_cards(image: Image.Image) -> None:
+def draw_system_stat_cards(image: Image.Image) -> None:
     draw = ImageDraw.Draw(image)
     number_font = font(62, bold=True)
     label_font = font(20, bold=True)
     stats = (
-        ("21", "EVIDENCE INPUTS"),
-        ("10", "GENERATED CHARTS"),
-        ("2", "PDF REPORTS"),
-        ("300s", "FINAL VIDEO"),
+        ("5", "RT AB/BA PAIRS"),
+        ("10,000", "SAMPLES / HALF"),
+        ("60/60", "IVC ACTIONS APPLIED"),
+        ("1×", "SO-100 ID1 CYCLE"),
     )
     for index, (number, label) in enumerate(stats):
         column = index % 2
@@ -367,23 +361,102 @@ def draw_stat_cards(image: Image.Image) -> None:
         draw.text((x1 + 28, y1 + 145), label, font=label_font, fill=COLORS["white"])
 
 
-def render_dynamic_overlay(scene: Scene, output_path: Path) -> None:
-    image = base_canvas(transparent=True)
+def render_terminal_frame(scene: Scene, output_path: Path) -> None:
+    image = base_canvas()
     draw = ImageDraw.Draw(image)
-    draw.rectangle((0, 0, WIDTH, 190), fill=(7, 17, 31, 232))
-    draw.rectangle((0, 815, WIDTH, HEIGHT), fill=(7, 17, 31, 238))
-    draw.rectangle((0, 0, WIDTH, 8), fill=COLORS["accent"])
+    draw_header(image, scene, compact=True)
+    draw.rounded_rectangle(
+        TERMINAL_MEDIA_BOX,
+        radius=24,
+        fill="#020b16",
+        outline=COLORS["accent"],
+        width=3,
+    )
+    draw.rectangle(
+        (
+            TERMINAL_MEDIA_BOX[0] + 3,
+            TERMINAL_MEDIA_BOX[1] + 3,
+            TERMINAL_MEDIA_BOX[2] - 3,
+            TERMINAL_CONTENT_BOX[1] - 5,
+        ),
+        fill="#10263a",
+    )
+    draw.text(
+        (TERMINAL_MEDIA_BOX[0] + 24, TERMINAL_MEDIA_BOX[1] + 14),
+        "ARCHIVED TERMINAL EVIDENCE",
+        font=font(20, bold=True),
+        fill=COLORS["accent_soft"],
+    )
+    draw.text(
+        (TERMINAL_MEDIA_BOX[2] - 468, TERMINAL_MEDIA_BOX[1] + 15),
+        "TOP 500 ROWS • SAFE-AREA FIT",
+        font=font(18, bold=True),
+        fill=COLORS["muted"],
+    )
+    draw_footer(image, "TERMINAL SOURCE RETAINED • NO SLIDE OVERLAP")
+    image.save(output_path, format="PNG", optimize=True)
+
+
+def render_live_camera_frame(scene: Scene, output_path: Path) -> None:
+    metadata = json.loads(LIVE_CAMERA_METADATA.read_text(encoding="utf-8"))
+    image = base_canvas()
+    draw = ImageDraw.Draw(image)
     draw_header(image, scene, compact=True)
 
-    badge_font = font(18, bold=True)
-    badge = "HISTORICAL TERMINAL EVIDENCE"
-    width = text_width(draw, badge, badge_font) + 34
-    box = (90, 842, 90 + width, 884)
-    draw.rounded_rectangle(box, radius=20, fill=COLORS["warning"])
-    draw.text((107, 849), badge, font=badge_font, fill=COLORS["ink"])
-    boundary = "Post-hoc evidence visualization; not synchronized physical footage."
-    draw.text((92, 910), boundary, font=font(25), fill=COLORS["white"])
-    draw.text((92, 960), "TGOSKits RT-IVC", font=font(20, bold=True), fill=COLORS["muted"])
+    camera_box = LIVE_CAMERA_CONTENT_BOXES[scene.index]
+    camera_card = (
+        camera_box[0] - 14,
+        camera_box[1] - 14,
+        camera_box[2] + 14,
+        camera_box[3] + 14,
+    )
+    draw.rounded_rectangle(
+        camera_card,
+        radius=24,
+        fill="#020b16",
+        outline=COLORS["accent"],
+        width=3,
+    )
+
+    if scene.index == 6:
+        details_box = (1250, 256, 1810, 903)
+        draw.rounded_rectangle(
+            details_box,
+            radius=24,
+            fill="#10263a",
+            outline=COLORS["card_edge"],
+            width=3,
+        )
+        draw.text(
+            (1280, 292),
+            "PHYSICAL UVC INPUT",
+            font=font(25, bold=True),
+            fill=COLORS["accent_soft"],
+        )
+        details = (
+            "Orange Pi 5 Plus",
+            f"{metadata['device']} · {metadata['driver']}",
+            f"{metadata['width']}×{metadata['height']} {metadata['pixel_format']}",
+            f"{metadata['frame_count']} frames · {metadata['duration_seconds']:.0f} s",
+            f"UTC {metadata['started_at_utc']}",
+            f"SHA-256  {metadata['video_sha256'][:12]}…",
+        )
+        for row, value in enumerate(details):
+            draw.text((1280, 362 + row * 72), value, font=font(23), fill=COLORS["white"])
+        draw_pill(image, (1280, 826), "NOT A REPOSITORY SAMPLE", COLORS["warning"])
+    else:
+        chart_box = card(image, (1150, 256, 1810, 846), padding=22)
+        paste_contained(image, CHARTS / "09-so100-id1.png", chart_box)
+        draw_pill(image, (130, 866), "PHYSICAL USB CAMERA", COLORS["accent"])
+        draw_pill(image, (1164, 866), "SUPERVISED SO-100 CYCLE", COLORS["warning"])
+        draw.text(
+            (130, 925),
+            "Camera and arm evidence are physical, but they are not synchronized on one sequence.",
+            font=font(22),
+            fill=COLORS["white"],
+        )
+
+    draw_footer(image, "PHYSICAL CAMERA SOURCE • PROVENANCE RECORDED")
     image.save(output_path, format="PNG", optimize=True)
 
 
@@ -469,29 +542,67 @@ def build_segment(scene: Scene, audio_path: Path, raw_audio_duration: float) -> 
         f"afade=t=in:st=0:d=0.25,afade=t=out:st={scene.duration - 0.55}:d=0.45[a]"
     )
     fade_out = scene.duration - 0.4
+    media_kind = scene_media_kind(scene.index)
 
-    if scene.index in HISTORICAL_STARTS:
+    if media_kind == "terminal":
+        left, top, right, bottom = TERMINAL_CONTENT_BOX
+        media_width = right - left
+        media_height = bottom - top
         command = [
             "ffmpeg",
             "-y",
-            "-ss",
-            f"{HISTORICAL_STARTS[scene.index]:.3f}",
-            "-i",
-            str(HISTORICAL_VIDEO),
             "-loop",
             "1",
             "-framerate",
             str(FPS),
             "-i",
             str(frame_path),
+            "-ss",
+            f"{TERMINAL_STARTS[scene.index]:.3f}",
+            "-i",
+            str(TERMINAL_VIDEO),
             "-i",
             str(audio_path),
             "-filter_complex",
             (
-                f"[0:v]scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=decrease,"
-                f"pad={WIDTH}:{HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=0x07111f[base];"
-                "[1:v]format=rgba[overlay];"
-                "[base][overlay]overlay=0:0:shortest=0,"
+                f"[0:v]scale={WIDTH}:{HEIGHT}[base];"
+                f"[1:v]crop=iw:500:0:0,scale={media_width}:{media_height}:"
+                "force_original_aspect_ratio=decrease:force_divisible_by=2,"
+                f"pad={media_width}:{media_height}:(ow-iw)/2:(oh-ih)/2:color=0x020b16[media];"
+                f"[base][media]overlay={left}:{top}:shortest=0,"
+                f"fade=t=in:st=0:d=0.35,fade=t=out:st={fade_out}:d=0.4,"
+                "format=yuv420p[v];"
+                f"[2:a]{audio_filter}"
+            ),
+        ]
+    elif media_kind == "live-camera":
+        left, top, right, bottom = LIVE_CAMERA_CONTENT_BOXES[scene.index]
+        media_width = right - left
+        media_height = bottom - top
+        command = [
+            "ffmpeg",
+            "-y",
+            "-loop",
+            "1",
+            "-framerate",
+            str(FPS),
+            "-i",
+            str(frame_path),
+            "-stream_loop",
+            "-1",
+            "-ss",
+            f"{LIVE_CAMERA_STARTS[scene.index]:.3f}",
+            "-i",
+            str(LIVE_CAMERA_VIDEO),
+            "-i",
+            str(audio_path),
+            "-filter_complex",
+            (
+                f"[0:v]scale={WIDTH}:{HEIGHT}[base];"
+                f"[1:v]scale={media_width}:{media_height}:"
+                "force_original_aspect_ratio=decrease:force_divisible_by=2,"
+                f"pad={media_width}:{media_height}:(ow-iw)/2:(oh-ih)/2:color=0x020b16[media];"
+                f"[base][media]overlay={left}:{top}:shortest=0,"
                 f"fade=t=in:st=0:d=0.35,fade=t=out:st={fade_out}:d=0.4,"
                 "format=yuv420p[v];"
                 f"[2:a]{audio_filter}"
@@ -678,14 +789,28 @@ def write_manifest(
     scenes: list[Scene],
     audio_durations: dict[int, float],
 ) -> dict[str, object]:
+    camera_metadata = json.loads(LIVE_CAMERA_METADATA.read_text(encoding="utf-8"))
     manifest: dict[str, object] = {
         "schema_version": 1,
         "generator": relative(Path(__file__)),
         "voice": {"provider": "Microsoft Edge TTS", "name": VOICE, "rate": VOICE_RATE},
-        "historical_source": {
-            "path": relative(HISTORICAL_VIDEO),
-            "sha256": sha256(HISTORICAL_VIDEO),
-            "disclosure": "Post-hoc evidence visualization; not synchronized physical footage.",
+        "terminal_source": {
+            "path": relative(TERMINAL_VIDEO),
+            "sha256": sha256(TERMINAL_VIDEO),
+            "disclosure": "Archived terminal evidence, cropped and fitted inside the projection safe area.",
+        },
+        "live_camera_source": {
+            "path": relative(LIVE_CAMERA_VIDEO),
+            "sha256": sha256(LIVE_CAMERA_VIDEO),
+            "metadata_path": relative(LIVE_CAMERA_METADATA),
+            "metadata_sha256": sha256(LIVE_CAMERA_METADATA),
+            "source_kind": camera_metadata["source_kind"],
+            "captured_at_utc": camera_metadata["started_at_utc"],
+            "hostname": camera_metadata["hostname"],
+            "device": camera_metadata["device"],
+            "driver": camera_metadata["driver"],
+            "frame_count": camera_metadata["frame_count"],
+            "disclosure": camera_metadata["claim_boundary"],
         },
         "scenes": [
             {
@@ -694,7 +819,9 @@ def write_manifest(
                 "title": scene.title,
                 "narration_sha256": hashlib.sha256(scene.narration.encode("utf-8")).hexdigest(),
                 "raw_audio_seconds": round(audio_durations[scene.index], 3),
-                "historical_source_start_seconds": HISTORICAL_STARTS.get(scene.index),
+                "media_kind": scene_media_kind(scene.index),
+                "terminal_source_start_seconds": TERMINAL_STARTS.get(scene.index),
+                "live_camera_source_start_seconds": LIVE_CAMERA_STARTS.get(scene.index),
             }
             for scene in scenes
         ],
@@ -703,7 +830,7 @@ def write_manifest(
             "subtitles": {"path": relative(subtitles), "sha256": sha256(subtitles)},
         },
         "limitations": [
-            "No synchronized physical camera-to-arm footage is claimed.",
+            "The displayed camera footage is a physical USB capture, but it is not synchronized with RKNN, RTOS, or SO-100 events.",
             "SO-100 evidence is a supervised single-joint pilot without an RTOS mediator.",
             "Continuous-loop actuator output is virtual state only.",
         ],

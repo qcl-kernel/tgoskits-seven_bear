@@ -1,0 +1,91 @@
+schema=seven-bear-live-camera-v1
+capture_id=seven-bear-camera-live-20260824T030103Z
+hostname=orangepi5plus
+started_at=2026-08-24T03:01:03Z
+device=/dev/video0
+format=MJPG
+width=1280
+height=720
+fps=30
+Driver Info:
+	Driver name      : uvcvideo
+	Card type        : USB Composite Device: USB Camer
+	Bus info         : usb-fc880000.usb-1
+	Driver version   : 6.1.43
+	Capabilities     : 0x84a00001
+		Video Capture
+		Metadata Capture
+		Streaming
+		Extended Pix Format
+		Device Capabilities
+	Device Caps      : 0x04200001
+		Video Capture
+		Streaming
+		Extended Pix Format
+Media Driver Info:
+	Driver name      : uvcvideo
+	Model            : USB Composite Device: USB Camer
+	Serial           : 
+	Bus info         : usb-fc880000.usb-1
+	Media version    : 6.1.43
+	Hardware revision: 0x00000100 (256)
+	Driver version   : 6.1.43
+Interface Info:
+	ID               : 0x03000002
+	Type             : V4L Video
+Entity Info:
+	ID               : 0x00000001 (1)
+	Name             : USB Composite Device: USB Camer
+	Function         : V4L2 I/O
+	Flags            : default
+	Pad 0x01000007   : 0: Sink
+	  Link 0x02000010: from remote pad 0x100000a of entity 'Extension 3' (Video Pixel Formatter): Data, Enabled, Immutable
+Priority: 2
+Video input : 0 (Input 1: ok)
+Format Video Capture:
+	Width/Height      : 1920/1080
+	Pixel Format      : 'MJPG' (Motion-JPEG)
+	Field             : None
+	Bytes per Line    : 0
+	Size Image        : 4177920
+	Colorspace        : sRGB
+	Transfer Function : Default (maps to sRGB)
+	YCbCr/HSV Encoding: Default (maps to ITU-R 601)
+	Quantization      : Default (maps to Full Range)
+	Flags             : 
+Crop Capability Video Capture:
+	Bounds      : Left 0, Top 0, Width 1920, Height 1080
+	Default     : Left 0, Top 0, Width 1920, Height 1080
+	Pixel Aspect: 1/1
+Selection Video Capture: crop_default, Left 0, Top 0, Width 1920, Height 1080, Flags: 
+Selection Video Capture: crop_bounds, Left 0, Top 0, Width 1920, Height 1080, Flags: 
+Streaming Parameters Video Capture:
+	Capabilities     : timeperframe
+	Frames per second: 30.000 (30/1)
+	Read buffers     : 0
+
+User Controls
+
+                     brightness 0x00980900 (int)    : min=-127 max=127 step=1 default=0 value=0
+                       contrast 0x00980901 (int)    : min=0 max=511 step=1 default=256 value=250
+                     saturation 0x00980902 (int)    : min=0 max=511 step=1 default=256 value=475
+                          gamma 0x00980910 (int)    : min=10 max=30 step=10 default=20 value=22
+                           gain 0x00980913 (int)    : min=1 max=7 step=1 default=4 value=4
+           power_line_frequency 0x00980918 (menu)   : min=0 max=2 default=0 value=0 (Disabled)
+				0: Disabled
+				1: 50 Hz
+				2: 60 Hz
+      white_balance_temperature 0x0098091a (int)    : min=0 max=6500 step=1 default=4500 value=4500
+                      sharpness 0x0098091b (int)    : min=0 max=256 step=1 default=128 value=180
+         backlight_compensation 0x0098091c (int)    : min=0 max=255 step=1 default=0 value=0
+
+Camera Controls
+
+                  auto_exposure 0x009a0901 (menu)   : min=0 max=3 default=3 value=3 (Aperture Priority Mode)
+				1: Manual Mode
+				3: Aperture Priority Mode
+         exposure_time_absolute 0x009a0902 (int)    : min=80 max=100000 step=1 default=80 value=80 flags=inactive
+finished_at=2026-08-24T03:01:27Z
+exit_status=0
+size_bytes=27215232
+397ee2500e890f459d875a10257794ad31cb7082f26810e92edff047af0ef9b3  /tmp/seven-bear-camera-live-20260824T030103Z.mjpg

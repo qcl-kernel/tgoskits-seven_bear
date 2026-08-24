@@ -113,7 +113,12 @@ def verify_documents() -> None:
     require("21 个输入 JSON" in documents[1].read_text(encoding="utf-8"), "test evidence count drift")
     require("21 个保留结果 JSON" in documents[2].read_text(encoding="utf-8"), "reproduction evidence count drift")
     video_script = documents[3].read_text(encoding="utf-8")
-    require("21 个证据输入" in video_script and "21 个结果 JSON" in video_script, "video evidence count drift")
+    require("/dev/video0" in video_script, "physical camera source missing from video script")
+    require("非 validation 目录中的样本图片" in video_script, "camera sample boundary missing")
+    require("未在同一 sequence 下同步" in video_script, "physical-loop boundary missing")
+    closing = video_script.rsplit("## Scene 10", maxsplit=1)[-1]
+    for forbidden in ("agy", "Gemini", "ilm-zh", "PDF", "提交材料"):
+        require(forbidden not in closing, f"material-generation narration remains: {forbidden}")
 
 
 def verify_charts() -> None:
@@ -175,8 +180,24 @@ def verify_video() -> None:
     require(sum(scene["duration_seconds"] for scene in manifest["scenes"]) == 300, "scene timeline drift")
     require(manifest["outputs"]["video"]["sha256"] == sha256(VIDEO), "video manifest hash mismatch")
     require(manifest["outputs"]["subtitles"]["sha256"] == sha256(SUBTITLES), "subtitle manifest hash mismatch")
+    live_source = manifest["live_camera_source"]
+    live_video = REPO / live_source["path"]
+    require(live_source["source_kind"] == "physical-usb-camera-live-capture", "camera source kind drift")
+    require(live_source["device"] == "/dev/video0", "camera device drift")
+    require(live_source["sha256"] == sha256(live_video), "camera source hash mismatch")
+    require(
+        [scene["index"] for scene in manifest["scenes"] if scene["media_kind"] == "terminal"]
+        == [1, 2, 4],
+        "terminal scene routing drift",
+    )
+    require(
+        [scene["index"] for scene in manifest["scenes"] if scene["media_kind"] == "live-camera"]
+        == [6, 8],
+        "live-camera scene routing drift",
+    )
     subtitle_text = SUBTITLES.read_text(encoding="utf-8-sig")
-    require("21 个结果 JSON" in subtitle_text, "corrected evidence count missing from subtitles")
+    require("/dev/video0" in subtitle_text, "physical camera source missing from subtitles")
+    require("不在同一时间线" in subtitle_text, "camera synchronization boundary missing")
 
 
 def verify_visual_qa() -> None:

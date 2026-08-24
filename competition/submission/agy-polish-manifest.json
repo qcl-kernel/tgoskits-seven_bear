@@ -239,35 +239,33 @@
       "calls": [
         {
           "attempt": 1,
-          "conversation_id": "59161038-5451-47b5-a64b-8791f1737b04",
-          "duration_seconds": 25.595882216,
+          "conversation_id": "606526d2-a773-4ef7-ad28-85a12236e06c",
+          "duration_seconds": 20.188710429,
           "entry_ids": [
             "design__17_traceability",
             "reproduction__03_offline",
-            "test__17_reproduction_checks",
-            "video__09_caption",
-            "video__09_narration"
+            "test__17_reproduction_checks"
           ],
-          "input_sha256": "4448c13b82b2642c122869d92a3449c0918946c51df8a04ff2e0bfdad248335f",
-          "output_sha256": "9dfde6db7a764491211b716dc6b13fff0c1d20218c202ff904980639137b7d3f",
+          "input_sha256": "d2bd180027935ffe23287f7221e8270bf582f8febc747f2467738d3216ccf083",
+          "output_sha256": "c82e4c9380011582e2be4a62dc396918fad9ee6a97d57a85c196ba44a35e5c2f",
           "usage": {
-            "cache_read_tokens": 17142,
-            "input_tokens": 28937,
-            "output_tokens": 7667,
-            "thinking_tokens": 5988,
-            "total_tokens": 36604
+            "cache_read_tokens": 16924,
+            "input_tokens": 27928,
+            "output_tokens": 6859,
+            "thinking_tokens": 5468,
+            "total_tokens": 34787
           }
         }
       ],
       "effort": "high",
-      "entry_count": 5,
-      "generated_at_utc": "2026-08-23T17:03:55.839632+00:00",
+      "entry_count": 3,
+      "generated_at_utc": "2026-08-24T05:32:21.275562+00:00",
       "model": "gemini-3.7-flash-high",
       "output": "competition/submission/copy/evidence-count-corrections.json",
-      "output_sha256": "9dfde6db7a764491211b716dc6b13fff0c1d20218c202ff904980639137b7d3f",
-      "purpose": "交付材料证据输入计数修订",
+      "output_sha256": "c82e4c9380011582e2be4a62dc396918fad9ee6a97d57a85c196ba44a35e5c2f",
+      "purpose": "比赛成果材料中的证据计数与复现修正",
       "source": "competition/submission/copy/source/evidence-count-corrections.json",
-      "source_sha256": "4448c13b82b2642c122869d92a3449c0918946c51df8a04ff2e0bfdad248335f"
+      "source_sha256": "d2bd180027935ffe23287f7221e8270bf582f8febc747f2467738d3216ccf083"
     },
     {
       "calls": [
@@ -360,8 +358,8 @@
       "calls": [
         {
           "attempt": 1,
-          "conversation_id": "6169abf9-b138-4369-a4d7-a908bcd234e8",
-          "duration_seconds": 24.671301099,
+          "conversation_id": "93d66d32-1fd8-4c21-ae9c-ed4319e7dfff",
+          "duration_seconds": 23.217173375,
           "entry_ids": [
             "00_narration",
             "01_narration",
@@ -369,31 +367,53 @@
             "03_narration",
             "04_narration",
             "05_narration",
+            "06_title",
+            "06_caption",
             "06_narration",
-            "07_narration",
+            "07_narration"
+          ],
+          "input_sha256": "1817199afd6f0b68c18852d20a6fbccc9e952d48c954e121b624bab9c48e2b3a",
+          "output_sha256": "5e077b2326abdf25d06cd25348e670b6de5c0d8947b171aae7f81b82fb5df848",
+          "usage": {
+            "cache_read_tokens": 17050,
+            "input_tokens": 31328,
+            "output_tokens": 9009,
+            "thinking_tokens": 6793,
+            "total_tokens": 40337
+          }
+        },
+        {
+          "attempt": 3,
+          "conversation_id": "ab952b05-20e0-458b-9288-c55a33b5645b",
+          "duration_seconds": 13.730322587,
+          "entry_ids": [
+            "08_title",
+            "08_caption",
             "08_narration",
+            "09_title",
+            "09_caption",
             "09_narration"
           ],
-          "input_sha256": "6b168330157984aad3335443b0e9a4faa1aa321f7ad0eb863cd888b82d4f047e",
-          "output_sha256": "bfbf741dd543c8e0816f8a2818a1ef0fcab6a9ab1b7d552969c88c42b0b9c1da",
+          "input_sha256": "15801fe86194bb60c56a4874f6b5434b113b9345f478298bcd3652e089166985",
+          "output_sha256": "9ecb49008f66d5652d1f27e7e47664cadfacdeb9971323e152771da757109bd6",
           "usage": {
-            "cache_read_tokens": 17307,
-            "input_tokens": 32356,
-            "output_tokens": 10913,
-            "thinking_tokens": 8442,
-            "total_tokens": 43269
+            "cache_read_tokens": 16745,
+            "input_tokens": 24861,
+            "output_tokens": 4164,
+            "thinking_tokens": 3402,
+            "total_tokens": 29025
           }
         }
       ],
       "effort": "high",
-      "entry_count": 10,
-      "generated_at_utc": "2026-08-23T16:52:57.522910+00:00",
+      "entry_count": 16,
+      "generated_at_utc": "2026-08-24T03:20:19.844260+00:00",
       "model": "gemini-3.7-flash-high",
       "output": "competition/submission/copy/video-final-corrections.json",
-      "output_sha256": "bfbf741dd543c8e0816f8a2818a1ef0fcab6a9ab1b7d552969c88c42b0b9c1da",
-      "purpose": "五分钟比赛视频精简旁白",
+      "output_sha256": "96a1e4c3951e377d84296dccc3758df10dcb65ce513ceadca994f2f475339fad",
+      "purpose": "比赛演示视频标题、说明与旁白",
       "source": "competition/submission/copy/source/video-final-corrections.json",
-      "source_sha256": "6b168330157984aad3335443b0e9a4faa1aa321f7ad0eb863cd888b82d4f047e"
+      "source_sha256": "8830f3deaa34551b20123b3ad92179ffaaebb09bc5c5742084947413057559f6"
     },
     {
       "calls": [
