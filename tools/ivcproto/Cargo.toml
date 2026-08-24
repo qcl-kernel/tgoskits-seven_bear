@@ -29,3 +29,8 @@ required-features = ["std"]
 name = "ivc-vision-controller"
 path = "src/bin/ivc_vision_controller.rs"
 required-features = ["std"]
+
+[[bin]]
+name = "ivc-vision-actuator"
+path = "src/bin/ivc_vision_actuator.rs"
+required-features = ["std"]

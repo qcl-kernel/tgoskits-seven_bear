@@ -23,6 +23,7 @@ add_executable(rknn_yolov8_image
 
 add_executable(rknn_yolov8_stream
     cpp/stream_main.cc
+    cpp/detection_validation.cc
     cpp/uvc_capture.cc
     cpp/uvc_capture_layout.cc
     cpp/postprocess.cc

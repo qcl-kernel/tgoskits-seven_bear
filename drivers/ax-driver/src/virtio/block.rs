@@ -8,7 +8,7 @@ use core::{
 };
 
 use ax_sync::PreemptIrqSaveGuard;
-use dma_api::{DmaDirection, InFlightDma};
+use dma_api::{DmaCoherency, DmaConstraints, DmaDeviceInfo, DmaDirection, InFlightDma};
 use rdif_block::{
     BatchSubmitDisposition, BatchSubmitResult, BlkError, BlockController, CompletedRequest,
     CompletionSink, ControlEvent, ControllerEvent, ControllerState, ControllerUpdate, DeviceInfo,
@@ -70,6 +70,7 @@ crate::model_register!(
 fn probe_fdt(probe: rdrive::register::ProbeFdt<'_>) -> Result<(), OnProbeError> {
     let (info, platform) = probe.into_parts();
     let binding = binding_info_from_fdt(&info)?;
+    let dma = virtio_block_dma_info(crate::binding_resolver::dma_coherency_from_fdt(&info));
     let (device_type, transport) = virtio::probe_fdt_mmio_device(&info)?;
     if device_type != DeviceType::Block {
         return Err(OnProbeError::NotMatch);
@@ -82,7 +83,7 @@ fn probe_fdt(probe: rdrive::register::ProbeFdt<'_>) -> Result<(), OnProbeError> 
     if irq_device_type != DeviceType::Block {
         return Err(OnProbeError::NotMatch);
     }
-    register_mmio_transport_with_info(platform, transport, irq_transport, binding)
+    register_mmio_transport_with_info(platform, transport, irq_transport, binding, dma)
 }
 
 pub(super) fn register_mmio_transport(
@@ -90,7 +91,13 @@ pub(super) fn register_mmio_transport(
     transport: MmioTransport<'static>,
     irq_transport: MmioTransport<'static>,
 ) -> Result<(), OnProbeError> {
-    register_mmio_transport_with_info(platform, transport, irq_transport, BindingInfo::empty())
+    register_mmio_transport_with_info(
+        platform,
+        transport,
+        irq_transport,
+        BindingInfo::empty(),
+        virtio_block_dma_info(DmaCoherency::NonCoherent),
+    )
 }
 
 fn register_mmio_transport_with_info(
@@ -98,10 +105,12 @@ fn register_mmio_transport_with_info(
     transport: MmioTransport<'static>,
     irq_transport: MmioTransport<'static>,
     binding: BindingInfo,
+    dma: DmaDeviceInfo,
 ) -> Result<(), OnProbeError> {
-    let controller = VirtioBlockController::new(transport, irq_transport).map_err(|error| {
-        OnProbeError::other(format!("failed to initialize virtio-blk: {error:?}"))
-    })?;
+    let controller =
+        VirtioBlockController::new(transport, irq_transport, dma).map_err(|error| {
+            OnProbeError::other(format!("failed to initialize virtio-blk: {error:?}"))
+        })?;
     platform.register_block_with_info(controller, binding);
     log::info!("registered IRQ-driven VirtIO MMIO block device");
     Ok(())
@@ -110,6 +119,7 @@ fn register_mmio_transport_with_info(
 struct VirtioBlockController {
     shared: Arc<VirtioBlockShared>,
     info: DeviceInfo,
+    dma: DmaDeviceInfo,
     supports_flush: bool,
     irq_handler: Option<Box<dyn HardIrqHandler>>,
     irq_enabled: Arc<AtomicBool>,
@@ -121,6 +131,7 @@ impl VirtioBlockController {
     fn new(
         transport: MmioTransport<'static>,
         irq_transport: MmioTransport<'static>,
+        dma: DmaDeviceInfo,
     ) -> Result<Self, VirtIoError> {
         let mut raw = RawVirtioBlock::new(transport)?;
         raw.disable_interrupts();
@@ -135,6 +146,7 @@ impl VirtioBlockController {
         Ok(Self {
             shared: Arc::new(VirtioBlockShared::new(raw)),
             info,
+            dma,
             supports_flush,
             irq_handler: Some(Box::new(VirtioMmioBlockIrq {
                 transport: irq_transport,
@@ -158,6 +170,7 @@ impl VirtioBlockController {
         let queue: Box<dyn HardwareQueue> = Box::new(VirtioBlockQueue {
             shared: Arc::clone(&self.shared),
             info: self.info,
+            dma: self.dma,
             supports_flush: self.supports_flush,
         });
         let endpoint = IrqEndpoint::new(IRQ_SOURCE_ID, 1 << QUEUE_ID, handler);
@@ -541,6 +554,7 @@ impl VirtioBlockState {
 struct VirtioBlockQueue {
     shared: Arc<VirtioBlockShared>,
     info: DeviceInfo,
+    dma: DmaDeviceInfo,
     supports_flush: bool,
 }
 
@@ -549,7 +563,7 @@ impl VirtioBlockQueue {
         QueueInfo {
             id: QUEUE_ID,
             device: self.info,
-            limits: virtio_block_limits(self.supports_flush),
+            limits: virtio_block_limits(self.dma, self.supports_flush),
         }
     }
 }
@@ -947,18 +961,24 @@ const fn irq_ack_from_status(status: InterruptStatus) -> IrqAck {
     IrqAck::cleared(queues, ControlEvent::new(IRQ_SOURCE_ID, 0))
 }
 
-const fn virtio_block_limits(supports_flush: bool) -> QueueLimits {
+const fn virtio_block_dma_info(coherency: DmaCoherency) -> DmaDeviceInfo {
+    DmaDeviceInfo::new(
+        dma_api::DmaDomainId::Direct,
+        coherency,
+        DmaConstraints::new(u64::MAX)
+            .with_align(PAGE_SIZE)
+            .with_max_segment_size(MAX_TRANSFER_SIZE),
+    )
+}
+
+const fn virtio_block_limits(dma: DmaDeviceInfo, supports_flush: bool) -> QueueLimits {
     QueueLimits {
-        dma_mask: u64::MAX,
-        dma_domain: dma_api::DmaDomainId::legacy_global(),
-        dma_alignment: 0x1000,
+        dma,
         dma_length_alignment: SECTOR_SIZE,
-        segment_boundary: None,
         max_inflight: 1,
         max_submit_batch: 1,
         max_blocks_per_request: (MAX_TRANSFER_SIZE / SECTOR_SIZE) as u32,
         max_segments: 1,
-        max_segment_size: MAX_TRANSFER_SIZE,
         supported_flags: RequestFlags::NONE,
         supports_flush,
     }
@@ -1017,18 +1037,28 @@ mod tests {
 
     #[test]
     fn queue_limits_preserve_owned_dma_single_queue_contract() {
-        let limits = virtio_block_limits(false);
+        let dma = virtio_block_dma_info(dma_api::DmaCoherency::Coherent);
+        let limits = virtio_block_limits(dma, false);
+        let constraints = limits.dma.constraints();
+
+        assert_eq!(limits.dma.domain(), dma_api::DmaDomainId::Direct);
+        assert_eq!(limits.dma.coherency(), dma_api::DmaCoherency::Coherent);
+        assert_eq!(constraints.addr_mask, u64::MAX);
+        assert_eq!(constraints.align, 0x1000);
+        assert_eq!(constraints.boundary, None);
+        assert_eq!(constraints.max_segment_size, Some(MAX_TRANSFER_SIZE));
         assert_eq!(limits.max_inflight, 1);
         assert_eq!(limits.max_submit_batch, 1);
         assert_eq!(limits.max_segments, 1);
         assert_eq!(limits.dma_length_alignment, SECTOR_SIZE);
-        assert!(limits.max_segment_size >= 4 * 1024 * 1024);
         assert!(!limits.supports_flush);
     }
 
     #[test]
     fn negotiated_flush_is_exposed_to_the_block_runtime() {
-        const LIMITS: QueueLimits = virtio_block_limits(true);
+        const DMA: dma_api::DmaDeviceInfo =
+            virtio_block_dma_info(dma_api::DmaCoherency::NonCoherent);
+        const LIMITS: QueueLimits = virtio_block_limits(DMA, true);
         const _: () = assert!(LIMITS.supports_flush);
 
         assert!(LIMITS.supports_flush);
