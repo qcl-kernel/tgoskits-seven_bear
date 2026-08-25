@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
-  "inspection_date": "2026-08-24",
+  "inspection_date": "2026-08-25",
   "pdfs": [
     {
       "path": "competition/submission/output/pdf/tgoskits-competition-design-zh.pdf",
       "pages": 21,
-      "render": "Poppler pdftoppm, 120 dpi final pass; earlier cover pass at 140 dpi",
-      "inspection": "All pages reviewed in contact sheets; cover and corrected traceability page reviewed at full resolution",
+      "render": "Poppler pdftoppm, 110 dpi final pass",
+      "inspection": "All 21 pages reviewed in contact sheets; the CI traceability table and conclusion page were reviewed at full resolution",
       "result": "pass"
     },
     {
       "path": "competition/submission/output/pdf/tgoskits-competition-test-report-zh.pdf",
       "pages": 20,
-      "render": "Poppler pdftoppm, 120 dpi final pass",
-      "inspection": "All pages reviewed in contact sheets; corrected reproduction page reviewed at full resolution",
+      "render": "Poppler pdftoppm, 110 dpi final pass",
+      "inspection": "All 20 pages reviewed in contact sheets; the CI result matrix, CI evidence tables, and limitation page were reviewed at full resolution",
       "result": "pass"
     }
   ],

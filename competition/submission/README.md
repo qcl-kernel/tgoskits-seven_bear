@@ -14,6 +14,7 @@ This directory is a reproducible presentation layer over immutable repository ev
 | Evidence snapshot | `data/evidence-snapshot.json` |
 | Content provenance | `agy-polish-manifest.json` |
 | Visual QA record | `visual-qa.json` |
+| Upstream PR #2182 CI evidence | `../results/upstream-pr-2182-ci-20260825/summary.json` |
 | Final checksums | `output/SHA256SUMS` |
 
 ## Rebuild and verify
@@ -34,6 +35,7 @@ PDF generation uses the vendored `ilm-zh` template pinned in `vendor/ilm-zh/UPST
 
 ## Claim boundaries
 
+- Upstream PR #2182 CI run `32794757246` completed successfully at code HEAD `75d8f3918580471a3451b29ca5d33a015bd5bb81` with 35/35 workflow jobs passing; this is integration evidence, not a current-HEAD formal RT board rerun.
 - Formal RT figures belong to frozen source commit `c82da8464ab69e7da95e9be08293559e67b28fac`; they are not a current-HEAD board rerun and observed maxima are not WCET.
 - The continuous vision loop reports virtual actuator state only.
 - The SO-100 result is a supervised ID1 single-cycle pilot without camera synchronization or an RTOS mediator.

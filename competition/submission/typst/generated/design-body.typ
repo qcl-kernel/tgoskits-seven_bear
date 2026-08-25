@@ -211,9 +211,26 @@ SO-100 通过 USB Control 连接 Orange Pi，由 12 V 独立电源供电。测�
 
 = 17. 可追溯性与复现设计
 <可追溯性与复现设计>
-`competition/submission/data/evidence-snapshot.json` 为材料生成专用的只读归一化快照，完整记录 21 个保留证据输入的相对路径与 SHA-256，并对关键 gate 和声明边界执行断言。图表严格仅读取该快照与经 `agy` 润色的标签，不从另一份手写数值生成。中文正文、图表标签、视频字幕与旁白由 `agy` CLI 调用 `gemini-3.7-flash-high`（配置 effort=high）处理，`competition/submission/agy-polish-manifest.json` 记录输入输出哈希、conversation ID 与 usage。
+`competition/submission/data/evidence-snapshot.json` 为交付材料生成专用的只读归一化快照，完整记录 21 个保留证据输入的相对路径与 SHA-256，并对关键 gate 与声明边界执行断言。所有图表严格仅读取该快照及经 `agy` 润色的标签，不从任何独立手写数值生成。中文正文、图表标签、视频字幕与旁白由 `agy` CLI 调用 `gemini-3.7-flash-high`（配置 effort=high）完成润色，并在 `competition/submission/agy-polish-manifest.json` 中完整记录输入输出哈希、conversation ID 与 usage。
 
-PDF 使用 Typst 与 `ilm-zh` 的固定提交 `7a6080e891631d45ab2c2b40531ea8a3f211270f` 构建。最终交付材料包含生成命令、工具版本、PDF 逐页视觉检查结果、视频抽帧检查结果与 SHA-256 清单。复现者可先进行离线证据校验，再选择 QEMU、板端 smoke 或需要 board lease 的物理 campaign；文档生成不替代硬件重跑。
+#figure(
+  align(center)[#table(
+    columns: (50%, 50%),
+    align: (auto,auto,),
+    table.header([Upstream CI 字段], [记录],),
+    table.hline(),
+    [PR], [`rcore-os/tgoskits#2182`],
+    [HEAD], [`75d8f3918580471a3451b29ca5d33a015bd5bb81`],
+    [CI 运行], [`32794757246`；主流水线 35/35 成功],
+    [关键通过项], [AArch64 IVC、Workspace Clippy/std tests、Orange Pi 5 Plus Linux、StarryOS 与 robot 板卡任务],
+    [机器摘要], [`competition/results/upstream-pr-2182-ci-20260825/summary.json`],
+  )]
+  , kind: table
+  )
+
+该结果用于证明代码集成路径成立，不替代当前成果分支的正式 RT 板端性能重跑。
+
+PDF 基于 Typst 及固定提交 `7a6080e891631d45ab2c2b40531ea8a3f211270f` 的 `ilm-zh` 模板构建。最终交付材料包含生成命令、工具版本、PDF 逐页视觉检查记录、视频抽帧核验结果与 SHA-256 清单。复现流程建议先进行离线证据校验，再选择 QEMU、板端 smoke 或需要 board lease 的物理 campaign；文档与材料生成流程不能替代硬件重跑。
 
 = 18. 结论与后续优先级
 <结论与后续优先级>

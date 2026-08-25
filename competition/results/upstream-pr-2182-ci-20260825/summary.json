@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-08-25T01:50:43.299Z",
+  "source": {
+    "repository": "rcore-os/tgoskits",
+    "pull_request": 2182,
+    "pull_request_url": "https://github.com/rcore-os/tgoskits/pull/2182",
+    "base_branch": "dev",
+    "base_sha": "f70cf8d0eadc43caf176e7873244e8fae8154d9c",
+    "head_branch": "feat/axvisor-rt-ivc-rk3588",
+    "head_sha": "75d8f3918580471a3451b29ca5d33a015bd5bb81"
+  },
+  "workflow": {
+    "name": "CI",
+    "run_id": 32794757246,
+    "run_url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at_utc": "2026-08-25T00:43:16Z",
+    "updated_at_utc": "2026-08-25T01:32:34Z",
+    "jobs_total": 35,
+    "jobs_success": 35,
+    "jobs_failed": 0,
+    "jobs_cancelled": 0
+  },
+  "critical_jobs": [
+    {
+      "name": "Preflight / Formatting + publish dry-run",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97643678130"
+    },
+    {
+      "name": "Preflight / Synchronization lint",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97643678147"
+    },
+    {
+      "name": "Workspace / Incremental Clippy",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644849841"
+    },
+    {
+      "name": "Workspace / std tests",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644849839"
+    },
+    {
+      "name": "AxVisor / QEMU aarch64 · IVC",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644850218"
+    },
+    {
+      "name": "AxVisor / QEMU aarch64 · Smoke + virtio-blk guest + axtest + timer stress",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644850190"
+    },
+    {
+      "name": "AxVisor / Board OrangePi 5 Plus · Linux guest",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644850243"
+    },
+    {
+      "name": "AxVisor / Board OrangePi 5 Plus · StarryOS guest",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644850192"
+    },
+    {
+      "name": "AxVisor / Board OrangePi 5 Plus robot · Linux guest",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644850249"
+    },
+    {
+      "name": "AxVisor / Board OrangePi 5 Plus robot · StarryOS guest",
+      "conclusion": "success",
+      "url": "https://github.com/rcore-os/tgoskits/actions/runs/32794757246/job/97644850232"
+    }
+  ],
+  "integrated_fixes": [
+    {
+      "pr_sha": "cf52846efe04166f17282e5fc10426be6d64e947",
+      "seven_bear_sha": "adf9e671dd93f6b8c315aa06d732ede1f6d54d00",
+      "subject": "fix(axvisor): make RT benchmark tooling self-contained"
+    },
+    {
+      "pr_sha": "75d8f3918580471a3451b29ca5d33a015bd5bb81",
+      "seven_bear_sha": "7b5c59af5c199dff4c95166ef4e743cdc6d00b1c",
+      "subject": "fix(axvisor): preserve assigned SPI ownership on host IRQ entry"
+    }
+  ],
+  "claim_boundary": "This record validates the code-only PR head and the listed CI jobs. It is integration evidence, not a replacement for the frozen formal RT campaign or a new current-HEAD performance measurement."
+}

@@ -4,7 +4,7 @@
 
 # 1. 固定源码与分支
 
-目标分支为 `chore/seven-bear-results-materials`，基于 `upstream/dev` 的 `f70cf8d0eadc43caf176e7873244e8fae8154d9c`。证据快照与文档重建输入 HEAD 为 `0c3ac8654f67922dcbc96eae3de380ffc0c79fea`。首先确认分支与基线：
+目标分支为 `chore/seven-bear-results-materials`，基于 upstream PR #2182 通过 CI 时对应的 `upstream/dev` 提交 `f70cf8d0eadc43caf176e7873244e8fae8154d9c`。证据快照与文档重建输入 HEAD 为 `0118ed5bbda46fefca64a39424a270e20232dff8`。首先确认分支与基线：
 
 ```sh
 git status --short
@@ -13,7 +13,7 @@ git rev-parse upstream/dev
 git rev-list --left-right --count upstream/dev...HEAD
 ```
 
-正式 RT 证据另绑定 `c82da8464ab69e7da95e9be08293559e67b28fac`。重建输入 HEAD 并非该提交的板端重跑，不能通过文档重建改变这一边界。
+正式 RT 证据另行绑定 `c82da8464ab69e7da95e9be08293559e67b28fac`。重建输入 HEAD 并非该提交的板端重跑，文档重建不得改变此边界。
 
 # 2. 环境与工具
 
@@ -32,7 +32,7 @@ python3 -m unittest discover -s competition/submission/tests -p 'test_*.py'
 python3 competition/submission/tools/verify_submission.py
 ```
 
-提取脚本重新读取 21 个保留结果 JSON，校验关键 gate、主张边界与 SHA-256。若任一源结果被修改、路径缺失或字段发生偏移，重建流程将报错终止。图表仅读取 `competition/submission/data/evidence-snapshot.json` 与 `competition/submission/copy/chart-labels.json`。
+证据提取脚本将重新读取 21 个保留结果 JSON，并校验关键 gate、主张边界与 SHA-256。若任一源结果被修改、路径缺失或字段发生偏移，重建流程必须报错终止。图表严格仅读取 `competition/submission/data/evidence-snapshot.json` 与 `competition/submission/copy/chart-labels.json`。
 
 # 4. 中文润色复现
 

@@ -21,11 +21,15 @@ SUBTITLES = SUBMISSION / "output" / "video" / "tgoskits-ivc-competition-demo.zh-
 VIDEO_MANIFEST = SUBMISSION / "output" / "video" / "video-manifest.json"
 DESIGN_PDF = SUBMISSION / "output" / "pdf" / "tgoskits-competition-design-zh.pdf"
 TEST_PDF = SUBMISSION / "output" / "pdf" / "tgoskits-competition-test-report-zh.pdf"
+UPSTREAM_CI_DIR = REPO / "competition" / "results" / "upstream-pr-2182-ci-20260825"
+UPSTREAM_CI_SUMMARY = UPSTREAM_CI_DIR / "summary.json"
+UPSTREAM_CI_README = UPSTREAM_CI_DIR / "README.md"
 
 
 def main() -> int:
     snapshot = load_json(SNAPSHOT)
     verify_evidence(snapshot)
+    verify_upstream_ci()
     verify_polish_manifest()
     verify_documents()
     verify_charts()
@@ -71,6 +75,61 @@ def verify_evidence(snapshot: dict[str, Any]) -> None:
     require(snapshot["realtime"]["current_head_rerun"] is False, "RT provenance boundary drift")
     boundaries = snapshot["claim_boundaries"]
     require(all(value is False for value in boundaries.values()), "claim boundary unexpectedly widened")
+
+
+def verify_upstream_ci() -> None:
+    summary = load_json(UPSTREAM_CI_SUMMARY)
+    source = summary.get("source", {})
+    workflow = summary.get("workflow", {})
+    require(summary.get("schema_version") == 1, "unexpected upstream CI evidence schema")
+    require(source.get("repository") == "rcore-os/tgoskits", "upstream CI repository drift")
+    require(source.get("pull_request") == 2182, "upstream CI pull request drift")
+    require(
+        source.get("base_sha") == "f70cf8d0eadc43caf176e7873244e8fae8154d9c",
+        "upstream CI base SHA drift",
+    )
+    require(
+        source.get("head_sha") == "75d8f3918580471a3451b29ca5d33a015bd5bb81",
+        "upstream CI head SHA drift",
+    )
+    require(workflow.get("run_id") == 32794757246, "upstream CI run ID drift")
+    require(workflow.get("status") == "completed", "upstream CI run is incomplete")
+    require(workflow.get("conclusion") == "success", "upstream CI run did not succeed")
+    require(
+        (workflow.get("jobs_total"), workflow.get("jobs_success")) == (35, 35),
+        "upstream CI successful job count drift",
+    )
+    require(
+        (workflow.get("jobs_failed"), workflow.get("jobs_cancelled")) == (0, 0),
+        "upstream CI contains failed or cancelled jobs",
+    )
+    critical_jobs = summary.get("critical_jobs")
+    require(isinstance(critical_jobs, list) and critical_jobs, "upstream CI critical jobs missing")
+    require(
+        all(job.get("conclusion") == "success" for job in critical_jobs),
+        "an upstream CI critical job did not succeed",
+    )
+    integrated_fixes = {
+        item.get("pr_sha"): item.get("seven_bear_sha")
+        for item in summary.get("integrated_fixes", [])
+    }
+    require(
+        integrated_fixes
+        == {
+            "cf52846efe04166f17282e5fc10426be6d64e947": (
+                "adf9e671dd93f6b8c315aa06d732ede1f6d54d00"
+            ),
+            "75d8f3918580471a3451b29ca5d33a015bd5bb81": (
+                "7b5c59af5c199dff4c95166ef4e743cdc6d00b1c"
+            ),
+        },
+        "upstream CI integrated-fix mapping drift",
+    )
+    require(UPSTREAM_CI_README.is_file(), "upstream CI evidence README is missing")
+    require(
+        workflow["run_url"] in UPSTREAM_CI_README.read_text(encoding="utf-8"),
+        "upstream CI run URL is missing from evidence README",
+    )
 
 
 def verify_polish_manifest() -> None:
@@ -223,6 +282,8 @@ def checksum_paths() -> list[Path]:
         VIDEO,
         SUBTITLES,
         VIDEO_MANIFEST,
+        UPSTREAM_CI_README,
+        UPSTREAM_CI_SUMMARY,
     ]
     paths.extend(sorted((SUBMISSION / "assets" / "charts").glob("[0-9][0-9]-*.*")))
     return paths

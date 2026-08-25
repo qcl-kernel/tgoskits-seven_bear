@@ -128,7 +128,7 @@ def write_typst_wrapper(path: Path, *, title: str, abstract: str, body: str) -> 
     "黑体": ((name: "Arial", covers: "latin-in-cjk"), "Noto Sans SC"),
     "等宽": ((name: "Cascadia Mono", covers: "latin-in-cjk"), "Noto Sans SC"),
   ),
-  date: datetime(year: 2026, month: 8, day: 24),
+  date: datetime(year: 2026, month: 8, day: 25),
   date-format: "[year]-[month padding:zero]-[day padding:zero]",
   abstract: [{typst_escape(abstract)}],
   chapter-pagebreak: true,

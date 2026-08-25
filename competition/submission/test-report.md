@@ -8,8 +8,9 @@
 
 | 测试域 | 样本或持续时间 | 结果 | 等级 |
 | --- | ---: | --- | --- |
+| Upstream PR CI | 主流水线 35 个任务 | 35/35 成功；AArch64 IVC 与 Orange Pi 5 Plus 相关任务成功 | PASS |
 | AxVisor 正式 RT | 5 组 AB/BA；每项每 half 10,000 样本 | M2 exit gate 通过；4 项 worst maximum 均改善 | FROZEN FORMAL |
-| AxVisor 双 soak | 1,864.677 秒 + 1,845.735 秒 | host/guest/direct IRQ 记录可配对 | FROZEN FORMAL |
+| AxVisor 双 soak | 1,864.677 秒 + 1,845.735 秒 | host/guest/direct IRQ 记录完全配对 | FROZEN FORMAL |
 | 原生 Zephyr | 4 组 AB/BA，共 8×10,000 样本 | idle/stress 均 0 miss、0 early wake | PASS |
 | 原生 Zephyr soak | 1,817.822 秒、10,000 样本 | 0 miss、0 early wake | PASS |
 | 当前源 IVC reset | 120 条控制 | accepted=120、applied=120、成功率 100.0% | PASS |
@@ -169,11 +170,28 @@ trace 起始为 configured-disarmed position=2042、torque=false；上电后向�
 
 通过项仅为 id1-single-cycle。full-arm motion、armed-motion estop、rtos mediator 与 camera-synchronized physical loop 均为 not-tested。该证据不能与 60 条视觉 run 拼接成同一次物理闭环。
 
-# 17. 复现与自动校验
+# 17. 复现、自动校验与 upstream CI
 
-材料生成前执行证据抽取器，对 21 个输入 JSON 计算 SHA-256，并断言正式 RT、当前 reset、原生 Zephyr、隔离、UVC、连续视觉、优化、pilot 与 SO-100 的关键 gate。图表脚本仅读取归一化快照。中文润色清单记录 `gemini-3.7-flash-high`、effort=high、conversation ID、usage 与输入输出哈希。
+材料生成前执行证据抽取器，对 21 个输入 JSON 计算 SHA-256，并断言正式 RT、当前 reset、原生 Zephyr、隔离、UVC、连续视觉、优化、pilot 与 SO-100 的关键 gate。图表生成脚本仅读取归一化快照。中文润色清单记录 `gemini-3.7-flash-high`、effort=high、conversation ID、usage 与输入输出哈希。
 
-离线复现先运行 Python 单元测试、证据快照重建、图表重建、PDF 构建与校验；硬件复现再依次获取 board lease、确认 Linux 状态、上传并核验镜像、执行 `sync`、重启至 AxVisor、采集 marker 并恢复 Linux。完整命令见随附复现说明。
+| CI 字段 | 记录 |
+| --- | --- |
+| Upstream PR | `rcore-os/tgoskits#2182` |
+| 代码 HEAD | `75d8f3918580471a3451b29ca5d33a015bd5bb81` |
+| CI 运行 | `32794757246`；success；主流水线 35 个任务全部成功 |
+| 完整地址 | <https://github.com/rcore-os/tgoskits/actions/runs/32794757246> |
+| 机器摘要 | `competition/results/upstream-pr-2182-ci-20260825/summary.json` |
+
+关键通过项包括 Formatting、Synchronization lint、Workspace Incremental Clippy、Workspace std tests、AxVisor QEMU aarch64 IVC、AxVisor QEMU aarch64 virtio-blk/timer stress，以及 Orange Pi 5 Plus Linux、StarryOS 与 robot 板卡任务。
+
+| PR 修复提交 | 成果分支 patch-equivalent 提交 |
+| --- | --- |
+| `cf52846efe04166f17282e5fc10426be6d64e947` | `adf9e671dd93f6b8c315aa06d732ede1f6d54d00` |
+| `75d8f3918580471a3451b29ca5d33a015bd5bb81` | `7b5c59af5c199dff4c95166ef4e743cdc6d00b1c` |
+
+PR CI 仅作为代码集成有效性的证据，不等同于在成果分支文档提交上对正式 RT 五配对与双 soak 进行的重跑。
+
+离线复现流程先运行 Python 单元测试、证据快照重建、图表重建、PDF 构建与校验；硬件复现流程再依次取得 board lease、确认 Linux 状态、上传并核验镜像、执行 `sync`、重启至 AxVisor、采集 marker 并恢复 Linux。完整命令见随附复现说明。
 
 # 18. 限制、风险与判定
 

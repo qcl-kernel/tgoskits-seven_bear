@@ -124,6 +124,37 @@
       "calls": [
         {
           "attempt": 1,
+          "conversation_id": "db8bf20d-4d92-4263-b0ca-55c7ae3cb363",
+          "duration_seconds": 17.786165982,
+          "entry_ids": [
+            "materials_section",
+            "result_readme"
+          ],
+          "input_sha256": "922d9f2805d8bdf2fb8b0fd0610475557094e6069f4cd6f8e9beec39f02791ab",
+          "output_sha256": "8dff885e36a483dbbc58548977273d6b963c3744ae90989e5f8c5e11435ed40c",
+          "usage": {
+            "cache_read_tokens": 16952,
+            "input_tokens": 28247,
+            "output_tokens": 7233,
+            "thinking_tokens": 5650,
+            "total_tokens": 35480
+          }
+        }
+      ],
+      "effort": "high",
+      "entry_count": 2,
+      "generated_at_utc": "2026-08-25T01:55:22.545072+00:00",
+      "model": "gemini-3.7-flash-high",
+      "output": "competition/submission/copy/ci-success-materials.json",
+      "output_sha256": "8dff885e36a483dbbc58548977273d6b963c3744ae90989e5f8c5e11435ed40c",
+      "purpose": "PR CI 成功证据与成果目录刷新",
+      "source": "competition/submission/copy/source/ci-success-materials.json",
+      "source_sha256": "922d9f2805d8bdf2fb8b0fd0610475557094e6069f4cd6f8e9beec39f02791ab"
+    },
+    {
+      "calls": [
+        {
+          "attempt": 1,
           "conversation_id": "f638ab49-b011-4586-88ab-c488f3b2fa4f",
           "duration_seconds": 34.366701456,
           "entry_ids": [
@@ -239,33 +270,34 @@
       "calls": [
         {
           "attempt": 1,
-          "conversation_id": "606526d2-a773-4ef7-ad28-85a12236e06c",
-          "duration_seconds": 20.188710429,
+          "conversation_id": "b8a7ac4a-3ec4-4c8e-b2af-24f2f50c6d2f",
+          "duration_seconds": 36.177636883,
           "entry_ids": [
             "design__17_traceability",
             "reproduction__03_offline",
+            "test__01_result_matrix",
             "test__17_reproduction_checks"
           ],
-          "input_sha256": "d2bd180027935ffe23287f7221e8270bf582f8febc747f2467738d3216ccf083",
-          "output_sha256": "c82e4c9380011582e2be4a62dc396918fad9ee6a97d57a85c196ba44a35e5c2f",
+          "input_sha256": "a80cc1ee5a3146ca97ae0321151041cf5e8dc3d53c509f7acbe5b0dc323cee75",
+          "output_sha256": "c289d590614a7c688e798560aff7cc98c979034df6dfb7035cb77313b9d4eb17",
           "usage": {
-            "cache_read_tokens": 16924,
-            "input_tokens": 27928,
-            "output_tokens": 6859,
-            "thinking_tokens": 5468,
-            "total_tokens": 34787
+            "cache_read_tokens": 21841,
+            "input_tokens": 31967,
+            "output_tokens": 14638,
+            "thinking_tokens": 10567,
+            "total_tokens": 46605
           }
         }
       ],
       "effort": "high",
-      "entry_count": 3,
-      "generated_at_utc": "2026-08-24T05:32:21.275562+00:00",
+      "entry_count": 4,
+      "generated_at_utc": "2026-08-25T02:03:53.227624+00:00",
       "model": "gemini-3.7-flash-high",
       "output": "competition/submission/copy/evidence-count-corrections.json",
-      "output_sha256": "c82e4c9380011582e2be4a62dc396918fad9ee6a97d57a85c196ba44a35e5c2f",
-      "purpose": "比赛成果材料中的证据计数与复现修正",
+      "output_sha256": "c289d590614a7c688e798560aff7cc98c979034df6dfb7035cb77313b9d4eb17",
+      "purpose": "比赛测试报告与可追溯性刷新",
       "source": "competition/submission/copy/source/evidence-count-corrections.json",
-      "source_sha256": "d2bd180027935ffe23287f7221e8270bf582f8febc747f2467738d3216ccf083"
+      "source_sha256": "a80cc1ee5a3146ca97ae0321151041cf5e8dc3d53c509f7acbe5b0dc323cee75"
     },
     {
       "calls": [
@@ -358,48 +390,32 @@
       "calls": [
         {
           "attempt": 1,
-          "conversation_id": "9c4773a8-8edb-48a9-b57d-bcac516309a3",
-          "duration_seconds": 15.693779283,
+          "conversation_id": "3267499d-4653-4c6c-adfc-668b3d67b560",
+          "duration_seconds": 17.434223575,
           "entry_ids": [
-            "design__00_cover"
-          ],
-          "input_sha256": "fc265212084dfc1cd7ba3d392271c52230ff8d9d9ca5a40d208782c511da2459",
-          "output_sha256": "49a494344316c91724eb1cd611d39e29a42585c2a7cd94187b1b7573ec28ef98",
-          "usage": {
-            "cache_read_tokens": 0,
-            "input_tokens": 41677,
-            "output_tokens": 4010,
-            "thinking_tokens": 3393,
-            "total_tokens": 45687
-          }
-        },
-        {
-          "attempt": 1,
-          "conversation_id": "bf956352-5e63-4f62-9823-b797ae640ee7",
-          "duration_seconds": 15.081761447,
-          "entry_ids": [
+            "design__00_cover",
             "reproduction__01_source"
           ],
-          "input_sha256": "fef6158a3034824dec55be6d5652706877bf3636bc980f76c08caf4bddbdc06d",
-          "output_sha256": "d79f64bb443898e37e42041c7c5697a9183f3c11f73c6a9f270ecc6b8eee7e6c",
+          "input_sha256": "9015f069d111969631dd2faa480b232197b3c9f5eaa4c687e639736636f55402",
+          "output_sha256": "491a20f53dd2e7dbfc4e4112886eb7feaf462b173553ad0a1cf3888f2bdde647",
           "usage": {
-            "cache_read_tokens": 16856,
-            "input_tokens": 25421,
-            "output_tokens": 4263,
-            "thinking_tokens": 3753,
-            "total_tokens": 29684
+            "cache_read_tokens": 16922,
+            "input_tokens": 27187,
+            "output_tokens": 6407,
+            "thinking_tokens": 5250,
+            "total_tokens": 33594
           }
         }
       ],
       "effort": "high",
       "entry_count": 2,
-      "generated_at_utc": "2026-08-24T15:53:03.485241+00:00",
+      "generated_at_utc": "2026-08-25T02:20:45.999109+00:00",
       "model": "gemini-3.7-flash-high",
       "output": "competition/submission/copy/version-refresh.json",
-      "output_sha256": "37cac362218901c8cd0ddef0d14662c68698cc1f92df82ba1c53692ced71a455",
+      "output_sha256": "491a20f53dd2e7dbfc4e4112886eb7feaf462b173553ad0a1cf3888f2bdde647",
       "purpose": "比赛成果材料版本来源刷新",
       "source": "competition/submission/copy/source/version-refresh.json",
-      "source_sha256": "cd5454fc45261d628a5caa81279e4cd1c185d1fcb241d0619a4e106fedad3ced"
+      "source_sha256": "9015f069d111969631dd2faa480b232197b3c9f5eaa4c687e639736636f55402"
     },
     {
       "calls": [

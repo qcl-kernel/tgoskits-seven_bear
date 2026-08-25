@@ -65,6 +65,54 @@ class EvidenceSnapshotTests(unittest.TestCase):
         self.assertEqual(self.snapshot["physical_actuator"]["claims"]["rtos_mediator"], "not-tested")
 
 
+class UpstreamCiEvidenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.summary = json.loads(
+            (
+                REPO
+                / "competition"
+                / "results"
+                / "upstream-pr-2182-ci-20260825"
+                / "summary.json"
+            ).read_text(encoding="utf-8")
+        )
+
+    def test_pr_ci_completed_with_all_jobs_successful(self) -> None:
+        source = self.summary["source"]
+        workflow = self.summary["workflow"]
+        self.assertEqual(source["repository"], "rcore-os/tgoskits")
+        self.assertEqual(source["pull_request"], 2182)
+        self.assertEqual(source["head_sha"], "75d8f3918580471a3451b29ca5d33a015bd5bb81")
+        self.assertEqual(workflow["run_id"], 32794757246)
+        self.assertEqual(workflow["status"], "completed")
+        self.assertEqual(workflow["conclusion"], "success")
+        self.assertEqual(workflow["jobs_total"], 35)
+        self.assertEqual(workflow["jobs_success"], 35)
+        self.assertEqual(workflow["jobs_failed"], 0)
+        self.assertEqual(workflow["jobs_cancelled"], 0)
+        self.assertTrue(
+            all(job["conclusion"] == "success" for job in self.summary["critical_jobs"])
+        )
+
+    def test_pr_fixes_map_to_the_results_branch_commits(self) -> None:
+        mapping = {
+            item["pr_sha"]: item["seven_bear_sha"]
+            for item in self.summary["integrated_fixes"]
+        }
+        self.assertEqual(
+            mapping,
+            {
+                "cf52846efe04166f17282e5fc10426be6d64e947": (
+                    "adf9e671dd93f6b8c315aa06d732ede1f6d54d00"
+                ),
+                "75d8f3918580471a3451b29ca5d33a015bd5bb81": (
+                    "7b5c59af5c199dff4c95166ef4e743cdc6d00b1c"
+                ),
+            },
+        )
+
+
 class PolishGuardTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

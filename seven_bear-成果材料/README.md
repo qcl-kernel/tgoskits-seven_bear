@@ -11,6 +11,10 @@
 | `tgoskits-ivc-competition-demo.mp4` | 五分钟成果演示视频。 |
 | `SHA256SUMS` | 上述三项交付文件的 SHA-256 完整性校验值。 |
 
+## 上游 PR CI 交付验证
+
+上游 PR `rcore-os/tgoskits#2182` 在代码提交 `75d8f3918580471a3451b29ca5d33a015bd5bb81` 上完成 CI 运行 `32794757246`，主流水线 35 个任务全部成功。通过项包括 Formatting、Synchronization lint、Workspace Clippy/std tests、AArch64 IVC，以及 Orange Pi 5 Plus 的 Linux、StarryOS 与 robot 板卡任务。成果分支以 patch-equivalent 方式同步了 RT 工具修复和已分配 SPI 归属修复；机器可读快照见 `competition/results/upstream-pr-2182-ci-20260825/summary.json`。该结果属于集成验证，不替代正式 RT 五配对与双 soak 的当前 HEAD 板端重跑。
+
 ## 原型系统与源代码
 
 源代码保留在仓库原有工程结构中，避免在成果目录内复制并形成多个实现版本：
@@ -21,6 +25,7 @@
 - 连续视觉闭环与分析工具：[competition/vision](../competition/vision/)
 - RK3588 UVC/RKNN 应用：[apps/starry/orangepi-5-plus-uvc-rknn](../apps/starry/orangepi-5-plus-uvc-rknn/)
 - 原始测试证据：[competition/results](../competition/results/)
+- Upstream PR CI 成功证据：[competition/results/upstream-pr-2182-ci-20260825](../competition/results/upstream-pr-2182-ci-20260825/)
 
 完整的成果生成与复现说明见 [reproduction-guide.md](../competition/submission/reproduction-guide.md)，正式交付包校验入口见 [competition/submission/README.md](../competition/submission/README.md)。
 
