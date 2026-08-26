@@ -63,7 +63,7 @@ mod reset_memory;
 #[cfg(any(test, target_arch = "aarch64"))]
 mod timer_wait;
 pub(crate) use event::VcpuEventChannel;
-#[cfg(any(test, target_arch = "aarch64", target_arch = "loongarch64"))]
+#[cfg(test)]
 pub(crate) use event::wait_for_vcpu_event_if_idle;
 #[cfg(any(target_arch = "aarch64", target_arch = "loongarch64"))]
 pub(crate) use event::wait_for_vcpu_event_if_idle_with;

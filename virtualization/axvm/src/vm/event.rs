@@ -24,7 +24,7 @@ impl VcpuEventChannel {
         self.wait_queue.wait();
     }
 
-    #[cfg(target_arch = "aarch64")]
+    #[cfg(target_arch = "loongarch64")]
     pub(crate) fn wait_until(&self, condition: impl Fn() -> bool) {
         self.wait_queue.wait_until(condition);
     }
@@ -36,7 +36,7 @@ impl VcpuEventChannel {
     }
 }
 
-#[cfg(any(target_arch = "aarch64", test))]
+#[cfg(any(test, target_arch = "aarch64", target_arch = "loongarch64"))]
 mod wait_race {
     use super::*;
 
@@ -60,13 +60,26 @@ mod wait_race {
     }
 
     /// Blocks only if the VM and target channel remained idle across setup.
+    #[cfg(test)]
     pub(crate) fn wait_for_vcpu_event_if_idle(
         channel: &VcpuEventChannel,
         wait_snapshot: &VcpuEventWaitSnapshot,
         may_wait: impl Fn() -> bool,
         wait_until: impl FnOnce(&dyn Fn() -> bool),
     ) {
-        let wake_condition = || !may_wait() || wait_snapshot.has_pending_event(channel);
+        wait_for_vcpu_event_if_idle_with(channel, wait_snapshot, may_wait, || false, wait_until);
+    }
+
+    /// Blocks only if the target channel and any additional source remain idle.
+    pub(crate) fn wait_for_vcpu_event_if_idle_with(
+        channel: &VcpuEventChannel,
+        wait_snapshot: &VcpuEventWaitSnapshot,
+        may_wait: impl Fn() -> bool,
+        additional_ready: impl Fn() -> bool,
+        wait_until: impl FnOnce(&dyn Fn() -> bool),
+    ) {
+        let wake_condition =
+            || !may_wait() || wait_snapshot.has_pending_event(channel) || additional_ready();
         if wake_condition() {
             return;
         }
@@ -74,8 +87,10 @@ mod wait_race {
     }
 }
 
-#[cfg(any(target_arch = "aarch64", test))]
+#[cfg(test)]
 pub(crate) use wait_race::wait_for_vcpu_event_if_idle;
+#[cfg(any(test, target_arch = "aarch64", target_arch = "loongarch64"))]
+pub(crate) use wait_race::wait_for_vcpu_event_if_idle_with;
 
 #[cfg(test)]
 mod tests {
@@ -104,5 +119,40 @@ mod tests {
         wait_for_vcpu_event_if_idle(&channel, &snapshot, || true, |_| waits.set(waits.get() + 1));
 
         assert_eq!(waits.get(), 0);
+    }
+
+    #[test]
+    fn additional_completion_before_wait_prevents_sleep() {
+        let channel = VcpuEventChannel::new();
+        let snapshot = channel.snapshot();
+        let waits = core::cell::Cell::new(0);
+
+        wait_for_vcpu_event_if_idle_with(
+            &channel,
+            &snapshot,
+            || true,
+            || true,
+            |_| waits.set(waits.get() + 1),
+        );
+
+        assert_eq!(waits.get(), 0);
+    }
+
+    #[test]
+    fn additional_completion_is_rechecked_at_the_park_boundary() {
+        let channel = VcpuEventChannel::new();
+        let snapshot = channel.snapshot();
+        let completed = core::cell::Cell::new(false);
+
+        wait_for_vcpu_event_if_idle_with(
+            &channel,
+            &snapshot,
+            || true,
+            || completed.get(),
+            |condition| {
+                completed.set(true);
+                assert!(condition());
+            },
+        );
     }
 }
